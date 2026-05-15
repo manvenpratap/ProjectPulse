@@ -1,0 +1,6 @@
+{
+  "name": "ProjectPulse",
+  "description": "A full-featured project management suite for high-density tracking of tasks, defects, and team capacity with AI-driven insights and Excel synchronization.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["Task Tracking", "Gantt Timeline", "Resource Planning", "Defect Management", "Strategic Analytics"]
+}
