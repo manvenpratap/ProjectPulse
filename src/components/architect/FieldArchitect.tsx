@@ -21,7 +21,7 @@ const FieldArchitect: React.FC = () => {
   const { state, updateProject } = useProject();
   const [activeTab, setActiveTab] = useState<'tasks' | 'defects'>('tasks');
 
-  const customFields = activeTab === 'tasks' ? state.customFields : state.defCustomFields;
+  const customFields = (activeTab === 'tasks' ? state.customFields : state.defCustomFields) || [];
 
   const handleAddField = () => {
     const newField: CustomField = {
@@ -31,19 +31,19 @@ const FieldArchitect: React.FC = () => {
     };
     
     if (activeTab === 'tasks') {
-      updateProject({ customFields: [...state.customFields, newField] });
+      updateProject({ customFields: [...(state.customFields || []), newField] });
     } else {
-      updateProject({ defCustomFields: [...state.defCustomFields, newField] });
+      updateProject({ defCustomFields: [...(state.defCustomFields || []), newField] });
     }
   };
 
   const removeField = (idx: number) => {
     if (confirm('Permanently delete this custom attribute? Existing data for this field will be lost.')) {
       if (activeTab === 'tasks') {
-        const updated = state.customFields.filter((_, i) => i !== idx);
+        const updated = (state.customFields || []).filter((_, i) => i !== idx);
         updateProject({ customFields: updated });
       } else {
-        const updated = state.defCustomFields.filter((_, i) => i !== idx);
+        const updated = (state.defCustomFields || []).filter((_, i) => i !== idx);
         updateProject({ defCustomFields: updated });
       }
     }

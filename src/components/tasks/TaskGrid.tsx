@@ -10,7 +10,9 @@ import {
   AlertTriangle,
   Clock,
   CheckCircle2,
-  Lock
+  Lock,
+  CheckSquare,
+  Bug
 } from 'lucide-react';
 import Button from '../shared/Button';
 
@@ -19,7 +21,14 @@ interface TaskGridProps {
 }
 
 const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
-  const { state } = useProject();
+  const { state, searchTerm } = useProject();
+
+  const filteredTasks = state.tasks.filter(t => 
+    t.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    t.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    t.module.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (t.assignee && t.assignee.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   const getStatusStyle = (status: TaskStatus) => {
     switch (status) {
@@ -56,8 +65,74 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
   }
 
   return (
-    <div className="overflow-x-auto rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-sm">
-      <table className="w-full text-left border-collapse min-w-[1000px]">
+    <div className="space-y-4">
+      {/* Mobile view cards */}
+      <div className="grid grid-cols-1 gap-3 lg:hidden">
+        {filteredTasks.map((task) => {
+          const overdue = daysDiff(task.dueDate)! < 0 && task.status !== TaskStatus.COMPLETED;
+          const blocked = isBlocked(task, state.tasks);
+          
+          return (
+            <div 
+              key={task.id}
+              onClick={() => onEditTask(task.id)}
+              className={clsx(
+                "p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm active:scale-[0.98] transition-all",
+                blocked && "bg-amber-50/50 border-amber-200"
+              )}
+            >
+              <div className="flex justify-between items-start mb-3">
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono font-bold text-[var(--color-primary-hex)]">{task.id}</span>
+                    <span className={clsx(
+                      "px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-tight border",
+                      getStatusStyle(task.status)
+                    )}>{task.status}</span>
+                    {task.subtasks.length > 0 && (
+                      <span className="flex items-center gap-1 text-[9px] font-black text-indigo-500 uppercase">
+                        <CheckSquare size={10} /> {task.subtasks.filter(s => s.done).length}/{task.subtasks.length}
+                      </span>
+                    )}
+                    {state.defects.filter(d => d.linkedId === task.id).length > 0 && (
+                      <span className="flex items-center gap-1 text-[9px] font-black text-rose-500 uppercase">
+                        <Bug size={10} /> {state.defects.filter(d => d.linkedId === task.id).length}
+                      </span>
+                    )}
+                  </div>
+                  <h4 className="text-sm font-bold text-[var(--color-text)] leading-tight">{task.name}</h4>
+                </div>
+                {blocked && <Lock size={12} className="text-amber-600" />}
+              </div>
+
+              <div className="flex items-center justify-between mt-4">
+                <div className="flex items-center gap-4">
+                   <div className="flex flex-col">
+                      <span className="text-[8px] font-bold text-[var(--color-text-faint)] uppercase">Module</span>
+                      <span className="text-[10px] font-bold truncate max-w-[80px]">{task.module}</span>
+                   </div>
+                   <div className="flex flex-col">
+                      <span className="text-[8px] font-bold text-[var(--color-text-faint)] uppercase">Due</span>
+                      <span className={clsx("text-[10px] font-bold", overdue ? "text-red-500" : "text-[var(--color-text-muted)]")}>
+                        {fmtDate(task.dueDate)}
+                      </span>
+                   </div>
+                </div>
+                <div className="flex items-center gap-2">
+                   <span className="text-[10px] font-mono font-bold">{task.progress}%</span>
+                   <div className="w-12 h-1 bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
+                      <div className="h-full bg-[var(--color-primary-hex)]" style={{ width: `${task.progress}%` }} />
+                   </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Desktop view table */}
+      <div className="hidden lg:block overflow-x-auto rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-sm">
+        <table className="w-full text-left border-collapse min-w-[1000px]">
         <thead>
           <tr className="bg-[var(--color-surface-offset)] border-bottom border-[var(--color-divider)]">
             <th className="px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-faint)] w-20">ID</th>
@@ -71,7 +146,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
           </tr>
         </thead>
         <tbody className="divide-y divide-[var(--color-divider)]">
-          {state.tasks.map((task) => {
+          {filteredTasks.map((task) => {
             const overdue = daysDiff(task.dueDate)! < 0 && task.status !== TaskStatus.COMPLETED;
             const blocked = isBlocked(task, state.tasks);
             
@@ -107,9 +182,16 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                       {task.name}
                     </span>
                     {task.subtasks.length > 0 && (
-                      <span className="px-1.5 py-0.5 rounded-md bg-[var(--color-surface-offset)] text-[10px] font-bold text-[var(--color-text-muted)]">
-                        {task.subtasks.length}
-                      </span>
+                      <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-indigo-50 border border-indigo-100 text-[9px] font-black text-indigo-600 uppercase">
+                        <CheckSquare size={10} />
+                        {task.subtasks.filter(s => s.done).length}/{task.subtasks.length}
+                      </div>
+                    )}
+                    {state.defects.filter(d => d.linkedId === task.id).length > 0 && (
+                      <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-rose-50 border border-rose-100 text-[9px] font-black text-rose-600 uppercase">
+                        <Bug size={10} />
+                        {state.defects.filter(d => d.linkedId === task.id).length}
+                      </div>
                     )}
                   </div>
                 </td>
@@ -160,7 +242,8 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
         </tbody>
       </table>
     </div>
-  );
+  </div>
+);
 };
 
 export default TaskGrid;

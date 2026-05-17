@@ -18,11 +18,32 @@ const RegistryView: React.FC = () => {
   const { state, updateProject } = useProject();
   const [selectedKey, setSelectedRegistryKey] = useState('status');
   const [newValue, setNewValue] = useState('');
+  const [newLibName, setNewLibName] = useState('');
+  const [isAddingLib, setIsAddingLib] = useState(false);
 
-  const keys = Object.keys(state.dropdowns).sort();
-  const values = state.dropdowns[selectedKey] || [];
+  const dropdowns = state.dropdowns || {};
+  const keys = Object.keys(dropdowns).sort();
+  const values = dropdowns[selectedKey] || [];
 
-  const isReserved = ['status', 'priority', 'category'].includes(selectedKey);
+  const isReserved = ['status', 'priority', 'category', 'module', 'moduleType'].includes(selectedKey);
+
+  const handleAddLib = () => {
+    if (!newLibName.trim()) return;
+    const formatted = newLibName.trim().replace(/\s+/g, '');
+    if (dropdowns[formatted]) {
+      alert('Library already exists');
+      return;
+    }
+    updateProject({
+      dropdowns: {
+        ...dropdowns,
+        [formatted]: []
+      }
+    });
+    setSelectedRegistryKey(formatted);
+    setNewLibName('');
+    setIsAddingLib(false);
+  };
 
   const handleAddValue = () => {
     if (!newValue.trim()) return;
@@ -61,25 +82,48 @@ const RegistryView: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full bg-[var(--color-bg)] overflow-hidden">
-      <div className="flex-1 max-w-[1400px] mx-auto w-full p-8 flex gap-8">
+    <div className="flex h-full bg-[var(--color-bg)] overflow-y-auto custom-scroll">
+      <div className="flex-1 max-w-[1400px] mx-auto w-full p-4 md:p-8 flex flex-col lg:flex-row gap-6 md:gap-8 min-h-full">
         {/* Sidebar */}
-        <div className="w-80 flex flex-col bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl overflow-hidden shadow-xl shadow-black/5">
+        <div className="w-full lg:w-80 flex flex-col bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl md:rounded-3xl overflow-hidden shadow-xl shadow-black/5 shrink-0 h-auto lg:h-[calc(100vh-120px)]">
           <div className="p-6 border-b border-[var(--color-divider)]">
-            <h4 className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-4">Option Libraries</h4>
-            <div className="relative">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
-              <input 
-                className="w-full h-9 pl-9 pr-4 bg-[var(--color-surface-2)] border border-transparent rounded-xl text-xs font-semibold focus:bg-white focus:border-indigo-500/20 outline-none transition-all"
-                placeholder="Filter libraries..."
-              />
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)]">Option Libraries</h4>
+              <button 
+                onClick={() => setIsAddingLib(!isAddingLib)} 
+                className="p-1 px-2 bg-indigo-50 text-indigo-600 rounded-md text-[9px] font-black uppercase tracking-tighter hover:bg-indigo-600 hover:text-white transition-all"
+              >
+                {isAddingLib ? 'Cancel' : 'Add New'}
+              </button>
             </div>
+            
+            {isAddingLib ? (
+              <div className="animate-in slide-in-from-top-2 duration-200">
+                <input 
+                  autoFocus
+                  className="w-full h-9 px-3 bg-[var(--color-surface-2)] border border-indigo-500/20 rounded-xl text-xs font-semibold outline-none shadow-inner mb-2"
+                  placeholder="Library Name..."
+                  value={newLibName}
+                  onChange={(e) => setNewLibName(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleAddLib()}
+                />
+                <Button variant="primary" size="sm" className="w-full h-8 text-[10px] rounded-lg font-black" onClick={handleAddLib}>Create Set</Button>
+              </div>
+            ) : (
+              <div className="relative">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
+                <input 
+                  className="w-full h-9 pl-9 pr-4 bg-[var(--color-surface-2)] border border-transparent rounded-xl text-xs font-semibold focus:bg-white focus:border-indigo-500/20 outline-none transition-all"
+                  placeholder="Filter libraries..."
+                />
+              </div>
+            )}
           </div>
           
-          <div className="flex-1 overflow-y-auto py-2 custom-scroll">
+          <div className="flex-1 overflow-y-auto py-2 custom-scroll max-h-[300px] lg:max-h-none">
             {keys.map(k => {
               const isActive = selectedKey === k;
-              const count = state.dropdowns[k].length;
+              const count = dropdowns[k].length;
               return (
                 <button
                   key={k}
@@ -116,17 +160,17 @@ const RegistryView: React.FC = () => {
         </div>
 
         {/* Workspace */}
-        <div className="flex-1 flex flex-col bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl overflow-hidden shadow-xl shadow-black/5 relative">
-          <div className="p-10 flex-1 overflow-y-auto custom-scroll">
+        <div className="flex-1 flex flex-col bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl md:rounded-3xl overflow-hidden shadow-xl shadow-black/5 relative min-h-[600px] lg:min-h-0">
+          <div className="p-6 md:p-10 flex-1 overflow-y-auto custom-scroll">
             <div className="max-w-3xl mx-auto">
-              <div className="flex justify-between items-start mb-12">
+              <div className="flex flex-col md:flex-row justify-between items-start mb-8 md:mb-12 gap-6 md:gap-0">
                 <div>
-                  <div className="flex items-center gap-3 mb-3">
-                    <h2 className="text-4xl font-display font-black tracking-tight text-[var(--color-text)] text-capitalize">
+                  <div className="flex items-center gap-3 mb-3 flex-wrap">
+                    <h2 className="text-3xl md:text-4xl font-display font-black tracking-tight text-[var(--color-text)] text-capitalize">
                       {selectedKey.replace(/([A-Z])/g, ' $1')}
                     </h2>
                     {isReserved && (
-                      <span className="px-2.5 py-1 bg-indigo-50 text-indigo-600 text-[10px] font-black uppercase rounded-lg border border-indigo-100">System Core</span>
+                      <span className="px-2.5 py-1 bg-indigo-50 text-indigo-600 text-[9px] md:text-[10px] font-black uppercase rounded-lg border border-indigo-100">System Core</span>
                     )}
                   </div>
                   <p className="text-sm text-[var(--color-text-muted)] leading-relaxed font-medium">
@@ -143,29 +187,29 @@ const RegistryView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="bg-[var(--color-surface-2)] rounded-3xl p-8 border border-[var(--color-divider)] mb-10 group focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
-                <h4 className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-6">Add New Value</h4>
-                <div className="flex gap-4">
+              <div className="bg-[var(--color-surface-2)] rounded-2xl md:rounded-3xl p-6 md:p-8 border border-[var(--color-divider)] mb-8 md:mb-10 group focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
+                <h4 className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-4 md:mb-6">Add New Value</h4>
+                <div className="flex flex-col sm:flex-row gap-4">
                   <input 
-                    className="flex-1 h-14 px-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl text-base font-bold text-[var(--color-text)] outline-none focus:border-indigo-500 transition-all shadow-sm"
+                    className="flex-1 h-12 md:h-14 px-4 md:px-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl md:rounded-2xl text-sm md:text-base font-bold text-[var(--color-text)] outline-none focus:border-indigo-500 transition-all shadow-sm"
                     placeholder="Enter unique value..."
                     value={newValue}
                     onChange={(e) => setNewValue(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleAddValue()}
                   />
-                  <Button variant="primary" className="h-14 px-10 rounded-2xl font-black shadow-lg shadow-indigo-100" onClick={handleAddValue}>
+                  <Button variant="primary" className="h-12 md:h-14 px-6 md:px-10 rounded-xl md:rounded-2xl font-black shadow-lg shadow-indigo-100" onClick={handleAddValue}>
                     Add to Library
                   </Button>
                 </div>
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-2 md:space-y-3">
                 <h4 className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-4">Total Definitions ({values.length})</h4>
                 {values.map((v, i) => (
-                  <div key={i} className="flex items-center justify-between p-5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl transition-all hover:translate-x-1 hover:border-indigo-500/30 group shadow-sm">
-                    <div className="flex items-center gap-6">
-                      <span className="text-[10px] font-mono font-black text-[var(--color-text-faint)] opacity-40">{(i + 1).toString().padStart(2, '0')}</span>
-                      <span className="text-base font-black text-[var(--color-text)]">{v}</span>
+                  <div key={i} className="flex items-center justify-between p-4 md:p-5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl md:rounded-2xl transition-all hover:translate-x-1 hover:border-indigo-500/30 group shadow-sm">
+                    <div className="flex items-center gap-4 md:gap-6">
+                      <span className="text-[9px] md:text-[10px] font-mono font-black text-[var(--color-text-faint)] opacity-40">{(i + 1).toString().padStart(2, '0')}</span>
+                      <span className="text-sm md:text-base font-black text-[var(--color-text)]">{v}</span>
                     </div>
                     <button 
                       onClick={() => removeValue(i)}

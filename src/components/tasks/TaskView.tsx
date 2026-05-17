@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import TaskGrid from './TaskGrid';
+import BoardView from './BoardView';
 import TaskModal from './TaskModal';
-import { ListTodo, Plus } from 'lucide-react';
+import { ListTodo, Plus, LayoutGrid, Kanban } from 'lucide-react';
 import Button from '../shared/Button';
+import clsx from 'clsx';
 
 const TaskView: React.FC = () => {
   const { state } = useProject();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'grid' | 'board'>('grid');
 
   const handleAddNewTask = () => {
     setEditingTaskId(null);
@@ -37,15 +40,39 @@ const TaskView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          <div className="flex p-1 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl mr-2">
+            <button 
+              onClick={() => setViewMode('grid')}
+              className={clsx(
+                "p-1.5 rounded-lg transition-all",
+                viewMode === 'grid' ? "bg-white text-indigo-600 shadow-sm" : "text-[var(--color-text-faint)] hover:text-indigo-500"
+              )}
+            >
+              <LayoutGrid size={16} />
+            </button>
+            <button 
+              onClick={() => setViewMode('board')}
+              className={clsx(
+                "p-1.5 rounded-lg transition-all",
+                viewMode === 'board' ? "bg-white text-indigo-600 shadow-sm" : "text-[var(--color-text-faint)] hover:text-indigo-500"
+              )}
+            >
+              <Kanban size={16} />
+            </button>
+          </div>
           <Button variant="primary" size="sm" onClick={handleAddNewTask}>
             <Plus size={16} className="mr-1" /> New Task
           </Button>
         </div>
       </div>
 
-      {/* Task Grid */}
-      <div className="flex-1 overflow-auto custom-scroll p-6">
-        <TaskGrid onEditTask={handleEditTask} />
+      {/* Task Content */}
+      <div className="flex-1 overflow-auto custom-scroll p-4 md:p-6">
+        {viewMode === 'grid' ? (
+           <TaskGrid onEditTask={handleEditTask} />
+        ) : (
+           <BoardView onEditTask={handleEditTask} />
+        )}
       </div>
 
       {/* Task Modal */}

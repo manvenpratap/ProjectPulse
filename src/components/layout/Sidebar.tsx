@@ -16,16 +16,19 @@ import {
   Blocks,
   Database,
   ListChecks,
-  BookOpen
+  BookOpen,
+  FileText,
+  Settings as SettingsIcon
 } from 'lucide-react';
 import clsx from 'clsx';
 
 interface SidebarProps {
   isOpen: boolean;
   toggle: () => void;
+  onNavigate: (view: string) => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
+const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
   const { state, setView } = useProject();
 
   const navItems = [
@@ -36,17 +39,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
     { id: 'features', label: 'Functional Matrix', icon: Layers },
     { id: 'log', label: 'Activity Log', icon: History },
     { id: 'dash', label: 'Intelligence', icon: LayoutDashboard },
+    { id: 'reports', label: 'Pulse Reports', icon: FileText },
     { id: 'defects', label: 'Defect Workshop', icon: Bug },
     { id: 'scaffolder', label: 'Project Architect', icon: Blocks },
     { id: 'fields', label: 'Field Architect', icon: Database },
     { id: 'dropdowns', label: 'Pulse Registry', icon: ListChecks },
     { id: 'steps', label: 'Step Templates', icon: BookOpen },
+    { id: 'settings', label: 'Configuration', icon: SettingsIcon },
   ];
 
   return (
     <div className={clsx(
-      "h-full bg-[var(--color-surface)] border-right border-[var(--color-divider)] flex flex-col transition-all duration-300 relative z-30",
-      isOpen ? "w-[260px]" : "w-[60px]"
+      "h-full bg-[var(--color-surface)] border-r border-[var(--color-divider)] flex flex-col transition-all duration-300 fixed lg:relative z-30 shadow-xl lg:shadow-none",
+      isOpen ? "translate-x-0 w-[260px]" : "-translate-x-full lg:translate-x-0 lg:w-[60px]"
     )}>
       <div className="h-[52px] flex items-center px-4 gap-3 border-bottom border-[var(--color-divider)] bg-[var(--color-surface)]">
         <div className="w-6 h-6 bg-[var(--color-primary-hex)] rounded-md flex items-center justify-center text-white shrink-0">
@@ -61,7 +66,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle }) => {
           return (
             <button
               key={item.id}
-              onClick={() => setView(item.id)}
+              onClick={() => onNavigate(item.id)}
               className={clsx(
                 "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group",
                 isActive 

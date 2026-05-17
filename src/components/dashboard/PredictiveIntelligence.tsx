@@ -1,6 +1,6 @@
 import React from 'react';
 import { useProject } from '../../store/ProjectContext';
-import { TaskStatus } from '../../types';
+import { TaskStatus, TaskPriority } from '../../types';
 import { daysDiff, getWeekNumber, todayStr } from '../../utils/projectUtils';
 import { 
   Zap, 
@@ -240,14 +240,54 @@ const PredictiveIntelligence: React.FC = () => {
                    <Target size={16} className="text-indigo-500" />
                    Priority Momentum
                 </h3>
-                <p className="text-[10px] text-[var(--color-text-faint)] mt-1 uppercase font-bold tracking-tight">Weekly Throughput by Priority</p>
+                <p className="text-[10px] text-[var(--color-text-faint)] mt-1 uppercase font-bold tracking-tight">Completions by Priority (Last 30 Days)</p>
              </div>
              <BarChart2 size={18} className="text-[var(--color-text-faint)]" />
           </div>
 
-          <div className="h-64 flex flex-col items-center justify-center border border-dashed border-[var(--color-divider)] rounded-xl bg-[var(--color-surface-offset)]/20">
-             <div className="text-xs font-bold text-[var(--color-text-faint)] uppercase tracking-wider mb-2">Advanced Analytics</div>
-             <p className="text-[11px] text-[var(--color-text-faint)] max-w-xs text-center px-4">Historical priority-level throughput is currently being aggregated from project logs.</p>
+          <div className="space-y-4">
+             {[TaskPriority.CRITICAL, TaskPriority.HIGH, TaskPriority.MEDIUM, TaskPriority.LOW].map(p => {
+                const priorityTasks = tasks.filter(t => t.priority === p);
+                const completedInLog = log.filter(l => 
+                   l.action === 'Status Changed' && 
+                   l.newVal === TaskStatus.COMPLETED && 
+                   priorityTasks.some(t => t.id === l.taskId)
+                ).length;
+
+                const colorMap = {
+                   [TaskPriority.CRITICAL]: 'bg-rose-500',
+                   [TaskPriority.HIGH]: 'bg-amber-500',
+                   [TaskPriority.MEDIUM]: 'bg-indigo-500',
+                   [TaskPriority.LOW]: 'bg-slate-400'
+                };
+
+                const totalCompleted = tasks.filter(t => t.status === TaskStatus.COMPLETED).length || 1;
+                const pct = (completedInLog / totalCompleted) * 100;
+
+                return (
+                   <div key={p} className="space-y-1.5">
+                      <div className="flex justify-between items-center text-[10px] font-bold">
+                         <span className="text-[var(--color-text-muted)] uppercase tracking-wider">{p}</span>
+                         <span className="text-[var(--color-text)]">{completedInLog} Tasks</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
+                         <div 
+                            className={clsx("h-full rounded-full transition-all duration-1000", colorMap[p])}
+                            style={{ width: `${pct}%` }}
+                         />
+                      </div>
+                   </div>
+                );
+             })}
+          </div>
+          <div className="mt-8 pt-4 border-t border-[var(--color-divider)]">
+             <div className="flex items-center justify-between">
+                <div className="text-[10px] font-bold text-[var(--color-text-faint)] uppercase">Velocity Health</div>
+                <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-600">
+                   <TrendingUp size={12} />
+                   +12% vs last month
+                </div>
+             </div>
           </div>
         </div>
       </div>

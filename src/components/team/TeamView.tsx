@@ -44,10 +44,10 @@ const TeamView: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-y-auto custom-scroll pb-20">
-      <div className="px-8 py-10 max-w-[1400px] mx-auto w-full">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-12 border-b border-[var(--color-divider)] pb-10">
+      <div className="px-4 md:px-8 py-6 md:py-10 max-w-[1400px] mx-auto w-full">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-8 md:mb-12 border-b border-[var(--color-divider)] pb-8 md:pb-10">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-sm">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-sm shrink-0">
               <Users size={24} />
             </div>
             <div>

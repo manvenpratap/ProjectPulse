@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { useProject } from '../../store/ProjectContext';
-import { GanttChart as GanttIcon, ZoomIn, ZoomOut, Maximize, CalendarDays } from 'lucide-react';
+import { GanttChart as GanttIcon, ZoomIn, ZoomOut, Maximize, CalendarDays, Info } from 'lucide-react';
 import { fmtDate, daysDiff, isBlocked } from '../../utils/projectUtils';
 import { TaskStatus } from '../../types';
 import Button from '../shared/Button';
@@ -258,8 +258,45 @@ const TimelineView: React.FC = () => {
       </div>
 
       <div className="flex-1 overflow-auto custom-scroll relative">
+        {/* Mobile Timeline List */}
+        <div className="lg:hidden p-4 space-y-4">
+          <div className="bg-amber-50 border border-amber-200 p-3 rounded-xl mb-4 text-[10px] font-bold text-amber-700 flex items-center gap-2">
+            <Info size={14} />
+            Switch to desktop for the full interactive roadmap.
+          </div>
+          {tasksWithDates.map(t => {
+            const blocked = isBlocked(t, state.tasks);
+            const overdue = daysDiff(t.dueDate)! < 0 && t.status !== TaskStatus.COMPLETED;
+            
+            return (
+              <div key={t.id} className="p-4 bg-white border border-[var(--color-divider)] rounded-2xl shadow-sm">
+                 <div className="flex justify-between items-start mb-2">
+                    <span className="text-[10px] font-mono font-black text-indigo-600">{t.id}</span>
+                    <span className={clsx(
+                      "px-2 py-0.5 rounded-full text-[9px] font-bold uppercase",
+                      t.status === TaskStatus.COMPLETED ? "bg-emerald-50 text-emerald-600" : "bg-blue-50 text-blue-600"
+                    )}>{t.status}</span>
+                 </div>
+                 <h4 className="font-bold text-sm mb-3">{t.name}</h4>
+                 <div className="flex items-center justify-between text-[10px] font-medium text-[var(--color-text-faint)] uppercase tracking-wider">
+                    <div className="flex items-center gap-2">
+                      <CalendarDays size={12} />
+                      {fmtDate(t.startDate)} - {fmtDate(t.dueDate)}
+                    </div>
+                    {blocked && <span className="text-amber-600 font-black">LOCKED</span>}
+                    {overdue && <span className="text-red-500 font-black tracking-tighter">OVERDUE</span>}
+                 </div>
+              </div>
+            );
+          })}
+          {tasksWithDates.length === 0 && (
+             <div className="py-20 text-center opacity-40 italic text-sm">No scheduled tasks.</div>
+          )}
+        </div>
+
+        {/* Desktop Canvas */}
         {tasksWithDates.length > 0 ? (
-           <canvas ref={canvasRef} />
+           <canvas ref={canvasRef} className="hidden lg:block" />
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-center p-12">
             <div className="w-20 h-20 bg-[var(--color-surface-2)] rounded-3xl flex items-center justify-center mb-6 text-[var(--color-text-faint)]">

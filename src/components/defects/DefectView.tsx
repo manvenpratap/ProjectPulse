@@ -1,17 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useProject } from '../../store/ProjectContext';
-import { Bug, Plus, Search, Filter, ShieldAlert } from 'lucide-react';
+import { Bug, Plus, Search, Filter, ShieldAlert, Activity } from 'lucide-react';
 import Button from '../shared/Button';
 import clsx from 'clsx';
 import { DefectStatus } from '../../types';
+import DefectModal from './DefectModal';
 
 const DefectView: React.FC = () => {
-  const { state, saveDefect } = useProject();
+  const { state } = useProject();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDefect, setSelectedDefect] = useState<string | null>(null);
+  const [search, setSearch] = useState('');
 
-  const handleLogDefect = () => {
-    const title = prompt('Enter defect title:');
-    if (title) saveDefect({ title });
+  const handleEdit = (id: string | null) => {
+    setSelectedDefect(id);
+    setIsModalOpen(true);
   };
+
+  const filteredDefects = state.defects.filter(d => 
+    d.title.toLowerCase().includes(search.toLowerCase()) || 
+    d.id.toLowerCase().includes(search.toLowerCase())
+  );
 
   const getStatusStyle = (status: DefectStatus) => {
     switch (status) {
@@ -45,19 +54,25 @@ const DefectView: React.FC = () => {
             <input 
               className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg pl-9 pr-4 py-1.5 text-xs outline-none focus:border-[var(--color-primary-hex)] w-[240px]"
               placeholder="Search by ID, title or tags..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
             />
           </div>
-          <Button variant="primary" size="sm" onClick={handleLogDefect} className="h-9 px-4">
+          <Button variant="primary" size="sm" onClick={() => handleEdit(null)} className="h-9 px-4">
              <Plus size={16} className="mr-1.5" /> Log Defect
           </Button>
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scroll p-6">
-        {state.defects.length > 0 ? (
+        {filteredDefects.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {state.defects.map((defect) => (
-              <div key={defect.id} className="card p-5 group hover:border-red-200 transition-all flex flex-col cursor-pointer">
+            {filteredDefects.map((defect) => (
+              <div 
+                key={defect.id} 
+                className="card p-5 group hover:border-red-200 transition-all flex flex-col cursor-pointer"
+                onClick={() => handleEdit(defect.id)}
+              >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <span className="text-[11px] font-mono font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded leading-none">
@@ -110,12 +125,18 @@ const DefectView: React.FC = () => {
             <p className="text-sm text-[var(--color-text-muted)] mt-2 max-w-sm mx-auto leading-relaxed">
               No defects are currently tracked. Use this space to capture technical debt and quality issues as they arise.
             </p>
-            <Button variant="primary" size="lg" className="mt-8 px-8" onClick={handleLogDefect}>
+            <Button variant="primary" size="lg" className="mt-8 px-8" onClick={() => handleEdit(null)}>
               Log First Issue
             </Button>
           </div>
         )}
       </div>
+
+      <DefectModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        defectId={selectedDefect}
+      />
     </div>
   );
 };

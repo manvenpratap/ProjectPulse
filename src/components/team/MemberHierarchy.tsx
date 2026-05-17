@@ -119,6 +119,8 @@ const MemberHierarchy: React.FC = () => {
     const nodes: Record<string, Node> = {};
     const roots: Node[] = [];
 
+    if (!members || !members.length) return [];
+
     // First pass: create all nodes
     members.forEach(m => {
       nodes[m.name] = {
@@ -161,8 +163,22 @@ const MemberHierarchy: React.FC = () => {
 
   const reset = () => setView({ panX: 0, panY: 40, zoom: 0.8 });
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    setDrag({ active: true, lastX: touch.clientX, lastY: touch.clientY });
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!drag.active) return;
+    const touch = e.touches[0];
+    const dx = touch.clientX - drag.lastX;
+    const dy = touch.clientY - drag.lastY;
+    setView({ ...view, panX: view.panX + dx, panY: view.panY + dy });
+    setDrag({ ...drag, lastX: touch.clientX, lastY: touch.clientY });
+  };
+
   return (
-    <div className="space-y-6 mt-16">
+    <div className="space-y-6 mt-16 px-4 md:px-0">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
@@ -179,11 +195,14 @@ const MemberHierarchy: React.FC = () => {
 
       <div 
         ref={containerRef}
-        className="h-[600px] w-full bg-[var(--color-surface-2)] rounded-3xl border border-[var(--color-divider)] relative overflow-hidden cursor-grab active:cursor-grabbing shadow-inner"
+        className="h-[400px] md:h-[600px] w-full bg-[var(--color-surface-2)] rounded-2xl md:rounded-3xl border border-[var(--color-divider)] relative overflow-hidden cursor-grab active:cursor-grabbing shadow-inner touch-none"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleMouseUp}
       >
         <canvas ref={canvasRef} className="block w-full h-full" />
         

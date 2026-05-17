@@ -24,7 +24,10 @@ interface ProjectContextType {
   updateSettings: (settings: Partial<ProjectState['settings']>) => void;
   resetProject: (name: string, desc: string, team: string[]) => void;
   loadSample: (type: 'web' | 'mobile') => void;
+  updateProject: (data: Partial<ProjectState>) => void;
   clearAllData: () => void;
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
   isLoading: boolean;
 }
 
@@ -33,14 +36,14 @@ const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<ProjectState>(getDefaultState());
   const [isLoading, setIsLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const loadSample = useCallback((type: 'web' | 'mobile') => {
-    if (type === 'web') {
-      setState(getWebSample() as ProjectState);
-    } else {
-      // Could add mobile sample later
-      setState(getWebSample() as ProjectState);
-    }
+    const sample = getWebSample();
+    setState(prev => ({
+      ...getDefaultState(),
+      ...sample as any
+    }));
   }, []);
 
 
@@ -51,7 +54,17 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       try {
         const parsed = JSON.parse(savedData);
         // Basic migration/merge with default state to ensure new keys exist
-        setState({ ...getDefaultState(), ...parsed });
+        const defaultState = getDefaultState();
+        setState({ 
+          ...defaultState, 
+          ...parsed,
+          // Explicitly ensure critical arrays exist if parsed version is old
+          features: parsed.features || defaultState.features || [],
+          dropdowns: parsed.dropdowns || defaultState.dropdowns || {},
+          customFields: parsed.customFields || defaultState.customFields || [],
+          defCustomFields: parsed.defCustomFields || defaultState.defCustomFields || [],
+          stepTemplates: parsed.stepTemplates || defaultState.stepTemplates || []
+        });
       } catch (e) {
         console.error('Failed to load project data', e);
       }
@@ -104,8 +117,8 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       dueDate: todayStr(),
       actCompletionDate: null,
       progress: 0,
-      estHours: 0,
-      actHours: 0,
+      estDays: 0,
+      actDays: 0,
       dependsOn: [],
       notes: '',
       subtasks: [],
@@ -244,6 +257,10 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setState(prev => ({ ...prev, settings: { ...prev.settings, ...settings } }));
   }, []);
 
+  const updateProject = useCallback((data: Partial<ProjectState>) => {
+    setState(prev => ({ ...prev, ...data }));
+  }, []);
+
   const resetProject = useCallback((name: string, desc: string, team: string[]) => {
     const initialState = getDefaultState();
     initialState.name = name;
@@ -274,8 +291,9 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     <ProjectContext.Provider value={{ 
       state, createTask, updateTask, deleteTask, 
       saveMember, deleteMember, saveDefect, deleteDefect,
-      addLog, setView, setTheme, updateSettings, 
-      resetProject, loadSample, clearAllData, isLoading 
+      addLog, setView, setTheme, updateSettings, updateProject,
+      resetProject, loadSample, clearAllData, isLoading,
+      searchTerm, setSearchTerm
     }}>
       {!isLoading && children}
     </ProjectContext.Provider>

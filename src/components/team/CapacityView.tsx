@@ -38,7 +38,7 @@ const CapacityView: React.FC = () => {
         const weekEnd = new Date(weekStart);
         weekEnd.setDate(weekEnd.getDate() + 7);
 
-        let totalHours = 0;
+        let totalDays = 0;
 
         memberTasks.forEach(task => {
           const taskStart = new Date(task.startDate);
@@ -56,24 +56,24 @@ const CapacityView: React.FC = () => {
             );
 
             if (workingDaysInTask > 0) {
-              const hoursPerDay = task.estHours / workingDaysInTask;
-              totalHours += hoursPerDay * workingDaysInIntersection;
+              const effortPerDay = task.estDays / workingDaysInTask;
+              totalDays += effortPerDay * workingDaysInIntersection;
             }
           }
         });
 
-        return Math.round(totalHours);
+        return Number(totalDays.toFixed(2));
       });
 
       const totalLoad = weeklyEffort.reduce((a, b) => a + b, 0);
-      const avgLoad = Math.round(totalLoad / weeks.length);
+      const avgLoad = Number((totalLoad / weeks.length).toFixed(2));
 
       return {
         ...member,
         weeklyEffort,
         totalLoad,
         avgLoad,
-        utilization: Math.round((avgLoad / settings.hoursPerWeek) * 100)
+        utilization: Math.round((avgLoad / settings.daysPerWeek) * 100)
       };
     });
 
@@ -82,8 +82,8 @@ const CapacityView: React.FC = () => {
 
   const { weeks, memberLoad } = calculateCapacity();
 
-  const getLoadColor = (hours: number) => {
-    const pct = (hours / settings.hoursPerWeek) * 100;
+  const getLoadColor = (days: number) => {
+    const pct = (days / settings.daysPerWeek) * 100;
     if (pct > 100) return 'bg-rose-100 text-rose-700 border-rose-200';
     if (pct > 80) return 'bg-amber-100 text-amber-700 border-amber-200';
     if (pct > 20) return 'bg-emerald-100 text-emerald-700 border-emerald-200';
@@ -112,11 +112,11 @@ const CapacityView: React.FC = () => {
           
           <div className="flex items-center gap-4 px-3">
             <div className="flex items-center gap-2">
-              <span className="text-[10px] uppercase font-bold text-slate-400">Hours/Wk</span>
+              <span className="text-[10px] uppercase font-bold text-slate-400">Days/Wk</span>
               <input 
                 type="number" 
-                value={settings.hoursPerWeek}
-                onChange={(e) => updateSettings({ hoursPerWeek: parseInt(e.target.value) })}
+                value={settings.daysPerWeek}
+                onChange={(e) => updateSettings({ daysPerWeek: parseFloat(e.target.value) })}
                 className="w-12 text-sm font-bold text-[var(--color-primary-hex)] bg-transparent focus:outline-none"
               />
             </div>
@@ -177,7 +177,7 @@ const CapacityView: React.FC = () => {
               <Calendar size={16} className="text-slate-400" />
             </div>
             <div className="text-2xl font-bold">
-              {Math.round(tasks.filter(t => t.status !== TaskStatus.COMPLETED).reduce((a, b) => a + b.estHours, 0))} Hours
+              {tasks.filter(t => t.status !== TaskStatus.COMPLETED).reduce((a, b) => a + b.estDays, 0).toFixed(1)} Days
             </div>
             <div className="mt-1 text-[10px] text-slate-500 font-medium">Estimated remaining effort</div>
           </div>
@@ -219,15 +219,15 @@ const CapacityView: React.FC = () => {
                         </div>
                       </div>
                     </td>
-                    {member.weeklyEffort.map((hours, wIdx) => {
-                      const util = (hours / settings.hoursPerWeek) * 100;
+                    {member.weeklyEffort.map((days, wIdx) => {
+                      const util = (days / settings.daysPerWeek) * 100;
                       return (
                         <td key={wIdx} className="p-2 border-r border-slate-100">
                           <div className={clsx(
                             "h-12 w-full rounded-lg border-2 flex flex-col items-center justify-center transition-all",
-                            getLoadColor(hours)
+                            getLoadColor(days)
                           )}>
-                            <span className="text-xs font-bold">{hours}h</span>
+                            <span className="text-xs font-bold">{days}d</span>
                             <div className="w-8 h-1 bg-current opacity-20 rounded-full mt-1 overflow-hidden">
                               <div 
                                 className="h-full bg-current opacity-100" 
@@ -282,7 +282,7 @@ const CapacityView: React.FC = () => {
             <span className="text-xs text-slate-500 font-medium">Under-allocated (&lt;20%)</span>
           </div>
           <div className="ml-auto text-[10px] text-slate-400 font-mono">
-            *Hours are distributed evenly across working days between task start and end.
+            *Effort is distributed evenly across working days between task start and end.
           </div>
         </div>
       </div>

@@ -19,10 +19,12 @@ import {
   ListChecks,
   BookOpen,
   Blocks,
-  Component as ComponentIcon
+  Component as ComponentIcon,
+  Menu
 } from 'lucide-react';
 import clsx from 'clsx';
 import ThemeFlyout from './ThemeFlyout';
+import NotificationFlyout from './NotificationFlyout';
 
 import { exportProjectExcel } from '../../services/excelService';
 
@@ -31,11 +33,16 @@ interface TopbarProps {
 }
 
 const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
-  const { state, setView, setTheme, resetProject } = useProject();
+  const { state, setView, setTheme, resetProject, searchTerm, setSearchTerm } = useProject();
   const [isThemeOpen, setIsThemeOpen] = useState(false);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
   
   const health = getHealthScore(state.tasks);
+  const overdueCount = state.tasks.filter(t => {
+     const dd = new Date(t.dueDate);
+     return dd < new Date() && t.status !== 'Completed';
+  }).length;
 
   const handleExport = async () => {
     await exportProjectExcel(state);
@@ -56,17 +63,24 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
 
   return (
     <>
-      <header className="h-[52px] bg-[var(--color-surface)] border-b border-[var(--color-divider)] flex items-center px-4 gap-4 shrink-0 z-20 shadow-sm">
-        <div className="flex items-center gap-3 min-w-0">
+      <header className="h-[52px] bg-[var(--color-surface)] border-b border-[var(--color-divider)] flex items-center px-4 gap-3 md:gap-4 shrink-0 z-20 shadow-sm">
+        <div className="flex items-center gap-2 md:gap-3 min-w-0">
+          <button 
+            onClick={toggleSidebar}
+            className="lg:hidden p-1.5 hover:bg-[var(--color-surface-2)] rounded-lg text-[var(--color-text-muted)] transition-colors"
+          >
+            <Menu size={20} />
+          </button>
+          
           <div className="flex flex-col min-w-0">
-            <span className="font-bold text-sm text-[var(--color-text)] truncate max-w-[200px]" title={state.name}>
+            <span className="font-bold text-xs md:text-sm text-[var(--color-text)] truncate max-w-[120px] md:max-w-[200px]" title={state.name}>
               {state.name}
             </span>
           </div>
           
           <div className="w-[1px] h-5 bg-[var(--color-divider)]" />
           
-          <div className="relative">
+          <div className="relative hidden sm:block">
             <button 
               onClick={() => setIsActionsOpen(!isActionsOpen)}
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[var(--color-surface-2)] transition-colors text-xs font-semibold text-[var(--color-text-muted)]"
@@ -101,7 +115,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
                     <span>View Activity Logs</span>
                   </button>
                   <button 
-                    onClick={() => { setIsActionsOpen(false); resetProject(); }}
+                    onClick={() => { setIsActionsOpen(false); resetProject(state.name, 'A fresh restart of the current workspace.', []); }}
                     className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600 flex items-center gap-3 text-sm transition-colors"
                   >
                     <RefreshCw size={16} />
@@ -160,54 +174,74 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-3 px-3 py-1.5 rounded-full bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+        <div className="flex items-center gap-2 md:gap-3 px-2 md:px-3 py-1.5 rounded-full bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
           <div className={clsx("w-2 h-2 rounded-full animate-pulse bg-current", getHealthColor(health))} />
-          <span className={clsx("text-[10px] font-bold uppercase tracking-wider", getHealthColor(health))}>
+          <span className={clsx("text-[9px] md:text-[10px] font-bold uppercase tracking-wider", getHealthColor(health))}>
             {getHealthLabel(health)} {health}%
           </span>
         </div>
 
         <div className="flex-1" />
 
-        <div className="flex items-center gap-1.5">
-          <div className="relative group hidden md:block">
+        <div className="flex items-center gap-1 md:gap-1.5">
+          <div className="relative group hidden lg:block">
             <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-[var(--color-text-faint)] pointer-events-none border border-[var(--color-divider)] px-1 rounded bg-[var(--color-surface)]">
               G /
             </kbd>
             <input 
               className="w-[200px] lg:w-[320px] h-9 pl-9 pr-4 bg-[var(--color-surface-2)] border border-transparent rounded-xl text-xs outline-none focus:border-[var(--color-primary-hex)] focus:bg-[var(--color-surface)] transition-all"
               placeholder="Search projects, tasks, IDs..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
           </div>
-
-          <Button variant="ghost" size="icon" title="Smart Alerts" className="rounded-xl">
-            <Bell size={18} />
-          </Button>
+          
+          <div className="relative">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              title="Smart Alerts" 
+              className={clsx("rounded-xl h-8 w-8 md:h-9 md:w-9 relative", isNotifOpen && "bg-[var(--color-surface-2)]")}
+              onClick={() => setIsNotifOpen(!isNotifOpen)}
+            >
+              <Bell size={18} />
+              {overdueCount > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[var(--color-surface)]" />
+              )}
+            </Button>
+            <NotificationFlyout isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
+          </div>
 
           <Button 
             variant="ghost" 
             size="icon" 
             title="Appearance Settings" 
-            className="rounded-xl"
+            className="rounded-xl h-8 w-8 md:h-9 md:w-9"
             onClick={() => setIsThemeOpen(true)}
           >
             <Palette size={18} />
           </Button>
 
-          <Button variant="ghost" size="icon" title="Help & Guide" className="rounded-xl">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            title="Help & Guide" 
+            className="rounded-xl h-8 w-8 md:h-9 md:w-9 hidden sm:flex"
+            onClick={() => resetProject(state.name, 'Project overview and guidelines reset.', [])}
+          >
             <HelpCircle size={18} />
           </Button>
 
-          <div className="w-[1px] h-5 bg-[var(--color-divider)] mx-1" />
+          <div className="w-[1px] h-5 bg-[var(--color-divider)] mx-0.5 md:mx-1 hidden sm:block" />
 
           <Button 
             variant="primary" 
             size="sm" 
             onClick={() => setView('tasks')}
-            className="h-9 rounded-xl shadow-sm px-4"
+            className="h-8 md:h-9 rounded-xl shadow-sm px-2 md:px-4"
           >
-            <Plus size={16} className="mr-1.5" /> <span>New Task</span>
+            <Plus size={16} className="md:mr-1.5" /> <span className="hidden md:inline">New Task</span>
           </Button>
         </div>
       </header>

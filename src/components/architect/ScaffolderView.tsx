@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useProject } from '../../store/ProjectContext';
-import { TaskStatus, TaskPriority } from '../../types';
+import { TaskStatus, TaskPriority, Feature } from '../../types';
 import { todayStr, getTeamNames } from '../../utils/projectUtils';
 import { 
   Blocks, 
@@ -30,7 +30,7 @@ interface ScaffoldModule {
 }
 
 const ScaffolderView: React.FC = () => {
-  const { state, setView, createTask } = useProject();
+  const { state, setView, createTask, updateProject } = useProject();
   const [step, setStep] = useState(1);
   const [modules, setModules] = useState<ScaffoldModule[]>([
     { name: '', type: 'Server', assignee: '', priority: TaskPriority.MEDIUM, status: TaskStatus.NOT_STARTED, release: 'v1.0.0', screens: '' }
@@ -59,8 +59,43 @@ const ScaffolderView: React.FC = () => {
     const validModules = modules.filter(m => m.name.trim());
     if (!validModules.length) return;
 
+    const newFeatures: Feature[] = [...(state.features || [])];
+
     validModules.forEach(m => {
-      const task = createTask({
+      const subtasks: any[] = [];
+      const guiScreens: string[] = [];
+      
+      // Split screens and handle them
+      if (m.type === 'GUI' && m.screens.trim()) {
+        const screenLines = m.screens.split('\n').filter(l => l.trim());
+        screenLines.forEach((line, lx) => {
+          const parts = line.split(',').map(s => s.trim());
+          const name = parts[0];
+          if (name) {
+            guiScreens.push(name);
+            subtasks.push({
+              id: `ST-${lx + 1}`,
+              name: `Template: ${name}`,
+              status: TaskStatus.NOT_STARTED,
+              progress: 0,
+              done: false,
+              effort: 1,
+              type: 'screen'
+            });
+          }
+        });
+      }
+
+      // Create strategic feature link if missing
+      if (!newFeatures.some(f => f.name === m.name)) {
+        newFeatures.push({
+          name: m.name,
+          desc: `Architecture component for ${m.name} module.`,
+          screens: guiScreens
+        });
+      }
+
+      createTask({
         name: m.name,
         module: m.name,
         moduleType: m.type,
@@ -69,16 +104,14 @@ const ScaffolderView: React.FC = () => {
         status: m.status,
         release: m.release,
         startDate: todayStr(),
-        category: m.type === 'GUI' ? 'GUI Screen' : 'Architecture',
-        subtasks: []
+        dueDate: todayStr(),
+        category: m.type === 'GUI' ? 'GUI Interface' : 'Architecture Component',
+        subtasks: subtasks,
+        guiScreens: guiScreens
       });
-
-      // Split screens and handle them (simplified for now)
-      if (m.type === 'GUI' && m.screens.trim()) {
-        // Logic for auto-generating screens could go here
-      }
     });
 
+    updateProject({ features: newFeatures });
     setView('tasks');
   };
 
@@ -134,7 +167,79 @@ const ScaffolderView: React.FC = () => {
               </div>
 
               <div className="overflow-x-auto rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface-offset)]/30 shadow-sm">
-                <table className="w-full border-collapse min-w-[1000px]">
+                {/* Mobile Scaffolder Cards */}
+                <div className="lg:hidden p-4 space-y-4">
+                  {modules.map((m, i) => (
+                    <div key={i} className="bg-white p-4 rounded-xl border border-[var(--color-divider)] shadow-sm relative">
+                      <div className="flex justify-between items-start mb-4">
+                        <div className="min-w-0 flex-1">
+                          <label className="text-[9px] font-black uppercase text-indigo-500 mb-1 block">Module Name</label>
+                          <input 
+                            className="w-full font-bold text-sm bg-transparent border-b border-indigo-100 focus:border-indigo-500 outline-none pb-1"
+                            placeholder="e.g. Identity"
+                            value={m.name}
+                            onChange={(e) => updateModule(i, 'name', e.target.value)}
+                          />
+                        </div>
+                        <button onClick={() => removeRow(i)} className="p-2 text-red-400 hover:text-red-600"><Trash2 size={16}/></button>
+                      </div>
+                      
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <label className="text-[9px] font-black uppercase text-[var(--color-text-faint)] mb-1 block">Layer</label>
+                          <select 
+                            className="w-full text-xs font-bold bg-transparent border-b border-[var(--color-divider)] focus:border-indigo-500 outline-none pb-1"
+                            value={m.type}
+                            onChange={(e) => updateModule(i, 'type', e.target.value)}
+                          >
+                            <option value="Server">Server</option>
+                            <option value="GUI">GUI</option>
+                            <option value="Interface">API</option>
+                            <option value="Infrastructure">Infrastructure</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-[9px] font-black uppercase text-[var(--color-text-faint)] mb-1 block">Lead</label>
+                          <select 
+                            className="w-full text-xs font-bold bg-transparent border-b border-[var(--color-divider)] focus:border-indigo-500 outline-none pb-1"
+                            value={m.assignee}
+                            onChange={(e) => updateModule(i, 'assignee', e.target.value)}
+                          >
+                            <option value="">None</option>
+                            {(getTeamNames(state.members) || []).map(n => <option key={n} value={n}>{n}</option>)}
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-[9px] font-black uppercase text-[var(--color-text-faint)] mb-1 block">Priority</label>
+                          <select 
+                            className="w-full text-xs font-bold bg-transparent border-b border-[var(--color-divider)] focus:border-indigo-500 outline-none pb-1"
+                            value={m.priority}
+                            onChange={(e) => updateModule(i, 'priority', e.target.value as any)}
+                          >
+                            {Object.values(TaskPriority).map(p => <option key={p} value={p}>{p}</option>)}
+                          </select>
+                        </div>
+                        <div>
+                          <label className="text-[9px] font-black uppercase text-[var(--color-text-faint)] mb-1 block">Release</label>
+                          <input 
+                            className="w-full text-xs font-bold bg-transparent border-b border-[var(--color-divider)] focus:border-indigo-500 outline-none pb-1"
+                            placeholder="v1.0"
+                            value={m.release}
+                            onChange={(e) => updateModule(i, 'release', e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {modules.length === 0 && (
+                    <div className="py-8 text-center text-[var(--color-text-faint)] font-bold italic text-xs">No modules defined.</div>
+                  )}
+                </div>
+
+                <table className="hidden lg:table w-full border-collapse min-w-[1000px]">
                   <thead>
                     <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] text-left">
                       <th className="p-4 w-64">Module Name</th>
@@ -175,7 +280,7 @@ const ScaffolderView: React.FC = () => {
                             onChange={(e) => updateModule(i, 'assignee', e.target.value)}
                           >
                             <option value="">Unassigned</option>
-                            {getTeamNames(state.members).map(n => <option key={n} value={n}>{n}</option>)}
+                            {(getTeamNames(state.members) || []).map(n => <option key={n} value={n}>{n}</option>)}
                           </select>
                         </td>
                         <td className="p-2">

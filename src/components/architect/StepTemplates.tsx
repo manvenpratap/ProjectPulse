@@ -19,6 +19,7 @@ import { StepTemplate } from '../../types';
 const StepTemplates: React.FC = () => {
   const { state, updateProject } = useProject();
   const [editingIdx, setEditingIdx] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState<StepTemplate | null>(null);
 
   const templates = state.stepTemplates || [];
 
@@ -40,6 +41,43 @@ const StepTemplates: React.FC = () => {
       const updated = templates.filter((_, i) => i !== idx);
       updateProject({ stepTemplates: updated });
     }
+  };
+
+  const startEdit = (idx: number) => {
+    setEditingIdx(idx);
+    setEditForm(JSON.parse(JSON.stringify(templates[idx])));
+  };
+
+  const saveEdit = () => {
+    if (editingIdx === null || !editForm) return;
+    const newTemplates = [...templates];
+    newTemplates[editingIdx] = editForm;
+    updateProject({ stepTemplates: newTemplates });
+    setEditingIdx(null);
+    setEditForm(null);
+  };
+
+  const addStep = () => {
+    if (!editForm) return;
+    setEditForm({
+      ...editForm,
+      steps: [...editForm.steps, { name: 'New Step', effort: 1 }]
+    });
+  };
+
+  const removeStep = (sIdx: number) => {
+    if (!editForm) return;
+    setEditForm({
+      ...editForm,
+      steps: editForm.steps.filter((_, i) => i !== sIdx)
+    });
+  };
+
+  const updateStep = (sIdx: number, field: 'name' | 'effort', val: any) => {
+    if (!editForm) return;
+    const newSteps = [...editForm.steps];
+    newSteps[sIdx] = { ...newSteps[sIdx], [field]: val };
+    setEditForm({ ...editForm, steps: newSteps });
   };
 
   return (
@@ -75,10 +113,10 @@ const StepTemplates: React.FC = () => {
                     <Zap size={22} />
                   </div>
                   <div className="flex gap-2">
-                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => setEditingIdx(i)}>
+                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={(e) => { e.stopPropagation(); startEdit(i); }}>
                         <Edit2 size={14} />
                      </Button>
-                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-red-500" onClick={() => removeTemplate(i)}>
+                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-red-500" onClick={(e) => { e.stopPropagation(); removeTemplate(i); }}>
                         <Trash2 size={14} />
                      </Button>
                   </div>
@@ -96,7 +134,7 @@ const StepTemplates: React.FC = () => {
                 <div className="flex-1 bg-[var(--color-surface-offset)]/50 rounded-2xl p-4 border border-[var(--color-divider)] border-dashed">
                    <div className="text-[9px] font-black text-[var(--color-text-faint)] uppercase tracking-widest mb-3">Sequence Flow</div>
                    <div className="space-y-3">
-                      {tpl.steps.map((st, si) => (
+                      {(tpl.steps || []).map((st, si) => (
                         <div key={si} className="flex items-center justify-between group/step">
                            <div className="flex items-center gap-3">
                               <div className="w-1.5 h-1.5 rounded-full bg-emerald-300" />
@@ -137,6 +175,83 @@ const StepTemplates: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {editForm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+           <div className="bg-[var(--color-bg)] w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden border border-[var(--color-divider)] animate-in zoom-in-95 duration-200">
+              <div className="p-8 border-b border-[var(--color-divider)] flex justify-between items-center bg-emerald-50/30">
+                 <h2 className="text-2xl font-black">Edit Blueprint</h2>
+                 <button onClick={() => setEditForm(null)} className="p-2 text-[var(--color-text-faint)] hover:text-[var(--color-text)] transition-colors">
+                    <CheckCircle2 size={24} />
+                 </button>
+              </div>
+              <div className="p-8 space-y-8 max-h-[60vh] overflow-y-auto custom-scroll">
+                 <div className="grid grid-cols-2 gap-4">
+                    <div>
+                       <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Template Name</label>
+                       <input 
+                          className="w-full h-12 px-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl font-bold outline-none focus:border-emerald-500 transition-all"
+                          value={editForm.name}
+                          onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                       />
+                    </div>
+                    <div>
+                       <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Category</label>
+                       <select 
+                          className="w-full h-12 px-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl font-bold outline-none focus:border-emerald-500 transition-all"
+                          value={editForm.category}
+                          onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                       >
+                          <option value="General">General</option>
+                          <option value="GUI">GUI</option>
+                          <option value="Server">Server</option>
+                          <option value="DevOps">DevOps</option>
+                          <option value="Security">Security</option>
+                       </select>
+                    </div>
+                 </div>
+
+                 <div>
+                    <div className="flex justify-between items-center mb-4">
+                       <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)]">Step Sequence</label>
+                       <Button variant="ghost" size="sm" className="h-8 text-emerald-600 font-bold" onClick={addStep}>
+                          <Plus size={14} className="mr-1" /> Add Phase
+                       </Button>
+                    </div>
+                    <div className="space-y-3">
+                       {editForm.steps.map((st, si) => (
+                         <div key={si} className="flex items-center gap-3 p-3 bg-[var(--color-surface-offset)] rounded-2xl border border-[var(--color-divider)] group/editstep">
+                            <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-[10px] font-black text-emerald-700 shrink-0">{si+1}</div>
+                            <input 
+                               className="flex-1 bg-transparent border-transparent font-bold text-sm outline-none focus:text-emerald-700"
+                               value={st.name}
+                               onChange={(e) => updateStep(si, 'name', e.target.value)}
+                            />
+                            <div className="flex items-center gap-2">
+                               <input 
+                                  type="number"
+                                  className="w-16 h-8 px-2 bg-white border border-[var(--color-divider)] rounded-lg text-xs font-bold outline-none focus:border-emerald-500"
+                                  value={st.effort}
+                                  onChange={(e) => updateStep(si, 'effort', parseInt(e.target.value) || 0)}
+                               />
+                               <span className="text-[10px] font-black text-[var(--color-text-faint)]">days</span>
+                            </div>
+                            <button onClick={() => removeStep(si)} className="p-1.5 text-red-400 hover:text-red-600 opacity-0 group-hover/editstep:opacity-100 transition-opacity">
+                               <Trash2 size={16} />
+                            </button>
+                         </div>
+                       ))}
+                    </div>
+                 </div>
+              </div>
+              <div className="p-8 bg-[var(--color-surface-offset)] flex gap-4">
+                 <Button variant="ghost" className="flex-1 font-bold h-12 rounded-2xl" onClick={() => setEditForm(null)}>Cancel</Button>
+                 <Button variant="primary" className="flex-1 font-black h-12 rounded-2xl bg-emerald-600 border-emerald-600 shadow-emerald-100" onClick={saveEdit}>Finalize Blueprint</Button>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 };

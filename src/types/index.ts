@@ -37,7 +37,7 @@ export interface Subtask {
   effort: number;
   progress: number;
   type: 'step' | 'screen';
-  actHours?: number;
+  actDays?: number;
   actCompletionDate?: string;
   startDate?: string;
   dueDate?: string;
@@ -57,8 +57,8 @@ export interface Task {
   dueDate: string;
   actCompletionDate: string | null;
   progress: number;
-  estHours: number;
-  actHours: number;
+  estDays: number;
+  actDays: number;
   dependsOn: string[];
   notes: string;
   subtasks: Subtask[];
@@ -196,7 +196,7 @@ export interface Feature {
 }
 
 export interface ProjectSettings {
-  hoursPerWeek: number;
+  daysPerWeek: number;
   workDays: number;
   alertPrefs: {
     overdue: boolean;

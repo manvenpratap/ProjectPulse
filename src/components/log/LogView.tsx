@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { History, Search, Filter, MessageSquare, Clock } from 'lucide-react';
 import { fmtDate } from '../../utils/projectUtils';
@@ -7,9 +7,16 @@ import { LogEntry } from '../../types';
 
 const LogView: React.FC = () => {
   const { state } = useProject();
+  const [search, setSearch] = useState('');
+
+  const filteredLogs = state.log.filter(l => 
+    l.taskName.toLowerCase().includes(search.toLowerCase()) || 
+    l.assignee.toLowerCase().includes(search.toLowerCase()) ||
+    l.action.toLowerCase().includes(search.toLowerCase())
+  );
 
   // Group by day
-  const groupedLogs = state.log.slice().reverse().reduce((acc, entry) => {
+  const groupedLogs = filteredLogs.slice().reverse().reduce((acc, entry) => {
     const date = entry.ts.split('T')[0];
     if (!acc[date]) acc[date] = [];
     acc[date].push(entry);
@@ -37,6 +44,8 @@ const LogView: React.FC = () => {
             <input 
               className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg pl-9 pr-4 py-1.5 text-xs outline-none focus:border-[var(--color-primary-hex)] w-[240px]"
               placeholder="Filter by actor or task..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
             />
           </div>
           <button className="p-2 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)]">

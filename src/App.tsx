@@ -15,11 +15,21 @@ import FunctionalMatrix from './components/architect/FunctionalMatrix';
 import FieldArchitect from './components/architect/FieldArchitect';
 import RegistryView from './components/architect/RegistryView';
 import StepTemplates from './components/architect/StepTemplates';
+import ReportView from './components/reports/ReportView';
+import SettingsView from './components/settings/SettingsView';
 import { motion, AnimatePresence } from 'motion/react';
 
 const MainApp: React.FC = () => {
   const { state, setView } = useProject();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default to closed for mobile-first
+
+  // Auto-close sidebar on mobile after navigation
+  const handleNav = (v: any) => {
+    setView(v);
+    if (window.innerWidth < 1024) {
+      setIsSidebarOpen(false);
+    }
+  };
 
   if (!state.name) {
     return <SetupView />;
@@ -39,15 +49,29 @@ const MainApp: React.FC = () => {
       case 'fields': return <FieldArchitect />;
       case 'dropdowns': return <RegistryView />;
       case 'steps': return <StepTemplates />;
+      case 'reports': return <ReportView />;
+      case 'settings': return <SettingsView />;
       default: return <TaskView />;
     }
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[var(--color-bg)] transition-colors duration-500">
-      <Sidebar isOpen={isSidebarOpen} toggle={() => setIsSidebarOpen(!isSidebarOpen)} />
+    <div className="flex h-screen overflow-hidden bg-[var(--color-bg)] transition-colors duration-500 relative">
+      <Sidebar 
+        isOpen={isSidebarOpen} 
+        toggle={() => setIsSidebarOpen(!isSidebarOpen)} 
+        onNavigate={handleNav}
+      />
       
-      <div className="flex flex-col flex-1 min-w-0">
+      {/* Mobile Sidebar Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-20 lg:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+      
+      <div className="flex flex-col flex-1 min-w-0 h-full relative">
         <Topbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
         
         <main className="flex-1 overflow-hidden relative">

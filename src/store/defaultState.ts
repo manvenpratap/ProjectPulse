@@ -61,7 +61,7 @@ export const getDefaultState = (): ProjectState => ({
     },
   ],
   settings: {
-    hoursPerWeek: 40,
+    daysPerWeek: 5,
     workDays: 5,
     alertPrefs: { 
       overdue: true, 

@@ -31,7 +31,7 @@ const BurndownChart: React.FC = () => {
     const totalDays = Math.ceil((end.getTime() - start.getTime()) / 864e5) || 7;
     const interval = Math.max(1, Math.ceil(totalDays / 10));
     
-    const totalEffort = tasks.reduce((s, t) => s + (t.estHours || 0), 0);
+    const totalEffort = tasks.reduce((s, t) => s + (t.estDays || 0), 0);
     const data = [];
 
     for (let i = 0; i <= totalDays; i += interval) {
@@ -48,7 +48,7 @@ const BurndownChart: React.FC = () => {
         // If completed, was it completed after currentPoint?
         const compDate = t.actCompletionDate ? new Date(t.actCompletionDate) : new Date(t.updatedAt);
         return compDate > currentPoint;
-      }).reduce((s, t) => s + (t.estHours || 0), 0);
+      }).reduce((s, t) => s + (t.estDays || 0), 0);
 
       data.push({
         name: `Day ${i}`,

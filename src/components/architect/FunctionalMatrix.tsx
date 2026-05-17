@@ -10,7 +10,8 @@ import {
   Trash2,
   ChevronRight,
   ShieldCheck,
-  ArrowRight
+  ArrowRight,
+  XCircle
 } from 'lucide-react';
 import Button from '../shared/Button';
 import clsx from 'clsx';
@@ -20,6 +21,8 @@ const FunctionalMatrix: React.FC = () => {
   const { state, updateProject } = useProject();
   const [searchTerm, setSearchTerm] = useState('');
   const [editingIdx, setEditingIdx] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState<Feature | null>(null);
+  const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
 
   const features = state.features || [];
 
@@ -37,6 +40,20 @@ const FunctionalMatrix: React.FC = () => {
       const newFeatures = features.filter((_, i) => i !== idx);
       updateProject({ features: newFeatures });
     }
+  };
+
+  const startEdit = (idx: number) => {
+    setEditingIdx(idx);
+    setEditForm({ ...features[idx] });
+  };
+
+  const saveEdit = () => {
+    if (editingIdx === null || !editForm) return;
+    const newFeatures = [...features];
+    newFeatures[editingIdx] = editForm;
+    updateProject({ features: newFeatures });
+    setEditingIdx(null);
+    setEditForm(null);
   };
 
   const filteredFeatures = features.filter(f => 
@@ -74,7 +91,8 @@ const FunctionalMatrix: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
            {filteredFeatures.map((f, i) => {
               const actualIdx = features.indexOf(f);
-              const linkedTasks = state.tasks.filter(t => t.module === f.name || f.screens.includes(t.name));
+              const screens = f.screens || [];
+              const linkedTasks = state.tasks.filter(t => t.module === f.name || screens.includes(t.name));
               const avgProg = linkedTasks.length > 0 ? Math.round(linkedTasks.reduce((s,t) => s + (t.progress || 0), 0) / linkedTasks.length) : 0;
               
               return (
@@ -90,7 +108,7 @@ const FunctionalMatrix: React.FC = () => {
                          </div>
                       </div>
                       <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => setEditingIdx(actualIdx)}>
+                         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => startEdit(actualIdx)}>
                             <Edit2 size={14} />
                          </Button>
                          <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-red-500" onClick={() => removeFeature(actualIdx)}>
@@ -115,19 +133,22 @@ const FunctionalMatrix: React.FC = () => {
                       </div>
 
                       <div className="flex flex-wrap gap-2">
-                         {f.screens.slice(0, 4).map((s, si) => (
+                         {screens.slice(0, 4).map((s, si) => (
                            <span key={si} className="px-2.5 py-1 bg-cyan-50 text-cyan-700 text-[10px] font-black rounded-lg border border-cyan-100">
                              {s}
                            </span>
                          ))}
-                         {f.screens.length > 4 && (
+                         {screens.length > 4 && (
                            <span className="px-2.5 py-1 bg-[var(--color-surface-offset)] text-[var(--color-text-faint)] text-[10px] font-black rounded-lg">
-                             + {f.screens.length - 4}
+                             + {screens.length - 4}
                            </span>
                          )}
                       </div>
 
-                      <button className="flex items-center gap-2 text-[10px] font-black text-cyan-600 uppercase tracking-widest group-hover:gap-3 transition-all">
+                      <button 
+                        onClick={() => setSelectedFeature(f)}
+                        className="flex items-center gap-2 text-[10px] font-black text-cyan-600 uppercase tracking-widest group-hover:gap-3 transition-all"
+                      >
                          View feature details <ArrowRight size={12} />
                       </button>
                    </div>
@@ -147,6 +168,129 @@ const FunctionalMatrix: React.FC = () => {
            )}
         </div>
       </div>
+
+      {/* Feature Details Overlay */}
+      {selectedFeature && (
+        <div className="fixed inset-0 z-[110] flex animate-in fade-in duration-300">
+           <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-md" onClick={() => setSelectedFeature(null)} />
+           <div className="ml-auto w-full max-w-2xl bg-white h-full relative shadow-2xl animate-in slide-in-from-right duration-500 flex flex-col">
+              <div className="p-8 border-b border-[var(--color-divider)] flex items-center justify-between bg-cyan-900 text-white">
+                 <div>
+                    <h2 className="text-3xl font-black tracking-tight">{selectedFeature.name}</h2>
+                    <p className="text-[10px] font-black uppercase tracking-widest opacity-60 mt-1">Strategic Blueprint Details</p>
+                 </div>
+                 <button onClick={() => setSelectedFeature(null)} className="h-12 w-12 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors">
+                    <XCircle size={28} />
+                 </button>
+              </div>
+              
+              <div className="flex-1 overflow-y-auto p-12 custom-scroll space-y-12">
+                 <section>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-cyan-600 mb-4">Strategic Purpose</h4>
+                    <p className="text-lg font-medium text-slate-700 leading-relaxed italic border-l-4 border-cyan-500 pl-6 py-2">
+                       "{selectedFeature.desc}"
+                    </p>
+                 </section>
+
+                 <section>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-cyan-600 mb-6">Target Implementation (Screens)</h4>
+                    <div className="grid grid-cols-2 gap-4">
+                       {(selectedFeature.screens || []).map((s, si) => (
+                         <div key={si} className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center gap-4 group">
+                            <div className="w-8 h-8 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-cyan-600 font-black text-xs shadow-sm">
+                               {si + 1}
+                            </div>
+                            <span className="font-bold text-slate-800">{s}</span>
+                         </div>
+                       ))}
+                       {(!selectedFeature.screens || selectedFeature.screens.length === 0) && (
+                         <div className="col-span-full py-12 text-center border-2 border-dashed border-slate-200 rounded-3xl text-slate-400 font-bold text-xs">
+                            No interface screens mapped yet.
+                         </div>
+                       )}
+                    </div>
+                 </section>
+
+                 <section>
+                    <h4 className="text-[10px] font-black uppercase tracking-widest text-cyan-600 mb-6">Linked Technical Status</h4>
+                    <div className="space-y-3">
+                       {state.tasks.filter(t => t.module === selectedFeature.name || (selectedFeature.screens || []).includes(t.name)).map(t => (
+                         <div key={t.id} className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl hover:border-cyan-500/30 transition-all shadow-sm">
+                            <div className="flex items-center gap-4">
+                               <span className="text-[10px] font-mono font-bold text-slate-400">{t.id}</span>
+                               <span className="font-bold text-slate-800">{t.name}</span>
+                            </div>
+                            <div className="flex items-center gap-6">
+                               <span className="text-[10px] font-black uppercase tracking-widest text-cyan-600 font-mono">{t.progress}%</span>
+                               <div className="w-24 h-1 bg-slate-100 rounded-full overflow-hidden">
+                                  <div className="h-full bg-cyan-500" style={{ width: `${t.progress}%` }} />
+                               </div>
+                            </div>
+                         </div>
+                       ))}
+                       {state.tasks.filter(t => t.module === selectedFeature.name || (selectedFeature.screens || []).includes(t.name)).length === 0 && (
+                         <div className="py-20 text-center bg-slate-50 rounded-3xl border border-slate-100">
+                            <Activity className="mx-auto text-slate-300 mb-4" size={32} />
+                            <p className="text-[10px] font-black uppercase text-slate-400">No active tasks linked to this strategy</p>
+                         </div>
+                       )}
+                    </div>
+                 </section>
+              </div>
+              
+              <div className="p-8 bg-slate-50 border-t border-slate-200 flex justify-end gap-4">
+                 <Button variant="ghost" className="font-bold" onClick={() => setSelectedFeature(null)}>Close Matrix Details</Button>
+                 <Button variant="primary" className="bg-cyan-600 border-cyan-600 font-black rounded-xl px-10 shadow-lg shadow-cyan-100" onClick={() => { setSelectedFeature(null); startEdit(features.indexOf(selectedFeature)); }}>
+                    Refine Feature Definition
+                 </Button>
+              </div>
+           </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {editForm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+           <div className="bg-[var(--color-bg)] w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden border border-[var(--color-divider)] animate-in zoom-in-95 duration-200">
+              <div className="p-8 border-b border-[var(--color-divider)] flex justify-between items-center">
+                 <h2 className="text-2xl font-black">Edit Feature</h2>
+                 <button onClick={() => setEditForm(null)} className="p-2 text-[var(--color-text-faint)] hover:text-[var(--color-text)] transition-colors">
+                    <XCircle size={24} />
+                 </button>
+              </div>
+              <div className="p-8 space-y-6">
+                 <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Feature Name</label>
+                    <input 
+                       className="w-full h-12 px-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl font-bold outline-none focus:border-cyan-500 transition-all"
+                       value={editForm.name}
+                       onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    />
+                 </div>
+                 <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Description</label>
+                    <textarea 
+                       className="w-full h-32 p-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl font-medium outline-none focus:border-cyan-500 transition-all resize-none"
+                       value={editForm.desc}
+                       onChange={(e) => setEditForm({ ...editForm, desc: e.target.value })}
+                    />
+                 </div>
+                 <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Linked Screens (Comma Separated)</label>
+                    <input 
+                       className="w-full h-12 px-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl font-bold outline-none focus:border-cyan-500 transition-all"
+                       value={editForm.screens.join(', ')}
+                       onChange={(e) => setEditForm({ ...editForm, screens: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+                    />
+                 </div>
+              </div>
+              <div className="p-8 bg-[var(--color-surface-offset)] flex gap-4">
+                 <Button variant="ghost" className="flex-1 font-bold h-12 rounded-2xl" onClick={() => setEditForm(null)}>Cancel</Button>
+                 <Button variant="primary" className="flex-1 font-black h-12 rounded-2xl bg-cyan-600 border-cyan-600 shadow-cyan-100" onClick={saveEdit}>Save Changes</Button>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 };

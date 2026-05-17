@@ -19,9 +19,10 @@ import { TaskStatus } from '../../types';
 import PredictiveIntelligence from './PredictiveIntelligence';
 import ModuleDeliveryMatrix from './ModuleDeliveryMatrix';
 import BurndownChart from './BurndownChart';
+import AIPulseAnalysis from './AIPulseAnalysis';
 
 const DashboardView: React.FC = () => {
-  const { state, setView } = useProject();
+  const { state, setView, loadSample } = useProject();
   const tasks = state.tasks;
   const health = getHealthScore(tasks);
   const doneCount = tasks.filter(t => t.status === TaskStatus.COMPLETED).length;
@@ -37,57 +38,87 @@ const DashboardView: React.FC = () => {
     { label: 'Risk Factors', value: blockedCount, icon: AlertCircle, color: 'text-red-600', bg: 'bg-red-50', sub: 'Require action' },
   ];
 
+  if (tasks.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full bg-[var(--color-bg)] p-8 text-center">
+        <div className="max-w-md">
+          <div className="w-20 h-20 bg-indigo-50 rounded-3xl flex items-center justify-center text-indigo-600 mx-auto mb-8 shadow-inner">
+            <BarChart3 size={40} />
+          </div>
+          <h1 className="font-display text-4xl font-black tracking-tight text-[var(--color-text)] mb-4">Intelligence Engine Offline</h1>
+          <p className="text-[var(--color-text-muted)] text-sm mb-10 leading-relaxed">
+            The dashboard requires active project telemetry to generate strategic insights. Populate your environment with technical tasks to activate the tracking sub-systems.
+          </p>
+          <div className="flex flex-col gap-4">
+            <button 
+              onClick={() => loadSample('web')}
+              className="h-14 px-10 bg-indigo-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-indigo-200 hover:scale-[1.02] transition-all active:scale-98"
+            >
+               Boot Demo Environment
+            </button>
+            <button 
+              onClick={() => setView('tasks')}
+              className="h-14 px-10 bg-[var(--color-surface)] border-2 border-[var(--color-divider)] rounded-2xl font-black text-sm uppercase tracking-widest hover:border-indigo-500/20 transition-all"
+            >
+               Create First Task
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-y-auto custom-scroll">
-      <div className="px-8 py-12 max-w-[1400px] mx-auto w-full space-y-16">
+      <div className="px-4 md:px-8 py-8 md:py-12 max-w-[1400px] mx-auto w-full space-y-12 md:space-y-16">
         {/* Hero Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-12 border-b border-[var(--color-divider)]">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 pb-10 md:pb-12 border-b border-[var(--color-divider)]">
           <div>
             <div className="flex items-center gap-3 mb-4">
                <div className="px-3 py-1 bg-indigo-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-indigo-200">Executive Hub</div>
-               <div className="w-1 h-1 rounded-full bg-[var(--color-divider)]" />
-               <span className="text-xs font-bold text-[var(--color-text-faint)] uppercase tracking-tight">System Status: Optimal</span>
+               <div className="hidden sm:block w-1 h-1 rounded-full bg-[var(--color-divider)]" />
+               <span className="hidden sm:inline text-xs font-bold text-[var(--color-text-faint)] uppercase tracking-tight">System Status: Optimal</span>
             </div>
-            <h1 className="font-display text-4xl lg:text-5xl font-black tracking-tight text-[var(--color-text)] mb-4">Project Intelligence</h1>
+            <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-[var(--color-text)] mb-4">Project Intelligence</h1>
             <p className="text-[var(--color-text-muted)] text-sm max-w-xl leading-relaxed">
               Real-world delivery telemetry, predictive forecasting, and strategic alignment across all project architecture layers.
             </p>
           </div>
           
           <div className="flex items-center gap-4">
-            <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl p-6 flex items-center gap-8 shadow-xl shadow-black/5 ring-1 ring-black/5">
+            <div className="w-full md:w-auto bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl p-5 md:p-6 flex items-center justify-around md:justify-start gap-6 md:gap-8 shadow-xl shadow-black/5 ring-1 ring-black/5">
               <div className="text-center shrink-0">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-faint)] mb-2">Health Index</div>
+                <div className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-faint)] mb-2">Health Index</div>
                 <div className={clsx(
-                  "text-4xl font-display font-black leading-none",
+                  "text-3xl md:text-4xl font-display font-black leading-none",
                   health > 80 ? "text-emerald-500" : health > 50 ? "text-amber-500" : "text-red-500"
                 )}>{health}%</div>
               </div>
               <div className="w-[1px] h-12 bg-[var(--color-divider)]" />
               <div className="text-center shrink-0">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-faint)] mb-2">Aggregate Progress</div>
-                <div className="text-4xl font-display font-black text-indigo-500 leading-none">{completionPct}%</div>
+                <div className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-faint)] mb-2">Aggregate Progress</div>
+                <div className="text-3xl md:text-4xl font-display font-black text-indigo-500 leading-none">{completionPct}%</div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
           {stats.map((stat, i) => (
-            <div key={i} className="card p-8 flex flex-col justify-between group hover:ring-2 hover:ring-indigo-500/20">
-              <div className="flex justify-between items-start mb-6">
+            <div key={i} className="card p-4 md:p-8 flex flex-col justify-between group hover:ring-2 hover:ring-indigo-500/20">
+              <div className="flex justify-between items-start mb-4 md:mb-6">
                 <div>
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-muted)] group-hover:text-[var(--color-primary-hex)] transition-colors">
+                  <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-muted)] group-hover:text-[var(--color-primary-hex)] transition-colors">
                     {stat.label}
                   </span>
-                  <div className="text-4xl font-display font-black mt-2 leading-none">{stat.value}</div>
+                  <div className="text-2xl md:text-4xl font-display font-black mt-1 md:mt-2 leading-none">{stat.value}</div>
                 </div>
-                <div className={clsx("p-3.5 rounded-2xl transition-all group-hover:scale-110 shadow-sm", stat.bg, stat.color)}>
-                  <stat.icon size={22} />
+                <div className={clsx("p-2.5 md:p-3.5 rounded-xl md:rounded-2xl transition-all group-hover:scale-110 shadow-sm", stat.bg, stat.color)}>
+                  <stat.icon size={20} className="md:w-[22px] md:h-[22px]" />
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-xs font-bold text-[var(--color-text-faint)]">
+              <div className="flex items-center gap-2 text-[10px] md:text-xs font-bold text-[var(--color-text-faint)]">
                  <div className="w-1.5 h-1.5 rounded-full bg-current opacity-40" />
                  {stat.sub}
               </div>
@@ -150,37 +181,7 @@ const DashboardView: React.FC = () => {
           </div>
 
           <div className="space-y-8">
-            <div className="card p-8 bg-gradient-to-br from-indigo-600 to-indigo-800 text-white border-none shadow-2xl shadow-indigo-200 relative overflow-hidden group">
-               <div className="absolute -right-8 -top-8 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-1000" />
-               <div className="absolute -left-8 -bottom-8 w-24 h-24 bg-white/5 rounded-full blur-xl" />
-               
-               <div className="relative z-10">
-                 <h3 className="text-2xl font-display font-black mb-1">Intelligence Pulse</h3>
-                 <p className="text-xs opacity-70 mb-8 font-bold uppercase tracking-widest">Automation & Diagnostics</p>
-                 
-                 <div className="space-y-4 font-mono text-[11px] font-bold uppercase tracking-tight">
-                   <div className="flex justify-between p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/20 transition-colors">
-                     <span className="opacity-60 flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> SYST_LOAD</span>
-                     <span className="text-emerald-300">NOMINAL</span>
-                   </div>
-                   <div className="flex justify-between p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/20 transition-colors">
-                     <span className="opacity-60 flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-emerald-400" /> FILE_INTEGRITY</span>
-                     <span>SYNCED</span>
-                   </div>
-                   <div className="flex justify-between p-3 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/20 transition-colors">
-                     <span className="opacity-60 flex items-center gap-2"><div className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" /> FORECAST_VEL</span>
-                     <span className="text-amber-300">STABLE</span>
-                   </div>
-                 </div>
-                 
-                 <button 
-                  onClick={() => window.location.reload()}
-                  className="w-full mt-10 py-4 bg-white text-indigo-700 rounded-2xl font-black text-xs uppercase tracking-widest hover:scale-[1.02] hover:shadow-xl transition-all active:scale-98 shadow-md"
-                 >
-                   Re-Calibrate Pulse
-                 </button>
-               </div>
-            </div>
+            <AIPulseAnalysis />
 
             <div className="card p-0 overflow-hidden">
               <div className="p-6 border-b border-[var(--color-divider)] flex items-center justify-between bg-[var(--color-surface-2)]">
