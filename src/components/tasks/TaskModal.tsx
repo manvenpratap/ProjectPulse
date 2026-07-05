@@ -30,7 +30,7 @@ interface TaskModalProps {
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
-  const { state, createTask, updateTask } = useProject();
+  const { state, createTask, updateTask, deleteTask } = useProject();
   const [formData, setFormData] = useState<Partial<Task>>({});
   const [showTemplates, setShowTemplates] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -141,12 +141,28 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
       title={taskId ? `Edit Task: ${taskId}` : "New Project Task"}
       size="lg"
       footer={
-        <>
-          <Button variant="ghost" onClick={onClose}>Cancel</Button>
-          <Button variant="primary" onClick={handleSave} disabled={!formData.name}>
-            {taskId ? 'Apply Changes' : 'Create Task'}
-          </Button>
-        </>
+        <div className="flex justify-between items-center w-full">
+          {taskId ? (
+            <Button 
+              variant="ghost" 
+              onClick={() => {
+                if (confirm('Permanently delete this task and all associated subtasks?')) {
+                  deleteTask(taskId);
+                  onClose();
+                }
+              }} 
+              className="text-red-500 hover:bg-red-50"
+            >
+              <Trash2 size={16} className="mr-2" /> Delete Task
+            </Button>
+          ) : <div />}
+          <div className="flex gap-2">
+            <Button variant="ghost" onClick={onClose}>Cancel</Button>
+            <Button variant="primary" onClick={handleSave} disabled={!formData.name}>
+              {taskId ? 'Apply Changes' : 'Create Task'}
+            </Button>
+          </div>
+        </div>
       }
     >
       <div className="space-y-6">

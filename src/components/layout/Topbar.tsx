@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { getHealthScore } from '../../utils/projectUtils';
 import Button from '../shared/Button';
+import HelpModal from '../shared/HelpModal';
 import { 
   Bell, 
   Palette, 
@@ -14,6 +15,7 @@ import {
   RefreshCw,
   Database,
   FileSpreadsheet,
+  Download,
   Settings,
   Layout,
   ListChecks,
@@ -26,17 +28,51 @@ import clsx from 'clsx';
 import ThemeFlyout from './ThemeFlyout';
 import NotificationFlyout from './NotificationFlyout';
 
-import { exportProjectExcel } from '../../services/excelService';
+import { exportProjectExcel, importProjectExcel } from '../../services/excelService';
 
 interface TopbarProps {
   toggleSidebar: () => void;
 }
 
 const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
-  const { state, setView, setTheme, resetProject, searchTerm, setSearchTerm } = useProject();
+  const { state, setView, setTheme, resetProject, searchTerm, setSearchTerm, updateProject } = useProject();
   const [isThemeOpen, setIsThemeOpen] = useState(false);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const importedData = await importProjectExcel(file);
+      updateProject(importedData);
+      alert('Project data imported successfully from Excel.');
+    } catch (err: any) {
+      alert('Failed to import Excel: ' + err.message);
+    }
+    // Reset file input so same file can be imported again if needed
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Shortcut: G then /
+      if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) {
+         e.preventDefault();
+         searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
   
   const health = getHealthScore(state.tasks);
   const overdueCount = state.tasks.filter(t => {
@@ -107,6 +143,29 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
                     <FileSpreadsheet size={16} className="text-emerald-500" />
                     <span>Export Project Excel...</span>
                   </button>
+                  <button 
+                    onClick={handleImportClick}
+                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors"
+                  >
+                    <FileSpreadsheet size={16} className="text-indigo-500" />
+                    <span>Import from Excel...</span>
+                  </button>
+                  <a 
+                    href="/demo-data.xlsx"
+                    download
+                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors no-underline text-[var(--color-text)]"
+                    onClick={() => setIsActionsOpen(false)}
+                  >
+                    <Download size={16} className="text-slate-500" />
+                    <span>Download Demo Excel</span>
+                  </a>
+                  <input 
+                    type="file"
+                    ref={fileInputRef}
+                    className="hidden"
+                    accept=".xlsx"
+                    onChange={handleFileChange}
+                  />
                   <button 
                     onClick={() => { setIsActionsOpen(false); setView('log'); }}
                     className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors"
@@ -189,6 +248,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
               G /
             </kbd>
             <input 
+              ref={searchInputRef}
               className="w-[200px] lg:w-[320px] h-9 pl-9 pr-4 bg-[var(--color-surface-2)] border border-transparent rounded-xl text-xs outline-none focus:border-[var(--color-primary-hex)] focus:bg-[var(--color-surface)] transition-all"
               placeholder="Search projects, tasks, IDs..."
               value={searchTerm}
@@ -228,7 +288,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
             size="icon" 
             title="Help & Guide" 
             className="rounded-xl h-8 w-8 md:h-9 md:w-9 hidden sm:flex"
-            onClick={() => resetProject(state.name, 'Project overview and guidelines reset.', [])}
+            onClick={() => setIsHelpOpen(true)}
           >
             <HelpCircle size={18} />
           </Button>
@@ -247,6 +307,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
       </header>
 
       <ThemeFlyout isOpen={isThemeOpen} onClose={() => setIsThemeOpen(false)} />
+      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
     </>
   );
 };

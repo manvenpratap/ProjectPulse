@@ -20,6 +20,8 @@ import { CustomField } from '../../types';
 const FieldArchitect: React.FC = () => {
   const { state, updateProject } = useProject();
   const [activeTab, setActiveTab] = useState<'tasks' | 'defects'>('tasks');
+  const [editingIdx, setEditingIdx] = useState<number | null>(null);
+  const [editForm, setEditForm] = useState<CustomField | null>(null);
 
   const customFields = (activeTab === 'tasks' ? state.customFields : state.defCustomFields) || [];
 
@@ -35,6 +37,25 @@ const FieldArchitect: React.FC = () => {
     } else {
       updateProject({ defCustomFields: [...(state.defCustomFields || []), newField] });
     }
+  };
+
+  const startEdit = (idx: number) => {
+    setEditingIdx(idx);
+    setEditForm({ ...customFields[idx] });
+  };
+
+  const saveEdit = () => {
+    if (editingIdx === null || !editForm) return;
+    const updated = [...customFields];
+    updated[editingIdx] = editForm;
+    
+    if (activeTab === 'tasks') {
+      updateProject({ customFields: updated });
+    } else {
+      updateProject({ defCustomFields: updated });
+    }
+    setEditingIdx(null);
+    setEditForm(null);
   };
 
   const removeField = (idx: number) => {
@@ -120,7 +141,7 @@ const FieldArchitect: React.FC = () => {
                       {getIconForType(cf.type)}
                     </div>
                     <div className="flex gap-2">
-                       <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg">
+                       <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => startEdit(i)}>
                           <Edit2 size={14} />
                        </Button>
                        <Button 
@@ -207,6 +228,62 @@ const FieldArchitect: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Modal */}
+      {editForm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+           <div className="bg-[var(--color-bg)] w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-[var(--color-divider)] animate-in zoom-in-95 duration-200">
+              <div className="p-8 border-b border-[var(--color-divider)] flex justify-between items-center bg-indigo-50/30">
+                 <h2 className="text-2xl font-black">Edit Attribute</h2>
+                 <button onClick={() => setEditForm(null)} className="p-2 text-[var(--color-text-faint)] hover:text-[var(--color-text)] transition-colors">
+                    <Trash2 size={24} className="rotate-45" />
+                 </button>
+              </div>
+              <div className="p-8 space-y-6">
+                 <div>
+                    <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Attribute Name</label>
+                    <input 
+                       className="w-full h-12 px-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl font-bold outline-none focus:border-indigo-500 transition-all"
+                       value={editForm.name}
+                       onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                    />
+                 </div>
+                 <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Data Type</label>
+                        <select 
+                          className="w-full h-12 px-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl font-bold outline-none focus:border-indigo-500 transition-all"
+                          value={editForm.type}
+                          onChange={(e) => setEditForm({ ...editForm, type: e.target.value as any })}
+                        >
+                          <option value="text">Textual</option>
+                          <option value="number">Numeric</option>
+                          <option value="date">Temporal (Date)</option>
+                          <option value="checkbox">Boolean (Checkbox)</option>
+                          <option value="dropdown">Categorical (Dropdown)</option>
+                        </select>
+                    </div>
+                    <div className="flex flex-col justify-center">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Constraint</label>
+                        <label className="flex items-center gap-3 cursor-pointer group">
+                           <input 
+                              type="checkbox"
+                              className="w-5 h-5 rounded border-[var(--color-divider)] text-indigo-600 focus:ring-indigo-500"
+                              checked={editForm.required}
+                              onChange={(e) => setEditForm({ ...editForm, required: e.target.checked })}
+                           />
+                           <span className="text-xs font-bold text-[var(--color-text-muted)] group-hover:text-indigo-600 transition-colors">Required Field</span>
+                        </label>
+                    </div>
+                 </div>
+              </div>
+              <div className="p-8 bg-[var(--color-surface-offset)] flex gap-4">
+                 <Button variant="ghost" className="flex-1 font-bold h-12 rounded-2xl" onClick={() => setEditForm(null)}>Cancel</Button>
+                 <Button variant="primary" className="flex-1 font-black h-12 rounded-2xl bg-indigo-600 border-indigo-600 shadow-indigo-100" onClick={saveEdit}>Update Schema</Button>
+              </div>
+           </div>
+        </div>
+      )}
     </div>
   );
 };

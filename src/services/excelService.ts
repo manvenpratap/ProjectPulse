@@ -28,6 +28,8 @@ export const exportProjectExcel = async (state: ProjectState) => {
     { header: 'Due Date', key: 'dueDate', width: 15 },
     { header: 'Progress', key: 'progress', width: 10 },
     { header: 'Module', key: 'module', width: 20 },
+    { header: 'Dependencies', key: 'dependsOn', width: 25 },
+    { header: 'Effort (d)', key: 'estDays', width: 12 },
   ];
 
   state.tasks.forEach(t => {
@@ -38,8 +40,10 @@ export const exportProjectExcel = async (state: ProjectState) => {
       priority: t.priority, 
       assignee: t.assignee, 
       dueDate: t.dueDate, 
-      progress: t.progress + '%',
-      module: t.module
+      progress: (t.progress || 0) + '%',
+      module: t.module,
+      dependsOn: t.dependsOn?.join(', ') || '',
+      estDays: t.estDays || 0
     });
   });
 
@@ -63,4 +67,69 @@ export const exportProjectExcel = async (state: ProjectState) => {
   a.download = `ProjectPulse_${state.name || 'Project'}_${new Date().toISOString().split('T')[0]}.xlsx`;
   a.click();
   URL.revokeObjectURL(url);
+};
+
+export const importProjectExcel = async (file: File): Promise<Partial<ProjectState>> => {
+  const wb = new ExcelJS.Workbook();
+  const reader = new FileReader();
+
+  return new Promise((resolve, reject) => {
+    reader.onload = async (e) => {
+      try {
+        const buffer = e.target?.result as ArrayBuffer;
+        await wb.xlsx.load(buffer);
+        
+        const tasksSheet = wb.getWorksheet('Tasks');
+        if (!tasksSheet) throw new Error('Invalid Excel format: "Tasks" sheet missing');
+
+        const tasks: any[] = [];
+        tasksSheet.eachRow((row, i) => {
+          if (i === 1) return; // Skip header
+          const t: any = {
+            id: row.getCell(1).text,
+            name: row.getCell(2).text,
+            status: row.getCell(3).text,
+            priority: row.getCell(4).text,
+            assignee: row.getCell(5).text,
+            dueDate: row.getCell(6).text,
+            progress: parseInt(row.getCell(7).text.replace('%', '')) || 0,
+            module: row.getCell(8).text,
+            dependsOn: row.getCell(9).text ? row.getCell(9).text.split(',').map((s: string) => s.trim()) : [],
+            estDays: parseFloat(row.getCell(10).text) || 0,
+            // Defaulting others
+            category: 'Feature',
+            startDate: new Date().toISOString().split('T')[0],
+            subtasks: [],
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString()
+          };
+          tasks.push(t);
+        });
+
+        const dashboardSheet = wb.getWorksheet('Dashboard');
+        const projectName = dashboardSheet?.getRow(2).getCell(2).text || 'Imported Project';
+
+        resolve({
+          name: projectName,
+          tasks,
+          log: [{ 
+            ts: new Date().toISOString(), 
+            action: 'Imported from Excel', 
+            taskId: 'SYSTEM', 
+            taskName: 'Excel Import', 
+            module: 'System', 
+            assignee: 'User',
+            field: '',
+            oldVal: '',
+            newVal: '',
+            comment: 'Batch import from spreadsheet'
+          }]
+        });
+      } catch (err) {
+        reject(err);
+      }
+    };
+    reader.onerror = reject;
+    reader.readAsArrayBuffer(file);
+  });
 };
