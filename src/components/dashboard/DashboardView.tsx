@@ -91,15 +91,15 @@ const DashboardView: React.FC = () => {
           <div className="flex flex-col gap-4">
             <button 
               onClick={() => loadSample('web')}
-              className="h-14 px-10 bg-indigo-600 text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-indigo-200 hover:scale-[1.02] transition-all active:scale-98 cursor-pointer"
+              className="h-11 px-6 bg-[var(--color-primary-hex)] text-white rounded-xl font-semibold text-sm shadow-md transition-colors duration-150 active:scale-[0.98] motion-safe:transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] cursor-pointer"
             >
-               Boot Demo Environment
+               Boot demo environment
             </button>
             <button 
               onClick={() => setView('tasks')}
-              className="h-14 px-10 bg-[var(--color-surface)] border-2 border-[var(--color-divider)] rounded-2xl font-black text-sm uppercase tracking-widest hover:border-indigo-500/20 transition-all cursor-pointer"
+              className="h-11 px-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl font-semibold text-sm hover:border-indigo-500/20 transition-colors duration-150 active:scale-[0.98] motion-safe:transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] cursor-pointer"
             >
-               Create First Task
+               Create first task
             </button>
           </div>
         </div>
@@ -253,9 +253,9 @@ const DashboardView: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-[var(--color-divider)]">
           <div>
             <div className="flex items-center gap-3 mb-3">
-              <div className="px-3 py-1 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-indigo-100">Project Telemetry</div>
+              <div className="px-3 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-full shadow-md shadow-indigo-100">Project Telemetry</div>
               <div className="w-1 h-1 rounded-full bg-[var(--color-divider)]" />
-              <span className="text-xs font-bold text-[var(--color-text-faint)] uppercase tracking-tight">System Status: Active</span>
+              <span className="text-xs font-medium text-[var(--color-text-muted)]">System status: active</span>
             </div>
             <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-[var(--color-text)] mb-3">Project Pulse Analytics</h1>
             <p className="text-[var(--color-text-muted)] text-sm max-w-xl leading-relaxed">
@@ -263,16 +263,16 @@ const DashboardView: React.FC = () => {
             </p>
           </div>
           
-          <div className="flex items-center gap-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl p-5 md:p-6 shadow-xl shadow-black/5">
+          <div className="flex items-center gap-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl p-5 md:p-6 shadow-sm">
             <div className="text-center shrink-0 pr-6 border-r border-[var(--color-divider)]">
-              <div className="text-[9px] font-bold uppercase tracking-widest text-[var(--color-text-faint)] mb-2">Composite Health</div>
+              <div className="text-xs font-medium text-[var(--color-text-muted)] mb-1">Composite health</div>
               <div className={clsx(
                 "text-2xl md:text-3xl font-display font-black leading-none",
                 health > 80 ? "text-emerald-500" : health > 50 ? "text-amber-500" : "text-red-500"
               )}>{health}%</div>
             </div>
             <div className="text-center shrink-0 pl-2">
-              <div className="text-[9px] font-bold uppercase tracking-widest text-[var(--color-text-faint)] mb-2">Completion Progress</div>
+              <div className="text-xs font-medium text-[var(--color-text-muted)] mb-1">Completion progress</div>
               <div className="text-2xl md:text-3xl font-display font-black text-indigo-500 leading-none">{completionPct}%</div>
             </div>
           </div>
@@ -283,7 +283,7 @@ const DashboardView: React.FC = () => {
           <button 
             onClick={() => setActiveTab('exec')}
             className={clsx(
-              "pb-4 font-bold text-sm tracking-tight border-b-2 transition-all relative whitespace-nowrap cursor-pointer",
+              "pb-4 font-bold text-sm tracking-tight border-b-2 transition-colors duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] relative whitespace-nowrap cursor-pointer",
               activeTab === 'exec' ? "border-[var(--color-primary-hex)] text-[var(--color-primary-hex)] font-black" : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
             )}
           >
@@ -292,7 +292,7 @@ const DashboardView: React.FC = () => {
           <button 
             onClick={() => setActiveTab('flow')}
             className={clsx(
-              "pb-4 font-bold text-sm tracking-tight border-b-2 transition-all relative whitespace-nowrap cursor-pointer",
+              "pb-4 font-bold text-sm tracking-tight border-b-2 transition-colors duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] relative whitespace-nowrap cursor-pointer",
               activeTab === 'flow' ? "border-[var(--color-primary-hex)] text-[var(--color-primary-hex)] font-black" : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
             )}
           >
@@ -301,7 +301,7 @@ const DashboardView: React.FC = () => {
           <button 
             onClick={() => setActiveTab('quality')}
             className={clsx(
-              "pb-4 font-bold text-sm tracking-tight border-b-2 transition-all relative whitespace-nowrap cursor-pointer",
+              "pb-4 font-bold text-sm tracking-tight border-b-2 transition-colors duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] relative whitespace-nowrap cursor-pointer",
               activeTab === 'quality' ? "border-[var(--color-primary-hex)] text-[var(--color-primary-hex)] font-black" : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
             )}
           >
@@ -319,14 +319,14 @@ const DashboardView: React.FC = () => {
                 <div key={i} className="card p-5 md:p-8 flex flex-col justify-between group hover:ring-2 hover:ring-indigo-500/20">
                   <div className="flex justify-between items-start mb-4 md:mb-6">
                     <div>
-                      <span className="text-[10px] md:text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-muted)] group-hover:text-[var(--color-primary-hex)] transition-colors">
+                      <span className="text-xs font-semibold text-[var(--color-text-muted)] group-hover:text-[var(--color-primary-hex)] transition-colors">
                         {stat.label}
                       </span>
                       <div className="text-2xl md:text-4xl font-display font-black mt-1 md:mt-2 leading-none">{stat.value}</div>
                       
                       {/* Sparkline SVG */}
                       <div className="mt-3 w-28 h-8 opacity-75 group-hover:opacity-100 transition-opacity">
-                        <svg className="w-full h-full" viewBox="0 0 100 30" fill="none">
+                        <svg className="w-full h-full" viewBox="0 0 100 30" fill="none" aria-hidden="true">
                           <path
                             d={`M ${stat.trend.map((val, idx) => {
                               const x = (idx / (stat.trend.length - 1)) * 100;
@@ -349,7 +349,7 @@ const DashboardView: React.FC = () => {
                         </svg>
                       </div>
                     </div>
-                    <div className={clsx("p-2.5 md:p-3.5 rounded-xl md:rounded-2xl transition-all group-hover:scale-110 shadow-sm", stat.bg, stat.color)}>
+                    <div className={clsx("p-2.5 md:p-3.5 rounded-xl md:rounded-2xl shadow-sm", stat.bg, stat.color)}>
                       <stat.icon size={20} className="md:w-[22px] md:h-[22px]" />
                     </div>
                   </div>
@@ -375,15 +375,15 @@ const DashboardView: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <span className="text-base font-bold text-slate-800">{rel.name}</span>
                           <span className={clsx(
-                            "px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider",
+                            "px-2 py-0.5 rounded text-xs font-medium",
                             rel.status === 'Released' ? "bg-emerald-100 text-emerald-800" :
-                            rel.status === 'Active' ? "bg-indigo-100 text-indigo-800 animate-pulse" :
+                            rel.status === 'Active' ? "bg-indigo-100 text-indigo-800 motion-safe:animate-pulse" :
                             "bg-slate-100 text-slate-600"
                           )}>
                             {rel.status}
                           </span>
                         </div>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                        <p className="text-xs text-[var(--color-text-muted)] font-medium flex items-center gap-1">
                           <Calendar size={12} className="text-slate-400" />
                           Launch Date: {rel.date}
                         </p>
@@ -398,7 +398,7 @@ const DashboardView: React.FC = () => {
                       <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                         <div 
                           className={clsx(
-                            "h-full rounded-full transition-all duration-1000",
+                            "h-full rounded-full",
                             rel.status === 'Released' ? 'bg-emerald-500' : 'bg-indigo-600'
                           )} 
                           style={{ width: `${rel.progress}%` }}
@@ -415,9 +415,9 @@ const DashboardView: React.FC = () => {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-100">
                 <div>
                   <h3 className="font-bold text-lg text-slate-800 leading-tight mb-1">Strategic Financial Telemetry &amp; Cost Control</h3>
-                  <p className="text-xs text-[var(--color-text-faint)] font-bold uppercase tracking-wider">Dynamic alignment of active tasks, estimated effort, and executive budget boundaries</p>
+                  <p className="text-xs text-[var(--color-text-muted)]">Dynamic alignment of active tasks, estimated effort, and executive budget boundaries</p>
                 </div>
-                <div className="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-700 text-[10px] font-black uppercase tracking-widest rounded-full shrink-0">
+                <div className="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-full shrink-0">
                   <Database size={12} />
                   <span>Interactive Simulation Mode</span>
                 </div>
@@ -427,7 +427,7 @@ const DashboardView: React.FC = () => {
                 
                 {/* 1. Simulator controls & Budget parameters (Left 4 columns) */}
                 <div className="lg:col-span-4 space-y-6 bg-slate-50/50 p-5 rounded-2xl border border-slate-150">
-                  <h4 className="text-xs font-black uppercase tracking-widest text-slate-500 flex items-center gap-1.5">
+                  <h4 className="text-xs font-semibold text-[var(--color-text-muted)] flex items-center gap-1.5">
                     <Sliders size={14} className="text-indigo-500" />
                     Simulated Budget Parameters
                   </h4>
@@ -470,11 +470,11 @@ const DashboardView: React.FC = () => {
 
                   {/* Context Metrics Summary */}
                   <div className="pt-4 border-t border-slate-200 space-y-3">
-                    <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase">
+                    <div className="flex justify-between items-center text-xs font-medium text-[var(--color-text-muted)]">
                       <span>Total Measured Effort:</span>
                       <span className="text-slate-700">{totalEffortDays} Days</span>
                     </div>
-                    <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase">
+                    <div className="flex justify-between items-center text-xs font-medium text-[var(--color-text-muted)]">
                       <span>Completed Volume:</span>
                       <span className="text-emerald-600">{completedEffortDays} Days ({Math.round((completedEffortDays / (totalEffortDays || 1)) * 100)}%)</span>
                     </div>
@@ -486,16 +486,16 @@ const DashboardView: React.FC = () => {
                   <div className="grid grid-cols-2 gap-4">
                     {/* Spent Card */}
                     <div className="p-4 bg-slate-50/20 border border-slate-150 rounded-2xl">
-                      <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Accrued Spent</div>
+                      <div className="text-xs font-medium text-[var(--color-text-muted)]">Accrued Spent</div>
                       <div className="text-lg font-black font-display text-slate-800 mt-1">${actualSpend.toLocaleString()}</div>
-                      <div className="text-[9px] font-bold text-slate-400 mt-1.5 uppercase tracking-tight">{budgetBurnPercent}% Budget Burned</div>
+                      <div className="text-xs text-[var(--color-text-muted)] mt-1">{budgetBurnPercent}% Budget Burned</div>
                     </div>
 
                     {/* Forecast Remaining Card */}
                     <div className="p-4 bg-slate-50/20 border border-slate-150 rounded-2xl">
-                      <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Pending Forecast</div>
+                      <div className="text-xs font-medium text-[var(--color-text-muted)]">Pending Forecast</div>
                       <div className="text-lg font-black font-display text-indigo-600 mt-1">${remainingForecast.toLocaleString()}</div>
-                      <div className="text-[9px] font-bold text-indigo-400 mt-1.5 uppercase tracking-tight">Requires Backlog Clearance</div>
+                      <div className="text-xs text-indigo-500 mt-1">Requires Backlog Clearance</div>
                     </div>
                   </div>
 
@@ -503,11 +503,11 @@ const DashboardView: React.FC = () => {
                   <div className="p-5 border border-slate-150 rounded-2xl space-y-3 bg-white shadow-sm">
                     <div className="flex justify-between items-start">
                       <div>
-                        <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Estimated Cost at Completion (EAC)</div>
+                        <div className="text-xs font-medium text-[var(--color-text-muted)]">Estimated Cost at Completion (EAC)</div>
                         <div className="text-2xl font-black font-display text-slate-800 mt-1">${totalEstimatedCost.toLocaleString()}</div>
                       </div>
                       <span className={clsx(
-                        "px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider border",
+                        "px-2.5 py-1 rounded-full text-xs font-medium border",
                         budgetVariance >= 0 ? "bg-emerald-50 text-emerald-700 border-emerald-150" : "bg-red-50 text-red-700 border-red-150"
                       )}>
                         {budgetVariance >= 0 ? 'Under Budget' : 'Budget Overrun'}
@@ -523,14 +523,14 @@ const DashboardView: React.FC = () => {
 
                     {/* Budget progress bar */}
                     <div className="space-y-1.5 pt-1">
-                      <div className="flex justify-between text-[9px] font-bold uppercase text-slate-400">
+                      <div className="flex justify-between text-xs font-medium text-[var(--color-text-muted)]">
                         <span>Cumulative Budget Burn</span>
                         <span>{totalForecastBurnPercent}%</span>
                       </div>
                       <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                         <div 
                           className={clsx(
-                            "h-full rounded-full transition-all",
+                            "h-full rounded-full",
                             totalForecastBurnPercent > 100 ? "bg-red-500" : totalForecastBurnPercent > 80 ? "bg-amber-500" : "bg-indigo-600"
                           )} 
                           style={{ width: `${Math.min(100, totalForecastBurnPercent)}%` }}
@@ -542,7 +542,7 @@ const DashboardView: React.FC = () => {
 
                 {/* 3. Recharts module allocation bar chart (Right 4 columns) */}
                 <div className="lg:col-span-4 space-y-4">
-                  <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 mb-2">Cost Distribution by Module</h4>
+                  <h4 className="text-xs font-semibold text-[var(--color-text-muted)] mb-2">Cost Distribution by Module</h4>
                   <div className="h-44 w-full">
                     {moduleCosts.length > 0 ? (
                       <ResponsiveContainer width="100%" height="100%">
@@ -567,7 +567,7 @@ const DashboardView: React.FC = () => {
                       <div className="h-full flex items-center justify-center text-slate-400 italic text-xs">No active modules to trace cost distribution</div>
                     )}
                   </div>
-                  <p className="text-[9px] text-slate-400 font-medium leading-normal text-center italic">Calculated live using estimating effort per target module component</p>
+                  <p className="text-[10px] text-[var(--color-text-muted)] font-medium leading-normal text-center italic">Calculated live using estimating effort per target module component</p>
                 </div>
 
               </div>
@@ -585,7 +585,7 @@ const DashboardView: React.FC = () => {
                       </div>
                       <div>
                         <h3 className="font-bold text-lg leading-tight">Critical Timeline Warnings</h3>
-                        <p className="text-xs text-[var(--color-text-faint)] font-bold uppercase tracking-tighter mt-0.5">Immediate coordination required</p>
+                        <p className="text-xs text-[var(--color-text-muted)] mt-0.5">Immediate coordination required</p>
                       </div>
                     </div>
                     
@@ -594,15 +594,15 @@ const DashboardView: React.FC = () => {
                         <div 
                           key={t.id} 
                           onClick={() => setView('tasks')}
-                          className="flex items-center justify-between p-4 rounded-2xl bg-rose-50/20 border border-rose-100 hover:bg-rose-50 hover:border-rose-200 transition-all cursor-pointer group"
+                          className="flex items-center justify-between p-4 rounded-2xl bg-rose-50/20 border border-rose-100 hover:bg-rose-50 hover:border-rose-200 transition-colors duration-150 active:scale-[0.98] cursor-pointer group"
                         >
                            <div className="min-w-0">
                              <div className="text-[10px] font-mono font-bold text-red-600 mb-1">{t.id}</div>
                              <div className="text-[13px] font-bold truncate pr-4">{t.name}</div>
                            </div>
                            <div className="text-right shrink-0">
-                              <div className="text-[11px] font-black text-red-600">{Math.abs(daysDiff(t.dueDate)!)}d OVERDUE</div>
-                              <div className="text-[9px] font-bold text-red-400 uppercase mt-0.5 group-hover:text-red-600">Action &rarr;</div>
+                              <div className="text-xs font-bold text-red-600">{Math.abs(daysDiff(t.dueDate)!)}d OVERDUE</div>
+                              <div className="text-xs font-medium text-red-500 mt-0.5 group-hover:text-red-700">Action</div>
                            </div>
                         </div>
                       ))}
@@ -633,19 +633,19 @@ const DashboardView: React.FC = () => {
                   <TrendingUp size={16} className="text-indigo-500" />
                   Live Team Telemetry Stream
                 </h3>
-                <span className="px-2 py-0.5 bg-indigo-100 text-indigo-800 text-[9px] font-mono font-bold rounded-md animate-pulse">LIVE FEED</span>
+                <span className="px-2 py-0.5 bg-indigo-100 text-indigo-800 text-xs font-medium rounded-md motion-safe:animate-pulse">Live feed</span>
               </div>
               <div className="p-2 min-h-[250px]">
                 {state.log.slice(-5).reverse().map((entry, idx) => (
                   <div key={idx} className="flex items-start gap-4 p-4 hover:bg-[var(--color-surface-offset)]/50 rounded-2xl transition-colors cursor-pointer group">
-                    <div className="w-2 h-2 rounded-full bg-indigo-500 mt-2 shrink-0 group-hover:scale-150 transition-transform" />
+                    <div className="w-2 h-2 rounded-full bg-indigo-500 mt-2 shrink-0" />
                     <div className="min-w-0 flex-1">
-                      <div className="text-[10px] font-black leading-tight uppercase tracking-widest text-[var(--color-text-faint)] mb-1">{entry.action}</div>
+                      <div className="text-xs font-medium text-[var(--color-text-muted)] mb-1">{entry.action}</div>
                       <div className="text-sm font-bold text-[var(--color-text)] truncate">{entry.taskName}</div>
                       <div className="flex items-center gap-2 mt-2">
                          <div className="px-2 py-0.5 bg-[var(--color-surface-2)] rounded-md text-[9px] font-mono font-bold text-[var(--color-text-muted)] border border-[var(--color-divider)]">{entry.taskId}</div>
-                         <div className="text-[9px] font-bold text-[var(--color-text-faint)] opacity-60 uppercase">{new Date(entry.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                         <div className="ml-auto text-[9px] font-bold text-indigo-500 uppercase">{entry.assignee}</div>
+                         <div className="text-xs text-[var(--color-text-muted)] opacity-60">{new Date(entry.ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                         <div className="ml-auto text-xs font-medium text-indigo-500">{entry.assignee}</div>
                       </div>
                     </div>
                   </div>
@@ -683,7 +683,7 @@ const DashboardView: React.FC = () => {
               <div className="card p-6 md:p-8 flex flex-col justify-between space-y-6">
                 <div>
                   <h3 className="font-bold text-lg leading-tight mb-1">Quality Confidence</h3>
-                  <p className="text-xs text-[var(--color-text-faint)] font-bold uppercase tracking-wider">Dynamic defect mitigation</p>
+                  <p className="text-xs text-[var(--color-text-muted)]">Dynamic defect mitigation</p>
                 </div>
 
                 <div className="flex flex-col items-center justify-center py-4">
@@ -706,7 +706,7 @@ const DashboardView: React.FC = () => {
                     </ResponsiveContainer>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
                       <span className="text-3xl font-display font-black tracking-tight text-slate-800">{qualityScore}%</span>
-                      <span className="text-[9px] font-bold text-slate-400 uppercase mt-0.5">Reliability index</span>
+                      <span className="text-xs text-[var(--color-text-muted)] mt-0.5">Reliability index</span>
                     </div>
                   </div>
                 </div>
@@ -718,7 +718,7 @@ const DashboardView: React.FC = () => {
                         <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
                         <span className="font-bold text-slate-650">{item.name}</span>
                       </div>
-                      <span className="font-mono font-black text-slate-500">{item.value} Bug{item.value > 1 ? 's' : ''}</span>
+                      <span className="font-semibold text-slate-500"><span className="font-mono">{item.value}</span> Bug{item.value > 1 ? 's' : ''}</span>
                     </div>
                   ))}
                   {severityChartData.length === 0 && (
@@ -731,7 +731,7 @@ const DashboardView: React.FC = () => {
               <div className="card p-6 md:p-8 flex flex-col justify-between">
                 <div>
                   <h3 className="font-bold text-lg leading-tight mb-1">Defect Pipeline Status</h3>
-                  <p className="text-xs text-[var(--color-text-faint)] font-bold uppercase tracking-wider">Bug progression telemetry</p>
+                  <p className="text-xs text-[var(--color-text-muted)]">Bug progression telemetry</p>
                 </div>
 
                 <div className="h-44 my-4">
@@ -757,17 +757,17 @@ const DashboardView: React.FC = () => {
 
                 <div className="grid grid-cols-3 gap-2 border-t border-slate-100 pt-4 text-center">
                   <div>
-                    <div className="text-[9px] font-bold uppercase text-slate-400">Total Bugs</div>
+                    <div className="text-xs font-medium text-[var(--color-text-muted)]">Total Bugs</div>
                     <div className="text-lg font-black font-display text-slate-700">{defects.length}</div>
                   </div>
                   <div>
-                    <div className="text-[9px] font-bold uppercase text-indigo-400">Open</div>
+                    <div className="text-xs font-medium text-indigo-400">Open</div>
                     <div className="text-lg font-black font-display text-indigo-600">
                       {defects.filter(d => d.status !== DefectStatus.CLOSED && d.status !== DefectStatus.REJECTED).length}
                     </div>
                   </div>
                   <div>
-                    <div className="text-[9px] font-bold uppercase text-emerald-400">Resolved</div>
+                    <div className="text-xs font-medium text-emerald-400">Resolved</div>
                     <div className="text-lg font-black font-display text-emerald-600">
                       {defects.filter(d => d.status === DefectStatus.CLOSED).length}
                     </div>
@@ -779,7 +779,7 @@ const DashboardView: React.FC = () => {
               <div className="card p-6 md:p-8 flex flex-col justify-between">
                 <div>
                   <h3 className="font-bold text-lg leading-tight mb-1">Active Severity Risks</h3>
-                  <p className="text-xs text-[var(--color-text-faint)] font-bold uppercase tracking-wider">Requires structural patch</p>
+                  <p className="text-xs text-[var(--color-text-muted)]">Requires structural patch</p>
                 </div>
 
                 <div className="space-y-3 my-4 overflow-y-auto max-h-48 custom-scroll flex-1 pr-1">
@@ -787,13 +787,13 @@ const DashboardView: React.FC = () => {
                     <div key={d.id} className="p-3 bg-red-50/40 border border-red-100 rounded-xl flex items-center justify-between">
                       <div className="min-w-0 flex-1 pr-2">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-[9px] font-mono font-bold text-red-650">{d.id}</span>
+                          <span className="text-[10px] font-mono font-bold text-red-650">{d.id}</span>
                           <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                          <span className="text-[9px] font-black uppercase text-red-600 tracking-wider truncate">{d.severity.split(' ')[0]}</span>
+                          <span className="text-xs font-medium text-red-600 truncate">{d.severity.split(' ')[0]}</span>
                         </div>
                         <div className="text-xs font-bold text-slate-700 truncate mt-0.5">{d.title}</div>
                       </div>
-                      <span className="px-2 py-0.5 bg-white border border-slate-200 text-[9px] font-bold text-slate-500 rounded-md shrink-0 uppercase">{d.assignee.split(' ')[0]}</span>
+                      <span className="px-2 py-0.5 bg-white border border-slate-200 text-xs font-medium text-slate-500 rounded-md shrink-0">{d.assignee.split(' ')[0]}</span>
                     </div>
                   ))}
                   {defects.filter(d => d.severity.includes('S1') || d.severity.includes('S2')).length === 0 && (
@@ -807,9 +807,9 @@ const DashboardView: React.FC = () => {
 
                 <button 
                   onClick={() => setView('defects')}
-                  className="w-full py-2.5 bg-slate-50 border border-slate-250 text-[11px] uppercase tracking-wider font-bold rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
+                  className="w-full py-2.5 bg-slate-50 border border-slate-250 text-xs font-semibold rounded-xl hover:bg-slate-100 transition-colors duration-150 active:scale-[0.98] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50"
                 >
-                  Configure Defect Matrix &rarr;
+                  Configure Defect Matrix
                 </button>
               </div>
             </div>
@@ -819,12 +819,12 @@ const DashboardView: React.FC = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-lg leading-tight mb-1">RAID Governance Heatmap</h3>
-                  <p className="text-xs text-[var(--color-text-faint)] font-bold uppercase tracking-wider">Dynamic probability vs impact index matrix (Active items only)</p>
+                  <p className="text-xs text-[var(--color-text-muted)]">Dynamic probability vs impact index matrix (Active items only)</p>
                 </div>
                 {selectedRiskCell && (
                   <button 
                     onClick={() => setSelectedRiskCell(null)}
-                    className="text-xs font-bold text-indigo-600 hover:text-indigo-800 uppercase flex items-center gap-1 cursor-pointer"
+                    className="text-xs font-medium text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50"
                   >
                     Clear Filter
                   </button>
@@ -836,13 +836,13 @@ const DashboardView: React.FC = () => {
                 {/* 3x3 Heatmap grid */}
                 <div className="lg:col-span-5 space-y-4">
                   <div className="flex">
-                    <div className="w-10 shrink-0 flex items-center justify-center text-[10px] uppercase font-black tracking-widest text-slate-400 -rotate-90">
+                    <div className="w-10 shrink-0 flex items-center justify-center text-xs font-semibold text-slate-400 -rotate-90">
                       Probability
                     </div>
                     <div className="flex-1 space-y-2">
                       {probLevels.map(p => (
                         <div key={p} className="flex items-center gap-2">
-                          <span className="w-16 text-[11px] font-bold text-slate-400 text-right pr-2 uppercase">{p}</span>
+                          <span className="w-16 text-xs font-medium text-slate-400 text-right pr-2">{p}</span>
                           <div className="flex-1 grid grid-cols-3 gap-2">
                             {impLevels.map(i => {
                               const count = getRaidCellCount(p, i);
@@ -852,13 +852,13 @@ const DashboardView: React.FC = () => {
                                   key={i}
                                   onClick={() => count > 0 && setSelectedRiskCell(isSelected ? null : { prob: p, imp: i })}
                                   className={clsx(
-                                    "h-16 rounded-xl border flex flex-col items-center justify-center transition-all cursor-pointer shadow-sm relative",
+                                    "h-16 rounded-xl border flex flex-col items-center justify-center transition-colors duration-150 motion-safe:transition-transform active:scale-95 cursor-pointer shadow-sm relative",
                                     getMatrixCellBg(p, i, count),
                                     isSelected && "ring-4 ring-indigo-500 scale-102 z-10"
                                   )}
                                 >
                                   <span className="text-xl font-display font-black">{count}</span>
-                                  <span className="text-[7px] opacity-75 uppercase tracking-widest font-black mt-0.5">RAID</span>
+                                  <span className="text-[9px] opacity-75 font-semibold mt-0.5">RAID</span>
                                 </div>
                               );
                             })}
@@ -871,7 +871,7 @@ const DashboardView: React.FC = () => {
                         <div className="w-16 shrink-0" />
                         <div className="flex-1 grid grid-cols-3 gap-2">
                           {impLevels.map(i => (
-                            <span key={i} className="text-center text-[10px] font-bold text-slate-400 uppercase">{i} Impact</span>
+                            <span key={i} className="text-center text-xs font-medium text-slate-400">{i} Impact</span>
                           ))}
                         </div>
                       </div>
@@ -889,7 +889,7 @@ const DashboardView: React.FC = () => {
                           : "Hover or select any cell in the matrix to inspect core risk mitigation cards."}
                       </span>
                       {selectedRiskCell && (
-                        <div className="w-3 h-3 rounded-full bg-indigo-500 animate-pulse" />
+                        <div className="w-3 h-3 rounded-full bg-indigo-500 motion-safe:animate-pulse" />
                       )}
                     </div>
 
@@ -904,7 +904,7 @@ const DashboardView: React.FC = () => {
                               <div className="flex items-center gap-2">
                                 <span className="text-xs font-mono font-bold text-slate-500">{item.id}</span>
                                 <span className={clsx(
-                                  "px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-wider",
+                                  "px-2 py-0.5 rounded text-xs font-medium",
                                   item.type === 'Risk' ? 'bg-red-50 text-red-700' :
                                   item.type === 'Issue' ? 'bg-orange-50 text-orange-700' :
                                   'bg-blue-50 text-blue-700'
@@ -916,11 +916,11 @@ const DashboardView: React.FC = () => {
                           </div>
                           {item.mitigation && (
                             <div className="p-3 bg-indigo-50/30 border border-indigo-50 rounded-xl text-xs text-slate-655 italic">
-                              <span className="font-bold text-indigo-700 not-italic uppercase text-[9px] tracking-wider block mb-0.5">Mitigation Protocol</span>
+                              <span className="font-semibold text-indigo-700 not-italic text-xs block mb-0.5">Mitigation Protocol</span>
                               "{item.mitigation}"
                             </div>
                           )}
-                          <div className="flex items-center justify-between pt-1 text-[10px] font-bold text-slate-400">
+                          <div className="flex items-center justify-between pt-1 text-xs font-medium text-slate-400">
                             <span>Owner: {item.owner}</span>
                             <span>Target Date: {item.dueDate}</span>
                           </div>
@@ -943,12 +943,12 @@ const DashboardView: React.FC = () => {
             <div className="card p-6 md:p-8 space-y-6">
               <div>
                 <h3 className="font-bold text-lg leading-tight mb-1">Resource Capacity &amp; Contribution Matrix</h3>
-                <p className="text-xs text-[var(--color-text-faint)] font-bold uppercase tracking-wider">Dynamic allocation telemetry mapping deliverables density</p>
+                <p className="text-xs text-[var(--color-text-muted)]">Dynamic allocation telemetry mapping deliverables density</p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {resourceLoads.map((load) => (
-                  <div key={load.member.id} className="p-5 border border-slate-150 rounded-2xl bg-slate-50/50 hover:bg-white hover:border-slate-300 transition-all flex flex-col justify-between space-y-4">
+                  <div key={load.member.id} className="p-5 border border-slate-150 rounded-2xl bg-slate-50/50 hover:bg-white hover:border-slate-300 transition-colors duration-150 flex flex-col justify-between space-y-4">
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-650 flex items-center justify-center font-display font-black text-sm">
@@ -956,12 +956,12 @@ const DashboardView: React.FC = () => {
                         </div>
                         <div>
                           <div className="font-bold text-slate-800 text-sm">{load.member.name}</div>
-                          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tight">{load.member.role}</div>
+                          <div className="text-xs font-medium text-slate-400">{load.member.role}</div>
                         </div>
                       </div>
 
                       <span className={clsx(
-                        "px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-wider border",
+                        "px-2.5 py-1 rounded-full text-xs font-medium border",
                         load.loadStatus === 'Overloaded' ? "bg-red-50 text-red-700 border-red-150" :
                         load.loadStatus === 'Available' ? "bg-emerald-50 text-emerald-700 border-emerald-150" :
                         "bg-indigo-50 text-indigo-700 border-indigo-150"
@@ -972,18 +972,18 @@ const DashboardView: React.FC = () => {
 
                     <div className="grid grid-cols-2 gap-4 text-center border-y border-slate-100 py-3">
                       <div>
-                        <div className="text-[9px] font-bold uppercase text-slate-400">Active Tasks</div>
+                        <div className="text-xs font-medium text-slate-400">Active Tasks</div>
                         <div className="text-base font-black font-display text-slate-700">{load.activeCount}</div>
                       </div>
                       <div>
-                        <div className="text-[9px] font-bold uppercase text-slate-400">Completions</div>
+                        <div className="text-xs font-medium text-slate-400">Completions</div>
                         <div className="text-base font-black font-display text-slate-700">{load.completedCount}</div>
                       </div>
                     </div>
 
                     <div className="space-y-1.5">
-                      <div className="flex justify-between items-center text-[10px] font-bold">
-                        <span className="text-slate-400 uppercase">Average progress</span>
+                      <div className="flex justify-between items-center text-xs font-medium">
+                        <span className="text-slate-400">Average progress</span>
                         <span className="text-indigo-650">{load.avgProgress}%</span>
                       </div>
                       <div className="h-1.5 w-full bg-slate-200/50 rounded-full overflow-hidden">

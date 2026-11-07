@@ -167,7 +167,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
     >
       <div className="space-y-6">
         {blocked && (
-          <div className="flex items-start gap-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-start gap-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2">
             <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
                <Lock size={20} className="text-amber-600" />
             </div>
@@ -183,17 +183,17 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
 
         {error && (
           <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-[11px] font-bold rounded-xl flex items-center gap-2">
-            <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+            <span className="w-1.5 h-1.5 bg-red-500 rounded-full motion-safe:animate-pulse" />
             {error}
           </div>
         )}
 
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-2">
+          <label className="text-xs font-medium text-[var(--color-text-muted)] flex items-center gap-2">
             <Type size={14} /> Task Title
           </label>
           <input 
-            className="w-full px-4 py-3 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-bold text-base"
+            className="w-full px-4 py-3 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-bold text-base focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
             placeholder="e.g. Implement OAuth2 flow"
             value={formData.name || ''}
             onChange={e => setFormData({ ...formData, name: e.target.value })}
@@ -202,11 +202,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
            <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-2">
+            <label className="text-xs font-medium text-[var(--color-text-muted)] flex items-center gap-2">
               <Activity size={14} /> Status
             </label>
             <select 
-              className="w-full px-4 py-2.5 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none text-sm font-semibold"
+              className="w-full px-4 py-2.5 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none text-sm font-semibold focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
               value={formData.status}
               onChange={e => setFormData({ ...formData, status: e.target.value as TaskStatus })}
             >
@@ -215,11 +215,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-2">
+            <label className="text-xs font-medium text-[var(--color-text-muted)] flex items-center gap-2">
               <Flag size={14} /> Priority
             </label>
             <select 
-              className="w-full px-4 py-2.5 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none text-sm font-semibold"
+              className="w-full px-4 py-2.5 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none text-sm font-semibold focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
               value={formData.priority}
               onChange={e => setFormData({ ...formData, priority: e.target.value as TaskPriority })}
             >
@@ -230,11 +230,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-2">
+            <label className="text-xs font-medium text-[var(--color-text-muted)] flex items-center gap-2">
               <Layers size={14} /> Module
             </label>
             <select 
-              className="w-full px-4 py-2.5 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none text-sm font-semibold"
+              className="w-full px-4 py-2.5 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none text-sm font-semibold focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
               value={formData.module}
               onChange={e => setFormData({ ...formData, module: e.target.value })}
             >
@@ -243,11 +243,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-2">
+            <label className="text-xs font-medium text-[var(--color-text-muted)] flex items-center gap-2">
               <User size={14} /> Assignee
             </label>
             <select 
-              className="w-full px-4 py-2.5 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none text-sm font-semibold"
+              className="w-full px-4 py-2.5 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none text-sm font-semibold focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
               value={formData.assignee || ''}
               onChange={e => setFormData({ ...formData, assignee: e.target.value })}
             >
@@ -259,37 +259,37 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
 
         <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-4">
            <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-2">
+            <label className="text-xs font-medium text-[var(--color-text-muted)] flex items-center gap-2">
               <Calendar size={14} /> Start Date
             </label>
             <input 
               type="date"
-              className="w-full px-4 py-2 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none text-xs"
+              className="w-full px-4 py-2 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none text-xs focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
               value={formData.startDate || ''}
               onChange={e => setFormData({ ...formData, startDate: e.target.value })}
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-2">
+            <label className="text-xs font-medium text-[var(--color-text-muted)] flex items-center gap-2">
               <Calendar size={14} /> Due Date
             </label>
             <input 
               type="date"
-              className="w-full px-4 py-2 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none text-xs"
+              className="w-full px-4 py-2 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none text-xs focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
               value={formData.dueDate || ''}
               onChange={e => setFormData({ ...formData, dueDate: e.target.value })}
             />
           </div>
 
           <div className="space-y-1.5">
-             <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-2">
+             <label className="text-xs font-medium text-[var(--color-text-muted)] flex items-center gap-2">
               <Clock size={14} /> Est. Days
             </label>
             <input 
               type="number"
               step="0.25"
-              className="w-full px-4 py-2 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none text-xs"
+              className="w-full px-4 py-2 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none text-xs focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
               value={formData.estDays || 0}
               onChange={e => setFormData({ ...formData, estDays: parseFloat(e.target.value) })}
             />
@@ -297,7 +297,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-2">
+          <label className="text-xs font-medium text-[var(--color-text-muted)] flex items-center gap-2">
             <Layers size={14} /> Dependencies (Blocked By)
           </label>
           <div className="flex flex-wrap gap-2 mb-2">
@@ -312,7 +312,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
                       ...formData, 
                       dependsOn: formData.dependsOn?.filter(id => id !== depId)
                     })}
-                    className="text-amber-400 hover:text-amber-600"
+                    className="text-amber-400 hover:text-amber-600 active:scale-95 transition-transform"
                   >
                     <Plus size={12} className="rotate-45" />
                   </button>
@@ -321,7 +321,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
             })}
           </div>
           <select 
-            className="w-full px-4 py-2 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none text-xs"
+            className="w-full px-4 py-2 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none text-xs focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
             onChange={e => {
               if (e.target.value && !formData.dependsOn?.includes(e.target.value)) {
                 setFormData({
@@ -332,7 +332,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
               e.target.value = '';
             }}
           >
-            <option value="">+ Add Dependency...</option>
+            <option value="">+ Add Dependency…</option>
             {state.tasks
               .filter(t => t.id !== taskId && !formData.dependsOn?.includes(t.id))
               .map(t => <option key={t.id} value={t.id}>{t.id}: {t.name}</option>)
@@ -342,14 +342,14 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
 
         <div className="space-y-4 pt-4 border-t border-[var(--color-divider)]">
           <div className="flex items-center justify-between">
-            <h3 className="text-[10px] font-black uppercase tracking-widest text-indigo-600 flex items-center gap-2">
+            <h3 className="text-xs font-semibold text-[var(--color-primary-hex)] flex items-center gap-2">
               <CheckSquare size={14} /> Task Lifecycle Phases (Subtasks)
             </h3>
             <div className="flex gap-2">
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="h-8 text-[10px] font-bold"
+                className="h-8 text-[10px] font-bold active:scale-[0.98]"
                 onClick={() => setShowTemplates(!showTemplates)}
               >
                 <Zap size={12} className="mr-1 text-amber-500" /> Apply Template
@@ -357,7 +357,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="h-8 text-[10px] font-bold"
+                className="h-8 text-[10px] font-bold active:scale-[0.98]"
                 onClick={addSubtask}
               >
                 <Plus size={12} className="mr-1 text-emerald-500" /> Add Phase
@@ -366,8 +366,8 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
           </div>
 
           {showTemplates && (
-            <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 animate-in slide-in-from-top-2 duration-200">
-               <div className="flex items-center justify-between mb-3 text-[10px] font-black uppercase tracking-tight text-amber-800">
+            <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 motion-safe:animate-in motion-safe:slide-in-from-top-2 duration-200">
+               <div className="flex items-center justify-between mb-3 text-xs font-medium text-amber-800">
                   <span>Strategic Blueprints</span>
                   <button onClick={() => setShowTemplates(false)} className="hover:text-amber-600 underline text-xs">Close</button>
                </div>
@@ -376,10 +376,10 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
                     <button 
                       key={i} 
                       onClick={() => applyTemplate(tpl)}
-                      className="text-left p-3 bg-white border border-amber-200 rounded-xl hover:border-amber-500 hover:shadow-md transition-all group"
+                      className="text-left p-3 bg-white border border-amber-200 rounded-xl hover:border-amber-500 transition-colors duration-150 active:scale-[0.98] group"
                     >
                        <div className="font-bold text-xs text-amber-900 truncate">{tpl.name}</div>
-                       <div className="text-[9px] font-black text-amber-600/60 uppercase">{tpl.steps.length} Phases • {tpl.category}</div>
+                       <div className="text-[11px] font-medium text-amber-600/80">{tpl.steps.length} Phases • {tpl.category}</div>
                     </button>
                   ))}
                   {(state.stepTemplates || []).length === 0 && (
@@ -420,7 +420,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
                 </select>
                 <div className="flex items-center gap-2 group-hover/sub:hidden">
                    <div className="w-12 h-1 bg-white rounded-full overflow-hidden border border-[var(--color-divider)]">
-                      <div className="h-full bg-indigo-500 transition-all" style={{ width: `${sub.progress}%` }} />
+                      <div className="h-full bg-indigo-500" style={{ width: `${sub.progress}%` }} />
                    </div>
                 </div>
                 <button 
@@ -434,7 +434,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
             {(formData.subtasks || []).length === 0 && !showTemplates && (
                <div className="py-8 text-center border-2 border-dashed border-[var(--color-divider)] rounded-3xl">
                   <List size={24} className="mx-auto text-[var(--color-text-faint)] mb-2 opacity-20" />
-                  <p className="text-[10px] font-black uppercase text-[var(--color-text-faint)]">Add phases manually or apply a blueprint template</p>
+                  <p className="text-xs font-medium text-[var(--color-text-muted)]">Add phases manually or apply a blueprint template</p>
                </div>
             )}
           </div>
@@ -442,7 +442,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
 
         <div className="space-y-1.5 pt-4">
           <div className="flex justify-between items-center mb-1">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-2">
+            <label className="text-xs font-medium text-[var(--color-text-muted)] flex items-center gap-2">
               <Activity size={14} /> Progress Oversight
             </label>
             <span className="text-[10px] font-black text-indigo-600 px-2 py-0.5 bg-indigo-50 rounded-full">{formData.progress}%</span>
@@ -458,12 +458,12 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
         </div>
 
         <div className="space-y-1.5 pt-4 border-t border-[var(--color-divider)]">
-          <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-2">
+          <label className="text-xs font-medium text-[var(--color-text-muted)] flex items-center gap-2">
             <AlignLeft size={14} /> Task Description / Notes
           </label>
           <textarea 
-            className="w-full px-4 py-3 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] text-sm h-32 resize-none"
-            placeholder="Add implementation details, blockers, or reference links..."
+            className="w-full px-4 py-3 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] text-sm h-32 resize-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
+            placeholder="Add implementation details, blockers, or reference links…"
             value={formData.notes || ''}
             onChange={e => setFormData({ ...formData, notes: e.target.value })}
           />
