@@ -29,6 +29,7 @@ import PredictiveIntelligence from './PredictiveIntelligence';
 import ModuleDeliveryMatrix from './ModuleDeliveryMatrix';
 import BurndownChart from './BurndownChart';
 import AIPulseAnalysis from './AIPulseAnalysis';
+import PageHeader from '../shared/PageHeader';
 import { 
   ResponsiveContainer, 
   PieChart, 
@@ -246,38 +247,28 @@ const DashboardView: React.FC = () => {
   }).sort((a, b) => b.totalCost - a.totalCost).slice(0, 5);
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-y-auto custom-scroll pb-16">
-      <div className="px-4 md:px-8 py-8 md:py-12 max-w-[1400px] mx-auto w-full space-y-10">
-        
-        {/* Title and Top Header bar */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-[var(--color-divider)]">
-          <div>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="px-3 py-1 bg-indigo-600 text-white text-xs font-semibold rounded-full shadow-md shadow-indigo-100">Project Telemetry</div>
-              <div className="w-1 h-1 rounded-full bg-[var(--color-divider)]" />
-              <span className="text-xs font-medium text-[var(--color-text-muted)]">System status: active</span>
-            </div>
-            <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-black tracking-tight text-[var(--color-text)] mb-3">Project Pulse Analytics</h1>
-            <p className="text-[var(--color-text-muted)] text-sm max-w-xl leading-relaxed">
-              Real-world delivery telemetry, bug dynamics, resource loading, and automated warning systems across all modules.
-            </p>
-          </div>
-          
-          <div className="flex items-center gap-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl p-5 md:p-6 shadow-sm">
-            <div className="text-center shrink-0 pr-6 border-r border-[var(--color-divider)]">
-              <div className="text-xs font-medium text-[var(--color-text-muted)] mb-1">Composite health</div>
-              <div className={clsx(
-                "text-2xl md:text-3xl font-display font-black leading-none",
-                health > 80 ? "text-emerald-500" : health > 50 ? "text-amber-500" : "text-red-500"
-              )}>{health}%</div>
-            </div>
-            <div className="text-center shrink-0 pl-2">
-              <div className="text-xs font-medium text-[var(--color-text-muted)] mb-1">Completion progress</div>
-              <div className="text-2xl md:text-3xl font-display font-black text-indigo-500 leading-none">{completionPct}%</div>
+    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+      <PageHeader
+        icon={TrendingUp}
+        title="Project Pulse Analytics"
+        subtitle="Real-world delivery telemetry, bug dynamics, and resource loading across all modules"
+        actions={
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 px-3 py-1.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs">
+              <span className="text-[var(--color-text-muted)] font-medium">Composite Health:</span>
+              <span className={clsx(
+                "font-mono font-bold",
+                health > 80 ? "text-emerald-500" : health > 50 ? "text-amber-500" : "text-rose-500"
+              )}>{health}%</span>
+              <div className="w-[1px] h-3.5 bg-[var(--color-divider)]" />
+              <span className="text-[var(--color-text-muted)] font-medium">Completion:</span>
+              <span className="font-mono font-bold text-[var(--color-primary-hex)]">{completionPct}%</span>
             </div>
           </div>
-        </div>
+        }
+      />
 
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 max-w-[1400px] mx-auto w-full space-y-8 pb-16">
         {/* Tab Interface Controls */}
         <div className="flex border-b border-[var(--color-divider)] pb-px gap-6 md:gap-10 overflow-x-auto custom-scroll">
           <button 

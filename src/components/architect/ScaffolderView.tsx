@@ -17,6 +17,7 @@ import {
   Database
 } from 'lucide-react';
 import Button from '../shared/Button';
+import PageHeader from '../shared/PageHeader';
 import clsx from 'clsx';
 
 interface ScaffoldModule {
@@ -136,16 +137,13 @@ const ScaffolderView: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-y-auto custom-scroll">
-      <div className="px-8 py-12 max-w-[1400px] mx-auto w-full">
-        <div className="mb-12">
-          <h1 className="font-display text-3xl font-black tracking-tight text-[var(--color-text)] mb-2 flex items-center gap-3">
-            <Blocks className="text-indigo-500" />
-            Project Architect
-          </h1>
-          <p className="text-[var(--color-text-muted)] text-sm font-medium">Design your modular architecture and generate full task hierarchies in one click.</p>
-        </div>
-
+    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+      <PageHeader
+        icon={Blocks}
+        title="Project Scaffolder"
+        subtitle="Design modular architecture and fast-scaffold deliverable matrices and task hierarchies"
+      />
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 max-w-[1400px] mx-auto w-full space-y-8">
         {renderStepStepper()}
 
         {step === 1 && (

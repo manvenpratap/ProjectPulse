@@ -15,6 +15,7 @@ import {
 import Button from '../shared/Button';
 import clsx from 'clsx';
 import { StepTemplate } from '../../types';
+import PageHeader from '../shared/PageHeader';
 
 const StepTemplates: React.FC = () => {
   const { state, updateProject } = useProject();
@@ -81,28 +82,20 @@ const StepTemplates: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-y-auto custom-scroll">
-      <div className="px-8 py-12 max-w-[1400px] mx-auto w-full">
-        <div className="flex items-end justify-between mb-12 border-b border-[var(--color-divider)] pb-12">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="px-3 py-1 bg-emerald-500 text-white text-xs font-semibold rounded-full shadow-sm">Process automation</div>
-            </div>
-            <h1 className="font-display text-4xl font-black tracking-tight text-[var(--color-text)] mb-4 flex items-center gap-4">
-              <BookOpen className="text-emerald-500" />
-              Step Blueprints
-            </h1>
-            <p className="text-[var(--color-text-muted)] text-sm max-w-xl leading-relaxed">
-              Define reusable technical workflow sequences. These blueprints can be applied to any module to instantly generate granular task histories and effort estimates.
-            </p>
-          </div>
-          
-          <Button variant="primary" size="sm" onClick={handleAddTemplate} className="h-10 px-8 rounded-xl font-bold bg-emerald-600 border-emerald-600 shadow-emerald-100">
-             <Plus size={18} className="mr-2" /> New Blueprint
+    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+      <PageHeader
+        icon={BookOpen}
+        title="Step Blueprints"
+        subtitle={`${templates.length} Active Templates • Automated technical workflow sequences`}
+        actions={
+          <Button variant="primary" size="sm" onClick={handleAddTemplate} className="h-9 px-4">
+            <Plus size={16} className="mr-1.5" /> New Blueprint
           </Button>
-        </div>
+        }
+      />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 max-w-[1400px] mx-auto w-full space-y-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {templates.map((tpl, i) => {
             const totalEffort = tpl.steps.reduce((s, st) => s + st.effort, 0);
             
@@ -168,7 +161,7 @@ const StepTemplates: React.FC = () => {
                <BookOpen size={64} strokeWidth={1} className="mb-6 opacity-20" />
                <h3 className="text-2xl font-black text-[var(--color-text-muted)]">No Technical Blueprints</h3>
                <p className="text-sm max-w-sm mt-2 leading-relaxed">Define standardized operational steps for common tasks (e.g. Design, Build, Test) to automate your planning phase.</p>
-               <Button variant="primary" className="mt-8 rounded-xl font-bold px-10 bg-emerald-600 border-emerald-600" onClick={handleAddTemplate}>
+               <Button variant="primary" className="mt-8 rounded-xl font-bold px-10" onClick={handleAddTemplate}>
                   Instantiate Blueprint Engine
                </Button>
             </div>

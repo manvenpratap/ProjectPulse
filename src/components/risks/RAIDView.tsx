@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import Button from '../shared/Button';
+import PageHeader from '../shared/PageHeader';
 
 const RAIDView: React.FC = () => {
   const { state, updateProject, addLog } = useProject();
@@ -274,39 +275,30 @@ const RAIDView: React.FC = () => {
   const activeDecisions = getFilteredDecisions();
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-y-auto custom-scroll">
-      <div className="px-4 md:px-8 py-8 md:py-12 max-w-[1400px] mx-auto w-full space-y-10">
-        
-        {/* Header Block */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[var(--color-divider)]">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-2.5 py-0.5 bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 text-xs font-semibold rounded-md">
-                Risk & Governance
-              </span>
-              <span className="text-[var(--color-text-faint)]">/</span>
-              <span className="text-xs text-[var(--color-text-muted)] font-medium">RAID Register</span>
-            </div>
-            <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-2">Unified RAID Register</h1>
-            <p className="text-[var(--color-text-muted)] text-sm max-w-xl leading-relaxed">
-              Track project Risks, Assumptions, Issues, and Dependencies alongside steering Decisions.
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
+    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+      <PageHeader
+        icon={ShieldAlert}
+        title="Unified RAID Register"
+        subtitle="Track Risks, Assumptions, Issues, and Dependencies alongside steering Decisions"
+        actions={
+          <div className="flex items-center gap-2">
             <button 
               onClick={() => handleOpenRaidModal()}
-              className="h-10 px-4 bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] rounded-lg text-xs font-semibold flex items-center gap-2 active:scale-[0.98] motion-safe:transition-transform shadow-sm cursor-pointer"
+              className="h-9 px-3.5 bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] rounded-xl text-xs font-semibold flex items-center gap-1.5 active:scale-95 shadow-sm cursor-pointer"
             >
               <PlusCircle size={15} /> <span>Log RAID Item</span>
             </button>
             <button 
               onClick={() => handleOpenDecisionModal()}
-              className="h-10 px-4 bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-lg text-xs font-semibold flex items-center gap-2 active:scale-[0.98] motion-safe:transition-transform shadow-sm cursor-pointer"
+              className="h-9 px-3.5 bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-xl text-xs font-semibold flex items-center gap-1.5 active:scale-95 shadow-sm cursor-pointer"
             >
               <FileText size={15} /> <span>Log Decision</span>
             </button>
           </div>
-        </div>
+        }
+      />
+
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 max-w-[1400px] mx-auto w-full space-y-8">
 
         {/* Categories Tab Bar */}
         <div className="flex items-center justify-between flex-wrap gap-4 pb-4 border-b border-[var(--color-divider)]">

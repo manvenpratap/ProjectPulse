@@ -20,6 +20,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import Button from '../shared/Button';
+import PageHeader from '../shared/PageHeader';
 import clsx from 'clsx';
 import { TaskStatus, TaskPriority } from '../../types';
 import { exportProjectExcel } from '../../services/excelService';
@@ -113,31 +114,22 @@ Project Management Office (PMO)`;
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-hidden print:bg-white">
-      {/* Header */}
-      <div className="px-6 py-4 border-b border-[var(--color-divider)] bg-[var(--color-surface)]/80 backdrop-blur-md flex items-center justify-between sticky top-0 z-10 print:hidden shrink-0">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center font-bold">
-            <FileText size={20} />
+      <PageHeader
+        icon={FileText}
+        title="Executive Reporting & Board Packs"
+        subtitle="Project performance, CXO briefings, and release audit deliverables"
+        className="print:hidden"
+        actions={
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" className="h-9 font-bold active:scale-95" onClick={handlePrint}>
+              <Printer size={15} className="mr-1.5" /> Print Sheet
+            </Button>
+            <Button variant="primary" size="sm" className="h-9 px-4 font-bold shadow-sm active:scale-95" onClick={() => exportProjectExcel(state)}>
+              <Download size={15} className="mr-1.5" /> Export Excel Pack
+            </Button>
           </div>
-          <div>
-            <h1 className="font-display text-lg font-bold tracking-tight text-[var(--color-text)]">
-              Executive Reporting & Board Packs
-            </h1>
-            <p className="text-xs text-[var(--color-text-muted)] font-medium">
-              Project Performance, CXO Briefings, and Release Audits
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" className="h-9 font-bold" onClick={handlePrint}>
-            <Printer size={16} className="mr-1.5" /> Print Sheet
-          </Button>
-          <Button variant="primary" size="sm" className="h-9 px-4 font-bold shadow-sm" onClick={() => exportProjectExcel(state)}>
-            <Download size={16} className="mr-1.5" /> Export Excel Pack
-          </Button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Main Content */}
       <div className="flex-1 overflow-y-auto custom-scroll p-4 md:p-6 print:p-0">

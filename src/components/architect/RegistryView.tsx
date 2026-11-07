@@ -12,6 +12,7 @@ import {
   Activity
 } from 'lucide-react';
 import Button from '../shared/Button';
+import PageHeader from '../shared/PageHeader';
 import clsx from 'clsx';
 
 const RegistryView: React.FC = () => {
@@ -82,10 +83,15 @@ const RegistryView: React.FC = () => {
   };
 
   return (
-    <div className="flex h-full bg-[var(--color-bg)] overflow-y-auto custom-scroll">
-      <div className="flex-1 max-w-[1400px] mx-auto w-full p-4 md:p-8 flex flex-col lg:flex-row gap-6 md:gap-8 min-h-full">
+    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+      <PageHeader
+        icon={ListChecks}
+        title="Pulse Registry"
+        subtitle="Centralized option libraries, dropdown taxonomies, and entity lookups"
+      />
+      <div className="flex-1 overflow-y-auto custom-scroll p-4 md:p-8 max-w-[1400px] mx-auto w-full flex flex-col lg:flex-row gap-6 md:gap-8">
         {/* Sidebar */}
-        <div className="w-full lg:w-80 flex flex-col bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl md:rounded-3xl overflow-hidden shadow-sm shrink-0 h-auto lg:h-[calc(100vh-120px)]">
+        <div className="w-full lg:w-80 flex flex-col bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl md:rounded-3xl overflow-hidden shadow-sm shrink-0 h-auto lg:h-[calc(100vh-140px)]">
           <div className="p-6 border-b border-[var(--color-divider)]">
             <div className="flex items-center justify-between mb-4">
               <h4 className="text-xs font-semibold text-[var(--color-text-muted)]">Option Libraries</h4>

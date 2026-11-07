@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import Button from '../shared/Button';
+import PageHeader from '../shared/PageHeader';
 import { exportProjectExcel } from '../../services/excelService';
 
 const OverviewView: React.FC = () => {
@@ -210,32 +211,16 @@ const OverviewView: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-y-auto custom-scroll pb-16">
-      <div className="px-4 md:px-8 py-6 md:py-10 max-w-[1400px] mx-auto w-full space-y-8">
-        
-        {/* Header Block with Linear-Style Breadcrumbs & Actions */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[var(--color-divider)]">
-          <div>
-            <div className="flex items-center gap-2.5 mb-2.5">
-              <span className="px-2.5 py-0.5 bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 text-xs font-semibold rounded-md">
-                Executive Command Center
-              </span>
-              <span className="text-[var(--color-text-faint)]">/</span>
-              <span className="text-xs font-medium text-[var(--color-text-muted)]">
-                Steering Telemetry
-              </span>
-            </div>
-            <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-2">
-              Executive Steering & Health Index
-            </h1>
-            <p className="text-[var(--color-text-muted)] text-sm max-w-2xl leading-relaxed">
-              Composite delivery health, early warning bottleneck signals, ALM releases, and real-time scenario simulation.
-            </p>
-          </div>
+    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+      <PageHeader
+        icon={Presentation}
+        title="Executive Steering & Health Index"
+        subtitle="Composite delivery health, early warning bottleneck signals, and real-time simulation"
+        actions={
           <div className="flex items-center gap-2.5">
             <button 
               onClick={() => exportProjectExcel(state)}
-              className="h-10 px-4 bg-[var(--color-surface)] border border-[var(--color-border)] hover:bg-[var(--color-surface-2)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-[var(--color-text)] rounded-lg text-xs font-semibold flex items-center gap-2 motion-safe:transition-transform cursor-pointer"
+              className="h-9 px-3.5 bg-[var(--color-surface)] border border-[var(--color-border)] hover:bg-[var(--color-surface-2)] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-[var(--color-text)] rounded-xl text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
               aria-label="Export project report to Excel"
             >
               <FileSpreadsheet size={15} className="text-emerald-500" /> 
@@ -244,7 +229,7 @@ const OverviewView: React.FC = () => {
             </button>
             <button 
               onClick={() => setView('dash')}
-              className="h-10 px-4 bg-[var(--color-primary-hex)] hover:opacity-95 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-[var(--color-primary-text)] rounded-lg text-xs font-semibold flex items-center gap-2 motion-safe:transition-transform cursor-pointer shadow-sm"
+              className="h-9 px-3.5 bg-[var(--color-primary-hex)] hover:opacity-95 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-[var(--color-primary-text)] rounded-xl text-xs font-semibold flex items-center gap-2 cursor-pointer shadow-sm transition-opacity"
               aria-label="Navigate to advanced telemetry dashboard"
             >
               <TrendingUp size={15} /> 
@@ -252,7 +237,10 @@ const OverviewView: React.FC = () => {
               <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono rounded bg-white/20 text-white">G D</kbd>
             </button>
           </div>
-        </div>
+        }
+      />
+
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 max-w-[1400px] mx-auto w-full space-y-8 pb-16">
 
         {/* Bento Grid: Health Dial + EWS */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

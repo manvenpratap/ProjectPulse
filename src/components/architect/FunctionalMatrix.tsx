@@ -14,6 +14,7 @@ import {
   XCircle
 } from 'lucide-react';
 import Button from '../shared/Button';
+import PageHeader from '../shared/PageHeader';
 import clsx from 'clsx';
 import { Feature } from '../../types';
 
@@ -62,31 +63,30 @@ const FunctionalMatrix: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-y-auto custom-scroll">
-      <div className="px-8 py-12 max-w-[1400px] mx-auto w-full">
-        <div className="flex items-center justify-between mb-12">
-          <div>
-            <h1 className="font-display text-3xl font-black tracking-tight text-[var(--color-text)] mb-2 flex items-center gap-3">
-              <Map className="text-cyan-500" />
-              Functional Matrix
-            </h1>
-            <p className="text-[var(--color-text-muted)] text-sm font-medium">Mapping project strategy to architectural entities and modules.</p>
+    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+      <PageHeader
+        icon={Layers}
+        title="Functional Matrix"
+        subtitle="Map project strategy and functional scope to architectural entities and modules"
+        actions={
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
+              <input 
+                className="h-9 pl-9 pr-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs font-semibold focus:border-[var(--color-primary-hex)] outline-none w-56 transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
+                placeholder="Filter matrix..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+            <Button variant="primary" size="sm" onClick={handleAddFeature} className="h-9 rounded-xl font-bold px-4 active:scale-95">
+              <Plus size={15} className="mr-1.5" /> New Feature
+            </Button>
           </div>
-          <div className="flex items-center gap-4">
-             <div className="relative">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
-                <input 
-                  className="h-10 pl-10 pr-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-semibold focus:border-indigo-500 outline-none w-64 transition-colors duration-150 shadow-sm focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
-                  placeholder="Filter matrix..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-             </div>
-             <Button variant="primary" size="sm" onClick={handleAddFeature} className="h-10 rounded-xl font-bold px-6 active:scale-[0.98]">
-                <Plus size={18} className="mr-2" /> New Feature
-             </Button>
-          </div>
-        </div>
+        }
+      />
+
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 max-w-[1400px] mx-auto w-full">
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
            {filteredFeatures.map((f, i) => {

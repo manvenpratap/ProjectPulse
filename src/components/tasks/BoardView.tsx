@@ -41,15 +41,15 @@ const BoardView: React.FC<BoardViewProps> = ({ onEditTask }) => {
         const columnTasks = filteredTasks.filter(t => t.status === col.id);
         
         return (
-          <div key={col.id} className="w-[320px] flex flex-col h-full bg-slate-50/50 rounded-3xl border border-[var(--color-divider)]">
+          <div key={col.id} className="w-[320px] flex flex-col h-full bg-[var(--color-surface-2)]/60 rounded-3xl border border-[var(--color-divider)]">
             <div className={clsx("p-5 border-b-2 flex items-center justify-between shrink-0", col.color)}>
                <div className="flex items-center gap-3">
-                  <h3 className="font-bold text-sm text-slate-800 tracking-tight">{col.title}</h3>
-                  <span className="px-2 py-0.5 bg-slate-200/50 text-[10px] font-mono font-black text-slate-500 rounded-full">
+                  <h3 className="font-bold text-sm text-[var(--color-text)] tracking-tight">{col.title}</h3>
+                  <span className="px-2 py-0.5 bg-[var(--color-surface)] text-[10px] font-mono font-bold text-[var(--color-text-muted)] rounded-full border border-[var(--color-divider)]">
                     {columnTasks.length}
                   </span>
                </div>
-               <button className="p-1 hover:bg-slate-200/50 rounded-lg transition-colors text-slate-400">
+               <button className="p-1 hover:bg-[var(--color-surface)] rounded-lg transition-colors text-[var(--color-text-faint)] hover:text-[var(--color-text)]">
                   <MoreVertical size={16} />
                </button>
             </div>
@@ -67,8 +67,8 @@ const BoardView: React.FC<BoardViewProps> = ({ onEditTask }) => {
                     onClick={() => onEditTask(task.id)}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onEditTask(task.id); } }}
                     className={clsx(
-                      "bg-white border rounded-2xl p-4 shadow-sm hover:shadow-xl transition-[border-color,box-shadow] duration-150 active:scale-[0.99] cursor-pointer group motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]",
-                      blocked ? "border-amber-200 bg-amber-50/30" : "border-[var(--color-divider)] hover:border-indigo-200"
+                      "bg-[var(--color-surface)] border rounded-2xl p-4 shadow-sm hover:shadow-md transition-[border-color,box-shadow] duration-150 active:scale-[0.99] cursor-pointer group motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]",
+                      blocked ? "border-amber-200/60 bg-amber-500/5" : "border-[var(--color-divider)] hover:border-[var(--color-text-faint)]"
                     )}
                   >
                     <div className="flex justify-between items-start mb-3">
@@ -81,27 +81,27 @@ const BoardView: React.FC<BoardViewProps> = ({ onEditTask }) => {
                         </span>
                         {blocked && <Lock size={12} className="text-amber-600" />}
                       </div>
-                      <span className="text-[10px] font-mono font-black text-slate-400">{task.id}</span>
+                      <span className="text-[10px] font-mono font-bold text-[var(--color-text-faint)]">{task.id}</span>
                     </div>
                     
-                    <h4 className="font-bold text-sm text-slate-900 leading-snug mb-4 group-hover:text-indigo-600 transition-colors">
+                    <h4 className="font-bold text-sm text-[var(--color-text)] leading-snug mb-4 group-hover:text-[var(--color-primary-hex)] transition-colors">
                       {task.name}
                     </h4>
 
                     <div className="flex items-center justify-between">
                        <div className="flex -space-x-2">
                           {task.assignee ? (
-                             <div className="w-7 h-7 rounded-full bg-indigo-100 border-2 border-white flex items-center justify-center text-[10px] font-black text-indigo-600 shadow-sm" title={task.assignee}>
+                             <div className="w-7 h-7 rounded-full bg-indigo-100 border-2 border-[var(--color-surface)] flex items-center justify-center text-[10px] font-bold text-indigo-600 shadow-sm" title={task.assignee}>
                                 {task.assignee.charAt(0)}
                              </div>
                           ) : (
-                             <div className="w-7 h-7 rounded-full bg-slate-100 border-2 border-white flex items-center justify-center text-[10px] font-black text-slate-400 italic">?</div>
+                             <div className="w-7 h-7 rounded-full bg-[var(--color-surface-2)] border-2 border-[var(--color-surface)] flex items-center justify-center text-[10px] font-bold text-[var(--color-text-faint)] italic">?</div>
                           )}
                        </div>
 
                        <div className="flex items-center gap-3">
                           {overdue && <AlertCircle size={14} className="text-red-500 motion-safe:animate-pulse" />}
-                          <div className="text-[10px] font-bold text-slate-400 flex items-center gap-1.5">
+                          <div className="text-[10px] font-bold text-[var(--color-text-faint)] flex items-center gap-1.5">
                              <Clock size={12} />
                              {task.dueDate.split('-').slice(1).join('/')}
                           </div>
@@ -109,14 +109,14 @@ const BoardView: React.FC<BoardViewProps> = ({ onEditTask }) => {
                     </div>
 
                     {task.progress > 0 && (
-                       <div className="mt-4 pt-4 border-t border-slate-50">
+                       <div className="mt-4 pt-4 border-t border-[var(--color-divider)]">
                           <div className="flex justify-between items-center mb-1.5">
-                             <span className="text-xs font-medium text-slate-400">Progress</span>
-                             <span className="text-xs font-medium text-slate-600">{task.progress}%</span>
+                             <span className="text-xs font-medium text-[var(--color-text-faint)]">Progress</span>
+                             <span className="text-xs font-medium text-[var(--color-text)]">{task.progress}%</span>
                           </div>
-                          <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
+                          <div className="h-1 bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
                              <div 
-                               className="h-full bg-indigo-500 rounded-full" 
+                               className="h-full bg-[var(--color-primary-hex)] rounded-full" 
                                style={{ width: `${task.progress}%` }} 
                              />
                           </div>
@@ -127,7 +127,7 @@ const BoardView: React.FC<BoardViewProps> = ({ onEditTask }) => {
               })}
               
               {columnTasks.length === 0 && (
-                <div className="h-24 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-center text-xs font-medium text-slate-400">
+                <div className="h-24 border-2 border-dashed border-[var(--color-divider)] rounded-2xl flex items-center justify-center text-xs font-medium text-[var(--color-text-faint)]">
                    Empty Column
                 </div>
               )}

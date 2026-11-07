@@ -4,6 +4,7 @@ import { GanttChart as GanttIcon, ZoomIn, ZoomOut, Maximize, CalendarDays, Info 
 import { fmtDate, daysDiff, isBlocked } from '../../utils/projectUtils';
 import { TaskStatus } from '../../types';
 import Button from '../shared/Button';
+import PageHeader from '../shared/PageHeader';
 import clsx from 'clsx';
 
 const TimelineView: React.FC = () => {
@@ -204,39 +205,34 @@ const TimelineView: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)]">
-      <div className="px-6 py-6 border-b border-[var(--color-divider)] bg-[var(--color-surface)]/50 backdrop-blur-md flex items-center justify-between sticky top-0 z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
-            <GanttIcon size={18} />
+      <PageHeader
+        icon={GanttIcon}
+        title="Project Timeline"
+        subtitle={`${tasksWithDates.length} Scheduled Tasks • Critical Path Optimized`}
+        actions={
+          <div className="flex items-center gap-2">
+            <div className="flex bg-[var(--color-surface-2)] p-1 rounded-xl border border-[var(--color-divider)]">
+              {(['day', 'week', 'month'] as const).map(z => (
+                <button
+                  key={z}
+                  onClick={() => setZoom(z)}
+                  className={clsx(
+                    "px-3 py-1 text-xs font-semibold rounded-lg transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] cursor-pointer capitalize",
+                    zoom === z 
+                      ? "bg-[var(--color-surface)] shadow-sm text-[var(--color-primary-hex)]" 
+                      : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  )}
+                >
+                  {z}
+                </button>
+              ))}
+            </div>
+            <div className="w-[1px] h-6 bg-[var(--color-divider)] mx-1" />
+            <Button variant="ghost" size="icon" title="Zoom In"><ZoomIn size={16} /></Button>
+            <Button variant="ghost" size="icon" title="Zoom Out"><ZoomOut size={16} /></Button>
           </div>
-          <div>
-            <h1 className="font-display text-lg font-bold tracking-tight">Project Timeline</h1>
-            <p className="text-xs text-[var(--color-text-muted)] font-medium">
-              {tasksWithDates.length} Scheduled Tasks • Critical Path Optimized
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="flex bg-[var(--color-surface-2)] p-1 rounded-lg border border-[var(--color-divider)]">
-            {(['day', 'week', 'month'] as const).map(z => (
-              <button
-                key={z}
-                onClick={() => setZoom(z)}
-                className={clsx(
-                  "px-3 py-1 text-xs font-semibold rounded-md transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]",
-                  zoom === z ? "bg-white shadow-sm text-indigo-600" : "text-[var(--color-text-faint)] hover:text-[var(--color-text-muted)]"
-                )}
-              >
-                {z}
-              </button>
-            ))}
-          </div>
-          <div className="w-[1px] h-6 bg-[var(--color-divider)] mx-2" />
-          <Button variant="ghost" size="icon" title="Zoom In"><ZoomIn size={16} /></Button>
-          <Button variant="ghost" size="icon" title="Zoom Out"><ZoomOut size={16} /></Button>
-        </div>
-      </div>
+        }
+      />
 
       <div className="px-6 py-3 bg-[var(--color-surface)] border-y border-[var(--color-divider)] flex items-center justify-center gap-6">
         <div className="flex items-center gap-2">

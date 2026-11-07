@@ -17,6 +17,7 @@ import Button from '../shared/Button';
 import clsx from 'clsx';
 import MemberHierarchy from './MemberHierarchy';
 import { AreaChart, Area, ResponsiveContainer } from 'recharts';
+import PageHeader from '../shared/PageHeader';
 
 const TeamView: React.FC = () => {
   const { state, saveMember, setView } = useProject();
@@ -43,26 +44,21 @@ const TeamView: React.FC = () => {
   }).sort((a, b) => b.count - a.count).slice(0, 3);
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-y-auto custom-scroll pb-20">
-      <div className="px-4 md:px-8 py-6 md:py-10 max-w-[1400px] mx-auto w-full">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-8 md:mb-12 border-b border-[var(--color-divider)] pb-8 md:pb-10">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center shadow-sm shrink-0">
-              <Users size={24} />
-            </div>
-            <div>
-              <h1 className="font-display text-4xl font-black tracking-tight text-[var(--color-text)]">Team Hub</h1>
-              <p className="text-sm text-[var(--color-text-muted)] font-medium">Strategic resource allocation and organizational intelligence.</p>
-            </div>
-          </div>
-          
-          <Button variant="primary" size="md" onClick={handleAddMember} className="h-12 px-8 rounded-2xl font-black shadow-xl shadow-indigo-100">
-            <UserPlus size={18} className="mr-2" /> Add Member
+    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+      <PageHeader
+        icon={Users}
+        title="Team Hub"
+        subtitle={`${members.length} Active Engineers • Strategic Capacity & Skills Matrix`}
+        actions={
+          <Button variant="primary" size="sm" onClick={handleAddMember} className="h-9 px-4">
+            <UserPlus size={16} className="mr-1.5" /> Add Member
           </Button>
-        </div>
+        }
+      />
 
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 max-w-[1400px] mx-auto w-full space-y-12">
         {/* Motivation / Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
            {/* Velocity Leaderboard */}
            <div className="card p-8 border-l-4 border-l-amber-500">
               <div className="flex items-center gap-3 mb-6">
@@ -194,14 +190,14 @@ const TeamView: React.FC = () => {
           {/* Skills Coverage Matrix */}
           <div className="lg:col-span-7 card p-8 shadow-sm space-y-6">
             <div>
-              <h3 className="font-bold text-sm text-slate-700">Skills Coverage Matrix</h3>
-              <p className="text-xs text-slate-500 font-medium mt-1">Core architectural and framework competencies</p>
+              <h3 className="font-bold text-sm text-[var(--color-text)]">Skills Coverage Matrix</h3>
+              <p className="text-xs text-[var(--color-text-muted)] font-medium mt-1">Core architectural and framework competencies</p>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-100 text-xs font-semibold text-slate-500">
+                  <tr className="border-b border-[var(--color-divider)] text-xs font-semibold text-[var(--color-text-muted)]">
                     <th className="py-3">Resource</th>
                     <th className="py-3">TypeScript</th>
                     <th className="py-3">React / Tailwind</th>
@@ -209,7 +205,7 @@ const TeamView: React.FC = () => {
                     <th className="py-3">Database/SQL</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100/60 text-xs font-semibold text-slate-700">
+                <tbody className="divide-y divide-[var(--color-divider)] text-xs font-semibold text-[var(--color-text)]">
                   {members.map((m, idx) => {
                     // Generate pseudo skills based on index for variety
                     const s1 = (idx * 2 + 3) % 6;
@@ -217,8 +213,8 @@ const TeamView: React.FC = () => {
                     const s3 = (idx + 4) % 6;
                     const s4 = (idx * 2 + 1) % 6;
                     return (
-                      <tr key={m.id} className="hover:bg-slate-50/50 transition-colors">
-                        <td className="py-3 font-bold text-slate-900">{m.name}</td>
+                      <tr key={m.id} className="hover:bg-[var(--color-surface-offset)]/50 transition-colors">
+                        <td className="py-3 font-bold text-[var(--color-text)]">{m.name}</td>
                         <td className="py-3">
                           <span className="font-mono text-indigo-600 font-bold">{"★".repeat(s1)}{"☆".repeat(5-s1)}</span>
                         </td>
@@ -243,40 +239,40 @@ const TeamView: React.FC = () => {
           <div className="lg:col-span-5 card p-8 shadow-sm flex flex-col justify-between">
             <div className="space-y-6">
               <div>
-                <h3 className="font-bold text-sm text-slate-700">Capacity & Team Events</h3>
-                <p className="text-xs text-slate-500 font-medium mt-1">Planned leaves and birth dates</p>
+                <h3 className="font-bold text-sm text-[var(--color-text)]">Capacity & Team Events</h3>
+                <p className="text-xs text-[var(--color-text-muted)] font-medium mt-1">Planned leaves and birth dates</p>
               </div>
 
               <div className="space-y-4">
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                <div className="p-4 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
                   <h4 className="text-xs font-bold text-indigo-500 mb-2 flex items-center gap-1.5">
                     <Cake size={14} /> Upcoming Birthday Celebrations
                   </h4>
                   <div className="space-y-2">
                     {members.slice(0, 3).map(m => (
-                      <div key={m.id} className="text-xs font-bold text-slate-800 flex justify-between">
+                      <div key={m.id} className="text-xs font-bold text-[var(--color-text)] flex justify-between">
                         <span>{m.name}</span>
-                        <span className="text-slate-450 text-[10px]">{m.birthday || '12 Oct'}</span>
+                        <span className="text-[var(--color-text-faint)] text-[10px]">{m.birthday || '12 Oct'}</span>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                <div className="p-4 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
                   <h4 className="text-xs font-bold text-rose-500 mb-2 flex items-center gap-1.5">
                     <Users size={14} className="text-rose-500" /> Planned Time Off (Leaves)
                   </h4>
                   <div className="space-y-2 text-xs">
                     {members.filter(m => m.plannedLeaves && m.plannedLeaves.length > 0).map(m => (
                       m.plannedLeaves.map((l, i) => (
-                        <div key={`${m.id}-${i}`} className="font-bold text-slate-800 flex justify-between">
-                          <span>{m.name} <span className="text-[10px] text-slate-400 font-medium">({l.reason})</span></span>
+                        <div key={`${m.id}-${i}`} className="font-bold text-[var(--color-text)] flex justify-between">
+                          <span>{m.name} <span className="text-[10px] text-[var(--color-text-faint)] font-medium">({l.reason})</span></span>
                           <span className="text-rose-550 font-mono text-[10px]">{l.from} to {l.to}</span>
                         </div>
                       ))
                     ))}
                     {members.filter(m => m.plannedLeaves && m.plannedLeaves.length > 0).length === 0 && (
-                      <div className="text-slate-400 italic text-[11px]">No planned team leaves registered. All staff active.</div>
+                      <div className="text-[var(--color-text-faint)] italic text-[11px]">No planned team leaves registered. All staff active.</div>
                     )}
                   </div>
                 </div>

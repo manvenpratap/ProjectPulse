@@ -24,6 +24,8 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import confetti from 'canvas-confetti';
+import PageHeader from '../shared/PageHeader';
+import Button from '../shared/Button';
 
 const CATEGORIES = [
   { id: 'went_well', label: 'What Went Well', color: 'emerald', icon: Smile, desc: 'Wins, accelerated velocities, and successful milestones' },
@@ -141,54 +143,38 @@ export const SprintRetroView: React.FC = () => {
   });
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-y-auto custom-scroll pb-16">
-      {/* Mobile-first centered shell container with Toss rhythm */}
-      <div className="w-full max-w-6xl mx-auto px-4 md:px-8 py-6 md:py-10 space-y-6">
-
-        {/* 1. HERO & SPRINT SENTIMENT PULSE (Information Pyramid Level 1) */}
-        <div className="p-6 md:p-8 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-sm space-y-6">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-[var(--color-divider)]">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="px-2.5 py-0.5 rounded-md bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 text-xs font-semibold">
-                  Continuous Improvement
-                </span>
-                <span className="text-[var(--color-text-faint)]">/</span>
-                <span className="text-xs font-mono font-medium text-[var(--color-text-muted)]">Sprint Telemetry</span>
-              </div>
-              <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-[var(--color-text)]">
-                Sprint Retrospective & Kaizen Engine
-              </h1>
-              <p className="text-xs md:text-sm text-[var(--color-text-muted)] mt-1 max-w-2xl">
-                Team feedback, velocity outcomes, friction discovery, and concrete engineering commitments.
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2.5 self-start md:self-auto">
-              <select
-                value={selectedSprint}
-                onChange={(e) => setSelectedSprint(e.target.value)}
-                className="h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs font-semibold text-[var(--color-text)] focus:outline-none cursor-pointer"
-                aria-label="Select sprint period"
-              >
-                <option value="Sprint 23">Sprint 23 (Current)</option>
-                <option value="Sprint 22">Sprint 22 (Prior)</option>
-                <option value="Sprint 21">Sprint 21</option>
-              </select>
-
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="h-10 px-4 bg-[var(--color-primary-hex)] hover:opacity-95 text-[var(--color-primary-text)] rounded-lg text-xs font-semibold flex items-center gap-2 transition-opacity shadow-sm cursor-pointer"
-                aria-label="Add retro item"
-              >
-                <Plus size={16} />
-                <span>Add Retro Item</span>
-              </button>
-            </div>
+    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+      <PageHeader
+        icon={Smile}
+        title="Sprint Retrospective"
+        subtitle={`Kaizen Continuous Improvement • ${selectedSprint} Telemetry`}
+        actions={
+          <div className="flex items-center gap-2">
+            <select
+              value={selectedSprint}
+              onChange={(e) => setSelectedSprint(e.target.value)}
+              className="h-9 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs font-semibold text-[var(--color-text)] focus:outline-none cursor-pointer"
+              aria-label="Select sprint period"
+            >
+              <option value="Sprint 23">Sprint 23 (Current)</option>
+              <option value="Sprint 22">Sprint 22 (Prior)</option>
+              <option value="Sprint 21">Sprint 21</option>
+            </select>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => setIsModalOpen(true)}
+              className="h-9 px-4"
+            >
+              <Plus size={16} className="mr-1.5" /> Add Retro Item
+            </Button>
           </div>
+        }
+      />
 
-          {/* Sprint Vital Gauges */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 max-w-[1400px] mx-auto w-full space-y-6">
+        {/* Sprint Vital Gauges */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Morale Index */}
             <div className="p-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 border border-emerald-500/20">
@@ -231,7 +217,6 @@ export const SprintRetroView: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
 
         {/* 2. CATEGORY PILL FILTER BAR (Information Pyramid Level 2) */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scroll">

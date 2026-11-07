@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { Bug, Plus, Search, Filter, ShieldAlert, Activity } from 'lucide-react';
 import Button from '../shared/Button';
+import PageHeader from '../shared/PageHeader';
 import clsx from 'clsx';
 import { DefectStatus } from '../../types';
 import DefectModal from './DefectModal';
@@ -24,47 +25,40 @@ const DefectView: React.FC = () => {
 
   const getStatusStyle = (status: DefectStatus) => {
     switch (status) {
-      case DefectStatus.NEW: return "bg-blue-50 text-blue-700 border-blue-100";
-      case DefectStatus.ASSIGNED: return "bg-indigo-50 text-indigo-700 border-indigo-100";
-      case DefectStatus.FIXED: return "bg-emerald-50 text-emerald-700 border-emerald-100";
-      case DefectStatus.CLOSED: return "bg-slate-50 text-slate-500 border-slate-200";
-      case DefectStatus.REJECTED: return "bg-red-50 text-red-600 border-red-100";
-      default: return "bg-slate-50 text-slate-600 border-slate-200";
+      case DefectStatus.NEW: return "bg-blue-500/10 text-blue-500 border-blue-500/20";
+      case DefectStatus.ASSIGNED: return "bg-indigo-500/10 text-indigo-500 border-indigo-500/20";
+      case DefectStatus.FIXED: return "bg-emerald-500/10 text-emerald-500 border-emerald-500/20";
+      case DefectStatus.CLOSED: return "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)]";
+      case DefectStatus.REJECTED: return "bg-rose-500/10 text-rose-500 border-rose-500/20";
+      default: return "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)]";
     }
   };
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)]">
-      <div className="px-6 py-6 border-b border-[var(--color-divider)] bg-[var(--color-surface)]/50 backdrop-blur-md flex items-center justify-between sticky top-0 z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-rose-50 text-red-600 flex items-center justify-center">
-            <Bug size={18} />
+      <PageHeader
+        icon={Bug}
+        title="Defect Workshop"
+        subtitle={`${state.defects.length} Quality Issues • ${state.defects.filter(d => d.status === DefectStatus.NEW).length} Unaddressed`}
+        actions={
+          <div className="flex items-center gap-3">
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
+              <input 
+                className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl pl-9 pr-4 py-1.5 text-xs outline-none focus:border-[var(--color-primary-hex)] w-[240px] focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-[var(--color-text)]"
+                placeholder="Search by ID, title or tags..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
+            </div>
+            <Button variant="primary" size="sm" onClick={() => handleEdit(null)} className="h-9 px-4 active:scale-95">
+              <Plus size={15} className="mr-1.5" /> Log Defect
+            </Button>
           </div>
-          <div>
-            <h1 className="font-display text-lg font-bold tracking-tight">Defect Workshop</h1>
-            <p className="text-xs text-[var(--color-text-muted)] font-medium">
-              {state.defects.length} Quality Issues • {state.defects.filter(d => d.status === DefectStatus.NEW).length} Unaddressed
-            </p>
-          </div>
-        </div>
+        }
+      />
 
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
-            <input 
-              className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg pl-9 pr-4 py-1.5 text-xs outline-none focus:border-[var(--color-primary-hex)] w-[240px]"
-              placeholder="Search by ID, title or tags..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-          </div>
-          <Button variant="primary" size="sm" onClick={() => handleEdit(null)} className="h-9 px-4">
-             <Plus size={16} className="mr-1.5" /> Log Defect
-          </Button>
-        </div>
-      </div>
-
-      <div className="flex-1 overflow-y-auto custom-scroll p-6">
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 max-w-[1400px] mx-auto w-full">
         {filteredDefects.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredDefects.map((defect) => (
@@ -75,7 +69,7 @@ const DefectView: React.FC = () => {
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-mono font-bold text-red-500 bg-red-50 px-1.5 py-0.5 rounded leading-none">
+                    <span className="text-[11px] font-mono font-bold text-rose-500 bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.5 rounded leading-none">
                       {defect.id}
                     </span>
                     <div className={clsx(

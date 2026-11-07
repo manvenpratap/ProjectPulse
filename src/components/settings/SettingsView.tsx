@@ -15,6 +15,7 @@ import {
 import Button from '../shared/Button';
 import BaselineManager from './BaselineManager';
 import clsx from 'clsx';
+import PageHeader from '../shared/PageHeader';
 
 const SettingsView: React.FC = () => {
   const { state, updateSettings, clearAllData } = useProject();
@@ -28,31 +29,19 @@ const SettingsView: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-y-auto custom-scroll">
-      <div className="px-6 py-8 max-w-5xl mx-auto w-full space-y-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--color-divider)] pb-6">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[var(--color-surface-offset)] border border-[var(--color-divider)] flex items-center justify-center text-[var(--color-text-faint)]">
-              <Settings size={28} strokeWidth={1.5} />
-            </div>
-            <div>
-              <h1 className="text-2xl font-display font-black tracking-tight text-[var(--color-text)]">
-                System Configuration & Governance
-              </h1>
-              <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                Manage operational telemetry, automated pulse alerts, and project baselines.
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-1.5 p-1 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl self-start sm:self-auto">
+    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+      <PageHeader
+        icon={Settings}
+        title="System Configuration & Governance"
+        subtitle="Manage operational telemetry, automated pulse alerts, and project baselines"
+        actions={
+          <div className="flex items-center gap-1.5 p-1 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl">
             <button
               onClick={() => setActiveTab('parameters')}
               className={clsx(
-                "px-3 py-1.5 rounded-lg text-xs font-bold transition-colors duration-150 active:scale-95 flex items-center gap-1.5",
+                "px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 flex items-center gap-1.5",
                 activeTab === 'parameters' 
-                  ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] shadow-sm" 
+                  ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" 
                   : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
               )}
             >
@@ -61,16 +50,19 @@ const SettingsView: React.FC = () => {
             <button
               onClick={() => setActiveTab('baselines')}
               className={clsx(
-                "px-3 py-1.5 rounded-lg text-xs font-bold transition-colors duration-150 active:scale-95 flex items-center gap-1.5",
+                "px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 flex items-center gap-1.5",
                 activeTab === 'baselines' 
-                  ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] shadow-sm" 
+                  ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" 
                   : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
               )}
             >
               <Camera size={14} /> Baseline Snapshots ({state.baselines?.length ? new Set(state.baselines.map(b => b.id)).size : 0})
             </button>
           </div>
-        </div>
+        }
+      />
+
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 max-w-[1400px] mx-auto w-full space-y-8">
 
         {activeTab === 'baselines' ? (
           <BaselineManager />

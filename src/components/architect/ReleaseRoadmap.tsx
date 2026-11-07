@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Button from '../shared/Button';
+import PageHeader from '../shared/PageHeader';
 import clsx from 'clsx';
 
 export const ReleaseRoadmap: React.FC = () => {
@@ -153,32 +154,19 @@ export const ReleaseRoadmap: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-y-auto custom-scroll">
-      <div className="p-6 md:p-8 max-w-[1400px] mx-auto w-full space-y-6">
-        {/* Header Block */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center font-bold">
-                <Flag size={20} />
-              </div>
-              <div>
-                <h1 className="text-2xl font-display font-black tracking-tight text-[var(--color-text)]">
-                  Release Roadmap & Version Governance
-                </h1>
-                <p className="text-xs text-[var(--color-text-muted)] font-medium mt-0.5">
-                  Define delivery cycles, coordinate milestone rollouts, and monitor scope completion.
-                </p>
-              </div>
-            </div>
-          </div>
+    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+      <PageHeader
+        icon={Flag}
+        title="Release Roadmap"
+        subtitle="Define delivery cycles, coordinate milestone rollouts, and monitor scope completion"
+        actions={
+          <Button variant="primary" size="sm" onClick={openAddModal} className="h-9 px-4 rounded-xl font-bold active:scale-95">
+            <Plus size={15} className="mr-1.5" /> Add Release Version
+          </Button>
+        }
+      />
 
-          <div className="flex items-center gap-3">
-            <Button variant="primary" size="sm" onClick={openAddModal} className="h-10 px-4 rounded-xl shadow-sm font-bold">
-              <Plus size={16} className="mr-1.5" /> Add Release Version
-            </Button>
-          </div>
-        </div>
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 max-w-[1400px] mx-auto w-full space-y-6">
 
         {/* KPI Telemetry Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

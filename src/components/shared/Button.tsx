@@ -22,7 +22,7 @@ const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props 
 }) => {
-  const baseStyles = "inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none";
+  const baseStyles = "inline-flex items-center justify-center rounded-lg font-semibold transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 disabled:pointer-events-none";
   
   const variants = {
     primary: "bg-[var(--color-primary-hex)] text-[var(--color-primary-text,white)] hover:opacity-90 shadow-sm",
@@ -40,12 +40,15 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button 
-      className={cn(baseStyles, variants[variant], sizes[size], className)}
+      className={clsx(
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] active:scale-95 disabled:opacity-50 disabled:pointer-events-none",
+        cn(baseStyles, variants[variant], sizes[size], className)
+      )}
       disabled={disabled || isLoading}
       {...props}
     >
       {isLoading ? (
-        <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+        <span className="w-4 h-4 border-2 border-current border-t-transparent rounded-full motion-safe:animate-spin" />
       ) : children}
     </button>
   );

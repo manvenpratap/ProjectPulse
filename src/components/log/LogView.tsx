@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { History, Search, Filter, MessageSquare, Clock } from 'lucide-react';
 import { fmtDate } from '../../utils/projectUtils';
+import PageHeader from '../shared/PageHeader';
 import clsx from 'clsx';
 import { LogEntry } from '../../types';
 
@@ -25,34 +26,27 @@ const LogView: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)]">
-      <div className="px-6 py-6 border-b border-[var(--color-divider)] bg-[var(--color-surface)]/50 backdrop-blur-md flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center">
-            <History size={18} />
+      <PageHeader
+        icon={History}
+        title="Project Audit Log"
+        subtitle={`${state.log.length} Transactional Entries Recorded`}
+        actions={
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
+              <input 
+                className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl pl-9 pr-4 py-1.5 text-xs outline-none focus:border-[var(--color-primary-hex)] w-[240px] focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-[var(--color-text)]"
+                placeholder="Filter by actor or task..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
+            </div>
+            <button className="p-2 rounded-xl text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] active:scale-95 cursor-pointer">
+              <Filter size={16} />
+            </button>
           </div>
-          <div>
-            <h1 className="font-display text-lg font-bold tracking-tight">Project Audit Log</h1>
-            <p className="text-xs text-[var(--color-text-muted)] font-medium">
-              {state.log.length} Transactional Entries Recorded
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
-            <input 
-              className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg pl-9 pr-4 py-1.5 text-xs outline-none focus:border-[var(--color-primary-hex)] w-[240px]"
-              placeholder="Filter by actor or task..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-          </div>
-          <button className="p-2 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)]">
-            <Filter size={18} />
-          </button>
-        </div>
-      </div>
+        }
+      />
 
       <div className="flex-1 overflow-y-auto custom-scroll p-6">
         <div className="max-w-4xl mx-auto space-y-10">

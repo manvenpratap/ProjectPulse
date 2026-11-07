@@ -14,6 +14,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import Button from '../shared/Button';
+import PageHeader from '../shared/PageHeader';
 import clsx from 'clsx';
 import { CustomField } from '../../types';
 
@@ -82,51 +83,45 @@ const FieldArchitect: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-y-auto custom-scroll">
-      <div className="px-8 py-12 max-w-[1400px] mx-auto w-full">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-12 border-b border-[var(--color-divider)] pb-12">
-          <div>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="px-3 py-1 bg-indigo-500 text-white text-xs font-semibold rounded-full shadow-md shadow-indigo-200">System Schema</div>
+    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+      <PageHeader
+        icon={Database}
+        title="Field Architect"
+        subtitle="Extend the system data model with custom metadata attributes and entity schema"
+        actions={
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5 p-1 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl">
+              <button 
+                onClick={() => setActiveTab('tasks')}
+                className={clsx(
+                  "px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 cursor-pointer",
+                  activeTab === 'tasks' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                )}
+              >
+                Task Schema
+              </button>
+              <button 
+                onClick={() => setActiveTab('defects')}
+                className={clsx(
+                  "px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 cursor-pointer",
+                  activeTab === 'defects' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                )}
+              >
+                Defect Schema
+              </button>
             </div>
-            <h1 className="font-display text-4xl font-black tracking-tight text-[var(--color-text)] mb-4 flex items-center gap-4">
-              <Database className="text-indigo-500" />
-              Field Architect
-            </h1>
-            <p className="text-[var(--color-text-muted)] text-sm max-w-xl leading-relaxed">
-              Extend the system data model with proprietary metadata attributes. Defined fields will automatically appear in data matrices and exports.
-            </p>
+            <Button variant="primary" size="sm" onClick={handleAddField} className="h-9 px-4 rounded-xl font-bold active:scale-95">
+              <Plus size={15} className="mr-1.5" /> Add Field
+            </Button>
           </div>
-          
-          <div className="bg-[var(--color-surface-offset)]/50 p-1.5 rounded-2xl border border-[var(--color-divider)] flex gap-2">
-            <button 
-              onClick={() => setActiveTab('tasks')}
-              className={clsx(
-                "px-6 py-2.5 rounded-xl text-xs font-semibold transition-colors duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 cursor-pointer",
-                activeTab === 'tasks' ? "bg-white text-indigo-600 shadow-sm" : "text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
-              )}
-            >
-              Task Schema
-            </button>
-            <button 
-              onClick={() => setActiveTab('defects')}
-              className={clsx(
-                "px-6 py-2.5 rounded-xl text-xs font-semibold transition-colors duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 cursor-pointer",
-                activeTab === 'defects' ? "bg-white text-indigo-600 shadow-sm" : "text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
-              )}
-            >
-              Defect Schema
-            </button>
-          </div>
-        </div>
+        }
+      />
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 max-w-[1400px] mx-auto w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           <div className="lg:col-span-2 space-y-6">
             <div className="flex justify-between items-center px-2">
                <h3 className="font-semibold text-xs text-[var(--color-text-muted)]">Custom Extensions ({customFields.length})</h3>
-               <Button variant="primary" size="sm" onClick={handleAddField} className="h-9 px-6 rounded-xl font-bold active:scale-[0.98]">
-                  <Plus size={16} className="mr-2" /> Add Field
-               </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -216,13 +211,13 @@ const FieldArchitect: React.FC = () => {
               </div>
             </div>
 
-            <div className="p-8 rounded-3xl bg-amber-50 border border-amber-100 text-amber-900">
+            <div className="p-6 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text)]">
                <div className="flex items-center gap-3 mb-3">
                   <AlertTriangle size={20} className="text-amber-500" />
                   <h3 className="font-bold text-sm">Security Caution</h3>
                </div>
-               <p className="text-xs font-medium leading-relaxed opacity-80">
-                  Deleting a field from the **Field Architect** will permanently remove that attribute from all existing task records. Please perform an **Excel Backup** before making sweeping schema changes.
+               <p className="text-xs font-medium leading-relaxed text-[var(--color-text-muted)]">
+                  Deleting a field from the <strong>Field Architect</strong> will permanently remove that attribute from all existing task records. Please perform an <strong>Excel Backup</strong> before making sweeping schema changes.
                </p>
             </div>
           </div>

@@ -39,6 +39,7 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import Button from '../shared/Button';
+import PageHeader from '../shared/PageHeader';
 
 type ViewMode = 'table' | 'kanban' | 'heatmap';
 type HeatmapPerspective = 'feat_screens' | 'env_pipeline' | 'del_impact';
@@ -224,71 +225,61 @@ export const DeliveriesView: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)] text-[var(--color-text)] overflow-hidden">
-      {/* 1. Cockpit Telemetry Banner */}
-      <div className="bg-[var(--color-surface)] border-b border-[var(--color-divider)] p-4 shrink-0">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-semibold text-[var(--color-primary-hex)]">
-                ALM / PDN Release Workstation
-              </span>
-              <span className="text-[var(--color-text-faint)] text-xs">/</span>
-              <span className="text-xs text-[var(--color-text-muted)]">
-                {deliveries.length} Total Packages
-              </span>
-            </div>
-            <h1 className="text-2xl font-display font-bold tracking-tight">
-              Software Deliveries & Deployment Schedule
-            </h1>
-          </div>
-
+      <PageHeader
+        icon={Package}
+        title="Software Deliveries & Deployment Schedule"
+        subtitle={`ALM / PDN Release Workstation • ${deliveries.length} Total Packages`}
+        actions={
           <div className="flex items-center gap-2 shrink-0 flex-wrap">
             {/* View Mode Switcher */}
-            <div className="flex items-center p-0.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg">
+            <div className="flex items-center p-0.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl">
               <button
                 onClick={() => setViewMode('table')}
                 className={clsx(
-                  "px-3 py-1.5 text-xs font-medium rounded-md flex items-center gap-1.5 transition-colors cursor-pointer",
-                  viewMode === 'table' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm font-semibold" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  "px-3 py-1 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer active:scale-95",
+                  viewMode === 'table' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
-                <Columns size={14} />
-                <span>Matrix Table</span>
+                <Columns size={13} />
+                <span>Matrix</span>
               </button>
               <button
                 onClick={() => setViewMode('kanban')}
                 className={clsx(
-                  "px-3 py-1.5 text-xs font-medium rounded-md flex items-center gap-1.5 transition-colors cursor-pointer",
-                  viewMode === 'kanban' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm font-semibold" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  "px-3 py-1 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer active:scale-95",
+                  viewMode === 'kanban' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
-                <Kanban size={14} />
-                <span>Pipeline Board</span>
+                <Kanban size={13} />
+                <span>Pipeline</span>
               </button>
               <button
                 onClick={() => setViewMode('heatmap')}
                 className={clsx(
-                  "px-3 py-1.5 text-xs font-medium rounded-md flex items-center gap-1.5 transition-colors cursor-pointer",
-                  viewMode === 'heatmap' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm font-semibold" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  "px-3 py-1 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer active:scale-95",
+                  viewMode === 'heatmap' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
-                <Activity size={14} />
+                <Activity size={13} />
                 <span>3D Heatmaps</span>
               </button>
             </div>
 
-            <Button variant="outline" size="sm" onClick={() => exportProjectExcel(state)} title="Export Excel with Deliveries sheet">
+            <Button variant="outline" size="sm" onClick={() => exportProjectExcel(state)} title="Export Excel with Deliveries sheet" className="h-9 font-bold active:scale-95">
               <FileSpreadsheet size={14} className="mr-1.5 text-emerald-500" />
               <span>Export .xlsx</span>
             </Button>
 
-            <Button variant="primary" size="sm" onClick={handleOpenCreate}>
+            <Button variant="primary" size="sm" onClick={handleOpenCreate} className="h-9 font-bold active:scale-95">
               <Plus size={14} className="mr-1" />
               <span>New Package</span>
             </Button>
           </div>
-        </div>
+        }
+      />
 
+      {/* 1. Cockpit Telemetry Banner */}
+      <div className="bg-[var(--color-surface)] border-b border-[var(--color-divider)] p-4 shrink-0">
         {/* Bento Telemetry Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">
           <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] p-3 rounded-lg">
