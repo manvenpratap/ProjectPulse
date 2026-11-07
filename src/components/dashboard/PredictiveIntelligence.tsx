@@ -94,7 +94,7 @@ const PredictiveIntelligence: React.FC = () => {
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-3">
-        <div className="w-2 h-2 rounded-full bg-indigo-500 shadow-[0_0_8px_var(--color-primary)] animate-pulse" />
+        <div className="w-2 h-2 rounded-full bg-indigo-500 motion-safe:animate-pulse" />
         <h2 className="text-xl font-bold font-display tracking-tight text-[var(--color-text)]">Predictive Intelligence</h2>
       </div>
 
@@ -102,7 +102,7 @@ const PredictiveIntelligence: React.FC = () => {
         {/* Forecast Card */}
         <div className="card p-6 border-l-4 border-l-indigo-500">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-faint)]">Completion Forecast</span>
+            <span className="text-xs font-medium text-[var(--color-text-faint)]">Completion forecast</span>
             <Target size={16} className="text-indigo-500" />
           </div>
           <div className="text-xl font-bold text-[var(--color-text)] mb-1">
@@ -113,7 +113,7 @@ const PredictiveIntelligence: React.FC = () => {
           </div>
           <div className="h-1.5 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
             <div 
-              className="h-full bg-indigo-500 rounded-full transition-all duration-1000" 
+              className="h-full bg-indigo-500 rounded-full" 
               style={{ width: `${Math.min(100, (1 - weeksRem/12) * 100)}%` }} 
             />
           </div>
@@ -122,7 +122,7 @@ const PredictiveIntelligence: React.FC = () => {
         {/* Capacity Load Card */}
         <div className="card p-6 border-l-4 border-l-emerald-500">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-faint)]">Efficiency Index</span>
+            <span className="text-xs font-medium text-[var(--color-text-faint)]">Efficiency index</span>
             <TrendingUp size={16} className="text-emerald-500" />
           </div>
           <div className="text-xl font-bold text-[var(--color-text)] mb-1">
@@ -133,14 +133,14 @@ const PredictiveIntelligence: React.FC = () => {
           </div>
           <div className="flex items-center gap-1.5">
              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-             <span className="text-[10px] font-bold text-emerald-600 uppercase">Optimal Flow</span>
+             <span className="text-xs font-medium text-emerald-600">Optimal flow</span>
           </div>
         </div>
 
         {/* Bottleneck Card */}
         <div className="card p-6 border-l-4 border-l-amber-500">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-faint)]">Active Bottlenecks</span>
+            <span className="text-xs font-medium text-[var(--color-text-faint)]">Active bottlenecks</span>
             <Lock size={16} className="text-amber-500" />
           </div>
           <div className="text-xl font-bold text-[var(--color-text)] mb-1">
@@ -161,7 +161,7 @@ const PredictiveIntelligence: React.FC = () => {
         {/* Backlog Density */}
         <div className="card p-6 border-l-4 border-l-rose-500">
           <div className="flex items-center justify-between mb-4">
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-faint)]">Risk Exposure</span>
+            <span className="text-xs font-medium text-[var(--color-text-faint)]">Risk exposure</span>
             <AlertTriangle size={16} className="text-rose-500" />
           </div>
           <div className="text-xl font-bold text-[var(--color-text)] mb-1">
@@ -178,7 +178,7 @@ const PredictiveIntelligence: React.FC = () => {
                 </div>
               ))}
             </div>
-            <span className="text-[10px] font-bold text-rose-600 uppercase">Action Req</span>
+            <span className="text-xs font-medium text-rose-600">Action req</span>
           </div>
         </div>
       </div>
@@ -192,7 +192,7 @@ const PredictiveIntelligence: React.FC = () => {
                    <Clock size={16} className="text-indigo-500" />
                    Schedule Deviation Matrix
                 </h3>
-                <p className="text-[10px] text-[var(--color-text-faint)] mt-1 uppercase font-bold tracking-tight">Time Elapsed vs Actual Progress</p>
+                <p className="text-xs text-[var(--color-text-faint)] mt-1 font-medium">Time elapsed vs actual progress</p>
              </div>
           </div>
           
@@ -221,7 +221,7 @@ const PredictiveIntelligence: React.FC = () => {
                     />
                     <div 
                       className={clsx(
-                        "absolute left-0 top-0 h-full z-10 transition-all duration-1000",
+                        "absolute left-0 top-0 h-full z-10",
                         isHigh ? "bg-rose-500" : "bg-indigo-500"
                       )}
                       style={{ width: `${m.progress}%` }} 
@@ -240,7 +240,7 @@ const PredictiveIntelligence: React.FC = () => {
                    <Target size={16} className="text-indigo-500" />
                    Priority Momentum
                 </h3>
-                <p className="text-[10px] text-[var(--color-text-faint)] mt-1 uppercase font-bold tracking-tight">Completions by Priority (Last 30 Days)</p>
+                <p className="text-xs text-[var(--color-text-faint)] mt-1 font-medium">Completions by priority (last 30 days)</p>
              </div>
              <BarChart2 size={18} className="text-[var(--color-text-faint)]" />
           </div>
@@ -266,13 +266,13 @@ const PredictiveIntelligence: React.FC = () => {
 
                 return (
                    <div key={p} className="space-y-1.5">
-                      <div className="flex justify-between items-center text-[10px] font-bold">
-                         <span className="text-[var(--color-text-muted)] uppercase tracking-wider">{p}</span>
+                      <div className="flex justify-between items-center text-xs font-semibold">
+                         <span className="text-[var(--color-text-muted)]">{p}</span>
                          <span className="text-[var(--color-text)]">{completedInLog} Tasks</span>
                       </div>
                       <div className="h-1.5 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
                          <div 
-                            className={clsx("h-full rounded-full transition-all duration-1000", colorMap[p])}
+                            className={clsx("h-full rounded-full", colorMap[p])}
                             style={{ width: `${pct}%` }}
                          />
                       </div>
@@ -282,7 +282,7 @@ const PredictiveIntelligence: React.FC = () => {
           </div>
           <div className="mt-8 pt-4 border-t border-[var(--color-divider)]">
              <div className="flex items-center justify-between">
-                <div className="text-[10px] font-bold text-[var(--color-text-faint)] uppercase">Velocity Health</div>
+                <div className="text-xs font-medium text-[var(--color-text-faint)]">Velocity health</div>
                 <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-600">
                    <TrendingUp size={12} />
                    +12% vs last month

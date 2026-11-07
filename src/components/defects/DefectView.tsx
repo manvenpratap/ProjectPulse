@@ -42,7 +42,7 @@ const DefectView: React.FC = () => {
           </div>
           <div>
             <h1 className="font-display text-lg font-bold tracking-tight">Defect Workshop</h1>
-            <p className="text-[11px] text-[var(--color-text-muted)] font-medium uppercase tracking-wider">
+            <p className="text-xs text-[var(--color-text-muted)] font-medium">
               {state.defects.length} Quality Issues • {state.defects.filter(d => d.status === DefectStatus.NEW).length} Unaddressed
             </p>
           </div>
@@ -70,7 +70,7 @@ const DefectView: React.FC = () => {
             {filteredDefects.map((defect) => (
               <div 
                 key={defect.id} 
-                className="card p-5 group hover:border-red-200 transition-all flex flex-col cursor-pointer"
+                className="card p-5 group hover:border-red-200 transition-colors duration-150 flex flex-col cursor-pointer active:scale-[0.98]"
                 onClick={() => handleEdit(defect.id)}
               >
                 <div className="flex items-start justify-between mb-4">
@@ -79,7 +79,7 @@ const DefectView: React.FC = () => {
                       {defect.id}
                     </span>
                     <div className={clsx(
-                      "text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border shrink-0",
+                      "text-xs font-semibold px-2 py-0.5 rounded-full border shrink-0",
                       getStatusStyle(defect.status)
                     )}>
                       {defect.status}
@@ -93,7 +93,7 @@ const DefectView: React.FC = () => {
                 </h3>
 
                 <div className="flex items-center gap-2 mb-6">
-                   <div className="text-[10px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider">Severity</div>
+                   <div className="text-xs font-medium text-[var(--color-text-faint)]">Severity</div>
                    <div className="w-1.5 h-1.5 rounded-full bg-red-400" />
                    <div className="text-[11px] font-bold">{defect.severity || 'S2 - High'}</div>
                 </div>
@@ -109,7 +109,7 @@ const DefectView: React.FC = () => {
                   </div>
                   
                   <div className="text-right">
-                    <div className="text-[9px] font-bold text-[var(--color-text-faint)] uppercase tracking-tight">Reported By</div>
+                    <div className="text-xs font-medium text-[var(--color-text-faint)]">Reported by</div>
                     <div className="text-[11px] font-medium truncate max-w-[80px]">{defect.reporter || 'System'}</div>
                   </div>
                 </div>

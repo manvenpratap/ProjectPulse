@@ -86,7 +86,7 @@ const StepTemplates: React.FC = () => {
         <div className="flex items-end justify-between mb-12 border-b border-[var(--color-divider)] pb-12">
           <div>
             <div className="flex items-center gap-3 mb-4">
-              <div className="px-3 py-1 bg-emerald-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-emerald-200">Process Automation</div>
+              <div className="px-3 py-1 bg-emerald-500 text-white text-xs font-semibold rounded-full shadow-sm">Process automation</div>
             </div>
             <h1 className="font-display text-4xl font-black tracking-tight text-[var(--color-text)] mb-4 flex items-center gap-4">
               <BookOpen className="text-emerald-500" />
@@ -107,7 +107,7 @@ const StepTemplates: React.FC = () => {
             const totalEffort = tpl.steps.reduce((s, st) => s + st.effort, 0);
             
             return (
-              <div key={i} className="card glass p-8 flex flex-col group hover:border-emerald-500/30 transition-all cursor-pointer">
+              <div key={i} className="card glass p-8 flex flex-col group hover:border-emerald-500/30 transition-colors duration-150 cursor-pointer">
                 <div className="flex justify-between items-start mb-6">
                   <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-inner">
                     <Zap size={22} />
@@ -125,14 +125,14 @@ const StepTemplates: React.FC = () => {
                 <div className="mb-6">
                    <h3 className="font-black text-xl text-[var(--color-text)] leading-tight mb-1">{tpl.name}</h3>
                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">{tpl.category} Mapping</span>
+                      <span className="text-xs font-medium text-emerald-600">{tpl.category} mapping</span>
                       <div className="w-1 h-1 rounded-full bg-[var(--color-divider)]" />
-                      <span className="text-[10px] font-bold text-[var(--color-text-faint)] uppercase tracking-tight">{totalEffort}d total effort</span>
+                      <span className="text-xs font-normal text-[var(--color-text-faint)]">{totalEffort}d total effort</span>
                    </div>
                 </div>
 
                 <div className="flex-1 bg-[var(--color-surface-offset)]/50 rounded-2xl p-4 border border-[var(--color-divider)] border-dashed">
-                   <div className="text-[9px] font-black text-[var(--color-text-faint)] uppercase tracking-widest mb-3">Sequence Flow</div>
+                   <div className="text-xs font-medium text-[var(--color-text-faint)] mb-3">Sequence flow</div>
                    <div className="space-y-3">
                       {(tpl.steps || []).map((st, si) => (
                         <div key={si} className="flex items-center justify-between group/step">
@@ -140,7 +140,7 @@ const StepTemplates: React.FC = () => {
                               <div className="w-1.5 h-1.5 rounded-full bg-emerald-300" />
                               <span className="text-xs font-bold text-[var(--color-text-muted)] group-hover/step:text-[var(--color-text)] transition-colors">{st.name}</span>
                            </div>
-                           <div className="flex items-center gap-1.5 opacity-60 text-[10px] font-mono font-bold">
+                           <div className="flex items-center gap-1.5 opacity-60 text-xs font-mono font-medium">
                               <Clock size={10} />
                               {st.effort}d
                            </div>
@@ -157,7 +157,7 @@ const StepTemplates: React.FC = () => {
                         </div>
                       ))}
                    </div>
-                   <span className="text-[10px] font-black text-[var(--color-text-faint)] uppercase tracking-widest">{tpl.steps.length} Steps</span>
+                   <span className="text-xs font-medium text-[var(--color-text-faint)]">{tpl.steps.length} Steps</span>
                 </div>
               </div>
             );
@@ -178,8 +178,8 @@ const StepTemplates: React.FC = () => {
 
       {/* Edit Modal */}
       {editForm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
-           <div className="bg-[var(--color-bg)] w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden border border-[var(--color-divider)] animate-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm motion-safe:animate-in motion-safe:fade-in duration-200">
+           <div className="bg-[var(--color-bg)] w-full max-w-xl rounded-3xl shadow-2xl overflow-hidden border border-[var(--color-divider)] motion-safe:animate-in motion-safe:zoom-in-95 duration-200">
               <div className="p-8 border-b border-[var(--color-divider)] flex justify-between items-center bg-emerald-50/30">
                  <h2 className="text-2xl font-black">Edit Blueprint</h2>
                  <button onClick={() => setEditForm(null)} className="p-2 text-[var(--color-text-faint)] hover:text-[var(--color-text)] transition-colors">
@@ -189,17 +189,17 @@ const StepTemplates: React.FC = () => {
               <div className="p-8 space-y-8 max-h-[60vh] overflow-y-auto custom-scroll">
                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                       <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Template Name</label>
+                       <label className="text-xs font-medium text-[var(--color-text-faint)] mb-2 block">Template name</label>
                        <input 
-                          className="w-full h-12 px-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl font-bold outline-none focus:border-emerald-500 transition-all"
+                          className="w-full h-12 px-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl font-bold outline-none focus:border-emerald-500 transition-colors duration-150"
                           value={editForm.name}
                           onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
                        />
                     </div>
                     <div>
-                       <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Category</label>
+                       <label className="text-xs font-medium text-[var(--color-text-faint)] mb-2 block">Category</label>
                        <select 
-                          className="w-full h-12 px-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl font-bold outline-none focus:border-emerald-500 transition-all"
+                          className="w-full h-12 px-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl font-bold outline-none focus:border-emerald-500 transition-colors duration-150"
                           value={editForm.category}
                           onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
                        >
@@ -214,7 +214,7 @@ const StepTemplates: React.FC = () => {
 
                  <div>
                     <div className="flex justify-between items-center mb-4">
-                       <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)]">Step Sequence</label>
+                       <label className="text-xs font-medium text-[var(--color-text-faint)]">Step sequence</label>
                        <Button variant="ghost" size="sm" className="h-8 text-emerald-600 font-bold" onClick={addStep}>
                           <Plus size={14} className="mr-1" /> Add Phase
                        </Button>

@@ -66,11 +66,11 @@ const ModuleDeliveryMatrix: React.FC = () => {
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)]">
-                <th className="p-4 text-left font-bold text-[10px] uppercase tracking-widest text-[var(--color-text-faint)] w-64 sticky left-0 bg-[var(--color-surface-offset)] z-10">
-                  Business Domain / layers
+                <th className="p-4 text-left font-semibold text-xs text-[var(--color-text-faint)] w-64 sticky left-0 bg-[var(--color-surface-offset)] z-10">
+                  Business domain / layers
                 </th>
                 {types.map(ty => (
-                  <th key={ty} className="p-4 text-center font-bold text-[10px] uppercase tracking-widest text-[var(--color-text-faint)] min-w-[160px]">
+                  <th key={ty} className="p-4 text-center font-semibold text-xs text-[var(--color-text-faint)] min-w-[160px]">
                     <div className="flex flex-col items-center gap-2">
                        {ty.includes('Server') ? <Database size={14} /> : ty.includes('GUI') ? <Monitor size={14} /> : <Package size={14} />}
                        {ty}
@@ -81,7 +81,7 @@ const ModuleDeliveryMatrix: React.FC = () => {
             </thead>
             <tbody>
               {mods.map(m => (
-                <tr key={m} className="border-b border-[var(--color-divider)] group hover:bg-[var(--color-surface-offset)]/30 transition-colors">
+                <tr key={m} className="border-b border-[var(--color-divider)] group hover:bg-[var(--color-surface-offset)]/30 transition-colors duration-150">
                   <td className="p-4 font-bold text-sm text-[var(--color-text-muted)] sticky left-0 bg-[var(--color-surface)] group-hover:bg-[var(--color-surface-offset)] z-10 border-r border-[var(--color-divider)]">
                     {m}
                   </td>
@@ -109,8 +109,8 @@ const ModuleDeliveryMatrix: React.FC = () => {
                       <td key={ty} className="p-4">
                         <div className="flex flex-col gap-2">
                           <div className={clsx(
-                            "flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider text-white shadow-sm self-center",
-                            displayStatus === TaskStatus.IN_PROGRESS && "animate-pulse"
+                            "flex items-center gap-2 px-3 py-1 rounded-md text-xs font-semibold text-white shadow-sm self-center",
+                            displayStatus === TaskStatus.IN_PROGRESS && "motion-safe:animate-pulse"
                           )} style={{ backgroundColor: config.color }}>
                             <config.icon size={10} strokeWidth={3} />
                             {displayStatus}
@@ -119,11 +119,11 @@ const ModuleDeliveryMatrix: React.FC = () => {
                           <div className="flex items-center gap-3">
                              <div className="flex-1 h-1.5 bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
                                <div 
-                                 className="h-full transition-all duration-1000" 
+                                 className="h-full rounded-full" 
                                  style={{ width: `${avgProg}%`, backgroundColor: config.color }} 
                                />
                              </div>
-                             <span className="text-[10px] font-mono font-bold text-[var(--color-text-faint)]">{avgProg}%</span>
+                             <span className="text-xs font-mono font-medium text-[var(--color-text-faint)]">{avgProg}%</span>
                           </div>
                         </div>
                       </td>

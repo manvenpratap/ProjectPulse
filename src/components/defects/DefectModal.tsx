@@ -71,9 +71,9 @@ const DefectModal: React.FC<DefectModalProps> = ({ isOpen, onClose, defectId }) 
     >
       <form onSubmit={handleSubmit} className="space-y-6 pt-2 pb-6">
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">Defect Title</label>
+          <label className="text-xs font-semibold text-[var(--color-text-faint)]">Defect title</label>
           <input 
-            className="w-full h-12 px-4 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl text-sm font-bold outline-none focus:border-red-500 transition-all shadow-sm"
+            className="w-full h-12 px-4 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl text-sm font-bold outline-none focus:border-red-500 transition-colors duration-150 shadow-sm"
             placeholder="Describe the failure vector..."
             value={formData.title || ''}
             onChange={e => setFormData({ ...formData, title: e.target.value })}
@@ -83,11 +83,11 @@ const DefectModal: React.FC<DefectModalProps> = ({ isOpen, onClose, defectId }) 
 
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-2">
+            <label className="text-xs font-semibold text-[var(--color-text-faint)] flex items-center gap-2">
               <Activity size={14} className="text-red-400" /> Status
             </label>
             <select 
-              className="w-full h-11 px-3 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl text-sm font-bold outline-none focus:border-red-500 transition-all"
+              className="w-full h-11 px-3 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl text-sm font-bold outline-none focus:border-red-500 transition-colors duration-150"
               value={formData.status}
               onChange={e => setFormData({ ...formData, status: e.target.value as DefectStatus })}
             >
@@ -95,11 +95,11 @@ const DefectModal: React.FC<DefectModalProps> = ({ isOpen, onClose, defectId }) 
             </select>
           </div>
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-2">
+            <label className="text-xs font-semibold text-[var(--color-text-faint)] flex items-center gap-2">
               <AlertTriangle size={14} className="text-amber-500" /> Severity
             </label>
             <select 
-              className="w-full h-11 px-3 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl text-sm font-bold outline-none focus:border-red-500 transition-all"
+              className="w-full h-11 px-3 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl text-sm font-bold outline-none focus:border-red-500 transition-colors duration-150"
               value={formData.severity}
               onChange={e => setFormData({ ...formData, severity: e.target.value })}
             >
@@ -113,11 +113,11 @@ const DefectModal: React.FC<DefectModalProps> = ({ isOpen, onClose, defectId }) 
 
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-2">
+            <label className="text-xs font-semibold text-[var(--color-text-faint)] flex items-center gap-2">
               <User size={14} /> Assignee
             </label>
             <select 
-              className="w-full h-11 px-3 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl text-sm font-bold outline-none focus:border-red-500 transition-all"
+              className="w-full h-11 px-3 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl text-sm font-bold outline-none focus:border-red-500 transition-colors duration-150"
               value={formData.assignee}
               onChange={e => setFormData({ ...formData, assignee: e.target.value })}
             >
@@ -126,11 +126,11 @@ const DefectModal: React.FC<DefectModalProps> = ({ isOpen, onClose, defectId }) 
             </select>
           </div>
           <div className="space-y-1.5">
-            <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-2">
-              <LinkIcon size={14} /> Linked Task / Element
+            <label className="text-xs font-semibold text-[var(--color-text-faint)] flex items-center gap-2">
+              <LinkIcon size={14} /> Linked task / element
             </label>
             <select 
-              className="w-full h-11 px-3 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl text-sm font-bold outline-none focus:border-red-500 transition-all"
+              className="w-full h-11 px-3 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-xl text-sm font-bold outline-none focus:border-red-500 transition-colors duration-150"
               value={formData.linkedId}
               onChange={e => setFormData({ ...formData, linkedId: e.target.value })}
             >
@@ -141,11 +141,11 @@ const DefectModal: React.FC<DefectModalProps> = ({ isOpen, onClose, defectId }) 
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-2">
-            <FileText size={14} /> Detailed Observation
+          <label className="text-xs font-semibold text-[var(--color-text-faint)] flex items-center gap-2">
+            <FileText size={14} /> Detailed observation
           </label>
           <textarea 
-            className="w-full p-4 h-24 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-2xl text-sm font-medium outline-none focus:border-red-500 transition-all resize-none"
+            className="w-full p-4 h-24 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-2xl text-sm font-medium outline-none focus:border-red-500 transition-colors duration-150 resize-none"
             placeholder="Environmental conditions, expected vs actual behavior..."
             value={formData.desc || ''}
             onChange={e => setFormData({ ...formData, desc: e.target.value })}
@@ -153,11 +153,11 @@ const DefectModal: React.FC<DefectModalProps> = ({ isOpen, onClose, defectId }) 
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-2">
-             Replication Protocol
+          <label className="text-xs font-semibold text-[var(--color-text-faint)] flex items-center gap-2">
+             Replication protocol
           </label>
           <textarea 
-            className="w-full p-4 h-20 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-2xl text-sm font-medium font-mono outline-none focus:border-red-500 transition-all resize-none"
+            className="w-full p-4 h-20 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-2xl text-sm font-medium font-mono outline-none focus:border-red-500 transition-colors duration-150 resize-none"
             placeholder="1. Login as Admin&#10;2. Click export&#10;3. Observe crash"
             value={formData.steps || ''}
             onChange={e => setFormData({ ...formData, steps: e.target.value })}
