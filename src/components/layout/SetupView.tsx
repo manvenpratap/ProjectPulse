@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import Button from '../shared/Button';
-import { Zap, Activity, FolderOpen, Database } from 'lucide-react';
+import { Zap, Activity, FolderOpen, Database, ArrowRight } from 'lucide-react';
 import { motion } from 'motion/react';
 
 const SetupView: React.FC = () => {
@@ -81,11 +81,12 @@ const SetupView: React.FC = () => {
         <Button 
           variant="primary" 
           size="lg" 
-          className="w-full h-12 rounded-xl text-[14px]"
+          className="w-full h-12 rounded-xl text-[14px] flex items-center justify-center gap-2"
           onClick={handleCreate}
           disabled={!name.trim()}
         >
-          Create Project & Enter Hub →
+          <span>Create Project & Enter Hub</span>
+          <ArrowRight size={16} />
         </Button>
 
         <div className="mt-8 pt-8 border-t border-[var(--color-divider)] flex flex-wrap justify-center gap-4">

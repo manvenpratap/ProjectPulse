@@ -284,7 +284,7 @@ const DashboardView: React.FC = () => {
             onClick={() => setActiveTab('exec')}
             className={clsx(
               "pb-4 font-bold text-sm tracking-tight border-b-2 transition-all relative whitespace-nowrap cursor-pointer",
-              activeTab === 'exec' ? "border-indigo-600 text-slate-800 font-black scale-102" : "border-transparent text-slate-400 hover:text-slate-600"
+              activeTab === 'exec' ? "border-[var(--color-primary-hex)] text-[var(--color-primary-hex)] font-black" : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
             )}
           >
             Executive Console
@@ -293,7 +293,7 @@ const DashboardView: React.FC = () => {
             onClick={() => setActiveTab('flow')}
             className={clsx(
               "pb-4 font-bold text-sm tracking-tight border-b-2 transition-all relative whitespace-nowrap cursor-pointer",
-              activeTab === 'flow' ? "border-indigo-600 text-slate-800 font-black scale-102" : "border-transparent text-slate-400 hover:text-slate-600"
+              activeTab === 'flow' ? "border-[var(--color-primary-hex)] text-[var(--color-primary-hex)] font-black" : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
             )}
           >
             Delivery Flow &amp; Velocity
@@ -302,7 +302,7 @@ const DashboardView: React.FC = () => {
             onClick={() => setActiveTab('quality')}
             className={clsx(
               "pb-4 font-bold text-sm tracking-tight border-b-2 transition-all relative whitespace-nowrap cursor-pointer",
-              activeTab === 'quality' ? "border-indigo-600 text-slate-800 font-black scale-102" : "border-transparent text-slate-400 hover:text-slate-600"
+              activeTab === 'quality' ? "border-[var(--color-primary-hex)] text-[var(--color-primary-hex)] font-black" : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
             )}
           >
             Quality &amp; Resources

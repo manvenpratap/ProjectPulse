@@ -6,7 +6,8 @@ import {
   Maximize, 
   RotateCcw,
   ZoomIn,
-  ZoomOut
+  ZoomOut,
+  Users
 } from 'lucide-react';
 import Button from '../shared/Button';
 
@@ -204,12 +205,12 @@ const MemberHierarchy: React.FC = () => {
         onTouchMove={handleTouchMove}
         onTouchEnd={handleMouseUp}
       >
-        <canvas ref={canvasRef} className="block w-full h-full" />
+        <canvas ref={canvasRef} className="block w-full h-full" aria-label="Interactive organizational reporting hierarchy chart" role="img" />
         
         {state.members.length < 2 && (
           <div className="absolute inset-0 flex flex-col items-center justify-center text-[var(--color-text-faint)] pointer-events-none p-12 text-center">
-             <div className="text-4xl mb-4 opacity-20">🌳</div>
-             <p className="max-w-xs text-sm font-medium">Add members and set the "Reports To" field to visualize your team's structure here.</p>
+             <Users size={36} className="mb-4 opacity-30 text-[var(--color-primary-hex)]" aria-hidden="true" />
+             <p className="max-w-xs text-sm font-medium">Add members and set the &ldquo;Reports To&rdquo; field to visualize your team&rsquo;s structure here.</p>
           </div>
         )}
       </div>

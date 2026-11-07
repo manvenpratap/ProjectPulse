@@ -67,18 +67,18 @@ const TeamView: React.FC = () => {
            <div className="card p-8 border-l-4 border-l-amber-500">
               <div className="flex items-center gap-3 mb-6">
                  <Trophy size={18} className="text-amber-500" />
-                 <h3 className="font-bold text-sm uppercase tracking-widest text-[var(--color-text-faint)]">Velocity Kings</h3>
+                 <h3 className="font-bold text-sm text-[var(--color-text)]">Velocity Leaders</h3>
               </div>
               <div className="space-y-4">
                  {leaders.map((l, i) => (
                    <div key={i} className="flex items-center justify-between group">
                       <div className="flex items-center gap-3">
-                         <span className="text-xs font-black text-[var(--color-text-faint)] w-4">{i+1}</span>
-                         <span className="text-sm font-bold truncate max-w-[120px]">{l.name}</span>
+                         <span className="text-xs font-bold text-[var(--color-text-faint)] w-4">{i+1}</span>
+                         <span className="text-sm font-semibold truncate max-w-[120px]">{l.name}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                         <span className="text-xs font-black text-amber-600">{l.count} Done</span>
-                         {i === 0 && <span className="text-xs">🥇</span>}
+                         <span className="text-xs font-mono font-semibold text-amber-500">{l.count} Done</span>
+                         {i === 0 && <Award size={14} className="text-amber-500" aria-label="Top performer" />}
                       </div>
                    </div>
                  ))}

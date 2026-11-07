@@ -57,7 +57,7 @@ const Modal: React.FC<ModalProps> = ({
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
             className={`relative w-full ${sizes[size]} bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]`}
           >
-            <div className="px-6 py-4 flex items-center justify-between border-bottom border-[var(--color-divider)]">
+            <div className="px-6 py-4 flex items-center justify-between border-b border-[var(--color-divider)]">
               <h3 className="font-display font-bold text-lg">{title}</h3>
               <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full">
                 <X size={18} />

@@ -35,7 +35,7 @@ const DefectView: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)]">
-      <div className="px-6 py-6 border-bottom border-[var(--color-divider)] bg-[var(--color-surface)]/50 backdrop-blur-md flex items-center justify-between sticky top-0 z-10">
+      <div className="px-6 py-6 border-b border-[var(--color-divider)] bg-[var(--color-surface)]/50 backdrop-blur-md flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-rose-50 text-red-600 flex items-center justify-center">
             <Bug size={18} />

@@ -204,7 +204,7 @@ const TimelineView: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)]">
-      <div className="px-6 py-6 border-bottom border-[var(--color-divider)] bg-[var(--color-surface)]/50 backdrop-blur-md flex items-center justify-between sticky top-0 z-10">
+      <div className="px-6 py-6 border-b border-[var(--color-divider)] bg-[var(--color-surface)]/50 backdrop-blur-md flex items-center justify-between sticky top-0 z-10">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
             <GanttIcon size={18} />
@@ -296,7 +296,7 @@ const TimelineView: React.FC = () => {
 
         {/* Desktop Canvas */}
         {tasksWithDates.length > 0 ? (
-           <canvas ref={canvasRef} className="hidden lg:block" />
+           <canvas ref={canvasRef} className="hidden lg:block" aria-label="Interactive project Gantt chart schedule" role="img" />
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-center p-12">
             <div className="w-20 h-20 bg-[var(--color-surface-2)] rounded-3xl flex items-center justify-center mb-6 text-[var(--color-text-faint)]">

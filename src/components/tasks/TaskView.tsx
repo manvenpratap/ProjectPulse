@@ -27,7 +27,7 @@ const TaskView: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)]">
       {/* View Header */}
-      <div className="px-6 py-4 flex items-center justify-between border-bottom border-[var(--color-divider)] bg-[var(--color-surface)]/50 backdrop-blur-md sticky top-0 z-10 shrink-0">
+      <div className="px-6 py-4 flex items-center justify-between border-b border-[var(--color-divider)] bg-[var(--color-surface)]/50 backdrop-blur-md sticky top-0 z-10 shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
             <ListTodo size={18} />

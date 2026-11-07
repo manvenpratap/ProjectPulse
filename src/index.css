@@ -11,6 +11,8 @@
 
   --color-primary: var(--color-primary-hex);
   --color-primary-highlight: var(--color-primary-highlight-hex);
+  --color-primary-text: var(--color-primary-text, #ffffff);
+  --color-surface-offset: var(--color-surface-offset, #f0ede8);
 
   --theme-nexus-color: #0f4c5c;
   --theme-obsidian-color: #00ff7f;
