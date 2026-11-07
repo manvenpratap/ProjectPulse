@@ -16,6 +16,7 @@ import Button from '../shared/Button';
 import clsx from 'clsx';
 import { StepTemplate } from '../../types';
 import PageHeader from '../shared/PageHeader';
+import { motion, AnimatePresence } from 'motion/react';
 
 const StepTemplates: React.FC = () => {
   const { state, updateProject } = useProject();
@@ -96,65 +97,75 @@ const StepTemplates: React.FC = () => {
 
       <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {templates.map((tpl, i) => {
-            const totalEffort = tpl.steps.reduce((s, st) => s + st.effort, 0);
-            
-            return (
-              <div key={i} className="card glass p-8 flex flex-col group hover:border-emerald-500/30 transition-colors duration-150 cursor-pointer">
-                <div className="flex justify-between items-start mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-inner">
-                    <Zap size={22} />
+          <AnimatePresence mode="popLayout">
+            {templates.map((tpl, i) => {
+              const totalEffort = tpl.steps.reduce((s, st) => s + st.effort, 0);
+              
+              return (
+                <motion.div 
+                  key={tpl.name || i} 
+                  layout
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.16, ease: [0.4, 0, 0.2, 1] }}
+                  className="card glass p-8 flex flex-col group hover:border-emerald-500/30 transition-colors duration-150 cursor-pointer"
+                >
+                  <div className="flex justify-between items-start mb-6">
+                    <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shadow-inner">
+                      <Zap size={22} />
+                    </div>
+                    <div className="flex gap-2">
+                       <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={(e) => { e.stopPropagation(); startEdit(i); }}>
+                          <Edit2 size={14} />
+                       </Button>
+                       <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-red-500" onClick={(e) => { e.stopPropagation(); removeTemplate(i); }}>
+                          <Trash2 size={14} />
+                       </Button>
+                    </div>
                   </div>
-                  <div className="flex gap-2">
-                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={(e) => { e.stopPropagation(); startEdit(i); }}>
-                        <Edit2 size={14} />
-                     </Button>
-                     <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-red-500" onClick={(e) => { e.stopPropagation(); removeTemplate(i); }}>
-                        <Trash2 size={14} />
-                     </Button>
+
+                  <div className="mb-6">
+                     <h3 className="font-black text-xl text-[var(--color-text)] leading-tight mb-1">{tpl.name}</h3>
+                     <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium text-emerald-600">{tpl.category} mapping</span>
+                        <div className="w-1 h-1 rounded-full bg-[var(--color-divider)]" />
+                        <span className="text-xs font-normal text-[var(--color-text-faint)]">{totalEffort}d total effort</span>
+                     </div>
                   </div>
-                </div>
 
-                <div className="mb-6">
-                   <h3 className="font-black text-xl text-[var(--color-text)] leading-tight mb-1">{tpl.name}</h3>
-                   <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-emerald-600">{tpl.category} mapping</span>
-                      <div className="w-1 h-1 rounded-full bg-[var(--color-divider)]" />
-                      <span className="text-xs font-normal text-[var(--color-text-faint)]">{totalEffort}d total effort</span>
-                   </div>
-                </div>
+                  <div className="flex-1 bg-[var(--color-surface-offset)]/50 rounded-2xl p-4 border border-[var(--color-divider)] border-dashed">
+                     <div className="text-xs font-medium text-[var(--color-text-faint)] mb-3">Sequence flow</div>
+                     <div className="space-y-3">
+                        {(tpl.steps || []).map((st, si) => (
+                          <div key={si} className="flex items-center justify-between group/step">
+                             <div className="flex items-center gap-3">
+                                <div className="w-1.5 h-1.5 rounded-full bg-emerald-300" />
+                                <span className="text-xs font-bold text-[var(--color-text-muted)] group-hover/step:text-[var(--color-text)] transition-colors">{st.name}</span>
+                             </div>
+                             <div className="flex items-center gap-1.5 opacity-60 text-xs font-mono font-medium">
+                                <Clock size={10} />
+                                {st.effort}d
+                             </div>
+                          </div>
+                        ))}
+                     </div>
+                  </div>
 
-                <div className="flex-1 bg-[var(--color-surface-offset)]/50 rounded-2xl p-4 border border-[var(--color-divider)] border-dashed">
-                   <div className="text-xs font-medium text-[var(--color-text-faint)] mb-3">Sequence flow</div>
-                   <div className="space-y-3">
-                      {(tpl.steps || []).map((st, si) => (
-                        <div key={si} className="flex items-center justify-between group/step">
-                           <div className="flex items-center gap-3">
-                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-300" />
-                              <span className="text-xs font-bold text-[var(--color-text-muted)] group-hover/step:text-[var(--color-text)] transition-colors">{st.name}</span>
-                           </div>
-                           <div className="flex items-center gap-1.5 opacity-60 text-xs font-mono font-medium">
-                              <Clock size={10} />
-                              {st.effort}d
-                           </div>
-                        </div>
-                      ))}
-                   </div>
-                </div>
-
-                <div className="mt-8 pt-6 border-t border-[var(--color-divider)] flex items-center justify-between">
-                   <div className="flex -space-x-2">
-                      {[1,2,3].map(j => (
-                        <div key={j} className="w-6 h-6 rounded-full border-2 border-[var(--color-surface)] bg-[var(--color-divider)] flex items-center justify-center">
-                           <span className="text-[6px] font-black">{j}</span>
-                        </div>
-                      ))}
-                   </div>
-                   <span className="text-xs font-medium text-[var(--color-text-faint)]">{tpl.steps.length} Steps</span>
-                </div>
-              </div>
-            );
-          })}
+                  <div className="mt-8 pt-6 border-t border-[var(--color-divider)] flex items-center justify-between">
+                     <div className="flex -space-x-2">
+                        {[1,2,3].map(j => (
+                          <div key={j} className="w-6 h-6 rounded-full border-2 border-[var(--color-surface)] bg-[var(--color-divider)] flex items-center justify-center">
+                             <span className="text-[6px] font-black">{j}</span>
+                          </div>
+                        ))}
+                     </div>
+                     <span className="text-xs font-medium text-[var(--color-text-faint)]">{tpl.steps.length} Steps</span>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </AnimatePresence>
 
           {templates.length === 0 && (
             <div className="col-span-full py-32 bg-[var(--color-surface-offset)]/30 rounded-3xl border-2 border-dashed border-[var(--color-divider)] flex flex-col items-center justify-center text-[var(--color-text-faint)] text-center px-12">

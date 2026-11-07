@@ -39,6 +39,8 @@ const Modal: React.FC<ModalProps> = ({
     full: "max-w-[95vw]",
   };
 
+  const isMobile = typeof window !== 'undefined' ? window.matchMedia('(max-width: 639px)').matches : false;
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -47,14 +49,20 @@ const Modal: React.FC<ModalProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
             onClick={onClose}
-            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+            className="absolute inset-0 bg-black/30 backdrop-blur-sm"
           />
           
           <motion.div
-            initial={{ opacity: 0, scale: 0.98, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.98, y: 20 }}
+            initial={isMobile ? { y: '100%', opacity: 1 } : { opacity: 0, scale: 0.96, y: 12 }}
+            animate={isMobile ? { y: 0, opacity: 1 } : { opacity: 1, scale: 1, y: 0 }}
+            exit={isMobile ? { y: '100%', opacity: 1 } : { opacity: 0, scale: 0.96, y: 12 }}
+            transition={
+              isMobile 
+                ? { type: 'spring', damping: 32, stiffness: 340, mass: 0.8 }
+                : { duration: 0.2, ease: [0.23, 1, 0.32, 1] }
+            }
             className={`relative w-full ${sizes[size]} bg-[var(--color-surface)] border-t sm:border border-[var(--color-border)] rounded-t-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[88dvh] sm:max-h-[90dvh]`}
           >
             {/* Mobile Sheet Handle */}

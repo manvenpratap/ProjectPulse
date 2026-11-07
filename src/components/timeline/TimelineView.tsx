@@ -26,6 +26,7 @@ import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
 import TaskModal from '../tasks/TaskModal';
 import clsx from 'clsx';
+import { motion, AnimatePresence } from 'motion/react';
 
 type ZoomMode = 'day' | 'week' | 'month';
 type SortMode = 'date' | 'name-asc' | 'name-desc';
@@ -1233,75 +1234,81 @@ export const TimelineView: React.FC = () => {
       )}
 
       {/* 5. Rich Hover Tooltip */}
-      {hoveredTask && (
-        <div 
-          className="fixed z-50 pointer-events-none bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl shadow-2xl p-3.5 max-w-xs text-xs space-y-2 motion-safe:animate-in motion-safe:fade-in duration-150"
-          style={{
-            left: Math.min(hoveredTask.x + 14, window.innerWidth - 300),
-            top: Math.min(hoveredTask.y + 14, window.innerHeight - 200)
-          }}
-        >
-          <div className="flex items-center justify-between gap-2 border-b border-[var(--color-divider)] pb-1.5">
-            <span className="font-mono text-[10px] font-bold text-[var(--color-primary-hex)]">
-              {hoveredTask.task.id}
-            </span>
-            <span 
-              className="px-2 py-0.5 rounded-full text-[10px] font-semibold text-white"
-              style={{ backgroundColor: getStatusColor(hoveredTask.task.status) }}
-            >
-              {hoveredTask.task.status}
-            </span>
-          </div>
-
-          <div className="font-bold text-sm text-[var(--color-text)] leading-snug">
-            {hoveredTask.task.name}
-          </div>
-
-          <div className="space-y-1 text-[11px] text-[var(--color-text-muted)]">
-            <div className="flex items-center gap-1.5">
-              <CalendarDays size={13} className="text-[var(--color-text-faint)]" />
-              <span>{fmtDate(hoveredTask.task.startDate)} → {fmtDate(hoveredTask.task.dueDate)}</span>
+      <AnimatePresence>
+        {hoveredTask && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.96 }}
+            transition={{ duration: 0.12, ease: [0.23, 1, 0.32, 1] }}
+            className="fixed z-50 pointer-events-none bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl shadow-2xl p-3.5 max-w-xs text-xs space-y-2 hidden md:block"
+            style={{
+              left: Math.min(hoveredTask.x + 14, window.innerWidth - 300),
+              top: Math.min(hoveredTask.y + 14, window.innerHeight - 200)
+            }}
+          >
+            <div className="flex items-center justify-between gap-2 border-b border-[var(--color-divider)] pb-1.5">
+              <span className="font-mono text-[10px] font-bold text-[var(--color-primary-hex)]">
+                {hoveredTask.task.id}
+              </span>
+              <span 
+                className="px-2 py-0.5 rounded-full text-[10px] font-semibold text-white"
+                style={{ backgroundColor: getStatusColor(hoveredTask.task.status) }}
+              >
+                {hoveredTask.task.status}
+              </span>
             </div>
-            {hoveredTask.task.assignee && (
+
+            <div className="font-bold text-sm text-[var(--color-text)] leading-snug">
+              {hoveredTask.task.name}
+            </div>
+
+            <div className="space-y-1 text-[11px] text-[var(--color-text-muted)]">
               <div className="flex items-center gap-1.5">
-                <User size={13} className="text-[var(--color-text-faint)]" />
-                <span>Lead: {hoveredTask.task.assignee}</span>
+                <CalendarDays size={13} className="text-[var(--color-text-faint)]" />
+                <span>{fmtDate(hoveredTask.task.startDate)} → {fmtDate(hoveredTask.task.dueDate)}</span>
               </div>
-            )}
-            {hoveredTask.task.moduleType && (
-              <div className="flex items-center gap-1.5">
-                <Layers size={13} className="text-[var(--color-text-faint)]" />
-                <span>Track: {hoveredTask.task.moduleType}</span>
-              </div>
-            )}
-            {hoveredTask.task.dependsOn && hoveredTask.task.dependsOn.length > 0 && (
-              <div className="flex items-center gap-1.5 text-amber-500 font-semibold">
-                <GitFork size={13} />
-                <span>Depends on: {hoveredTask.task.dependsOn.join(', ')}</span>
-              </div>
-            )}
-            {hoveredTask.task.actCompletionDate && (
-              <div className="flex items-center gap-1.5 text-emerald-500 font-semibold">
-                <CheckCircle2 size={13} />
-                <span>Completed: {fmtDate(hoveredTask.task.actCompletionDate)}</span>
-              </div>
-            )}
-          </div>
+              {hoveredTask.task.assignee && (
+                <div className="flex items-center gap-1.5">
+                  <User size={13} className="text-[var(--color-text-faint)]" />
+                  <span>Lead: {hoveredTask.task.assignee}</span>
+                </div>
+              )}
+              {hoveredTask.task.moduleType && (
+                <div className="flex items-center gap-1.5">
+                  <Layers size={13} className="text-[var(--color-text-faint)]" />
+                  <span>Track: {hoveredTask.task.moduleType}</span>
+                </div>
+              )}
+              {hoveredTask.task.dependsOn && hoveredTask.task.dependsOn.length > 0 && (
+                <div className="flex items-center gap-1.5 text-amber-500 font-semibold">
+                  <GitFork size={13} />
+                  <span>Depends on: {hoveredTask.task.dependsOn.join(', ')}</span>
+                </div>
+              )}
+              {hoveredTask.task.actCompletionDate && (
+                <div className="flex items-center gap-1.5 text-emerald-500 font-semibold">
+                  <CheckCircle2 size={13} />
+                  <span>Completed: {fmtDate(hoveredTask.task.actCompletionDate)}</span>
+                </div>
+              )}
+            </div>
 
-          <div className="pt-1.5 border-t border-[var(--color-divider)]">
-            <div className="flex justify-between text-[10px] font-mono text-[var(--color-text-muted)] mb-1">
-              <span>Progress</span>
-              <span className="font-bold text-[var(--color-text)]">{hoveredTask.task.progress || 0}%</span>
+            <div className="pt-1.5 border-t border-[var(--color-divider)]">
+              <div className="flex justify-between text-[10px] font-mono text-[var(--color-text-muted)] mb-1">
+                <span>Progress</span>
+                <span className="font-bold text-[var(--color-text)]">{hoveredTask.task.progress || 0}%</span>
+              </div>
+              <div className="w-full h-1.5 bg-[var(--color-surface-2)] rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-[var(--color-primary-hex)] rounded-full" 
+                  style={{ width: `${hoveredTask.task.progress || 0}%` }}
+                />
+              </div>
             </div>
-            <div className="w-full h-1.5 bg-[var(--color-surface-2)] rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-[var(--color-primary-hex)] rounded-full" 
-                style={{ width: `${hoveredTask.task.progress || 0}%` }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 6. Task Modal for Direct Editing */}
       <TaskModal

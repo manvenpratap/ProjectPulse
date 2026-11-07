@@ -61,7 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
 
   return (
     <div className={clsx(
-      "h-full bg-[var(--color-surface)] border-r border-[var(--color-divider)] flex flex-col motion-safe:transition-transform duration-300 fixed lg:relative z-30 shadow-xl lg:shadow-none",
+      "h-full bg-[var(--color-surface)] border-r border-[var(--color-divider)] flex flex-col motion-safe:transition-[transform,width] duration-250 ease-[cubic-bezier(0.23,1,0.32,1)] fixed lg:relative z-30 shadow-xl lg:shadow-none motion-reduce:transition-none",
       isOpen ? "translate-x-0 w-[280px] max-w-[85vw]" : "-translate-x-full lg:translate-x-0 lg:w-[60px]"
     )}>
       <div className="h-[calc(52px+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] flex items-center justify-between px-4 gap-3 border-b border-[var(--color-divider)] bg-[var(--color-surface)]">

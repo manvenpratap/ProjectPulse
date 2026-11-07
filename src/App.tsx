@@ -77,12 +77,18 @@ const MainApp: React.FC = () => {
       />
       
       {/* Mobile Sidebar Overlay */}
-      {isSidebarOpen && (
-        <div 
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-20 lg:hidden overscroll-contain"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {isSidebarOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.24, ease: 'easeOut' }}
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-20 lg:hidden overscroll-contain"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
       
       <div className="flex flex-col flex-1 min-w-0 h-full relative">
         <Topbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
