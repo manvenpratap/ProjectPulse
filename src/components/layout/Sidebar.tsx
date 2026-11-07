@@ -62,13 +62,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
   return (
     <div className={clsx(
       "h-full bg-[var(--color-surface)] border-r border-[var(--color-divider)] flex flex-col motion-safe:transition-transform duration-300 fixed lg:relative z-30 shadow-xl lg:shadow-none",
-      isOpen ? "translate-x-0 w-[260px]" : "-translate-x-full lg:translate-x-0 lg:w-[60px]"
+      isOpen ? "translate-x-0 w-[280px] max-w-[85vw]" : "-translate-x-full lg:translate-x-0 lg:w-[60px]"
     )}>
-      <div className="h-[calc(52px+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] flex items-center px-4 gap-3 border-b border-[var(--color-divider)] bg-[var(--color-surface)]">
-        <div className="w-6 h-6 bg-[var(--color-primary-hex)] rounded-md flex items-center justify-center text-white shrink-0">
-          <Activity size={14} strokeWidth={2.5} />
+      <div className="h-[calc(52px+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] flex items-center justify-between px-4 gap-3 border-b border-[var(--color-divider)] bg-[var(--color-surface)]">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-6 h-6 bg-[var(--color-primary-hex)] rounded-md flex items-center justify-center text-white shrink-0">
+            <Activity size={14} strokeWidth={2.5} />
+          </div>
+          {isOpen && <span className="font-display font-bold text-sm truncate">ProjectPulse</span>}
         </div>
-        {isOpen && <span className="font-display font-bold text-sm truncate">ProjectPulse</span>}
+        {isOpen && (
+          <button 
+            onClick={toggle}
+            aria-label="Close sidebar"
+            className="lg:hidden p-1.5 hover:bg-[var(--color-surface-2)] rounded-lg text-[var(--color-text-muted)] min-h-[36px] min-w-[36px] flex items-center justify-center"
+          >
+            <ChevronLeft size={18} />
+          </button>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto py-4 px-2 space-y-1 custom-scroll">
@@ -79,7 +90,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
               key={item.id}
               onClick={() => onNavigate(item.id)}
               className={clsx(
-                "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] group",
+                "w-full flex items-center gap-3 px-3 py-2.5 sm:py-2 min-h-[44px] sm:min-h-[38px] rounded-lg transition-colors duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] group",
                 isActive 
                   ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-semibold" 
                   : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)]"

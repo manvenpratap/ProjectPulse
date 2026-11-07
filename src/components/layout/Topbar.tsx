@@ -106,7 +106,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
           <button 
             onClick={toggleSidebar}
             aria-label="Toggle navigation menu"
-            className="lg:hidden p-1.5 hover:bg-[var(--color-surface-2)] rounded-lg text-[var(--color-text-muted)] transition-colors"
+            className="lg:hidden min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-[var(--color-surface-2)] rounded-lg text-[var(--color-text-muted)] transition-colors active:scale-95"
           >
             <Menu size={20} />
           </button>
@@ -280,7 +280,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
               size="icon" 
               title="Smart Alerts"
               aria-label="Smart Alerts and Notifications" 
-              className={clsx("rounded-xl h-8 w-8 md:h-9 md:w-9 relative", isNotifOpen && "bg-[var(--color-surface-2)]")}
+              className={clsx("rounded-xl min-h-[40px] min-w-[40px] sm:min-h-[36px] sm:min-w-[36px] relative", isNotifOpen && "bg-[var(--color-surface-2)]")}
               onClick={() => setIsNotifOpen(!isNotifOpen)}
             >
               <Bell size={18} />
@@ -296,7 +296,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
             size="icon" 
             title="Appearance Settings"
             aria-label="Appearance and Theme Settings" 
-            className="rounded-xl h-8 w-8 md:h-9 md:w-9"
+            className="rounded-xl min-h-[40px] min-w-[40px] sm:min-h-[36px] sm:min-w-[36px]"
             onClick={() => setIsThemeOpen(true)}
           >
             <Palette size={18} />
@@ -307,7 +307,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
             size="icon" 
             title="Help & Guide"
             aria-label="Help and Guide" 
-            className="rounded-xl h-8 w-8 md:h-9 md:w-9 hidden sm:flex"
+            className="rounded-xl min-h-[40px] min-w-[40px] sm:min-h-[36px] sm:min-w-[36px] hidden sm:flex"
             onClick={() => setIsHelpOpen(true)}
           >
             <HelpCircle size={18} />
@@ -319,7 +319,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
             variant="primary" 
             size="sm" 
             onClick={() => setView('tasks')}
-            className="h-8 md:h-9 rounded-xl shadow-sm px-2 md:px-4"
+            className="h-9 rounded-xl shadow-sm px-3 md:px-4 text-xs font-semibold"
           >
             <Plus size={16} className="md:mr-1.5" /> <span className="hidden md:inline">New Task</span>
           </Button>

@@ -63,13 +63,17 @@ const NotificationFlyout: React.FC<NotificationFlyoutProps> = ({ isOpen, onClose
   return (
     <>
       <div className="fixed inset-0 z-[100]" onClick={onClose} />
-      <div className="fixed top-[52px] right-4 w-full max-w-[360px] bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-2xl z-[101] overflow-hidden motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-4 duration-300">
-        <div className="p-5 border-b border-[var(--color-divider)] flex items-center justify-between">
+      <div className="fixed top-[calc(56px+env(safe-area-inset-top,0px))] left-2 right-2 sm:left-auto sm:right-4 w-auto sm:w-[360px] bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-2xl z-[101] overflow-hidden motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-4 duration-300">
+        <div className="p-4 sm:p-5 border-b border-[var(--color-divider)] flex items-center justify-between">
           <div className="flex items-center gap-2">
              <Bell size={18} className="text-indigo-600" />
              <h3 className="font-display font-black text-sm tracking-tight">Notification Pulse</h3>
           </div>
-          <button onClick={onClose} className="p-1 hover:bg-[var(--color-surface-2)] rounded-lg transition-colors">
+          <button 
+            onClick={onClose} 
+            aria-label="Close notifications"
+            className="p-2 min-h-[36px] min-w-[36px] flex items-center justify-center hover:bg-[var(--color-surface-2)] rounded-lg transition-colors"
+          >
             <X size={16} />
           </button>
         </div>

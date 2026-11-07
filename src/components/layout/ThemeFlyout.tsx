@@ -69,16 +69,17 @@ const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed top-0 right-0 w-[480px] max-w-full h-screen bg-[var(--color-surface)] border-l border-[var(--color-divider)] shadow-2xl z-[101] flex flex-col"
+            className="fixed top-0 right-0 w-[480px] max-w-full h-[100dvh] bg-[var(--color-surface)] border-l border-[var(--color-divider)] shadow-2xl z-[101] flex flex-col"
           >
-            <div className="p-6 border-b border-[var(--color-divider)] flex items-center justify-between bg-[var(--color-surface-2)]">
+            <div className="p-4 sm:p-6 pt-[calc(1rem+env(safe-area-inset-top,0px))] sm:pt-[calc(1.5rem+env(safe-area-inset-top,0px))] border-b border-[var(--color-divider)] flex items-center justify-between bg-[var(--color-surface-2)]">
               <div>
-                <h3 className="text-xl font-display font-black text-[var(--color-text)] tracking-tight">System Aesthetics</h3>
+                <h3 className="text-lg sm:text-xl font-display font-black text-[var(--color-text)] tracking-tight">System Aesthetics</h3>
                 <p className="text-xs text-[var(--color-text-muted)] mt-1 font-medium">Reconfigure the project visual intelligence layer</p>
               </div>
               <button 
                 onClick={onClose}
-                className="p-2 hover:bg-[var(--color-surface-offset)] rounded-xl transition-colors text-[var(--color-text-muted)]"
+                aria-label="Close aesthetics flyout"
+                className="p-2 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-[var(--color-surface-offset)] rounded-xl transition-colors text-[var(--color-text-muted)]"
               >
                 <X size={20} />
               </button>
@@ -158,7 +159,7 @@ const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
               })}
             </div>
 
-            <div className="p-6 border-t border-[var(--color-divider)] bg-[var(--color-surface-2)]">
+            <div className="p-4 sm:p-6 pb-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))] border-t border-[var(--color-divider)] bg-[var(--color-surface-2)]">
               <button 
                 onClick={onClose}
                 className="w-full py-3.5 bg-[var(--color-primary)] text-white font-bold text-xs rounded-2xl shadow-md active:scale-[0.98] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"

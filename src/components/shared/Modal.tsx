@@ -42,7 +42,7 @@ const Modal: React.FC<ModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -52,24 +52,27 @@ const Modal: React.FC<ModalProps> = ({
           />
           
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 10 }}
+            initial={{ opacity: 0, scale: 0.98, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            className={`relative w-full ${sizes[size]} bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90dvh]`}
+            exit={{ opacity: 0, scale: 0.98, y: 20 }}
+            className={`relative w-full ${sizes[size]} bg-[var(--color-surface)] border-t sm:border border-[var(--color-border)] rounded-t-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[88dvh] sm:max-h-[90dvh]`}
           >
-            <div className="px-6 py-4 flex items-center justify-between border-b border-[var(--color-divider)]">
-              <h3 className="font-display font-bold text-lg">{title}</h3>
-              <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full">
+            {/* Mobile Sheet Handle */}
+            <div className="w-10 h-1 bg-[var(--color-divider)] rounded-full mx-auto my-2 sm:hidden shrink-0" />
+
+            <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b border-[var(--color-divider)]">
+              <h3 className="font-display font-bold text-base sm:text-lg">{title}</h3>
+              <Button variant="ghost" size="icon" onClick={onClose} className="rounded-full min-h-[36px] min-w-[36px]">
                 <X size={18} />
               </Button>
             </div>
             
-            <div className="px-6 py-6 overflow-y-auto custom-scroll flex-1 overscroll-contain">
+            <div className="px-4 sm:px-6 py-4 sm:py-6 overflow-y-auto custom-scroll flex-1 overscroll-contain">
               {children}
             </div>
             
             {footer && (
-              <div className="px-6 py-4 border-t border-[var(--color-divider)] bg-[var(--color-surface-2)] flex justify-end gap-3 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
+              <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-[var(--color-divider)] bg-[var(--color-surface-2)] flex justify-end gap-3 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
                 {footer}
               </div>
             )}

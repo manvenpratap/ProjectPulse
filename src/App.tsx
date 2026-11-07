@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ProjectProvider, useProject } from './store/ProjectContext';
 import Sidebar from './components/layout/Sidebar';
 import Topbar from './components/layout/Topbar';
+import MobileBottomNav from './components/layout/MobileBottomNav';
 import TaskView from './components/tasks/TaskView';
 import TimelineView from './components/timeline/TimelineView';
 import DashboardView from './components/dashboard/DashboardView';
@@ -86,7 +87,7 @@ const MainApp: React.FC = () => {
       <div className="flex flex-col flex-1 min-w-0 h-full relative">
         <Topbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
         
-        <main className="flex-1 overflow-hidden relative">
+        <main className="flex-1 overflow-hidden relative pb-[calc(56px+env(safe-area-inset-bottom,0px))] lg:pb-0">
           <AnimatePresence mode="wait">
             <motion.div
               key={state.view}
@@ -100,6 +101,13 @@ const MainApp: React.FC = () => {
             </motion.div>
           </AnimatePresence>
         </main>
+
+        {/* Mobile Ergonomic Bottom Navigation Bar */}
+        <MobileBottomNav 
+          currentView={state.view} 
+          onNavigate={handleNav} 
+          onOpenMore={() => setIsSidebarOpen(true)} 
+        />
       </div>
     </div>
   );

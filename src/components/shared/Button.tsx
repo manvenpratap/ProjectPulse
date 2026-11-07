@@ -32,10 +32,10 @@ const Button: React.FC<ButtonProps> = ({
   };
 
   const sizes = {
-    sm: "px-3 py-1.5 text-xs gap-1.5",
-    md: "px-4 py-2 text-sm gap-2",
-    lg: "px-6 py-2.5 text-base gap-2.5",
-    icon: "p-2 min-w-[32px] min-h-[32px]",
+    sm: "px-3 py-2 sm:py-1.5 min-h-[36px] sm:min-h-[32px] text-xs gap-1.5",
+    md: "px-4 py-2.5 sm:py-2 min-h-[42px] sm:min-h-[38px] text-sm gap-2",
+    lg: "px-6 py-3 sm:py-2.5 min-h-[48px] sm:min-h-[44px] text-base gap-2.5",
+    icon: "p-2 min-w-[40px] min-h-[40px] sm:min-w-[36px] sm:min-h-[36px] flex items-center justify-center",
   };
 
   return (
