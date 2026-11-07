@@ -7,6 +7,10 @@ export const getDefaultState = (): ProjectState => ({
   members: [],
   defects: [],
   reports: [],
+  raids: [],
+  decisions: [],
+  baselines: [],
+  releases: [],
   log: [],
   features: [
     { name: 'Core Infrastructure', screens: ['Database Schema', 'Core Services', 'API Gateway'], desc: 'Fundamental system services and architecture.' },
@@ -75,12 +79,15 @@ export const getDefaultState = (): ProjectState => ({
       staleDays: 7 
     }
   },
-  view: 'tasks',
-  theme: 'paper',
+  view: 'overview',
+  theme: 'pulse',
   nextTaskId: 1,
   nextMemberId: 1,
   nextSubId: 1,
   nextDefectId: 1,
   nextLogId: 1,
-  nextReportId: 1
+  nextReportId: 1,
+  nextRaidId: 1,
+  nextDecisionId: 1,
+  nextBaselineId: 1
 });

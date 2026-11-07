@@ -17,6 +17,9 @@ import RegistryView from './components/architect/RegistryView';
 import StepTemplates from './components/architect/StepTemplates';
 import ReportView from './components/reports/ReportView';
 import SettingsView from './components/settings/SettingsView';
+import OverviewView from './components/dashboard/OverviewView';
+import RAIDView from './components/risks/RAIDView';
+import SchedulerView from './components/scheduler/SchedulerView';
 import { motion, AnimatePresence } from 'motion/react';
 
 const MainApp: React.FC = () => {
@@ -37,6 +40,7 @@ const MainApp: React.FC = () => {
 
   const renderView = () => {
     switch (state.view) {
+      case 'overview': return <OverviewView />;
       case 'tasks': return <TaskView />;
       case 'timeline': return <TimelineView />;
       case 'dash': return <DashboardView />;
@@ -50,8 +54,10 @@ const MainApp: React.FC = () => {
       case 'dropdowns': return <RegistryView />;
       case 'steps': return <StepTemplates />;
       case 'reports': return <ReportView />;
+      case 'risks': return <RAIDView />;
+      case 'scheduler': return <SchedulerView />;
       case 'settings': return <SettingsView />;
-      default: return <TaskView />;
+      default: return <OverviewView />;
     }
   };
 

@@ -10,6 +10,8 @@ interface ThemeFlyoutProps {
 }
 
 const THEMES = [
+  { id: 'pulse', name: 'Pulse (Technical)', primary: '#38BDF8', bg: '#0D0D0F', surface: 'rgba(13, 13, 15, 0.8)', font: "'Inter', sans-serif", desc: 'Technical Edition with dotted texture and neon cyan highlights.' },
+  { id: 'brutalist', name: 'Brutalist', primary: '#f0ff00', bg: '#111111', surface: '#1a1a1a', font: "'Syne', sans-serif", desc: 'High-contrast Heavy Brutalist with neon accents.' },
   { id: 'nexus', name: 'Nexus', primary: '#0f4c5c', bg: '#f8f7f3', surface: '#ffffff', font: "'Fraunces', serif", desc: 'Warm SaaS aesthetic with serif accents.' },
   { id: 'nexus-dark', name: 'Nexus Night', primary: '#0f4c5c', bg: '#0a1f24', surface: '#0f2d35', font: "'Fraunces', serif", desc: 'Refined dark mode for quiet productivity.' },
   { id: 'obsidian', name: 'Obsidian', primary: '#00ff7f', bg: '#050505', surface: '#0f0f0f', font: "'JetBrains Mono', monospace", desc: 'Deep industrial mode with neon highlights.' },

@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Orbitron:wght@400..900&family=Outfit:wght@100..900&family=Paytone+One&family=Rajdhani:wght@300;400;500;600;700&family=Satoshi:wght@300;400;500;700;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&display=swap');
 
 @import "tailwindcss";
 
@@ -65,6 +66,49 @@
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
   --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="brutalist"] {
+  --color-display-font: 'Syne', sans-serif;
+  --font-sans: "JetBrains Mono", monospace;
+  --color-bg: #111111;
+  --color-surface: #1a1a1a;
+  --color-surface-2: #242424;
+  --color-surface-offset: #0f0f0f;
+  --color-text: #ffffff;
+  --color-text-muted: #e2e8f0;
+  --color-text-faint: rgba(255, 255, 255, 0.35);
+  --color-primary-hex: #f0ff00;
+  --color-primary-hover: #d2df00;
+  --color-primary-highlight-hex: rgba(240, 255, 0, 0.15);
+  --color-primary-text: #111111;
+  --color-border: #ffffff;
+  --color-divider: #ffffff;
+  --shadow-sm: 4px 4px 0px #ffffff;
+  --shadow-md: 6px 6px 0px #ffffff;
+  --shadow-lg: 8px 8px 0px #ffffff;
+}
+
+[data-theme="pulse"] {
+  --color-display-font: 'Syne', sans-serif;
+  --font-sans: "Inter", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+  --color-bg: #0D0D0F;
+  --color-surface: #121214;
+  --color-surface-2: #1c1c1f;
+  --color-surface-offset: #050507;
+  --color-text: #E4E4E7;
+  --color-text-muted: #71717A;
+  --color-text-faint: rgba(228, 228, 231, 0.1);
+  --color-primary-hex: #38BDF8;
+  --color-primary-hover: #0ea5e9;
+  --color-primary-highlight-hex: rgba(56, 189, 248, 0.15);
+  --color-primary-text: #0D0D0F;
+  --color-border: rgba(228, 228, 231, 0.1);
+  --color-divider: rgba(228, 228, 231, 0.08);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
 }
 
 [data-theme="obsidian"] {
@@ -539,3 +583,101 @@ h1, h2, h3, h4, h5, h6 {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-faint);
 }
+
+/* --- Brutalist Theme Overrides --- */
+[data-theme="brutalist"] {
+  font-family: 'JetBrains Mono', monospace !important;
+}
+
+[data-theme="brutalist"] *:not(.rounded-full):not(circle):not(img):not(.no-brutalist):not(span) {
+  border-radius: 0px !important;
+}
+
+[data-theme="brutalist"] .card,
+[data-theme="brutalist"] .glass,
+[data-theme="brutalist"] input,
+[data-theme="brutalist"] select,
+[data-theme="brutalist"] textarea {
+  border: 2px solid #ffffff !important;
+  box-shadow: 4px 4px 0px #ffffff !important;
+  background-color: var(--color-surface) !important;
+}
+
+[data-theme="brutalist"] button:not(.btn-ghost):not(.p-1):not(.no-brutalist) {
+  border: 2px solid #ffffff !important;
+  box-shadow: 4px 4px 0px #ffffff !important;
+}
+
+[data-theme="brutalist"] button:not(.btn-ghost):not(.p-1):not(.no-brutalist):hover {
+  transform: translate(-2px, -2px) !important;
+  box-shadow: 6px 6px 0px var(--color-primary-hex) !important;
+}
+
+[data-theme="brutalist"] button:not(.btn-ghost):not(.p-1):not(.no-brutalist):active {
+  transform: translate(2px, 2px) !important;
+  box-shadow: 2px 2px 0px #ffffff !important;
+}
+
+[data-theme="brutalist"] .badge,
+[data-theme="brutalist"] [class*="badge"] {
+  border: 2px solid #ffffff !important;
+  border-radius: 0px !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+}
+
+[data-theme="brutalist"] header {
+  border-bottom: 2px solid #ffffff !important;
+}
+
+[data-theme="brutalist"] aside,
+[data-theme="brutalist"] .sidebar-main {
+  border-right: 2px solid #ffffff !important;
+}
+
+[data-theme="brutalist"] h1,
+[data-theme="brutalist"] h2,
+[data-theme="brutalist"] h3 {
+  font-family: 'Syne', sans-serif !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* --- Pulse Theme Overrides --- */
+[data-theme="pulse"] {
+  font-family: 'Inter', sans-serif !important;
+}
+
+[data-theme="pulse"]::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(228, 228, 231, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme="pulse"] h1,
+[data-theme="pulse"] h2,
+[data-theme="pulse"] h3 {
+  font-family: 'Syne', sans-serif !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: -0.04em !important;
+}
+
+[data-theme="pulse"] .card,
+[data-theme="pulse"] .glass {
+  background: rgba(18, 18, 21, 0.8) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(228, 228, 231, 0.1) !important;
+  border-radius: 4px !important;
+}
+
+[data-theme="pulse"] *:not(.rounded-full):not(circle):not(img):not(.no-brutalist):not(span):not(button):not(input) {
+  border-radius: 4px !important;
+}
+

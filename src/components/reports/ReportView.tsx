@@ -14,6 +14,7 @@ import {
 import Button from '../shared/Button';
 import clsx from 'clsx';
 import { TaskStatus } from '../../types';
+import { exportProjectExcel } from '../../services/excelService';
 import { 
   BarChart, 
   Bar, 
@@ -62,7 +63,7 @@ const ReportView: React.FC = () => {
           <Button variant="ghost" size="sm" className="h-9" onClick={handlePrint}>
             <Printer size={16} className="mr-1.5" /> Print Report
           </Button>
-          <Button variant="primary" size="sm" className="h-9 px-6 bg-indigo-600 hover:bg-indigo-700">
+          <Button variant="primary" size="sm" className="h-9 px-6 bg-indigo-600 hover:bg-indigo-700" onClick={() => exportProjectExcel(state)}>
              <Download size={16} className="mr-1.5" /> Export Data
           </Button>
         </div>

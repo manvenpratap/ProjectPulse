@@ -176,6 +176,91 @@ export const getWebSample = (): Partial<ProjectState> => {
   ];
   state.nextDefectId = 4;
 
+  state.raids = [
+    {
+      id: 'RAID-001',
+      type: 'Risk',
+      title: 'VPC Gateway Transit Latency Threshold',
+      desc: 'Cross-region data synchronization might exceed the SLA under peak transactional traffic loads.',
+      owner: 'James Holden',
+      impact: 'High',
+      probability: 'Medium',
+      severity: 'S2 - Major',
+      dueDate: '2026-05-15',
+      status: 'Active',
+      mitigation: 'Implement CloudFront edge-cache caching routing policies.',
+      createdAt: nowISO(),
+      updatedAt: nowISO()
+    },
+    {
+      id: 'RAID-002',
+      type: 'Dependency',
+      title: 'Auth social connector sandbox credentials',
+      desc: 'Social auth client IDs require formal approval from compliance.',
+      owner: 'Naomi Nagata',
+      impact: 'Medium',
+      probability: null,
+      severity: 'S3 - Moderate',
+      dueDate: '2026-04-10',
+      status: 'Identified',
+      mitigation: 'Mock authentication endpoints configured as secondary fallbacks.',
+      createdAt: nowISO(),
+      updatedAt: nowISO()
+    },
+    {
+      id: 'RAID-003',
+      type: 'Issue',
+      title: 'Memory leak blocking Socket QA cycle',
+      desc: 'DEF-001 socket leakage crashes test environment container instances.',
+      owner: 'Amos Burton',
+      impact: 'High',
+      probability: null,
+      severity: 'S1 - Critical',
+      dueDate: '2026-03-25',
+      status: 'Active',
+      mitigation: 'Isolate socket buffers and run manual garbage collection iterations.',
+      createdAt: nowISO(),
+      updatedAt: nowISO()
+    }
+  ];
+  state.nextRaidId = 4;
+
+  state.decisions = [
+    {
+      id: 'DEC-001',
+      title: 'Migrate core application persistence layer to Cloud SQL',
+      desc: 'Transition legacy monolithic schema to transactional relational PostgreSQL database to handle audit trails.',
+      status: 'Approved',
+      impact: 'High',
+      approver: 'Alex Rivera',
+      proposedBy: 'Sarah Chen',
+      rationale: 'PostgreSQL robust JSONB data typing and strong consistency satisfy regulatory compliance mandates.',
+      alternatives: 'DynamoDB or standard MongoDB. Ruled out due to complex multi-row transactional join overhead.',
+      linkedTask: 'TASK-001',
+      linkedMilestone: '',
+      dueDate: '2026-01-10',
+      createdAt: nowISO(),
+      updatedAt: nowISO()
+    },
+    {
+      id: 'DEC-002',
+      title: 'Implement AWS Cognito for external user management',
+      desc: 'Delegate client identity federation to AWS cloud identity provider.',
+      status: 'Pending Sign-off',
+      impact: 'Medium',
+      approver: 'Alex Rivera',
+      proposedBy: 'Naomi Nagata',
+      rationale: 'Reduces custom codebase footprint and guarantees secure SOC2 compliant token flows.',
+      alternatives: 'Custom OAuth2 implementation using node-oauth. Ruled out due to security liability constraints.',
+      linkedTask: 'TASK-002',
+      linkedMilestone: '',
+      dueDate: '2026-04-15',
+      createdAt: nowISO(),
+      updatedAt: nowISO()
+    }
+  ];
+  state.nextDecisionId = 3;
+
   return state;
 };
 

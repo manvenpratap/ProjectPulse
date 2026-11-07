@@ -3,9 +3,10 @@ import { useProject } from '../../store/ProjectContext';
 import TaskGrid from './TaskGrid';
 import BoardView from './BoardView';
 import TaskModal from './TaskModal';
-import { ListTodo, Plus, LayoutGrid, Kanban } from 'lucide-react';
+import { ListTodo, Plus, LayoutGrid, Kanban, FileSpreadsheet } from 'lucide-react';
 import Button from '../shared/Button';
 import clsx from 'clsx';
+import { exportProjectExcel } from '../../services/excelService';
 
 const TaskView: React.FC = () => {
   const { state } = useProject();
@@ -60,7 +61,10 @@ const TaskView: React.FC = () => {
               <Kanban size={16} />
             </button>
           </div>
-          <Button variant="primary" size="sm" onClick={handleAddNewTask}>
+          <Button variant="outline" size="sm" onClick={() => exportProjectExcel(state)} className="mr-1 h-9">
+            <FileSpreadsheet size={16} className="mr-1.5 text-emerald-600" /> Export Excel
+          </Button>
+          <Button variant="primary" size="sm" onClick={handleAddNewTask} className="h-9">
             <Plus size={16} className="mr-1" /> New Task
           </Button>
         </div>

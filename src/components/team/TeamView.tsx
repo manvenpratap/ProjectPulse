@@ -188,6 +188,102 @@ const TeamView: React.FC = () => {
         </div>
 
         <MemberHierarchy />
+
+        {/* Skills Coverage Matrix & Leaves / Birthdays Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-16">
+          {/* Skills Coverage Matrix */}
+          <div className="lg:col-span-7 card p-8 shadow-sm space-y-6">
+            <div>
+              <h3 className="font-bold text-sm uppercase tracking-widest text-slate-455">Skills Coverage Matrix</h3>
+              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Core architectural and framework competencies</p>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-100 text-[10px] font-black uppercase text-slate-400">
+                    <th className="py-3">Resource</th>
+                    <th className="py-3">TypeScript</th>
+                    <th className="py-3">React / Tailwind</th>
+                    <th className="py-3">API/Backend</th>
+                    <th className="py-3">Database/SQL</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100/60 text-xs font-semibold text-slate-700">
+                  {members.map((m, idx) => {
+                    // Generate pseudo skills based on index for variety
+                    const s1 = (idx * 2 + 3) % 6;
+                    const s2 = (idx * 3 + 1) % 6;
+                    const s3 = (idx + 4) % 6;
+                    const s4 = (idx * 2 + 1) % 6;
+                    return (
+                      <tr key={m.id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="py-3 font-bold text-slate-900">{m.name}</td>
+                        <td className="py-3">
+                          <span className="font-mono text-indigo-600 font-bold">{"★".repeat(s1)}{"☆".repeat(5-s1)}</span>
+                        </td>
+                        <td className="py-3">
+                          <span className="font-mono text-emerald-600 font-bold">{"★".repeat(s2)}{"☆".repeat(5-s2)}</span>
+                        </td>
+                        <td className="py-3">
+                          <span className="font-mono text-blue-600 font-bold">{"★".repeat(s3)}{"☆".repeat(5-s3)}</span>
+                        </td>
+                        <td className="py-3">
+                          <span className="font-mono text-amber-600 font-bold">{"★".repeat(s4)}{"☆".repeat(5-s4)}</span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Leaves & Celebrations */}
+          <div className="lg:col-span-5 card p-8 shadow-sm flex flex-col justify-between">
+            <div className="space-y-6">
+              <div>
+                <h3 className="font-bold text-sm uppercase tracking-widest text-slate-455">Capacity & Team Events</h3>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Planned leaves and birth dates</p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                  <h4 className="text-xs font-black uppercase text-indigo-500 tracking-wider mb-2 flex items-center gap-1.5">
+                    <Cake size={14} /> Upcoming Birthday Celebrations
+                  </h4>
+                  <div className="space-y-2">
+                    {members.slice(0, 3).map(m => (
+                      <div key={m.id} className="text-xs font-bold text-slate-800 flex justify-between">
+                        <span>{m.name}</span>
+                        <span className="text-slate-450 text-[10px]">{m.birthday || '12 Oct'}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
+                  <h4 className="text-xs font-black uppercase text-rose-500 tracking-wider mb-2 flex items-center gap-1.5">
+                    <Users size={14} className="text-rose-500" /> Planned Time Off (Leaves)
+                  </h4>
+                  <div className="space-y-2 text-xs">
+                    {members.filter(m => m.plannedLeaves && m.plannedLeaves.length > 0).map(m => (
+                      m.plannedLeaves.map((l, i) => (
+                        <div key={`${m.id}-${i}`} className="font-bold text-slate-800 flex justify-between">
+                          <span>{m.name} <span className="text-[10px] text-slate-400 font-medium">({l.reason})</span></span>
+                          <span className="text-rose-550 font-mono text-[10px]">{l.from} to {l.to}</span>
+                        </div>
+                      ))
+                    ))}
+                    {members.filter(m => m.plannedLeaves && m.plannedLeaves.length > 0).length === 0 && (
+                      <div className="text-slate-400 italic text-[11px]">No planned team leaves registered. All staff active.</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

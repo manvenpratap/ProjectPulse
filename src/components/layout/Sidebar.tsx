@@ -18,6 +18,8 @@ import {
   ListChecks,
   BookOpen,
   FileText,
+  Presentation,
+  ShieldAlert,
   Settings as SettingsIcon
 } from 'lucide-react';
 import clsx from 'clsx';
@@ -32,6 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
   const { state, setView } = useProject();
 
   const navItems = [
+    { id: 'overview', label: 'Executive Overview', icon: Presentation },
     { id: 'tasks', label: 'Tasks Matrix', icon: ClipboardList },
     { id: 'timeline', label: 'Project Timeline', icon: GanttChart },
     { id: 'capacity', label: 'Capacity Plan', icon: BarChart3 },
@@ -39,6 +42,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
     { id: 'features', label: 'Functional Matrix', icon: Layers },
     { id: 'log', label: 'Activity Log', icon: History },
     { id: 'dash', label: 'Intelligence', icon: LayoutDashboard },
+    { id: 'scheduler', label: 'Intelligent Scheduler', icon: CalendarDays },
+    { id: 'risks', label: 'RAID Register', icon: ShieldAlert },
     { id: 'reports', label: 'Pulse Reports', icon: FileText },
     { id: 'defects', label: 'Defect Workshop', icon: Bug },
     { id: 'scaffolder', label: 'Project Architect', icon: Blocks },

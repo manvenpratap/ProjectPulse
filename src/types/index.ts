@@ -158,6 +158,10 @@ export interface ProjectState {
   members: Member[];
   defects: Defect[];
   reports: ProjectReport[];
+  raids: RaidItem[];
+  decisions: Decision[];
+  baselines: Baseline[];
+  releases: Release[];
   log: LogEntry[];
   features: Feature[];
   dropdowns: Record<string, string[]>;
@@ -173,6 +177,9 @@ export interface ProjectState {
   nextDefectId: number;
   nextLogId: number;
   nextReportId: number;
+  nextRaidId?: number;
+  nextDecisionId?: number;
+  nextBaselineId?: number;
   [key: string]: any;
 }
 
@@ -193,11 +200,78 @@ export interface Feature {
   name: string;
   desc: string;
   screens: string[];
+  release?: string;
+}
+
+export interface RaidItem {
+  id: string;
+  type: 'Risk' | 'Assumption' | 'Issue' | 'Dependency';
+  title: string;
+  desc: string;
+  owner: string;
+  impact: 'High' | 'Medium' | 'Low';
+  probability?: 'High' | 'Medium' | 'Low' | null;
+  severity: string;
+  dueDate: string;
+  status: string;
+  mitigation: string;
+  linkedTasks?: string[];
+  linkedMilestones?: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Decision {
+  id: string;
+  title: string;
+  desc: string;
+  status: 'Pending Sign-off' | 'Approved' | 'Rejected' | 'Appealed';
+  impact: string;
+  approver: string;
+  proposedBy: string;
+  rationale: string;
+  alternatives: string;
+  linkedTask: string;
+  linkedMilestone: string;
+  dueDate: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Baseline {
+  id: string;
+  name: string;
+  desc: string;
+  taskId: string;
+  taskName: string;
+  baselineStartDate: string;
+  baselineDueDate: string;
+  baselineEffort: number;
+  actStartDate: string;
+  actDueDate: string;
+  actEffort: number;
+  varianceDays: number;
+  slippageReason: string;
+  snapshotDate: string;
+}
+
+export interface Release {
+  id: string;
+  name: string;
+  date: string;
+  status: 'Planned' | 'Active' | 'Released';
 }
 
 export interface ProjectSettings {
   daysPerWeek: number;
   workDays: number;
+  effortUnit?: string;
+  hoursPerDay?: number;
+  hoursPerWeek?: number;
+  roadmapModulesSelected?: string[];
+  roadmapModuleTypesSelected?: string[];
+  roadmapViewMode?: 'unified' | 'swimlane';
+  viewOrder?: string[];
   alertPrefs: {
     overdue: boolean;
     dueSoon: boolean;
