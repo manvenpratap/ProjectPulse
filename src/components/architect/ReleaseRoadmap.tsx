@@ -183,53 +183,53 @@ export const ReleaseRoadmap: React.FC = () => {
         {/* KPI Telemetry Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
-            <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
+            <div className="flex items-center justify-between text-xs font-semibold text-[var(--color-text-muted)]">
               <span>Total Cycles</span>
               <Flag size={14} className="text-indigo-500" />
             </div>
             <div className="mt-2 text-2xl font-mono font-black text-[var(--color-text)]">
               {totalReleases}
             </div>
-            <div className="text-[10px] text-[var(--color-text-muted)] font-medium mt-0.5">
+            <div className="text-xs text-[var(--color-text-muted)] font-medium mt-0.5">
               Configured milestones
             </div>
           </div>
 
           <div className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
-            <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
+            <div className="flex items-center justify-between text-xs font-semibold text-[var(--color-text-muted)]">
               <span>Active Cycle</span>
               <Clock size={14} className="text-blue-500" />
             </div>
             <div className="mt-2 text-2xl font-mono font-black text-blue-600">
               {activeReleases}
             </div>
-            <div className="text-[10px] text-[var(--color-text-muted)] font-medium mt-0.5">
+            <div className="text-xs text-[var(--color-text-muted)] font-medium mt-0.5">
               In active development
             </div>
           </div>
 
           <div className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
-            <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
+            <div className="flex items-center justify-between text-xs font-semibold text-[var(--color-text-muted)]">
               <span>Shipped</span>
               <CheckCircle2 size={14} className="text-emerald-500" />
             </div>
             <div className="mt-2 text-2xl font-mono font-black text-emerald-600">
               {releasedReleases}
             </div>
-            <div className="text-[10px] text-[var(--color-text-muted)] font-medium mt-0.5">
+            <div className="text-xs text-[var(--color-text-muted)] font-medium mt-0.5">
               Production delivered
             </div>
           </div>
 
           <div className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
-            <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
+            <div className="flex items-center justify-between text-xs font-semibold text-[var(--color-text-muted)]">
               <span>Unmapped Scope</span>
               <AlertTriangle size={14} className="text-amber-500" />
             </div>
             <div className="mt-2 text-2xl font-mono font-black text-amber-600">
               {unmappedTasks}
             </div>
-            <div className="text-[10px] text-[var(--color-text-muted)] font-medium mt-0.5">
+            <div className="text-xs text-[var(--color-text-muted)] font-medium mt-0.5">
               Tasks without release tag
             </div>
           </div>
@@ -241,10 +241,10 @@ export const ReleaseRoadmap: React.FC = () => {
             <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
             <input 
               type="text"
-              placeholder="Search release versions..."
+              placeholder="Search release versions…"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              className="w-full h-9 pl-9 pr-3 text-xs bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-semibold"
+              className="w-full h-9 pl-9 pr-3 text-xs bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-semibold focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
             />
           </div>
 
@@ -254,7 +254,7 @@ export const ReleaseRoadmap: React.FC = () => {
                 key={st}
                 onClick={() => setFilterStatus(st)}
                 className={clsx(
-                  "px-3 py-1.5 rounded-lg text-xs font-bold transition-all shrink-0",
+                  "px-3 py-1.5 rounded-lg text-xs font-bold transition-colors duration-150 active:scale-[0.98] shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 cursor-pointer",
                   filterStatus === st 
                     ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)]" 
                     : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)]"
@@ -283,7 +283,7 @@ export const ReleaseRoadmap: React.FC = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="p-5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 transition-all shadow-sm flex flex-col justify-between group"
+                className="p-5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 transition-colors duration-150 shadow-sm flex flex-col justify-between group"
               >
                 <div>
                   <div className="flex items-start justify-between gap-3 mb-3">
@@ -296,7 +296,7 @@ export const ReleaseRoadmap: React.FC = () => {
                           {r.name}
                         </h3>
                         <span className={clsx(
-                          "inline-block px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider border mt-1",
+                          "inline-block px-2 py-0.5 rounded-md text-xs font-medium border mt-1",
                           getStatusBadge(r.status)
                         )}>
                           {r.status}
@@ -307,14 +307,14 @@ export const ReleaseRoadmap: React.FC = () => {
                     <div className="flex items-center gap-1">
                       <button 
                         onClick={() => openEditModal(r)}
-                        className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors"
+                        className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors active:scale-95"
                         title="Edit Release"
                       >
                         <Edit3 size={15} />
                       </button>
                       <button 
                         onClick={() => handleDeleteRelease(r.id, r.name)}
-                        className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-red-500 hover:bg-red-50 transition-colors"
+                        className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-red-500 hover:bg-red-50 transition-colors active:scale-95"
                         title="Delete Release"
                       >
                         <Trash2 size={15} />
@@ -325,11 +325,11 @@ export const ReleaseRoadmap: React.FC = () => {
                   {/* Dates & Timeline */}
                   <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-[var(--color-surface-2)] text-xs mb-3">
                     <div>
-                      <span className="text-[9px] uppercase font-bold text-[var(--color-text-faint)] block">Cycle Start</span>
+                      <span className="text-xs font-medium text-[var(--color-text-muted)] block">Cycle Start</span>
                       <span className="font-mono font-semibold text-[var(--color-text)]">{fmtDate(r.startDate || '')}</span>
                     </div>
                     <div>
-                      <span className="text-[9px] uppercase font-bold text-[var(--color-text-faint)] block">Target Launch</span>
+                      <span className="text-xs font-medium text-[var(--color-text-muted)] block">Target Launch</span>
                       <span className={clsx(
                         "font-mono font-semibold",
                         isOverdue ? "text-red-500 font-bold" : "text-[var(--color-text)]"
@@ -347,12 +347,12 @@ export const ReleaseRoadmap: React.FC = () => {
                   {/* Progress Bar */}
                   <div className="space-y-1.5 mb-4">
                     <div className="flex justify-between items-center text-xs font-semibold">
-                      <span className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">Scope Completion</span>
+                      <span className="text-xs font-semibold text-[var(--color-text-muted)]">Scope Completion</span>
                       <span className="font-mono font-bold text-indigo-600">{progress}%</span>
                     </div>
                     <div className="h-2 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-[var(--color-primary-hex)] rounded-full transition-all duration-500"
+                        className="h-full bg-[var(--color-primary-hex)] rounded-full"
                         style={{ width: `${progress}%` }}
                       />
                     </div>
@@ -409,7 +409,7 @@ export const ReleaseRoadmap: React.FC = () => {
       {/* Add / Edit Release Modal */}
       <AnimatePresence>
         {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 motion-safe:animate-in motion-safe:fade-in duration-200">
             <motion.div 
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -420,14 +420,14 @@ export const ReleaseRoadmap: React.FC = () => {
                 <h2 className="text-base font-bold text-[var(--color-text)]">
                   {editingRelease ? 'Edit Release Version' : 'Create Release Version'}
                 </h2>
-                <button onClick={() => setIsModalOpen(false)} className="text-[var(--color-text-faint)] hover:text-[var(--color-text)]">
+                <button onClick={() => setIsModalOpen(false)} className="text-[var(--color-text-faint)] hover:text-[var(--color-text)] active:scale-95">
                   <X size={18} />
                 </button>
               </div>
 
               <div className="p-6 space-y-4 text-xs font-semibold">
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1.5">
+                  <label className="text-xs font-medium text-[var(--color-text-muted)] block mb-1.5">
                     Release Version Identifier *
                   </label>
                   <input 
@@ -435,44 +435,44 @@ export const ReleaseRoadmap: React.FC = () => {
                     placeholder="e.g. v2.1.0 or Q3-Release"
                     value={formName}
                     onChange={e => setFormName(e.target.value)}
-                    className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-bold text-sm"
+                    className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-bold text-sm focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1.5">
+                    <label className="text-xs font-medium text-[var(--color-text-muted)] block mb-1.5">
                       Cycle Start Date
                     </label>
                     <input 
                       type="date"
                       value={formStartDate}
                       onChange={e => setFormStartDate(e.target.value)}
-                      className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-mono text-xs font-semibold"
+                      className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-mono text-xs font-semibold focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1.5">
+                    <label className="text-xs font-medium text-[var(--color-text-muted)] block mb-1.5">
                       Target Launch Date
                     </label>
                     <input 
                       type="date"
                       value={formTargetDate}
                       onChange={e => setFormTargetDate(e.target.value)}
-                      className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-mono text-xs font-semibold"
+                      className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-mono text-xs font-semibold focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1.5">
+                  <label className="text-xs font-medium text-[var(--color-text-muted)] block mb-1.5">
                     Governance Status
                   </label>
                   <select
                     value={formStatus}
                     onChange={e => setFormStatus(e.target.value as any)}
-                    className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-bold text-xs"
+                    className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-bold text-xs focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
                   >
                     <option value="Planned">Planned (Future)</option>
                     <option value="Active">Active (In Development)</option>
@@ -497,7 +497,7 @@ export const ReleaseRoadmap: React.FC = () => {
       {/* Scope Details Drawer / Modal */}
       <AnimatePresence>
         {selectedReleaseDetails && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
             <motion.div 
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -514,7 +514,7 @@ export const ReleaseRoadmap: React.FC = () => {
                     Target: {fmtDate(selectedReleaseDetails.date)} • Status: {selectedReleaseDetails.status}
                   </p>
                 </div>
-                <button onClick={() => setSelectedReleaseDetails(null)} className="text-[var(--color-text-faint)] hover:text-[var(--color-text)]">
+                <button onClick={() => setSelectedReleaseDetails(null)} className="text-[var(--color-text-faint)] hover:text-[var(--color-text)] active:scale-95">
                   <X size={18} />
                 </button>
               </div>
@@ -522,7 +522,7 @@ export const ReleaseRoadmap: React.FC = () => {
               <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scroll">
                 {/* Mapped Tasks */}
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-faint)] mb-3 flex items-center gap-2">
+                  <h4 className="text-xs font-semibold text-[var(--color-text-muted)] mb-3 flex items-center gap-2">
                     <ClipboardList size={14} className="text-indigo-500" />
                     Mapped Tasks ({tasks.filter(t => t.release === selectedReleaseDetails.name).length})
                   </h4>
@@ -547,7 +547,7 @@ export const ReleaseRoadmap: React.FC = () => {
 
                 {/* Mapped Deliveries */}
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-faint)] mb-3 flex items-center gap-2">
+                  <h4 className="text-xs font-semibold text-[var(--color-text-muted)] mb-3 flex items-center gap-2">
                     <Package size={14} className="text-emerald-500" />
                     Mapped Deliveries ({deliveries.filter(d => d.releaseVersion === selectedReleaseDetails.name).length})
                   </h4>
