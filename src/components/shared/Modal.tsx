@@ -55,7 +55,7 @@ const Modal: React.FC<ModalProps> = ({
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            className={`relative w-full ${sizes[size]} bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]`}
+            className={`relative w-full ${sizes[size]} bg-[var(--color-surface)] border border-[var(--color-border)] rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90dvh]`}
           >
             <div className="px-6 py-4 flex items-center justify-between border-b border-[var(--color-divider)]">
               <h3 className="font-display font-bold text-lg">{title}</h3>
@@ -64,12 +64,12 @@ const Modal: React.FC<ModalProps> = ({
               </Button>
             </div>
             
-            <div className="px-6 py-6 overflow-y-auto custom-scroll flex-1">
+            <div className="px-6 py-6 overflow-y-auto custom-scroll flex-1 overscroll-contain">
               {children}
             </div>
             
             {footer && (
-              <div className="px-6 py-4 border-top border-[var(--color-divider)] bg-[var(--color-surface-2)] flex justify-end gap-3">
+              <div className="px-6 py-4 border-t border-[var(--color-divider)] bg-[var(--color-surface-2)] flex justify-end gap-3 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
                 {footer}
               </div>
             )}

@@ -234,7 +234,7 @@ const TimelineView: React.FC = () => {
         }
       />
 
-      <div className="px-6 lg:px-8 py-3 bg-[var(--color-surface)] border-y border-[var(--color-divider)] flex items-center justify-center gap-6">
+      <div className="px-4 sm:px-6 lg:px-8 py-3 bg-[var(--color-surface)] border-y border-[var(--color-divider)] flex items-center justify-center gap-6">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-blue-500 opacity-20 border border-blue-500"></div>
           <span className="text-xs font-medium text-[var(--color-text-muted)]">In progress</span>

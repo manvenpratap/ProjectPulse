@@ -58,7 +58,7 @@ const DefectView: React.FC = () => {
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 w-full">
+      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full">
         {filteredDefects.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredDefects.map((defect) => (

@@ -253,7 +253,7 @@ const CapacityView: React.FC = () => {
 
       <div className="flex-1 overflow-hidden flex flex-col lg:flex-row">
         {/* Main interactive grid column */}
-        <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 space-y-6">
+        <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 space-y-6">
           
           {/* Active Summary Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

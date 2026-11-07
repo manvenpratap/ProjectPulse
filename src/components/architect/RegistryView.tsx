@@ -89,7 +89,7 @@ const RegistryView: React.FC = () => {
         title="Pulse Registry"
         subtitle="Centralized option libraries, dropdown taxonomies, and entity lookups"
       />
-      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 w-full flex flex-col lg:flex-row gap-6 md:gap-8">
+      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full flex flex-col lg:flex-row gap-6 md:gap-8">
         {/* Sidebar */}
         <div className="w-full lg:w-80 flex flex-col bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl md:rounded-3xl overflow-hidden shadow-sm shrink-0 h-auto lg:h-[calc(100vh-140px)]">
           <div className="p-6 border-b border-[var(--color-divider)]">

@@ -64,7 +64,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
       "h-full bg-[var(--color-surface)] border-r border-[var(--color-divider)] flex flex-col motion-safe:transition-transform duration-300 fixed lg:relative z-30 shadow-xl lg:shadow-none",
       isOpen ? "translate-x-0 w-[260px]" : "-translate-x-full lg:translate-x-0 lg:w-[60px]"
     )}>
-      <div className="h-[52px] flex items-center px-4 gap-3 border-b border-[var(--color-divider)] bg-[var(--color-surface)]">
+      <div className="h-[calc(52px+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] flex items-center px-4 gap-3 border-b border-[var(--color-divider)] bg-[var(--color-surface)]">
         <div className="w-6 h-6 bg-[var(--color-primary-hex)] rounded-md flex items-center justify-center text-white shrink-0">
           <Activity size={14} strokeWidth={2.5} />
         </div>
@@ -132,7 +132,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
         )}
       </div>
 
-      <div className="p-3 border-top border-[var(--color-divider)]">
+      <div className="p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] border-t border-[var(--color-divider)]">
         <button 
           onClick={toggle}
           aria-label={isOpen ? "Collapse navigation sidebar" : "Expand navigation sidebar"}

@@ -298,7 +298,7 @@ const RAIDView: React.FC = () => {
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 w-full space-y-8">
+      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full space-y-8">
 
         {/* Categories Tab Bar */}
         <div className="flex items-center justify-between flex-wrap gap-4 pb-4 border-b border-[var(--color-divider)]">

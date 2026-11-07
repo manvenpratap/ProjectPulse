@@ -68,7 +68,7 @@ const MainApp: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[var(--color-bg)] transition-colors duration-500 relative">
+    <div className="flex h-[100dvh] overflow-hidden bg-[var(--color-bg)] transition-colors duration-500 relative">
       <Sidebar 
         isOpen={isSidebarOpen} 
         toggle={() => setIsSidebarOpen(!isSidebarOpen)} 
@@ -78,7 +78,7 @@ const MainApp: React.FC = () => {
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-20 lg:hidden"
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-20 lg:hidden overscroll-contain"
           onClick={() => setIsSidebarOpen(false)}
         />
       )}

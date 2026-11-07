@@ -268,7 +268,7 @@ const DashboardView: React.FC = () => {
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 w-full space-y-8 pb-16">
+      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full space-y-8 pb-16">
         {/* Tab Interface Controls */}
         <div className="flex border-b border-[var(--color-divider)] pb-px gap-6 md:gap-10 overflow-x-auto custom-scroll">
           <button 

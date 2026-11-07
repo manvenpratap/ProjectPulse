@@ -17,7 +17,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   className = '',
 }) => {
   return (
-    <header className={`h-[60px] px-6 lg:px-8 border-b border-[var(--color-divider)] bg-[var(--color-surface)]/80 backdrop-blur-md sticky top-0 z-20 flex items-center justify-between shrink-0 ${className}`}>
+    <header className={`h-[60px] px-4 sm:px-6 lg:px-8 border-b border-[var(--color-divider)] bg-[var(--color-surface)]/80 backdrop-blur-md sticky top-0 z-20 flex items-center justify-between shrink-0 ${className}`}>
       <div className="flex items-center gap-3 min-w-0">
         <div className="w-8 h-8 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-primary-hex)] flex items-center justify-center shrink-0">
           <Icon size={17} strokeWidth={2.2} />

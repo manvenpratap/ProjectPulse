@@ -279,7 +279,7 @@ export const DeliveriesView: React.FC = () => {
       />
 
       {/* 1. Cockpit Telemetry Banner */}
-      <div className="bg-[var(--color-surface)] border-b border-[var(--color-divider)] p-6 lg:p-8 shrink-0">
+      <div className="bg-[var(--color-surface)] border-b border-[var(--color-divider)] p-4 sm:p-6 lg:p-8 shrink-0">
         {/* Bento Telemetry Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">
           <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] p-3 rounded-lg">
@@ -350,7 +350,7 @@ export const DeliveriesView: React.FC = () => {
       </div>
 
       {/* 2. Operational Filter Toolbar */}
-      <div className="px-6 lg:px-8 py-3 bg-[var(--color-surface)] border-b border-[var(--color-divider)] flex flex-wrap items-center justify-between gap-3 shrink-0">
+      <div className="px-4 sm:px-6 lg:px-8 py-3 bg-[var(--color-surface)] border-b border-[var(--color-divider)] flex flex-wrap items-center justify-between gap-3 shrink-0">
         <div className="flex items-center gap-2 flex-1 min-w-[260px] max-w-[420px]">
           <div className="relative w-full">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
@@ -465,7 +465,7 @@ export const DeliveriesView: React.FC = () => {
       </div>
 
       {/* 3. Main Workspace Body */}
-      <div className="flex-1 overflow-auto custom-scroll p-6 lg:p-8">
+      <div className="flex-1 overflow-auto custom-scroll p-4 sm:p-6 lg:p-8">
         {/* VIEW MODE 1: MATRIX TABLE */}
         {viewMode === 'table' && (
           <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl overflow-hidden shadow-sm">

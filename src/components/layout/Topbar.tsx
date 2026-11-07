@@ -101,7 +101,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
 
   return (
     <>
-      <header className="h-[52px] bg-[var(--color-surface)] border-b border-[var(--color-divider)] flex items-center px-4 gap-3 md:gap-4 shrink-0 z-20 shadow-sm">
+      <header className="h-[calc(52px+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] bg-[var(--color-surface)] border-b border-[var(--color-divider)] flex items-center px-4 gap-3 md:gap-4 shrink-0 z-20 shadow-sm">
         <div className="flex items-center gap-2 md:gap-3 min-w-0">
           <button 
             onClick={toggleSidebar}
