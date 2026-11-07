@@ -19,6 +19,10 @@
     "mtime": 1794072310.0829268,
     "hash": "4657f4c105f74393b9a16b4ae2136c53"
   },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/src/config/navigation.ts": {
+    "mtime": 1794083282.3417494,
+    "hash": "3cf5a032ef178902cdc89f9044c14cad"
+  },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/utils/projectUtils.ts": {
     "mtime": 1794069784.6511564,
     "hash": "a11e1437e1e024c3000542f0c82d3728"
@@ -56,12 +60,12 @@
     "hash": "def4d1458d34d6d787d7d427bf0192f5"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/MobileBottomNav.tsx": {
-    "mtime": 1794080708.9452236,
-    "hash": "0d7039559778ab510ef03a74ad860605"
+    "mtime": 1794083207.547794,
+    "hash": "bd02a0fe805fc1a42f3d3ded243709ff"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/Sidebar.tsx": {
-    "mtime": 1794082896.2259338,
-    "hash": "dd1bc6624ebb39000b8fae583571f0a3"
+    "mtime": 1794083351.4990408,
+    "hash": "371de869cbef263a8d0e4ff6cc91b516"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/NotificationFlyout.tsx": {
     "mtime": 1794080708.98775,
@@ -76,8 +80,8 @@
     "hash": "5b719ac7e4e294b1c3a32f34fe1ee817"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/shared/PageHeader.tsx": {
-    "mtime": 1794080435.1374624,
-    "hash": "e601c95bfb96a1e071c71a08fd923465"
+    "mtime": 1794083290.5443282,
+    "hash": "88fa2886073f697f663b03b5008de9c8"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/shared/Button.tsx": {
     "mtime": 1794082764.3690178,
