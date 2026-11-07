@@ -60,7 +60,7 @@ def run_mobile_audit():
                 bottom_btn.first.click()
             else:
                 # Open menu drawer
-                menu_btn = page.locator('nav[aria-label="Mobile Navigation"] button:has-text("Menu"), button[aria-label="Toggle navigation menu"]')
+                menu_btn = page.locator('nav[aria-label="Mobile Navigation"] button:has-text("Hubs"), nav[aria-label="Mobile Navigation"] button:has-text("Menu"), button[aria-label="Toggle navigation menu"], button[aria-label="More navigation options"]')
                 if menu_btn.count() > 0:
                     menu_btn.first.click()
                     page.wait_for_timeout(300)

@@ -1,7 +1,8 @@
 import React from 'react';
-import { Presentation, Package, ClipboardList, ShieldAlert, Menu } from 'lucide-react';
+import { Presentation, ClipboardList, Users, ShieldAlert, Menu } from 'lucide-react';
 import clsx from 'clsx';
 import { useProject } from '../../store/ProjectContext';
+import { getHubForView } from '../../config/navigation';
 
 interface MobileBottomNavProps {
   currentView: string;
@@ -15,15 +16,16 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   onOpenMore,
 }) => {
   const { state } = useProject();
+  const currentHub = getHubForView(currentView);
 
   const primaryTabs = [
-    { id: 'overview', label: 'Overview', icon: Presentation },
-    { id: 'deliveries', label: 'ALM', icon: Package, badge: state.deliveries?.length },
-    { id: 'tasks', label: 'Tasks', icon: ClipboardList },
-    { id: 'risks', label: 'RAID', icon: ShieldAlert },
+    { hubId: 'analytics', id: 'overview', label: 'Analytics', icon: Presentation },
+    { hubId: 'execution', id: 'tasks', label: 'Execution', icon: ClipboardList, badge: state.deliveries?.length },
+    { hubId: 'team', id: 'team', label: 'Team', icon: Users },
+    { hubId: 'governance', id: 'defects', label: 'Quality', icon: ShieldAlert, badge: state.defects?.filter(d => d.status === 'New').length },
   ];
 
-  const isMoreActive = !primaryTabs.some(tab => tab.id === currentView);
+  const isMoreActive = currentHub.id === 'architecture' || currentHub.id === 'settings';
 
   return (
     <nav 
@@ -31,7 +33,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
       className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-[var(--color-surface)]/95 backdrop-blur-md border-t border-[var(--color-divider)] flex items-center justify-around px-1 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] shadow-lg select-none"
     >
       {primaryTabs.map((tab) => {
-        const isActive = currentView === tab.id;
+        const isActive = currentHub.id === tab.hubId;
         const Icon = tab.icon;
         return (
           <button
@@ -39,7 +41,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
             onClick={() => onNavigate(tab.id)}
             aria-label={tab.label}
             className={clsx(
-              "flex-1 flex flex-col items-center justify-center min-h-[46px] py-1 px-1 rounded-xl transition-colors duration-150 active:scale-95 relative",
+              "flex-1 flex flex-col items-center justify-center min-h-[46px] py-1 px-1 rounded-xl transition-colors duration-150 active:scale-95 relative cursor-pointer",
               isActive 
                 ? "text-[var(--color-primary-hex)] font-semibold" 
                 : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
@@ -60,25 +62,20 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         );
       })}
 
-      {/* 5th Tab: Drawer Menu Trigger */}
+      {/* More / All Hubs Drawer Button */}
       <button
         onClick={onOpenMore}
-        aria-label="Open Full Workspace Menu"
+        aria-label="More navigation options"
         className={clsx(
-          "flex-1 flex flex-col items-center justify-center min-h-[46px] py-1 px-1 rounded-xl transition-colors duration-150 active:scale-95 relative",
+          "flex-1 flex flex-col items-center justify-center min-h-[46px] py-1 px-1 rounded-xl transition-colors duration-150 active:scale-95 relative cursor-pointer",
           isMoreActive 
             ? "text-[var(--color-primary-hex)] font-semibold" 
             : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
         )}
       >
-        <div className="relative">
-          <Menu size={19} strokeWidth={isMoreActive ? 2.4 : 1.8} />
-          {isMoreActive && (
-            <span className="absolute -top-0.5 -right-1 w-2 h-2 bg-[var(--color-primary-hex)] rounded-full" />
-          )}
-        </div>
-        <span className="text-[10px] tracking-tight mt-1 truncate max-w-[64px]">
-          Menu
+        <Menu size={19} strokeWidth={isMoreActive ? 2.4 : 1.8} />
+        <span className="text-[10px] tracking-tight mt-1 truncate">
+          Hubs
         </span>
       </button>
     </nav>
