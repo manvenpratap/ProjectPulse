@@ -135,28 +135,28 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
                   className="fixed inset-0 z-10" 
                   onClick={() => setIsActionsOpen(false)} 
                 />
-                <div className="absolute top-full left-0 mt-1 w-64 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl shadow-2xl z-20 py-2 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-faint)]">
+                <div className="absolute top-full left-0 mt-1 w-64 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl shadow-2xl z-20 py-2 overflow-hidden motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2 duration-200">
+                  <div className="px-3 py-2 text-xs font-semibold text-[var(--color-text-faint)]">
                     Data & Persistence
                   </div>
                   <button 
                     onClick={handleExport}
-                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors"
+                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
                   >
                     <FileSpreadsheet size={16} className="text-emerald-500" />
-                    <span>Export Project Excel...</span>
+                    <span>Export Project Excel…</span>
                   </button>
                   <button 
                     onClick={handleImportClick}
-                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors"
+                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
                   >
                     <FileSpreadsheet size={16} className="text-indigo-500" />
-                    <span>Import from Excel...</span>
+                    <span>Import from Excel…</span>
                   </button>
                   <a 
                     href="/demo-data.xlsx"
                     download
-                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors no-underline text-[var(--color-text)]"
+                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98] no-underline text-[var(--color-text)]"
                     onClick={() => setIsActionsOpen(false)}
                   >
                     <Download size={16} className="text-slate-500" />
@@ -171,14 +171,14 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
                   />
                   <button 
                     onClick={() => { setIsActionsOpen(false); setView('log'); }}
-                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors"
+                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
                   >
                     <Database size={16} className="text-blue-500" />
                     <span>View Activity Logs</span>
                   </button>
                   <button 
                     onClick={() => { setIsActionsOpen(false); resetProject(state.name, 'A fresh restart of the current workspace.', []); }}
-                    className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600 flex items-center gap-3 text-sm transition-colors"
+                    className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600 flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
                   >
                     <RefreshCw size={16} />
                     <span>New Project (Wipe All)</span>
@@ -186,63 +186,63 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
 
                   <div className="h-[1px] bg-[var(--color-divider)] my-2" />
                   
-                  <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-faint)]">
+                  <div className="px-3 py-2 text-xs font-semibold text-[var(--color-text-faint)]">
                     Workspace Config
                   </div>
                   <button 
                     onClick={() => { setIsActionsOpen(false); setView('fields'); }}
-                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors"
+                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
                   >
                     <Layout size={16} className="text-indigo-500" />
-                    <span>Field Architect...</span>
+                    <span>Field Architect…</span>
                   </button>
                   <button 
                     onClick={() => { setIsActionsOpen(false); setView('dropdowns'); }}
-                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors"
+                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
                   >
                     <ListChecks size={16} className="text-amber-500" />
-                    <span>Option Libraries...</span>
+                    <span>Option Libraries…</span>
                   </button>
                   <button 
                     onClick={() => { setIsActionsOpen(false); setView('steps'); }}
-                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors"
+                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
                   >
                     <BookOpen size={16} className="text-purple-500" />
-                    <span>Step Templates...</span>
+                    <span>Step Templates…</span>
                   </button>
 
                   <div className="h-[1px] bg-[var(--color-divider)] my-2" />
                   
-                  <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-faint)]">
+                  <div className="px-3 py-2 text-xs font-semibold text-[var(--color-text-faint)]">
                     Project Architecture
                   </div>
                   <button 
                     onClick={() => { setIsActionsOpen(false); setView('releases'); }}
-                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors"
+                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
                   >
                     <Flag size={16} className="text-indigo-500" />
-                    <span>Release Roadmap...</span>
+                    <span>Release Roadmap…</span>
                   </button>
                   <button 
                     onClick={() => { setIsActionsOpen(false); setView('retro'); }}
-                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors"
+                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
                   >
                     <Smile size={16} className="text-emerald-500" />
-                    <span>Sprint Retrospective...</span>
+                    <span>Sprint Retrospective…</span>
                   </button>
                   <button 
                     onClick={() => { setIsActionsOpen(false); setView('scaffolder'); }}
-                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors"
+                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
                   >
                     <Blocks size={16} className="text-rose-500" />
-                    <span>Project Scaffolder...</span>
+                    <span>Project Scaffolder…</span>
                   </button>
                   <button 
                     onClick={() => { setIsActionsOpen(false); setView('features'); }}
-                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors"
+                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
                   >
                     <ComponentIcon size={16} className="text-cyan-500" />
-                    <span>Strategic Features...</span>
+                    <span>Strategic Features…</span>
                   </button>
                 </div>
               </>
@@ -251,8 +251,8 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
         </div>
 
         <div className="flex items-center gap-2 md:gap-3 px-2 md:px-3 py-1.5 rounded-full bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-          <div className={clsx("w-2 h-2 rounded-full animate-pulse bg-current", getHealthColor(health))} />
-          <span className={clsx("text-[9px] md:text-[10px] font-bold uppercase tracking-wider", getHealthColor(health))}>
+          <div className={clsx("w-2 h-2 rounded-full motion-safe:animate-pulse bg-current", getHealthColor(health))} />
+          <span className={clsx("text-xs font-semibold", getHealthColor(health))}>
             {getHealthLabel(health)} {health}%
           </span>
         </div>
@@ -266,7 +266,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
             </kbd>
             <input 
               ref={searchInputRef}
-              className="w-[200px] lg:w-[320px] h-9 pl-9 pr-4 bg-[var(--color-surface-2)] border border-transparent rounded-xl text-xs outline-none focus:border-[var(--color-primary-hex)] focus:bg-[var(--color-surface)] transition-all"
+              className="w-[200px] lg:w-[320px] h-9 pl-9 pr-4 bg-[var(--color-surface-2)] border border-transparent rounded-xl text-xs outline-none focus:border-[var(--color-primary-hex)] focus:bg-[var(--color-surface)] transition-colors duration-150"
               placeholder="Search projects, tasks, IDs..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

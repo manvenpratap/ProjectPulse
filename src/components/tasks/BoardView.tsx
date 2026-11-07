@@ -62,16 +62,19 @@ const BoardView: React.FC<BoardViewProps> = ({ onEditTask }) => {
                 return (
                   <div 
                     key={task.id}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => onEditTask(task.id)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onEditTask(task.id); } }}
                     className={clsx(
-                      "bg-white border rounded-2xl p-4 shadow-sm hover:shadow-xl transition-all cursor-pointer group animate-in fade-in slide-in-from-bottom-2 duration-300",
+                      "bg-white border rounded-2xl p-4 shadow-sm hover:shadow-xl transition-[border-color,box-shadow] duration-150 active:scale-[0.99] cursor-pointer group motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]",
                       blocked ? "border-amber-200 bg-amber-50/30" : "border-[var(--color-divider)] hover:border-indigo-200"
                     )}
                   >
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex items-center gap-2">
                         <span className={clsx(
-                          "px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest",
+                          "px-2 py-0.5 rounded text-xs font-semibold",
                           getPriorityColor(task.priority)
                         )}>
                           {task.priority}
@@ -97,7 +100,7 @@ const BoardView: React.FC<BoardViewProps> = ({ onEditTask }) => {
                        </div>
 
                        <div className="flex items-center gap-3">
-                          {overdue && <AlertCircle size={14} className="text-red-500 animate-pulse" />}
+                          {overdue && <AlertCircle size={14} className="text-red-500 motion-safe:animate-pulse" />}
                           <div className="text-[10px] font-bold text-slate-400 flex items-center gap-1.5">
                              <Clock size={12} />
                              {task.dueDate.split('-').slice(1).join('/')}
@@ -108,12 +111,12 @@ const BoardView: React.FC<BoardViewProps> = ({ onEditTask }) => {
                     {task.progress > 0 && (
                        <div className="mt-4 pt-4 border-t border-slate-50">
                           <div className="flex justify-between items-center mb-1.5">
-                             <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Progress</span>
-                             <span className="text-[9px] font-black text-slate-600">{task.progress}%</span>
+                             <span className="text-xs font-medium text-slate-400">Progress</span>
+                             <span className="text-xs font-medium text-slate-600">{task.progress}%</span>
                           </div>
                           <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
                              <div 
-                               className="h-full bg-indigo-500 rounded-full transition-all duration-1000" 
+                               className="h-full bg-indigo-500 rounded-full" 
                                style={{ width: `${task.progress}%` }} 
                              />
                           </div>
@@ -124,7 +127,7 @@ const BoardView: React.FC<BoardViewProps> = ({ onEditTask }) => {
               })}
               
               {columnTasks.length === 0 && (
-                <div className="h-24 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-center text-[10px] font-black uppercase text-slate-300 tracking-widest">
+                <div className="h-24 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-center text-xs font-medium text-slate-400">
                    Empty Column
                 </div>
               )}

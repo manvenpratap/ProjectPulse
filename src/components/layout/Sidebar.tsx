@@ -61,7 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
 
   return (
     <div className={clsx(
-      "h-full bg-[var(--color-surface)] border-r border-[var(--color-divider)] flex flex-col transition-all duration-300 fixed lg:relative z-30 shadow-xl lg:shadow-none",
+      "h-full bg-[var(--color-surface)] border-r border-[var(--color-divider)] flex flex-col motion-safe:transition-transform duration-300 fixed lg:relative z-30 shadow-xl lg:shadow-none",
       isOpen ? "translate-x-0 w-[260px]" : "-translate-x-full lg:translate-x-0 lg:w-[60px]"
     )}>
       <div className="h-[52px] flex items-center px-4 gap-3 border-b border-[var(--color-divider)] bg-[var(--color-surface)]">
@@ -79,7 +79,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
               key={item.id}
               onClick={() => onNavigate(item.id)}
               className={clsx(
-                "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group",
+                "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-colors duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] group",
                 isActive 
                   ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-semibold" 
                   : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)]"
@@ -104,24 +104,24 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
         {isOpen && (
           <>
             <div className="pt-6 pb-2 px-3">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-faint)]">
-                Project Stats
+              <span className="text-xs font-semibold text-[var(--color-text-faint)]">
+                Project stats
               </span>
             </div>
             <div className="px-1 space-y-2">
               <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl p-3 grid grid-cols-3 gap-2 text-center">
                 <div className="space-y-1">
-                  <span className="text-[9px] uppercase font-bold text-[var(--color-text-faint)]">Tasks</span>
+                  <span className="text-xs font-medium text-[var(--color-text-faint)]">Tasks</span>
                   <div className="text-[12px] font-mono font-bold leading-tight">{state.tasks.length}</div>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[9px] uppercase font-bold text-[var(--color-text-faint)]">Done</span>
+                  <span className="text-xs font-medium text-[var(--color-text-faint)]">Done</span>
                   <div className="text-[12px] font-mono font-bold leading-tight text-emerald-500">
                     {state.tasks.filter(t => t.status === 'Completed').length}
                   </div>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[9px] uppercase font-bold text-[var(--color-text-faint)]">ALM</span>
+                  <span className="text-xs font-medium text-[var(--color-text-faint)]">ALM</span>
                   <div className="text-[12px] font-mono font-bold leading-tight text-[var(--color-primary-hex)]">
                     {state.deliveries?.length || 0}
                   </div>

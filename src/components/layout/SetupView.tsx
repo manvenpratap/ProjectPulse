@@ -32,7 +32,7 @@ const SetupView: React.FC = () => {
 
         <h1 className="font-display text-4xl font-bold tracking-tight mb-3">
           Track. Log. Report.<br />
-          <span className="text-[var(--color-text-muted)]">All in one place.</span>
+          <span className="text-[var(--color-text-muted)]">Unified engineering delivery.</span>
         </h1>
         
         <p className="text-[var(--color-text-muted)] text-sm mb-10 leading-relaxed">
@@ -40,13 +40,13 @@ const SetupView: React.FC = () => {
         </p>
 
         <div className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-[24px] p-8 text-left shadow-xl mb-6">
-          <h2 className="text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] mb-6">
-            Create New Project
+          <h2 className="text-xs font-semibold text-[var(--color-text-muted)] mb-6">
+            Create new project
           </h2>
           
           <div className="space-y-5">
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">Project Name</label>
+              <label className="text-xs font-semibold text-[var(--color-text-muted)]">Project name</label>
               <input 
                 className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg outline-none focus:border-[var(--color-primary-hex)] transition-colors text-sm"
                 placeholder="e.g. Platform Modernization Q3"
@@ -56,7 +56,7 @@ const SetupView: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">Description</label>
+              <label className="text-xs font-semibold text-[var(--color-text-muted)]">Description</label>
               <textarea 
                 className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg outline-none focus:border-[var(--color-primary-hex)] transition-colors text-sm resize-none"
                 placeholder="Brief project summary..."
@@ -67,7 +67,7 @@ const SetupView: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">Team Members (comma-separated)</label>
+              <label className="text-xs font-semibold text-[var(--color-text-muted)]">Team members (comma-separated)</label>
               <input 
                 className="w-full px-4 py-2.5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg outline-none focus:border-[var(--color-primary-hex)] transition-colors text-sm"
                 placeholder="Alex, Sarah, Marcus, Elena"

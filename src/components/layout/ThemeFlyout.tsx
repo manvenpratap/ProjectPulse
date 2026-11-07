@@ -92,7 +92,7 @@ const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
                     key={t.id}
                     onClick={() => setTheme(t.id)}
                     className={clsx(
-                      "w-full text-left p-4 rounded-3xl border-2 transition-all group relative overflow-hidden flex items-center gap-5",
+                      "w-full text-left p-4 rounded-3xl border-2 transition-colors duration-150 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] group relative overflow-hidden flex items-center gap-5",
                       isActive 
                         ? "border-[var(--color-primary-hex)] bg-[var(--color-primary-highlight-hex)] shadow-sm" 
                         : "border-[var(--color-divider)] hover:border-[var(--color-text-faint)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)]"
@@ -126,7 +126,7 @@ const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span 
-                          className="font-black text-sm uppercase tracking-widest text-[var(--color-text)]"
+                          className="font-bold text-sm text-[var(--color-text)]"
                           style={{ fontFamily: t.font }}
                         >
                           {t.name}
@@ -144,7 +144,7 @@ const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
                         {t.desc}
                       </p>
                       <div className="mt-2 flex items-center gap-2 opacity-40">
-                         <span className="text-[9px] font-mono font-bold uppercase tracking-tighter" style={{ fontFamily: t.font }}>{t.font.split(',')[0].replace(/'/g, '')}</span>
+                         <span className="text-xs font-mono font-medium" style={{ fontFamily: t.font }}>{t.font.split(',')[0].replace(/'/g, '')}</span>
                       </div>
                     </div>
 
@@ -161,7 +161,7 @@ const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
             <div className="p-6 border-t border-[var(--color-divider)] bg-[var(--color-surface-2)]">
               <button 
                 onClick={onClose}
-                className="w-full py-3.5 bg-[var(--color-primary)] text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-lg shadow-[var(--color-primary-highlight)] hover:scale-[1.01] transition-all active:scale-[0.98]"
+                className="w-full py-3.5 bg-[var(--color-primary)] text-white font-bold text-xs rounded-2xl shadow-md active:scale-[0.98] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
               >
                 Seal Configuration
               </button>

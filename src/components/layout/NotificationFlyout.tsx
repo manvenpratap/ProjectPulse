@@ -63,7 +63,7 @@ const NotificationFlyout: React.FC<NotificationFlyoutProps> = ({ isOpen, onClose
   return (
     <>
       <div className="fixed inset-0 z-[100]" onClick={onClose} />
-      <div className="fixed top-[52px] right-4 w-full max-w-[360px] bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-2xl z-[101] overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
+      <div className="fixed top-[52px] right-4 w-full max-w-[360px] bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-2xl z-[101] overflow-hidden motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-4 duration-300">
         <div className="p-5 border-b border-[var(--color-divider)] flex items-center justify-between">
           <div className="flex items-center gap-2">
              <Bell size={18} className="text-indigo-600" />
@@ -81,7 +81,7 @@ const NotificationFlyout: React.FC<NotificationFlyoutProps> = ({ isOpen, onClose
                 <button
                   key={notif.id}
                   onClick={() => { setView(notif.target); onClose(); }}
-                  className="w-full text-left p-4 rounded-2xl hover:bg-[var(--color-surface-2)] transition-all group flex items-start gap-4"
+                  className="w-full text-left p-4 rounded-2xl hover:bg-[var(--color-surface-2)] transition-colors duration-150 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] group flex items-start gap-4"
                 >
                   <div className={clsx("w-10 h-10 rounded-xl shrink-0 flex items-center justify-center", notif.bg, notif.color)}>
                     <notif.icon size={20} />
@@ -89,7 +89,7 @@ const NotificationFlyout: React.FC<NotificationFlyoutProps> = ({ isOpen, onClose
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center mb-1">
                        <span className="text-xs font-black text-[var(--color-text)]">{notif.title}</span>
-                       <ChevronRight size={14} className="text-[var(--color-text-faint)] opacity-0 group-hover:opacity-100 transition-all -translate-x-2 group-hover:translate-x-0" />
+                       <ChevronRight size={14} className="text-[var(--color-text-faint)] opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
                     </div>
                     <p className="text-[11px] text-[var(--color-text-muted)] leading-relaxed font-medium">
                       {notif.desc}
@@ -104,7 +104,7 @@ const NotificationFlyout: React.FC<NotificationFlyoutProps> = ({ isOpen, onClose
                  <AlertCircle size={32} />
                </div>
                <h4 className="font-bold text-sm">System Quiet</h4>
-               <p className="text-[10px] uppercase font-black tracking-widest text-[var(--color-text-faint)] mt-1">No critical alerts detected</p>
+               <p className="text-xs font-medium text-[var(--color-text-faint)] mt-1">No critical alerts detected</p>
             </div>
           )}
         </div>
@@ -113,7 +113,7 @@ const NotificationFlyout: React.FC<NotificationFlyoutProps> = ({ isOpen, onClose
            <div className="p-4 border-t border-[var(--color-divider)] bg-[var(--color-surface-2)]/50">
               <button 
                 onClick={() => { setView('tasks'); onClose(); }}
-                className="w-full py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-indigo-100 hover:scale-[1.02] transition-all"
+                className="w-full py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-semibold shadow-md active:scale-[0.98] transition-colors duration-150"
               >
                 Clear Diagnostics
               </button>

@@ -32,7 +32,7 @@ const LogView: React.FC = () => {
           </div>
           <div>
             <h1 className="font-display text-lg font-bold tracking-tight">Project Audit Log</h1>
-            <p className="text-[11px] text-[var(--color-text-muted)] font-medium uppercase tracking-wider">
+            <p className="text-xs text-[var(--color-text-muted)] font-medium">
               {state.log.length} Transactional Entries Recorded
             </p>
           </div>
@@ -60,7 +60,7 @@ const LogView: React.FC = () => {
             <div key={date} className="relative">
               {/* Day Label */}
               <div className="flex items-center gap-4 mb-4">
-                <div className="px-3 py-1 rounded-full bg-[var(--color-surface-offset)] border border-[var(--color-divider)] text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)]">
+                <div className="px-3 py-1 rounded-full bg-[var(--color-surface-offset)] border border-[var(--color-divider)] text-xs font-medium text-[var(--color-text-muted)]">
                   {new Date(date).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })}
                 </div>
                 <div className="h-[1px] flex-1 bg-[var(--color-divider)] shadow-sm" />
@@ -76,7 +76,7 @@ const LogView: React.FC = () => {
                     <div key={idx} className="group relative">
                       {/* Timeline Dot */}
                       <div className={clsx(
-                        "absolute -left-[1.35rem] top-4 w-2.5 h-2.5 rounded-full border-2 border-[var(--color-surface)] ring-4 ring-[var(--color-bg)] transition-transform group-hover:scale-125",
+                        "absolute -left-[1.35rem] top-4 w-2.5 h-2.5 rounded-full border-2 border-[var(--color-surface)] ring-4 ring-[var(--color-bg)] motion-safe:transition-transform motion-safe:group-hover:scale-125",
                         isCreated ? "bg-emerald-500" : isStatus ? "bg-indigo-500" : "bg-blue-400"
                       )} />
 
@@ -85,12 +85,12 @@ const LogView: React.FC = () => {
                         {time}
                       </div>
 
-                      <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl p-4 shadow-sm group-hover:shadow-md transition-all group-hover:border-[var(--color-primary-highlight-hex)]">
+                      <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl p-4 shadow-sm group-hover:shadow-md transition-colors duration-150 group-hover:border-[var(--color-primary-highlight-hex)]">
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center flex-wrap gap-2 mb-1">
                               <span className={clsx(
-                                "text-[9px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded",
+                                "text-xs font-semibold px-1.5 py-0.5 rounded",
                                 isCreated ? "bg-emerald-100 text-emerald-700" : isStatus ? "bg-indigo-100 text-indigo-700" : "bg-blue-100 text-blue-700"
                               )}>
                                 {entry.action}
@@ -121,7 +121,7 @@ const LogView: React.FC = () => {
                           </div>
                           
                           <div className="text-right hidden sm:block">
-                             <div className="text-[10px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider mb-1">Assignee</div>
+                             <div className="text-xs font-medium text-[var(--color-text-faint)] mb-1">Assignee</div>
                              <div className="text-[11px] font-bold">{entry.assignee}</div>
                           </div>
                         </div>

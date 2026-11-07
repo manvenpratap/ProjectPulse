@@ -34,7 +34,7 @@ const TaskView: React.FC = () => {
           </div>
           <div>
             <h1 className="font-display text-lg font-bold tracking-tight">Project Tasks Matrix</h1>
-            <p className="text-[11px] text-[var(--color-text-muted)] font-medium uppercase tracking-wider">
+            <p className="text-xs text-[var(--color-text-muted)] font-medium">
               {state.tasks.length} Total Tasks • {state.tasks.filter(t => t.status === 'Completed').length} Done
             </p>
           </div>
@@ -45,7 +45,7 @@ const TaskView: React.FC = () => {
             <button 
               onClick={() => setViewMode('grid')}
               className={clsx(
-                "p-1.5 rounded-lg transition-all",
+                "p-1.5 rounded-lg transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]",
                 viewMode === 'grid' ? "bg-white text-indigo-600 shadow-sm" : "text-[var(--color-text-faint)] hover:text-indigo-500"
               )}
             >
@@ -54,7 +54,7 @@ const TaskView: React.FC = () => {
             <button 
               onClick={() => setViewMode('board')}
               className={clsx(
-                "p-1.5 rounded-lg transition-all",
+                "p-1.5 rounded-lg transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]",
                 viewMode === 'board' ? "bg-white text-indigo-600 shadow-sm" : "text-[var(--color-text-faint)] hover:text-indigo-500"
               )}
             >
