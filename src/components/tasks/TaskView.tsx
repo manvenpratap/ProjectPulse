@@ -33,28 +33,34 @@ const TaskView: React.FC = () => {
         subtitle={`${state.tasks.length} Total Tasks • ${state.tasks.filter(t => t.status === 'Completed').length} Done`}
         actions={
           <div className="flex items-center gap-2">
-            <div className="flex p-1 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl mr-1">
+            <div className="inline-flex items-center p-1 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl mr-1 gap-1">
               <button 
                 onClick={() => setViewMode('grid')}
                 className={clsx(
-                  "min-w-[36px] min-h-[36px] flex items-center justify-center p-2 rounded-lg transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] cursor-pointer",
-                  viewMode === 'grid' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  "min-h-[34px] px-2.5 sm:px-3 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all duration-150 active:scale-95 cursor-pointer",
+                  viewMode === 'grid' 
+                    ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm border border-[var(--color-divider)]" 
+                    : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
                 title="Grid Matrix View"
                 aria-label="Grid Matrix View"
               >
-                <LayoutGrid size={16} />
+                <LayoutGrid size={14} />
+                <span className="hidden sm:inline">Grid</span>
               </button>
               <button 
                 onClick={() => setViewMode('board')}
                 className={clsx(
-                  "min-w-[36px] min-h-[36px] flex items-center justify-center p-2 rounded-lg transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] cursor-pointer",
-                  viewMode === 'board' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  "min-h-[34px] px-2.5 sm:px-3 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all duration-150 active:scale-95 cursor-pointer",
+                  viewMode === 'board' 
+                    ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm border border-[var(--color-divider)]" 
+                    : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
                 title="Kanban Board View"
                 aria-label="Kanban Board View"
               >
-                <Kanban size={16} />
+                <Kanban size={14} />
+                <span className="hidden sm:inline">Board</span>
               </button>
             </div>
             <Button variant="outline" size="sm" onClick={() => exportProjectExcel(state)} className="mr-1 h-9 font-bold active:scale-95 px-2.5 sm:px-3">

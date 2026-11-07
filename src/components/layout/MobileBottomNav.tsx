@@ -30,7 +30,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   return (
     <nav 
       aria-label="Mobile Navigation" 
-      className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-[var(--color-surface)]/95 backdrop-blur-md border-t border-[var(--color-divider)] flex items-center justify-around px-1 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] shadow-lg select-none"
+      className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-[var(--color-surface)]/85 backdrop-blur-2xl saturate-180 border-t border-[var(--color-divider)]/80 flex items-center justify-around px-1 pt-1.5 pb-[calc(0.5rem+env(safe-area-inset-bottom,0px))] shadow-xs select-none"
     >
       {primaryTabs.map((tab) => {
         const isActive = currentHub.id === tab.hubId;

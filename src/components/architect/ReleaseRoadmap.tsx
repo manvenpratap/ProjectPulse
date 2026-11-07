@@ -25,6 +25,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
+import Modal from '../shared/Modal';
 import clsx from 'clsx';
 
 export const ReleaseRoadmap: React.FC = () => {
@@ -397,178 +398,150 @@ export const ReleaseRoadmap: React.FC = () => {
       </div>
 
       {/* Add / Edit Release Modal */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 motion-safe:animate-in motion-safe:fade-in duration-200">
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-[var(--color-surface)] w-full max-w-md rounded-2xl border border-[var(--color-divider)] shadow-2xl overflow-hidden"
-            >
-              <div className="px-6 py-4 border-b border-[var(--color-divider)] flex justify-between items-center">
-                <h2 className="text-base font-bold text-[var(--color-text)]">
-                  {editingRelease ? 'Edit Release Version' : 'Create Release Version'}
-                </h2>
-                <button onClick={() => setIsModalOpen(false)} className="text-[var(--color-text-faint)] hover:text-[var(--color-text)] active:scale-95">
-                  <X size={18} />
-                </button>
-              </div>
-
-              <div className="p-6 space-y-4 text-xs font-semibold">
-                <div>
-                  <label className="text-xs font-medium text-[var(--color-text-muted)] block mb-1.5">
-                    Release Version Identifier *
-                  </label>
-                  <input 
-                    type="text"
-                    placeholder="e.g. v2.1.0 or Q3-Release"
-                    value={formName}
-                    onChange={e => setFormName(e.target.value)}
-                    className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-bold text-sm focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs font-medium text-[var(--color-text-muted)] block mb-1.5">
-                      Cycle Start Date
-                    </label>
-                    <input 
-                      type="date"
-                      value={formStartDate}
-                      onChange={e => setFormStartDate(e.target.value)}
-                      className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-mono text-xs font-semibold focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-xs font-medium text-[var(--color-text-muted)] block mb-1.5">
-                      Target Launch Date
-                    </label>
-                    <input 
-                      type="date"
-                      value={formTargetDate}
-                      onChange={e => setFormTargetDate(e.target.value)}
-                      className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-mono text-xs font-semibold focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-xs font-medium text-[var(--color-text-muted)] block mb-1.5">
-                    Governance Status
-                  </label>
-                  <select
-                    value={formStatus}
-                    onChange={e => setFormStatus(e.target.value as any)}
-                    className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-bold text-xs focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
-                  >
-                    <option value="Planned">Planned (Future)</option>
-                    <option value="Active">Active (In Development)</option>
-                    <option value="Released">Released (Shipped / Done)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="px-6 py-4 bg-[var(--color-surface-2)] border-t border-[var(--color-divider)] flex justify-end gap-2">
-                <Button variant="ghost" size="sm" onClick={() => setIsModalOpen(false)}>
-                  Cancel
-                </Button>
-                <Button variant="primary" size="sm" onClick={handleSaveRelease}>
-                  {editingRelease ? 'Update Release' : 'Create Release'}
-                </Button>
-              </div>
-            </motion.div>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={editingRelease ? 'Edit Release Version' : 'Create Release Version'}
+        size="md"
+        footer={
+          <div className="flex justify-end gap-2.5 w-full">
+            <Button variant="ghost" size="sm" onClick={() => setIsModalOpen(false)} className="rounded-xl min-h-[38px] px-4 font-semibold">
+              Cancel
+            </Button>
+            <Button variant="primary" size="sm" onClick={handleSaveRelease} className="rounded-xl min-h-[38px] px-4 font-semibold bg-[var(--color-primary-hex)] text-[var(--color-primary-text)]">
+              {editingRelease ? 'Update Release' : 'Create Release'}
+            </Button>
           </div>
-        )}
-      </AnimatePresence>
+        }
+      >
+        <div className="space-y-4 text-xs font-semibold">
+          <div>
+            <label className="text-xs font-medium text-[var(--color-text-muted)] block mb-1.5">
+              Release Version Identifier *
+            </label>
+            <input 
+              type="text"
+              placeholder="e.g. v2.1.0 or Q3-Release"
+              value={formName}
+              onChange={e => setFormName(e.target.value)}
+              className="w-full h-11 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-bold text-sm"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs font-medium text-[var(--color-text-muted)] block mb-1.5">
+                Cycle Start Date
+              </label>
+              <input 
+                type="date"
+                value={formStartDate}
+                onChange={e => setFormStartDate(e.target.value)}
+                className="w-full h-11 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-mono text-xs font-semibold"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-[var(--color-text-muted)] block mb-1.5">
+                Target Launch Date
+              </label>
+              <input 
+                type="date"
+                value={formTargetDate}
+                onChange={e => setFormTargetDate(e.target.value)}
+                className="w-full h-11 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-mono text-xs font-semibold"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-[var(--color-text-muted)] block mb-1.5">
+              Governance Status
+            </label>
+            <select
+              value={formStatus}
+              onChange={e => setFormStatus(e.target.value as any)}
+              className="w-full h-11 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-bold text-xs"
+            >
+              <option value="Planned">Planned (Future)</option>
+              <option value="Active">Active (In Development)</option>
+              <option value="Released">Released (Shipped / Done)</option>
+            </select>
+          </div>
+        </div>
+      </Modal>
 
       {/* Scope Details Drawer / Modal */}
-      <AnimatePresence>
+      <Modal
+        isOpen={!!selectedReleaseDetails}
+        onClose={() => setSelectedReleaseDetails(null)}
+        title={selectedReleaseDetails ? `Mapped Scope for ${selectedReleaseDetails.name}` : ''}
+        size="lg"
+        footer={
+          <div className="flex justify-end w-full">
+            <Button variant="ghost" size="sm" onClick={() => setSelectedReleaseDetails(null)} className="rounded-xl min-h-[38px] px-4 font-semibold">
+              Close
+            </Button>
+          </div>
+        }
+      >
         {selectedReleaseDetails && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-[var(--color-surface)] w-full max-w-2xl max-h-[80vh] flex flex-col rounded-2xl border border-[var(--color-divider)] shadow-2xl overflow-hidden"
-            >
-              <div className="px-6 py-4 border-b border-[var(--color-divider)] flex justify-between items-center bg-[var(--color-surface-2)]">
-                <div>
-                  <h2 className="text-base font-bold text-[var(--color-text)] flex items-center gap-2">
-                    <Flag size={16} className="text-indigo-600" />
-                    Mapped Scope for {selectedReleaseDetails.name}
-                  </h2>
-                  <p className="text-xs text-[var(--color-text-muted)]">
-                    Target: {fmtDate(selectedReleaseDetails.date)} • Status: {selectedReleaseDetails.status}
-                  </p>
-                </div>
-                <button onClick={() => setSelectedReleaseDetails(null)} className="text-[var(--color-text-faint)] hover:text-[var(--color-text)] active:scale-95">
-                  <X size={18} />
-                </button>
-              </div>
+          <div className="space-y-6">
+            <div className="p-3 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] text-xs text-[var(--color-text-muted)]">
+              Target: {fmtDate(selectedReleaseDetails.date)} • Status: {selectedReleaseDetails.status}
+            </div>
 
-              <div className="flex-1 overflow-y-auto p-6 space-y-6 custom-scroll">
-                {/* Mapped Tasks */}
-                <div>
-                  <h4 className="text-xs font-semibold text-[var(--color-text-muted)] mb-3 flex items-center gap-2">
-                    <ClipboardList size={14} className="text-indigo-500" />
-                    Mapped Tasks ({tasks.filter(t => t.release === selectedReleaseDetails.name).length})
-                  </h4>
-                  <div className="space-y-2">
-                    {tasks.filter(t => t.release === selectedReleaseDetails.name).map(t => (
-                      <div key={t.id} className="p-3 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] flex items-center justify-between text-xs">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className="font-mono font-bold text-[var(--color-primary-hex)] shrink-0">{t.id}</span>
-                          <span className="font-semibold text-[var(--color-text)] truncate">{t.name}</span>
-                        </div>
-                        <div className="flex items-center gap-3 shrink-0">
-                          <span className="text-[10px] font-bold text-[var(--color-text-muted)]">{t.status}</span>
-                          <span className="font-mono font-bold text-indigo-600">{t.progress}%</span>
-                        </div>
-                      </div>
-                    ))}
-                    {tasks.filter(t => t.release === selectedReleaseDetails.name).length === 0 && (
-                      <p className="text-xs italic text-[var(--color-text-muted)]">No tasks assigned to this release.</p>
-                    )}
+            {/* Mapped Tasks */}
+            <div>
+              <h4 className="text-xs font-semibold text-[var(--color-text-muted)] mb-3 flex items-center gap-2">
+                <ClipboardList size={14} className="text-indigo-500" />
+                Mapped Tasks ({tasks.filter(t => t.release === selectedReleaseDetails.name).length})
+              </h4>
+              <div className="space-y-2">
+                {tasks.filter(t => t.release === selectedReleaseDetails.name).map(t => (
+                  <div key={t.id} className="p-3 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="font-mono font-bold text-[var(--color-primary-hex)] shrink-0">{t.id}</span>
+                      <span className="font-semibold text-[var(--color-text)] truncate">{t.name}</span>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className="text-[10px] font-bold text-[var(--color-text-muted)]">{t.status}</span>
+                      <span className="font-mono font-bold text-indigo-600">{t.progress}%</span>
+                    </div>
                   </div>
-                </div>
+                ))}
+                {tasks.filter(t => t.release === selectedReleaseDetails.name).length === 0 && (
+                  <p className="text-xs italic text-[var(--color-text-muted)]">No tasks assigned to this release.</p>
+                )}
+              </div>
+            </div>
 
-                {/* Mapped Deliveries */}
-                <div>
-                  <h4 className="text-xs font-semibold text-[var(--color-text-muted)] mb-3 flex items-center gap-2">
-                    <Package size={14} className="text-emerald-500" />
-                    Mapped Deliveries ({deliveries.filter(d => d.releaseVersion === selectedReleaseDetails.name).length})
-                  </h4>
-                  <div className="space-y-2">
-                    {deliveries.filter(d => d.releaseVersion === selectedReleaseDetails.name).map(d => (
-                      <div key={d.id} className="p-3 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] flex items-center justify-between text-xs">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className="font-mono font-bold text-emerald-600 shrink-0">{d.almId || d.id}</span>
-                          <span className="font-semibold text-[var(--color-text)] truncate">{d.name}</span>
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700">{d.status}</span>
-                        </div>
-                      </div>
-                    ))}
-                    {deliveries.filter(d => d.releaseVersion === selectedReleaseDetails.name).length === 0 && (
-                      <p className="text-xs italic text-[var(--color-text-muted)]">No deliveries mapped to this release.</p>
-                    )}
+            {/* Mapped Deliveries */}
+            <div>
+              <h4 className="text-xs font-semibold text-[var(--color-text-muted)] mb-3 flex items-center gap-2">
+                <Package size={14} className="text-emerald-500" />
+                Mapped Deliveries ({deliveries.filter(d => d.releaseVersion === selectedReleaseDetails.name).length})
+              </h4>
+              <div className="space-y-2">
+                {deliveries.filter(d => d.releaseVersion === selectedReleaseDetails.name).map(d => (
+                  <div key={d.id} className="p-3 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="font-mono font-bold text-emerald-600 shrink-0">{d.almId || d.id}</span>
+                      <span className="font-semibold text-[var(--color-text)] truncate">{d.name}</span>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300">{d.status}</span>
+                    </div>
                   </div>
-                </div>
+                ))}
+                {deliveries.filter(d => d.releaseVersion === selectedReleaseDetails.name).length === 0 && (
+                  <p className="text-xs italic text-[var(--color-text-muted)]">No deliveries mapped to this release.</p>
+                )}
               </div>
-
-              <div className="p-4 bg-[var(--color-surface-2)] border-t border-[var(--color-divider)] flex justify-end">
-                <Button variant="ghost" size="sm" onClick={() => setSelectedReleaseDetails(null)}>
-                  Close
-                </Button>
-              </div>
-            </motion.div>
+            </div>
           </div>
         )}
-      </AnimatePresence>
+      </Modal>
     </div>
   );
 };

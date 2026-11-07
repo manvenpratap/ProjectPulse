@@ -40,6 +40,7 @@ import {
 import clsx from 'clsx';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
+import Modal from '../shared/Modal';
 
 type ViewMode = 'table' | 'kanban' | 'heatmap';
 type HeatmapPerspective = 'feat_screens' | 'env_pipeline' | 'del_impact';
@@ -285,9 +286,9 @@ export const DeliveriesView: React.FC = () => {
       <div className="bg-[var(--color-surface)] border-b border-[var(--color-divider)] p-4 sm:p-6 lg:p-8 shrink-0">
         {/* Bento Telemetry Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">
-          <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] p-3 rounded-lg">
+          <div className="bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Deployed Live</div>
-            <div className="text-xl font-mono font-bold text-emerald-400 mt-1 flex items-baseline gap-1.5">
+            <div className="text-xl font-bold text-emerald-500 mt-1 flex items-baseline gap-1.5 tracking-tight">
               <span>{telemetry.deployed}</span>
               <span className="text-[11px] font-normal text-[var(--color-text-muted)]">
                 / {telemetry.total}
@@ -296,9 +297,9 @@ export const DeliveriesView: React.FC = () => {
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Production sign-off</div>
           </div>
 
-          <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] p-3 rounded-lg">
+          <div className="bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Ready / In Flight</div>
-            <div className="text-xl font-mono font-bold text-sky-400 mt-1 flex items-baseline gap-1.5">
+            <div className="text-xl font-bold text-sky-500 mt-1 flex items-baseline gap-1.5 tracking-tight">
               <span>{telemetry.ready + telemetry.inProgress}</span>
               <span className="text-[11px] font-normal text-[var(--color-text-muted)]">
                 active
@@ -307,22 +308,22 @@ export const DeliveriesView: React.FC = () => {
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Staging & UAT queues</div>
           </div>
 
-          <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] p-3 rounded-lg">
+          <div className="bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Pending Sign-Off</div>
-            <div className="text-xl font-mono font-bold text-amber-400 mt-1">
+            <div className="text-xl font-bold text-amber-500 mt-1 tracking-tight">
               {telemetry.pendingSignoff}
             </div>
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Awaiting lead sign-off</div>
           </div>
 
-          <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] p-3 rounded-lg">
+          <div className="bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Smoke Test Gates</div>
-            <div className="text-xl font-mono font-bold mt-1 flex items-center gap-2">
-              <span className={telemetry.failedSmoke > 0 ? "text-rose-400" : "text-emerald-400"}>
+            <div className="text-xl font-bold mt-1 flex items-center gap-2 tracking-tight">
+              <span className={telemetry.failedSmoke > 0 ? "text-rose-500" : "text-emerald-500"}>
                 {telemetry.failedSmoke > 0 ? `${telemetry.failedSmoke} Fail` : '0 Fail'}
               </span>
               {telemetry.runningSmoke > 0 && (
-                <span className="text-[10px] text-cyan-400 font-mono motion-safe:animate-pulse">
+                <span className="text-[10px] text-cyan-500 font-mono motion-safe:animate-pulse">
                   ({telemetry.runningSmoke} Run)
                 </span>
               )}
@@ -330,22 +331,22 @@ export const DeliveriesView: React.FC = () => {
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Automated test matrix</div>
           </div>
 
-          <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] p-3 rounded-lg">
+          <div className="bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Avg Cycle Lead Time</div>
-            <div className="text-xl font-mono font-bold text-[var(--color-text)] mt-1">
-              {telemetry.avgLeadTime} <span className="text-xs text-[var(--color-text-muted)]">days</span>
+            <div className="text-xl font-bold text-[var(--color-text)] mt-1 tracking-tight">
+              {telemetry.avgLeadTime} <span className="text-xs text-[var(--color-text-muted)] font-normal">days</span>
             </div>
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Commit-to-release duration</div>
           </div>
 
-          <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] p-3 rounded-lg">
+          <div className="bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Delay Variance</div>
             <div className={clsx(
-              "text-xl font-mono font-bold mt-1",
-              parseFloat(telemetry.avgVariance) > 0 ? "text-rose-400" : "text-emerald-400"
+              "text-xl font-bold mt-1 tracking-tight",
+              parseFloat(telemetry.avgVariance) > 0 ? "text-rose-500" : "text-emerald-500"
             )}>
               {parseFloat(telemetry.avgVariance) > 0 ? `+${telemetry.avgVariance}` : telemetry.avgVariance}
-              <span className="text-xs text-[var(--color-text-muted)] ml-1">days</span>
+              <span className="text-xs text-[var(--color-text-muted)] ml-1 font-normal">days</span>
             </div>
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Variance vs target</div>
           </div>
@@ -1100,23 +1101,25 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
-        <div className="p-4 border-b border-[var(--color-divider)] flex items-center justify-between bg-[var(--color-surface-2)]">
-          <div className="flex items-center gap-2">
-            <Package size={18} className="text-[var(--color-primary-hex)]" />
-            <h3 className="font-display font-bold text-base uppercase">
-              {delivery ? `Edit Delivery Package: ${delivery.almId}` : 'New Software Delivery Package'}
-            </h3>
-          </div>
-          <button onClick={onClose} className="p-1 text-[var(--color-text-muted)] hover:text-[var(--color-text)]">
-            <X size={16} />
-          </button>
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={delivery ? `Edit Package: ${delivery.almId || delivery.name}` : 'New Software Delivery Package'}
+      size="xl"
+      footer={
+        <div className="flex justify-end gap-2.5 w-full">
+          <Button variant="outline" size="sm" type="button" onClick={onClose} className="rounded-xl min-h-[38px] px-4 font-semibold">
+            Cancel
+          </Button>
+          <Button variant="primary" size="sm" type="button" onClick={handleSubmit} className="rounded-xl min-h-[38px] px-4 font-semibold bg-[var(--color-primary-hex)] text-[var(--color-primary-text)]">
+            {delivery ? 'Save Changes' : 'Create Package'}
+          </Button>
         </div>
-
-        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-4 space-y-4 custom-scroll">
-          {/* Row 1: ALM ID & PDN */}
-          <div className="grid grid-cols-2 gap-3">
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Row 1: ALM ID & PDN */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-medium text-[var(--color-text-muted)]">ALM Defect / Ticket ID</label>
               <input 
@@ -1323,17 +1326,8 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
             </div>
           </div>
 
-          <div className="p-3 border-t border-[var(--color-divider)] flex justify-end gap-2 bg-[var(--color-surface-2)] -mx-4 -mb-4 mt-6">
-            <Button variant="outline" size="sm" type="button" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button variant="primary" size="sm" type="submit">
-              {delivery ? 'Save Changes' : 'Create Package'}
-            </Button>
-          </div>
-        </form>
-      </div>
-    </div>
+      </form>
+    </Modal>
   );
 };
 

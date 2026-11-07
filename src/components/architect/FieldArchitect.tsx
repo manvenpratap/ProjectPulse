@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
+import Modal from '../shared/Modal';
 import clsx from 'clsx';
 import { CustomField } from '../../types';
 
@@ -229,60 +230,63 @@ const FieldArchitect: React.FC = () => {
       </div>
 
       {/* Edit Modal */}
-      {editForm && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/50 motion-safe:animate-in motion-safe:fade-in duration-200">
-           <div className="bg-[var(--color-bg)] w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-[var(--color-divider)] motion-safe:animate-in motion-safe:zoom-in-95 duration-200">
-              <div className="p-8 border-b border-[var(--color-divider)] flex justify-between items-center bg-indigo-50/30">
-                 <h2 className="text-2xl font-black">Edit Attribute</h2>
-                 <button onClick={() => setEditForm(null)} className="p-2 text-[var(--color-text-faint)] hover:text-[var(--color-text)] transition-colors active:scale-95">
-                    <Trash2 size={24} className="rotate-45" />
-                 </button>
+      <Modal
+        isOpen={!!editForm}
+        onClose={() => setEditForm(null)}
+        title="Refactor Attribute Schema"
+        size="md"
+        footer={
+          <div className="flex gap-2.5 w-full justify-end">
+            <Button variant="ghost" className="rounded-xl min-h-[38px] px-4 font-semibold" onClick={() => setEditForm(null)}>
+              Cancel
+            </Button>
+            <Button variant="primary" className="rounded-xl min-h-[38px] px-4 font-semibold bg-[var(--color-primary-hex)] text-[var(--color-primary-text)]" onClick={saveEdit}>
+              Update Schema
+            </Button>
+          </div>
+        }
+      >
+        {editForm && (
+          <div className="space-y-4 text-xs font-semibold">
+            <div>
+              <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Attribute Name</label>
+              <input 
+                className="w-full h-11 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl font-bold text-sm outline-none focus:border-[var(--color-primary-hex)]"
+                value={editForm.name}
+                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+              />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Data Type</label>
+                <select 
+                  className="w-full h-11 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl font-bold outline-none focus:border-[var(--color-primary-hex)]"
+                  value={editForm.type}
+                  onChange={(e) => setEditForm({ ...editForm, type: e.target.value as any })}
+                >
+                  <option value="text">Textual</option>
+                  <option value="number">Numeric</option>
+                  <option value="date">Temporal (Date)</option>
+                  <option value="checkbox">Boolean (Checkbox)</option>
+                  <option value="dropdown">Categorical (Dropdown)</option>
+                </select>
               </div>
-              <div className="p-8 space-y-6">
-                 <div>
-                    <label className="text-xs font-medium text-[var(--color-text-muted)] mb-2 block">Attribute Name</label>
-                    <input 
-                       className="w-full h-12 px-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl font-bold outline-none focus:border-indigo-500 transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
-                       value={editForm.name}
-                       onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
-                    />
-                 </div>
-                 <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <label className="text-xs font-medium text-[var(--color-text-muted)] mb-2 block">Data Type</label>
-                        <select 
-                          className="w-full h-12 px-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl font-bold outline-none focus:border-indigo-500 transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
-                          value={editForm.type}
-                          onChange={(e) => setEditForm({ ...editForm, type: e.target.value as any })}
-                        >
-                          <option value="text">Textual</option>
-                          <option value="number">Numeric</option>
-                          <option value="date">Temporal (Date)</option>
-                          <option value="checkbox">Boolean (Checkbox)</option>
-                          <option value="dropdown">Categorical (Dropdown)</option>
-                        </select>
-                    </div>
-                    <div className="flex flex-col justify-center">
-                        <label className="text-xs font-medium text-[var(--color-text-muted)] mb-2 block">Constraint</label>
-                        <label className="flex items-center gap-3 cursor-pointer group">
-                           <input 
-                              type="checkbox"
-                              className="w-5 h-5 rounded border-[var(--color-divider)] text-indigo-600 focus:ring-indigo-500"
-                              checked={editForm.required}
-                              onChange={(e) => setEditForm({ ...editForm, required: e.target.checked })}
-                           />
-                           <span className="text-xs font-bold text-[var(--color-text-muted)] group-hover:text-indigo-600 transition-colors">Required Field</span>
-                        </label>
-                    </div>
-                 </div>
+              <div className="flex flex-col justify-center">
+                <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Constraint</label>
+                <label className="flex items-center gap-2.5 cursor-pointer mt-1">
+                  <input 
+                    type="checkbox"
+                    className="w-4 h-4 rounded border-[var(--color-divider)] text-[var(--color-primary-hex)] focus:ring-[var(--color-primary-hex)]"
+                    checked={editForm.required}
+                    onChange={(e) => setEditForm({ ...editForm, required: e.target.checked })}
+                  />
+                  <span className="text-xs font-semibold text-[var(--color-text)]">Required Field</span>
+                </label>
               </div>
-              <div className="p-8 bg-[var(--color-surface-offset)] flex gap-4">
-                 <Button variant="ghost" className="flex-1 font-bold h-12 rounded-2xl active:scale-[0.98]" onClick={() => setEditForm(null)}>Cancel</Button>
-                 <Button variant="primary" className="flex-1 font-black h-12 rounded-2xl bg-indigo-600 border-indigo-600 shadow-indigo-100 active:scale-[0.98]" onClick={saveEdit}>Update Schema</Button>
-              </div>
-           </div>
-        </div>
-      )}
+            </div>
+          </div>
+        )}
+      </Modal>
     </div>
   );
 };

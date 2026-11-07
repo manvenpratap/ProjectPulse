@@ -1241,7 +1241,7 @@ export const TimelineView: React.FC = () => {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.96 }}
             transition={{ duration: 0.12, ease: [0.23, 1, 0.32, 1] }}
-            className="fixed z-50 pointer-events-none bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl shadow-2xl p-3.5 max-w-xs text-xs space-y-2 hidden md:block"
+            className="fixed z-50 pointer-events-none bg-[var(--color-surface)]/92 backdrop-blur-2xl border border-[var(--color-divider)] rounded-2xl shadow-xl p-3.5 max-w-xs text-xs space-y-2 hidden md:block"
             style={{
               left: Math.min(hoveredTask.x + 14, window.innerWidth - 300),
               top: Math.min(hoveredTask.y + 14, window.innerHeight - 200)

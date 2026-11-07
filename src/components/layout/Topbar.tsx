@@ -101,32 +101,32 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
 
   return (
     <>
-      <header className="h-[calc(52px+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] bg-[var(--color-surface)] border-b border-[var(--color-divider)] flex items-center px-4 gap-3 md:gap-4 shrink-0 z-20 shadow-sm">
+      <header className="h-[calc(54px+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] bg-[var(--color-surface)]/85 backdrop-blur-xl saturate-180 border-b border-[var(--color-divider)] flex items-center px-4 gap-3 md:gap-4 shrink-0 z-20 shadow-2xs sticky top-0">
         <div className="flex items-center gap-2 md:gap-3 min-w-0">
           <button 
             onClick={toggleSidebar}
             aria-label="Toggle navigation menu"
-            className="lg:hidden min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-[var(--color-surface-2)] rounded-lg text-[var(--color-text-muted)] transition-colors active:scale-95"
+            className="lg:hidden min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-[var(--color-surface-2)] rounded-xl text-[var(--color-text-muted)] transition-colors active:scale-95 cursor-pointer"
           >
             <Menu size={20} />
           </button>
           
           <div className="flex flex-col min-w-0">
-            <span className="font-bold text-xs md:text-sm text-[var(--color-text)] truncate max-w-[120px] md:max-w-[200px]" title={state.name}>
+            <span className="font-semibold text-xs md:text-sm text-[var(--color-text)] tracking-tight truncate max-w-[120px] md:max-w-[200px]" title={state.name}>
               {state.name}
             </span>
           </div>
           
-          <div className="w-[1px] h-5 bg-[var(--color-divider)]" />
+          <div className="w-[1px] h-4 bg-[var(--color-divider)]" />
           
           <div className="relative hidden sm:block">
             <button 
               onClick={() => setIsActionsOpen(!isActionsOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-[var(--color-surface-2)] transition-colors text-xs font-semibold text-[var(--color-text-muted)]"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-[var(--color-surface-2)] transition-colors text-xs font-semibold text-[var(--color-text-muted)] cursor-pointer active:scale-97"
             >
               <FolderOpen size={14} />
-              Project Actions
-              <ChevronDown size={12} className={clsx("transition-transform", isActionsOpen && "rotate-180")} />
+              <span>Project Actions</span>
+              <ChevronDown size={12} className={clsx("transition-transform duration-200", isActionsOpen && "rotate-180")} />
             </button>
 
             {isActionsOpen && (
@@ -135,7 +135,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
                   className="fixed inset-0 z-10" 
                   onClick={() => setIsActionsOpen(false)} 
                 />
-                <div className="absolute top-full left-0 mt-1 w-64 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl shadow-2xl z-20 py-2 overflow-hidden motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2 duration-200">
+                <div className="absolute top-full left-0 mt-2 w-64 bg-[var(--color-surface)]/95 backdrop-blur-2xl border border-[var(--color-divider)] rounded-2xl shadow-xl z-20 py-2 overflow-hidden ring-1 ring-black/5 motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 duration-150 origin-top-left">
                   <div className="px-3 py-2 text-xs font-semibold text-[var(--color-text-faint)]">
                     Data & Persistence
                   </div>
@@ -250,9 +250,9 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 md:gap-3 px-2 md:px-3 py-1.5 rounded-full bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+        <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] shadow-2xs backdrop-blur-sm">
           <div className={clsx("w-2 h-2 rounded-full motion-safe:animate-pulse bg-current", getHealthColor(health))} />
-          <span className={clsx("text-xs font-semibold", getHealthColor(health))}>
+          <span className={clsx("text-xs font-semibold tracking-tight", getHealthColor(health))}>
             {getHealthLabel(health)} {health}%
           </span>
         </div>
@@ -261,13 +261,13 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
 
         <div className="flex items-center gap-1 md:gap-1.5">
           <div className="relative group hidden lg:block">
-            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-[var(--color-text-faint)] pointer-events-none border border-[var(--color-divider)] px-1 rounded bg-[var(--color-surface)]">
-              G /
+            <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-mono text-[var(--color-text-faint)] pointer-events-none border border-[var(--color-divider)] px-1.5 py-0.5 rounded-md bg-[var(--color-surface)]/80 shadow-2xs">
+              /
             </kbd>
             <input 
               ref={searchInputRef}
-              className="w-[200px] lg:w-[320px] h-9 pl-9 pr-4 bg-[var(--color-surface-2)] border border-transparent rounded-xl text-xs outline-none focus:border-[var(--color-primary-hex)] focus:bg-[var(--color-surface)] transition-colors duration-150"
-              placeholder="Search projects, tasks, IDs..."
+              className="w-[200px] lg:w-[260px] xl:w-[300px] h-9 pl-9 pr-8 bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] rounded-xl text-xs outline-none focus:border-[var(--color-primary-hex)]/40 focus:bg-[var(--color-surface)] focus:ring-2 focus:ring-[var(--color-primary-hex)]/15 transition-all duration-150"
+              placeholder="Search tasks, defects, RAID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />

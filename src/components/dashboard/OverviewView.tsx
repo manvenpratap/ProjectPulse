@@ -246,9 +246,9 @@ const OverviewView: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* Health Index Dial Component */}
-          <div className="p-6 rounded-xl flex flex-col justify-between items-center text-center bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
+          <div className="card p-6 flex flex-col justify-between items-center text-center">
             <div className="space-y-1 text-center w-full">
-              <h3 className="font-sans font-bold text-sm text-[var(--color-text)]">Composite Health Index</h3>
+              <h3 className="font-bold text-sm tracking-tight text-[var(--color-text)]">Composite Health Index</h3>
               <p className="text-xs text-[var(--color-primary-hex)] font-medium">Multi-factor algorithmic dial</p>
             </div>
 
@@ -276,29 +276,29 @@ const OverviewView: React.FC = () => {
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-3xl font-mono font-bold tracking-tight text-[var(--color-text)]">{healthScore}%</span>
+                <span className="text-3xl font-bold tracking-tight text-[var(--color-text)]">{healthScore}%</span>
                 <span className="text-xs text-[var(--color-text-muted)] mt-0.5">Health score</span>
               </div>
             </div>
 
             <div className="w-full grid grid-cols-2 gap-3 border-t border-[var(--color-divider)] pt-4">
-              <div className="text-center p-2 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+              <div className="text-center p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
                 <div className="text-xs text-[var(--color-text-muted)]">Completed</div>
-                <div className="text-lg font-mono font-bold text-emerald-500">{progressPct}%</div>
+                <div className="text-lg font-bold text-emerald-500">{progressPct}%</div>
               </div>
-              <div className="text-center p-2 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+              <div className="text-center p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
                 <div className="text-xs text-[var(--color-text-muted)]">Backlog</div>
-                <div className="text-lg font-mono font-bold text-[var(--color-text)]">{totalTasks - doneTasks.length} tasks</div>
+                <div className="text-lg font-bold text-[var(--color-text)]">{totalTasks - doneTasks.length} tasks</div>
               </div>
             </div>
           </div>
 
           {/* Early Warning System (EWS) */}
-          <div className="lg:col-span-2 p-6 rounded-xl flex flex-col justify-between shadow-sm bg-[var(--color-surface)] border border-[var(--color-divider)]">
+          <div className="card p-6 lg:col-span-2 flex flex-col justify-between">
             <div className="space-y-1 mb-4">
               <div className="flex items-center justify-between">
-                <h3 className="font-sans font-bold text-sm text-[var(--color-text)]">Early Warning System (EWS)</h3>
-                <span className="text-xs px-2 py-0.5 rounded bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)]">
+                <h3 className="font-bold text-sm tracking-tight text-[var(--color-text)]">Early Warning System (EWS)</h3>
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)] font-medium">
                   {ewsAlerts.length} Active Notice{ewsAlerts.length > 1 ? 's' : ''}
                 </span>
               </div>
@@ -310,14 +310,14 @@ const OverviewView: React.FC = () => {
                 <div 
                   key={alert.id} 
                   className={clsx(
-                    "p-3.5 rounded-lg border flex gap-3.5 items-start transition-colors duration-200",
+                    "p-3.5 rounded-xl border flex gap-3.5 items-start transition-colors duration-200",
                     alert.type === 'critical' ? "bg-rose-500/10 border-rose-500/25 text-rose-500" :
                     alert.type === 'warning' ? "bg-amber-500/10 border-amber-500/25 text-amber-500" :
                     "bg-emerald-500/10 border-emerald-500/25 text-emerald-500"
                   )}
                 >
                   <div className={clsx(
-                    "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm",
+                    "w-8 h-8 rounded-xl flex items-center justify-center shrink-0 shadow-2xs",
                     alert.type === 'critical' ? "bg-rose-500 text-white" :
                     alert.type === 'warning' ? "bg-amber-500 text-white" :
                     "bg-emerald-500 text-white"
@@ -336,7 +336,7 @@ const OverviewView: React.FC = () => {
         </div>
 
         {/* ALM Deliveries Snapshot Card */}
-        <div className="p-6 border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-sm rounded-xl">
+        <div className="card p-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -388,10 +388,10 @@ const OverviewView: React.FC = () => {
         </div>
 
         {/* Milestone Roadmap Widget */}
-        <div className="p-6 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-sm">
+        <div className="card p-6">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h3 className="font-bold text-sm text-[var(--color-text)]">Milestone Roadmap Timeline</h3>
+              <h3 className="font-bold text-sm tracking-tight text-[var(--color-text)]">Milestone Roadmap Timeline</h3>
               <p className="text-xs text-[var(--color-text-muted)]">Chronological checkpoint nodes, reached delivery gates, and target dates.</p>
             </div>
             <button 
@@ -411,7 +411,7 @@ const OverviewView: React.FC = () => {
                 return (
                   <div key={t.id} className="flex flex-col items-center text-center min-w-[160px] space-y-2.5 shrink-0">
                     <div className={clsx(
-                      "w-9 h-9 rounded-full flex items-center justify-center border-2 font-mono font-bold text-xs motion-safe:transition-transform duration-200 shadow-sm",
+                      "w-9 h-9 rounded-full flex items-center justify-center border-2 font-mono font-bold text-xs motion-safe:transition-transform duration-200 shadow-2xs",
                       isDone 
                         ? "bg-emerald-500 text-white border-emerald-300" 
                         : "bg-[var(--color-surface)] text-[var(--color-primary-hex)] border-[var(--color-primary-hex)]"
@@ -422,7 +422,7 @@ const OverviewView: React.FC = () => {
                       <div className="text-xs font-semibold text-[var(--color-text)] line-clamp-1 max-w-[150px]">{t.name}</div>
                       <div className="text-xs font-mono text-[var(--color-text-muted)] mt-0.5">{t.dueDate}</div>
                       <span className={clsx(
-                        "inline-block px-2 py-0.5 rounded text-[11px] font-semibold mt-1",
+                        "inline-block px-2.5 py-0.5 rounded-full text-[11px] font-semibold mt-1",
                         isDone ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" : "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20"
                       )}>
                         {isDone ? 'REACHED' : 'PENDING'}
@@ -439,7 +439,7 @@ const OverviewView: React.FC = () => {
         </div>
 
         {/* Resource Utilization Widget */}
-        <div className="p-6 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-sm">
+        <div className="card p-6">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h3 className="font-bold text-sm text-[var(--color-text)]">Resource Utilization Matrix</h3>
@@ -512,7 +512,7 @@ const OverviewView: React.FC = () => {
         </div>
 
         {/* What-If Sandbox Dashboard Widget (Linear / Telemetry Cockpit) */}
-        <div className="p-6 md:p-8 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl shadow-sm relative overflow-hidden">
+        <div className="card p-6 md:p-8 relative overflow-hidden">
           <div className="relative z-10 space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[var(--color-divider)]">
               <div>

@@ -60,19 +60,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
     <aside 
       aria-label="Application Navigation"
       className={clsx(
-        "h-full bg-[var(--color-surface)] border-r border-[var(--color-divider)] flex flex-col motion-safe:transition-[transform,width] duration-250 ease-[cubic-bezier(0.23,1,0.32,1)] fixed lg:relative z-30 shadow-xl lg:shadow-none motion-reduce:transition-none select-none",
+        "h-full bg-[var(--color-surface)]/92 backdrop-blur-2xl border-r border-[var(--color-divider)] flex flex-col motion-safe:transition-[transform,width] duration-250 ease-[cubic-bezier(0.23,1,0.32,1)] fixed lg:relative z-30 shadow-xl lg:shadow-none motion-reduce:transition-none select-none",
         isOpen ? "translate-x-0 w-[270px] max-w-[85vw]" : "-translate-x-full lg:translate-x-0 lg:w-[68px]"
       )}
     >
       {/* Brand Header */}
-      <div className="h-[calc(56px+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] flex items-center justify-between px-4 border-b border-[var(--color-divider)] bg-[var(--color-surface)] shrink-0">
+      <div className="h-[calc(54px+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] flex items-center justify-between px-4 border-b border-[var(--color-divider)] bg-[var(--color-surface)]/75 shrink-0">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-8 h-8 bg-[var(--color-primary-hex)] rounded-xl flex items-center justify-center text-white shrink-0 shadow-xs">
+          <div className="w-8 h-8 bg-[var(--color-primary-hex)] rounded-xl flex items-center justify-center text-white shrink-0 shadow-2xs">
             <Activity size={16} strokeWidth={2.4} />
           </div>
           {isOpen && (
             <div className="min-w-0">
-              <span className="font-display font-bold text-sm tracking-tight text-[var(--color-text)] truncate block">
+              <span className="font-bold text-sm tracking-tight text-[var(--color-text)] truncate block">
                 ProjectPulse
               </span>
               <span className="text-[10px] text-[var(--color-text-faint)] font-mono block truncate">
