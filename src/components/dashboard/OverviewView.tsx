@@ -25,7 +25,8 @@ import {
   Check,
   Zap,
   RotateCcw,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Command
 } from 'lucide-react';
 import clsx from 'clsx';
 import Button from '../shared/Button';
@@ -111,7 +112,7 @@ const OverviewView: React.FC = () => {
     });
   }
 
-  // 3. Milestones & Major Deliverables (Tasks categorized as Server Module, GUI Screen or High Priority)
+  // 3. Milestones & Major Deliverables
   const criticalMilestones = tasks
     .filter(t => t.priority === TaskPriority.CRITICAL || t.priority === TaskPriority.HIGH)
     .slice(0, 5);
@@ -132,7 +133,7 @@ const OverviewView: React.FC = () => {
   // Simulating output values
   const simConfidence = Math.max(10, Math.min(98, 75 + (addEngineers * 5) + (scopeReduction * 0.5) - (timeCompression * 1.2)));
   const simHealth = Math.max(10, Math.min(100, Math.round(healthScore + (addEngineers * 3) + (scopeReduction * 0.4) - (timeCompression * 0.8))));
-  const daysDelta = (addEngineers * -2) + (scopeReduction * -1) + (timeCompression * -2); // advances by e.g. -15 days
+  const daysDelta = (addEngineers * -2) + (scopeReduction * -1) + (timeCompression * -2);
   const simShortfall = Math.max(0, overloadedCount - addEngineers);
 
   const handleCommitSimulation = () => {
@@ -210,118 +211,134 @@ const OverviewView: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-y-auto custom-scroll pb-16">
-      <div className="px-4 md:px-8 py-8 md:py-12 max-w-[1400px] mx-auto w-full space-y-10">
+      <div className="px-4 md:px-8 py-6 md:py-10 max-w-[1400px] mx-auto w-full space-y-8">
         
-        {/* Header Block */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-[var(--color-divider)]">
+        {/* Header Block with Linear-Style Breadcrumbs & Actions */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[var(--color-divider)]">
           <div>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="px-3 py-1 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">Executive Overview</div>
-              <div className="w-1 h-1 rounded-full bg-[var(--color-divider)]" />
-              <span className="text-xs font-bold text-[var(--color-text-faint)] uppercase">Project Pulse Dial</span>
+            <div className="flex items-center gap-2.5 mb-2.5">
+              <span className="px-2.5 py-0.5 bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 text-xs font-semibold rounded-md">
+                Executive Command Center
+              </span>
+              <span className="text-[var(--color-text-faint)]">/</span>
+              <span className="text-xs font-mono font-medium text-[var(--color-text-muted)]">
+                Steering Telemetry
+              </span>
             </div>
-            <h1 className="font-display text-3xl md:text-4xl font-black tracking-tight text-[var(--color-text)] mb-3">Executive Summary</h1>
-            <p className="text-[var(--color-text-muted)] text-sm max-w-xl leading-relaxed">
-              Composite health index, early warning signals, resource utilization, and major active workstreams.
+            <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-2">
+              Executive Steering & Health Index
+            </h1>
+            <p className="text-[var(--color-text-muted)] text-sm max-w-2xl leading-relaxed">
+              Composite delivery health, early warning bottleneck signals, ALM releases, and real-time scenario simulation.
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <button 
               onClick={() => exportProjectExcel(state)}
-              className="h-12 px-5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:scale-[1.02] transition-all"
+              className="h-10 px-4 bg-[var(--color-surface)] border border-[var(--color-border)] hover:bg-[var(--color-surface-2)] text-[var(--color-text)] rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
+              aria-label="Export project report to Excel"
             >
-              <FileSpreadsheet size={16} /> Export to Excel
+              <FileSpreadsheet size={15} className="text-emerald-500" /> 
+              <span>Export Excel</span>
+              <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono rounded bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[var(--color-text-faint)]">⌘E</kbd>
             </button>
             <button 
               onClick={() => setView('dash')}
-              className="h-12 px-6 bg-indigo-600 text-white rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:scale-[1.02] transition-transform"
+              className="h-10 px-4 bg-[var(--color-primary-hex)] hover:opacity-95 text-[var(--color-primary-text,#ffffff)] rounded-lg text-xs font-semibold flex items-center gap-2 transition-opacity cursor-pointer shadow-sm"
+              aria-label="Navigate to advanced telemetry dashboard"
             >
-              <TrendingUp size={16} /> Advanced Analytics
+              <TrendingUp size={15} /> 
+              <span>Advanced Analytics</span>
+              <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono rounded bg-white/20 text-white">G D</kbd>
             </button>
           </div>
         </div>
 
-        {/* Bento Grid */}
-        {/* Bento Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Bento Grid: Health Dial + EWS */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           
           {/* Health Index Dial Component */}
-          <div className="card p-8 flex flex-col justify-between items-center text-center bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
+          <div className="p-6 rounded-xl flex flex-col justify-between items-center text-center bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
             <div className="space-y-1 text-center w-full">
-              <h3 className="font-display font-bold text-sm uppercase text-[var(--color-text)]">Composite Health Index</h3>
-              <p className="text-[10px] font-mono font-bold text-[var(--color-primary-hex)] uppercase tracking-widest">Mathematical Formula Dial</p>
+              <h3 className="font-sans font-bold text-sm text-[var(--color-text)]">Composite Health Index</h3>
+              <p className="text-xs font-mono text-[var(--color-primary-hex)] font-semibold uppercase tracking-wider">Multi-factor Algorithmic Dial</p>
             </div>
 
-            <div className="relative w-44 h-44 my-6 flex items-center justify-center">
+            <div className="relative w-40 h-40 my-5 flex items-center justify-center">
               <svg className="w-full h-full transform -rotate-90">
                 <circle 
-                  cx="88" 
-                  cy="88" 
-                  r="72" 
+                  cx="80" 
+                  cy="80" 
+                  r="64" 
                   className="stroke-[var(--color-surface-2)] fill-none" 
-                  strokeWidth="14" 
+                  strokeWidth="12" 
                 />
                 <circle 
-                  cx="88" 
-                  cy="88" 
-                  r="72" 
+                  cx="80" 
+                  cy="80" 
+                  r="64" 
                   className={clsx(
                     "fill-none transition-all duration-1000",
-                    healthScore > 80 ? "stroke-emerald-400" : healthScore > 50 ? "stroke-amber-400" : "stroke-rose-400"
+                    healthScore > 80 ? "stroke-emerald-500" : healthScore > 50 ? "stroke-amber-500" : "stroke-rose-500"
                   )}
-                  strokeWidth="14" 
-                  strokeDasharray="452.3"
-                  strokeDashoffset={452.3 - (452.3 * healthScore) / 100}
+                  strokeWidth="12" 
+                  strokeDasharray="402.1"
+                  strokeDashoffset={402.1 - (402.1 * healthScore) / 100}
                   strokeLinecap="round"
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-4xl font-mono font-black tracking-tight text-[var(--color-text)]">{healthScore}%</span>
-                <span className="text-[10px] font-mono uppercase text-[var(--color-text-muted)] mt-1">Health Score</span>
+                <span className="text-3xl font-mono font-bold tracking-tight text-[var(--color-text)]">{healthScore}%</span>
+                <span className="text-xs font-mono uppercase text-[var(--color-text-muted)] mt-0.5">Health Score</span>
               </div>
             </div>
 
-            <div className="w-full grid grid-cols-2 gap-4 border-t border-[var(--color-divider)] pt-6">
-              <div>
-                <div className="text-[10px] font-mono uppercase text-[var(--color-text-muted)]">Completed</div>
-                <div className="text-xl font-mono font-bold text-emerald-400">{progressPct}%</div>
+            <div className="w-full grid grid-cols-2 gap-3 border-t border-[var(--color-divider)] pt-4">
+              <div className="text-center p-2 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                <div className="text-xs font-mono uppercase text-[var(--color-text-muted)]">Completed</div>
+                <div className="text-lg font-mono font-bold text-emerald-500">{progressPct}%</div>
               </div>
-              <div>
-                <div className="text-[10px] font-mono uppercase text-[var(--color-text-muted)]">Active backlog</div>
-                <div className="text-xl font-mono font-bold text-[var(--color-text)]">{totalTasks - doneTasks.length} tasks</div>
+              <div className="text-center p-2 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                <div className="text-xs font-mono uppercase text-[var(--color-text-muted)]">Backlog</div>
+                <div className="text-lg font-mono font-bold text-[var(--color-text)]">{totalTasks - doneTasks.length} tasks</div>
               </div>
             </div>
           </div>
 
           {/* Early Warning System (EWS) */}
-          <div className="lg:col-span-2 card p-8 flex flex-col justify-between shadow-sm bg-[var(--color-surface)] border border-[var(--color-divider)]">
-            <div className="space-y-1 mb-6">
-              <h3 className="font-display font-bold text-sm uppercase text-[var(--color-text)]">Early Warning System (EWS)</h3>
-              <p className="text-[10px] font-mono font-bold text-[var(--color-text-muted)] uppercase tracking-widest">Active Bottleneck and Slippage Alerts</p>
+          <div className="lg:col-span-2 p-6 rounded-xl flex flex-col justify-between shadow-sm bg-[var(--color-surface)] border border-[var(--color-divider)]">
+            <div className="space-y-1 mb-4">
+              <div className="flex items-center justify-between">
+                <h3 className="font-sans font-bold text-sm text-[var(--color-text)]">Early Warning System (EWS)</h3>
+                <span className="text-xs font-mono px-2 py-0.5 rounded bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)]">
+                  {ewsAlerts.length} Active Notice{ewsAlerts.length > 1 ? 's' : ''}
+                </span>
+              </div>
+              <p className="text-xs text-[var(--color-text-muted)]">Real-time telemetry scan for schedule slips, high RAID impacts, and resource overloading.</p>
             </div>
 
-            <div className="space-y-4 flex-1">
+            <div className="space-y-3 flex-1">
               {ewsAlerts.map(alert => (
                 <div 
                   key={alert.id} 
                   className={clsx(
-                    "p-4 rounded-xl border flex gap-4 items-start transition-all",
-                    alert.type === 'critical' ? "bg-rose-500/10 border-rose-500/30 text-rose-300" :
-                    alert.type === 'warning' ? "bg-amber-500/10 border-amber-500/30 text-amber-300" :
-                    "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
+                    "p-3.5 rounded-lg border flex gap-3.5 items-start transition-all",
+                    alert.type === 'critical' ? "bg-rose-500/10 border-rose-500/25 text-rose-500" :
+                    alert.type === 'warning' ? "bg-amber-500/10 border-amber-500/25 text-amber-500" :
+                    "bg-emerald-500/10 border-emerald-500/25 text-emerald-500"
                   )}
                 >
                   <div className={clsx(
-                    "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
+                    "w-8 h-8 rounded-lg flex items-center justify-center shrink-0 shadow-sm",
                     alert.type === 'critical' ? "bg-rose-500 text-white" :
                     alert.type === 'warning' ? "bg-amber-500 text-white" :
                     "bg-emerald-500 text-white"
                   )}>
-                    <alert.icon size={18} />
+                    <alert.icon size={16} />
                   </div>
-                  <div>
-                    <h4 className="font-bold text-sm text-[var(--color-text)]">{alert.label}</h4>
-                    <p className="text-xs text-[var(--color-text-muted)] leading-relaxed mt-1">{alert.desc}</p>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-bold text-xs text-[var(--color-text)]">{alert.label}</h4>
+                    <p className="text-xs text-[var(--color-text-muted)] leading-relaxed mt-0.5">{alert.desc}</p>
                   </div>
                 </div>
               ))}
@@ -331,48 +348,48 @@ const OverviewView: React.FC = () => {
         </div>
 
         {/* ALM Deliveries Snapshot Card */}
-        <div className="card p-6 border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-sm rounded-xl">
+        <div className="p-6 border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-sm rounded-xl">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-[10px] font-mono uppercase font-bold text-[var(--color-primary-hex)]">ALM Release Workstation</span>
+                <span className="text-xs font-mono uppercase font-bold text-[var(--color-primary-hex)]">ALM Release Workstation</span>
                 <span className="text-xs text-[var(--color-text-faint)]">·</span>
                 <span className="text-xs text-[var(--color-text-muted)] font-mono">{(state.deliveries || []).length} Packages</span>
               </div>
-              <h3 className="text-base font-display font-bold uppercase tracking-tight text-[var(--color-text)]">
+              <h3 className="text-base font-sans font-bold tracking-tight text-[var(--color-text)]">
                 Active Deployments & Release Verification Gates
               </h3>
             </div>
             <button 
               onClick={() => setView('deliveries')}
-              className="px-4 py-2 bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] hover:bg-[var(--color-primary-hex)] hover:text-[var(--color-primary-text)] rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all self-start md:self-auto cursor-pointer"
+              className="px-3.5 py-1.5 bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] hover:bg-[var(--color-primary-hex)] hover:text-[var(--color-primary-text,#fff)] rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all self-start md:self-auto cursor-pointer"
             >
               <span>Open ALM Workspace</span>
-              <ArrowRight size={14} />
+              <ArrowRight size={13} />
             </button>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg">
-              <span className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">Production Deployed</span>
-              <div className="text-xl font-mono font-bold text-emerald-400 mt-1">
+              <span className="text-xs font-medium text-[var(--color-text-muted)]">Production Deployed</span>
+              <div className="text-xl font-mono font-bold text-emerald-500 mt-1">
                 {(state.deliveries || []).filter(d => d.status === 'Deployed').length}
               </div>
             </div>
             <div className="p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg">
-              <span className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">In Pipeline</span>
-              <div className="text-xl font-mono font-bold text-sky-400 mt-1">
+              <span className="text-xs font-medium text-[var(--color-text-muted)]">In Pipeline</span>
+              <div className="text-xl font-mono font-bold text-sky-500 mt-1">
                 {(state.deliveries || []).filter(d => d.status === 'Ready for Deployment' || d.status === 'In Progress').length}
               </div>
             </div>
             <div className="p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg">
-              <span className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">Pending Sign-off</span>
-              <div className="text-xl font-mono font-bold text-amber-400 mt-1">
+              <span className="text-xs font-medium text-[var(--color-text-muted)]">Pending Sign-off</span>
+              <div className="text-xl font-mono font-bold text-amber-500 mt-1">
                 {(state.deliveries || []).filter(d => d.signOffStatus === 'Pending').length}
               </div>
             </div>
             <div className="p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg">
-              <span className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">Avg Cycle Lead</span>
+              <span className="text-xs font-medium text-[var(--color-text-muted)]">Avg Cycle Lead</span>
               <div className="text-xl font-mono font-bold text-[var(--color-text)] mt-1">
                 {(state.deliveries || []).filter(d => d.leadTimeDays > 0).length 
                   ? ((state.deliveries || []).filter(d => d.leadTimeDays > 0).reduce((acc, d) => acc + d.leadTimeDays, 0) / (state.deliveries || []).filter(d => d.leadTimeDays > 0).length).toFixed(1)
@@ -383,36 +400,41 @@ const OverviewView: React.FC = () => {
         </div>
 
         {/* Milestone Roadmap Widget */}
-        <div className="card p-6 shadow-sm">
+        <div className="p-6 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-sm">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h3 className="font-bold text-sm">Milestone Roadmap Widget</h3>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">A chronological track showing milestones, reached nodes, and target dates.</p>
+              <h3 className="font-bold text-sm text-[var(--color-text)]">Milestone Roadmap Timeline</h3>
+              <p className="text-xs text-[var(--color-text-muted)]">Chronological checkpoint nodes, reached delivery gates, and target dates.</p>
             </div>
-            <button onClick={() => setView('timeline')} className="text-xs font-bold text-indigo-600 hover:underline">View Timeline</button>
+            <button 
+              onClick={() => setView('timeline')} 
+              className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline cursor-pointer"
+            >
+              View Timeline →
+            </button>
           </div>
           
-          <div className="relative py-4">
-            <div className="absolute top-1/2 left-4 right-4 h-1 bg-slate-100 -translate-y-1/2 z-0" />
-            <div className="relative z-10 flex justify-between items-center gap-4 overflow-x-auto pb-4 custom-scroll">
+          <div className="relative py-2">
+            <div className="absolute top-1/2 left-4 right-4 h-0.5 bg-[var(--color-divider)] -translate-y-1/2 z-0" />
+            <div className="relative z-10 flex justify-between items-center gap-4 overflow-x-auto pb-3 custom-scroll">
               {criticalMilestones.map((t, idx) => {
                 const isDone = t.status === TaskStatus.COMPLETED;
                 return (
-                  <div key={t.id} className="flex flex-col items-center text-center min-w-[160px] space-y-3 shrink-0">
+                  <div key={t.id} className="flex flex-col items-center text-center min-w-[160px] space-y-2.5 shrink-0">
                     <div className={clsx(
-                      "w-10 h-10 rounded-full flex items-center justify-center border-4 font-black text-xs transition-all shadow-sm",
+                      "w-9 h-9 rounded-full flex items-center justify-center border-2 font-mono font-bold text-xs transition-all shadow-sm",
                       isDone 
-                        ? "bg-emerald-550 text-white border-emerald-200" 
-                        : "bg-white text-indigo-600 border-indigo-200"
+                        ? "bg-emerald-500 text-white border-emerald-300" 
+                        : "bg-[var(--color-surface)] text-[var(--color-primary-hex)] border-[var(--color-primary-hex)]"
                     )}>
                       {idx + 1}
                     </div>
                     <div>
-                      <div className="text-xs font-bold text-slate-800 line-clamp-1">{t.name}</div>
-                      <div className="text-[9px] font-mono font-bold text-slate-400 mt-0.5">{t.dueDate}</div>
+                      <div className="text-xs font-semibold text-[var(--color-text)] line-clamp-1 max-w-[150px]">{t.name}</div>
+                      <div className="text-xs font-mono text-[var(--color-text-muted)] mt-0.5">{t.dueDate}</div>
                       <span className={clsx(
-                        "inline-block px-1.5 py-0.5 rounded text-[8px] font-black uppercase mt-1.5 tracking-wider",
-                        isDone ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-indigo-50 text-indigo-600 border border-indigo-100"
+                        "inline-block px-2 py-0.5 rounded text-[11px] font-semibold mt-1",
+                        isDone ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" : "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20"
                       )}>
                         {isDone ? 'REACHED' : 'PENDING'}
                       </span>
@@ -421,49 +443,54 @@ const OverviewView: React.FC = () => {
                 );
               })}
               {criticalMilestones.length === 0 && (
-                <div className="w-full py-6 text-center text-slate-400 text-xs">No milestone-grade deliverables found in active tasks.</div>
+                <div className="w-full py-6 text-center text-[var(--color-text-muted)] text-xs">No milestone-grade deliverables found in active tasks.</div>
               )}
             </div>
           </div>
         </div>
 
         {/* Resource Utilization Widget */}
-        <div className="card p-6 shadow-sm">
+        <div className="p-6 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-sm">
           <div className="flex justify-between items-center mb-6">
             <div>
-              <h3 className="font-bold text-sm">Resource Utilization Matrix</h3>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Individual resource cards with utilization metrics and active task lists.</p>
+              <h3 className="font-bold text-sm text-[var(--color-text)]">Resource Utilization Matrix</h3>
+              <p className="text-xs text-[var(--color-text-muted)]">Individual engineer capacity load, active commitments, and utilization thresholds.</p>
             </div>
-            <button onClick={() => setView('capacity')} className="text-xs font-bold text-indigo-600 hover:underline">View Capacity</button>
+            <button 
+              onClick={() => setView('capacity')} 
+              className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline cursor-pointer"
+            >
+              View Capacity →
+            </button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {members.slice(0, 8).map(m => {
               const activeTasks = tasks.filter(t => t.assignee === m.name && t.status !== TaskStatus.COMPLETED);
               const totalActiveEffort = activeTasks.reduce((sum, t) => sum + t.estDays, 0);
-              const utilizationPct = Math.min(Math.round((totalActiveEffort / 10) * 100), 150); // Assumes 10 days capacity
+              const utilizationPct = Math.min(Math.round((totalActiveEffort / 10) * 100), 150);
               return (
-                <div key={m.id} className="p-5 rounded-2xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors flex flex-col justify-between">
+                <div key={m.id} className="p-4 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface-2)] hover:border-[var(--color-border)] transition-colors flex flex-col justify-between">
                   <div>
-                    <div className="flex justify-between items-start mb-3">
+                    <div className="flex justify-between items-start mb-2.5">
                       <div>
-                        <h4 className="font-bold text-sm text-slate-800 leading-tight">{m.name}</h4>
-                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">{m.role || 'Contributor'}</p>
+                        <h4 className="font-bold text-xs text-[var(--color-text)] leading-tight">{m.name}</h4>
+                        <p className="text-xs text-[var(--color-text-muted)] mt-0.5">{m.role || 'Contributor'}</p>
                       </div>
                       <span className={clsx(
-                        "px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider",
-                        utilizationPct > 100 ? "bg-rose-50 text-rose-600 border border-rose-100" :
-                        utilizationPct > 60 ? "bg-amber-50 text-amber-600 border border-amber-100" :
-                        "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                        "px-1.5 py-0.5 rounded text-[11px] font-mono font-semibold",
+                        utilizationPct > 100 ? "bg-rose-500/10 text-rose-500 border border-rose-500/20" :
+                        utilizationPct > 60 ? "bg-amber-500/10 text-amber-500 border border-amber-500/20" :
+                        "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"
                       )}>
-                        {utilizationPct}% Util
+                        {utilizationPct}%
                       </span>
                     </div>
 
-                    <div className="w-full bg-slate-200/50 h-1.5 rounded-full overflow-hidden mb-4 shadow-inner">
+                    <div className="w-full bg-[var(--color-surface-offset,#e2e8f0)] dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden mb-3">
                       <div 
                         className={clsx(
-                          "h-full rounded-full transition-all duration-1000",
+                          "h-full rounded-full transition-all duration-700",
                           utilizationPct > 100 ? "bg-rose-500" :
                           utilizationPct > 60 ? "bg-amber-500" :
                           "bg-emerald-500"
@@ -473,19 +500,19 @@ const OverviewView: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-1.5 mt-2 pt-3 border-t border-slate-100">
-                    <div className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Active tasks:</div>
+                  <div className="space-y-1 mt-2 pt-2.5 border-t border-[var(--color-divider)]">
+                    <div className="text-xs text-[var(--color-text-muted)] font-medium mb-1">Active tasks:</div>
                     {activeTasks.slice(0, 2).map(t => (
-                      <div key={t.id} className="text-xs text-slate-700 font-bold flex justify-between gap-2">
+                      <div key={t.id} className="text-xs text-[var(--color-text)] font-medium flex justify-between gap-2">
                         <span className="truncate">• {t.name}</span>
-                        <span className="font-mono text-[10px] text-indigo-600 shrink-0">{t.estDays}d</span>
+                        <span className="font-mono text-xs text-[var(--color-primary-hex)] shrink-0">{t.estDays}d</span>
                       </div>
                     ))}
                     {activeTasks.length > 2 && (
-                      <div className="text-[9px] text-slate-400 font-bold uppercase italic mt-1">+ {activeTasks.length - 2} more active tasks</div>
+                      <div className="text-xs text-[var(--color-text-muted)] italic mt-0.5">+ {activeTasks.length - 2} more active tasks</div>
                     )}
                     {activeTasks.length === 0 && (
-                      <div className="text-xs text-slate-400 italic">No active tasks allocated.</div>
+                      <div className="text-xs text-[var(--color-text-muted)] italic">No active tasks allocated.</div>
                     )}
                   </div>
                 </div>
@@ -494,40 +521,41 @@ const OverviewView: React.FC = () => {
           </div>
         </div>
 
-        {/* What-If Sandbox Dashboard Widget */}
-        <div className="card p-8 bg-gradient-to-br from-indigo-950 via-slate-900 to-indigo-900 text-white border-none shadow-xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-8 opacity-5 text-indigo-400 pointer-events-none">
-            <Sparkles size={200} />
-          </div>
-
-          <div className="relative z-10 space-y-8">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-white/10">
+        {/* What-If Sandbox Dashboard Widget (Linear / Telemetry Cockpit) */}
+        <div className="p-6 md:p-8 bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl shadow-sm relative overflow-hidden">
+          <div className="relative z-10 space-y-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[var(--color-divider)]">
               <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="text-indigo-400 animate-pulse" size={16} />
-                  <span className="text-[10px] font-black uppercase text-indigo-300 tracking-widest">Dynamic Copilot Sandbox</span>
+                <div className="flex items-center gap-2 mb-1.5">
+                  <Sparkles className="text-[var(--color-primary-hex)]" size={15} />
+                  <span className="text-xs font-mono font-bold uppercase text-[var(--color-primary-hex)] tracking-wider">
+                    Copilot Scenario Modeler
+                  </span>
                 </div>
-                <h3 className="font-display text-xl font-black">Strategic What-If Scenario Modeler</h3>
-                <p className="text-slate-300 text-xs mt-1">Simulate changes in engineering resources, project scope, and timelines to forecast risk posture.</p>
+                <h3 className="font-sans text-lg font-bold text-[var(--color-text)]">Strategic What-If Sandbox</h3>
+                <p className="text-[var(--color-text-muted)] text-xs mt-0.5">
+                  Simulate adjustments in engineering resources, scope descoping, and timeline crunch to model risk outcomes.
+                </p>
               </div>
               <div className="flex gap-2">
                 <button 
                   onClick={resetWhatIf}
-                  className="px-4 py-2 border border-white/20 hover:border-white/40 rounded-xl text-xs font-bold transition-all flex items-center gap-1"
+                  className="px-3 py-1.5 border border-[var(--color-divider)] hover:bg-[var(--color-surface-2)] text-[var(--color-text)] rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
+                  aria-label="Reset simulation parameters"
                 >
                   <RotateCcw size={12} /> Reset Simulation
                 </button>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* Sliders (LHS) */}
-              <div className="lg:col-span-7 space-y-6">
+              <div className="lg:col-span-7 space-y-5">
                 {/* Additional Engineers Slider */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs font-bold">
-                    <span className="text-slate-200">Additional Engineering Resources</span>
-                    <span className="text-indigo-400">+{addEngineers} Headcount</span>
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs font-semibold text-[var(--color-text)]">
+                    <span>Additional Engineering Resources</span>
+                    <span className="font-mono text-[var(--color-primary-hex)]">+{addEngineers} Headcount</span>
                   </div>
                   <input 
                     type="range" 
@@ -535,19 +563,19 @@ const OverviewView: React.FC = () => {
                     max="5" 
                     value={addEngineers} 
                     onChange={(e) => setAddEngineers(parseInt(e.target.value))}
-                    className="w-full accent-indigo-500 h-1.5 bg-white/10 rounded-lg cursor-pointer"
+                    className="w-full accent-[var(--color-primary-hex)] h-1.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg cursor-pointer"
                   />
-                  <div className="flex justify-between text-[9px] text-slate-400 font-bold">
-                    <span>None</span>
-                    <span>+5 Developers</span>
+                  <div className="flex justify-between text-xs text-[var(--color-text-muted)]">
+                    <span>Baseline (0)</span>
+                    <span>+5 Devs</span>
                   </div>
                 </div>
 
                 {/* Scope Reduction Slider */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs font-bold">
-                    <span className="text-slate-200">Scope Rescoping / Feature Descoping</span>
-                    <span className="text-indigo-400">-{scopeReduction}% Backlog Reduction</span>
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs font-semibold text-[var(--color-text)]">
+                    <span>Scope Descoping / Backlog Reduction</span>
+                    <span className="font-mono text-[var(--color-primary-hex)]">-{scopeReduction}% Backlog</span>
                   </div>
                   <input 
                     type="range" 
@@ -555,19 +583,19 @@ const OverviewView: React.FC = () => {
                     max="40" 
                     value={scopeReduction} 
                     onChange={(e) => setScopeReduction(parseInt(e.target.value))}
-                    className="w-full accent-indigo-500 h-1.5 bg-white/10 rounded-lg cursor-pointer"
+                    className="w-full accent-[var(--color-primary-hex)] h-1.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg cursor-pointer"
                   />
-                  <div className="flex justify-between text-[9px] text-slate-400 font-bold">
-                    <span>Full Scope</span>
+                  <div className="flex justify-between text-xs text-[var(--color-text-muted)]">
+                    <span>100% Scope</span>
                     <span>-40% Non-critical Features</span>
                   </div>
                 </div>
 
                 {/* Timeline Compression Slider */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs font-bold">
-                    <span className="text-slate-200">Timeline Schedule Compression</span>
-                    <span className="text-indigo-400">{timeCompression}% Faster Deadline</span>
+                <div className="space-y-1.5">
+                  <div className="flex justify-between text-xs font-semibold text-[var(--color-text)]">
+                    <span>Timeline Schedule Compression</span>
+                    <span className="font-mono text-[var(--color-primary-hex)]">{timeCompression}% Acceleration</span>
                   </div>
                   <input 
                     type="range" 
@@ -575,67 +603,67 @@ const OverviewView: React.FC = () => {
                     max="30" 
                     value={timeCompression} 
                     onChange={(e) => setTimeCompression(parseInt(e.target.value))}
-                    className="w-full accent-indigo-500 h-1.5 bg-white/10 rounded-lg cursor-pointer"
+                    className="w-full accent-[var(--color-primary-hex)] h-1.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg cursor-pointer"
                   />
-                  <div className="flex justify-between text-[9px] text-slate-400 font-bold">
-                    <span>Normal pacing</span>
-                    <span>30% compression (Sprint crunch)</span>
+                  <div className="flex justify-between text-xs text-[var(--color-text-muted)]">
+                    <span>Standard Pacing</span>
+                    <span>30% Sprint Crunch</span>
                   </div>
                 </div>
               </div>
 
               {/* Simulated Outcomes (RHS) */}
-              <div className="lg:col-span-5 bg-white/5 border border-white/10 rounded-2xl p-6 grid grid-cols-2 gap-4">
+              <div className="lg:col-span-5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl p-5 grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <div className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">Simulated Confidence</div>
+                  <div className="text-xs text-[var(--color-text-muted)] font-medium">Simulated Confidence</div>
                   <div className={clsx(
-                    "text-2xl font-display font-black",
-                    simConfidence > 80 ? "text-emerald-400" : simConfidence > 50 ? "text-amber-400" : "text-rose-400"
+                    "text-2xl font-mono font-bold",
+                    simConfidence > 80 ? "text-emerald-500" : simConfidence > 50 ? "text-amber-500" : "text-rose-500"
                   )}>
                     {simConfidence}%
                   </div>
-                  <p className="text-[9px] text-slate-400">Baseline level: 75%</p>
+                  <p className="text-xs text-[var(--color-text-faint)]">Baseline: 75%</p>
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">Simulated Health</div>
+                  <div className="text-xs text-[var(--color-text-muted)] font-medium">Simulated Health</div>
                   <div className={clsx(
-                    "text-2xl font-display font-black",
-                    simHealth > 80 ? "text-emerald-400" : simHealth > 50 ? "text-amber-400" : "text-rose-400"
+                    "text-2xl font-mono font-bold",
+                    simHealth > 80 ? "text-emerald-500" : simHealth > 50 ? "text-amber-500" : "text-rose-500"
                   )}>
                     {simHealth}%
                   </div>
-                  <p className="text-[9px] text-slate-400">Current index: {healthScore}%</p>
+                  <p className="text-xs text-[var(--color-text-faint)]">Current: {healthScore}%</p>
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">P90 Delivery Delta</div>
-                  <div className="text-2xl font-display font-black text-indigo-300">
+                  <div className="text-xs text-[var(--color-text-muted)] font-medium">Delivery Delta</div>
+                  <div className="text-2xl font-mono font-bold text-[var(--color-primary-hex)]">
                     {daysDelta !== 0 ? `${daysDelta} days` : 'Stable'}
                   </div>
-                  <p className="text-[9px] text-slate-400">Target delivery date offset</p>
+                  <p className="text-xs text-[var(--color-text-faint)]">Schedule offset</p>
                 </div>
 
                 <div className="space-y-1">
-                  <div className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">Capacity Balance</div>
+                  <div className="text-xs text-[var(--color-text-muted)] font-medium">Capacity Balance</div>
                   <div className={clsx(
-                    "text-2xl font-display font-black",
-                    simShortfall <= 0 ? "text-emerald-400" : "text-amber-400"
+                    "text-2xl font-mono font-bold",
+                    simShortfall <= 0 ? "text-emerald-500" : "text-amber-500"
                   )}>
-                    {simShortfall <= 0 ? 'Surplus (+2)' : `${simShortfall} Overloaded`}
+                    {simShortfall <= 0 ? 'Optimal' : `${simShortfall} Overload`}
                   </div>
-                  <p className="text-[9px] text-slate-400">FTE resource loading gap</p>
+                  <p className="text-xs text-[var(--color-text-faint)]">FTE loading gap</p>
                 </div>
 
-                <div className="col-span-2 pt-4 border-t border-white/10 mt-2">
+                <div className="col-span-2 pt-3 border-t border-[var(--color-divider)] mt-1">
                   <button 
                     onClick={handleCommitSimulation}
                     disabled={simulationCommitted}
                     className={clsx(
-                      "w-full h-11 rounded-xl text-xs font-black uppercase tracking-wider transition-colors flex items-center justify-center gap-2 shadow-lg",
+                      "w-full h-10 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer",
                       simulationCommitted 
                         ? "bg-emerald-600 text-white cursor-default" 
-                        : "bg-indigo-600 hover:bg-indigo-500 text-white"
+                        : "bg-[var(--color-primary-hex)] hover:opacity-95 text-[var(--color-primary-text,#fff)]"
                     )}
                   >
                     {simulationCommitted ? (
@@ -655,68 +683,78 @@ const OverviewView: React.FC = () => {
         </div>
 
         {/* Governance & Critical Path Split Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
           {/* Critical Path Deliverables */}
-          <div className="card p-6 shadow-sm">
-            <div className="flex justify-between items-center mb-6">
+          <div className="p-6 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-sm">
+            <div className="flex justify-between items-center mb-4">
               <div>
-                <h3 className="font-bold text-sm">Critical Path Deliverables</h3>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">High & Critical Priority Telemetry</p>
+                <h3 className="font-bold text-sm text-[var(--color-text)]">Critical Path Deliverables</h3>
+                <p className="text-xs text-[var(--color-text-muted)]">High & Critical Priority Telemetry Tasks</p>
               </div>
-              <button onClick={() => setView('tasks')} className="text-xs font-bold text-indigo-600 hover:underline">View Matrix</button>
+              <button 
+                onClick={() => setView('tasks')} 
+                className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline cursor-pointer"
+              >
+                View Tasks →
+              </button>
             </div>
 
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-[var(--color-divider)]">
               {criticalMilestones.length > 0 ? criticalMilestones.map(t => (
-                <div key={t.id} className="py-3.5 flex items-center justify-between gap-4">
+                <div key={t.id} className="py-3 flex items-center justify-between gap-4">
                   <div className="truncate flex-1">
-                    <div className="text-xs font-bold text-slate-900 truncate">{t.name}</div>
-                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-tight mt-0.5">{t.id} • {t.assignee || 'Unassigned'}</div>
+                    <div className="text-xs font-semibold text-[var(--color-text)] truncate">{t.name}</div>
+                    <div className="text-xs text-[var(--color-text-muted)] font-mono mt-0.5">{t.id} · {t.assignee || 'Unassigned'}</div>
                   </div>
-                  <div className="flex items-center gap-3 shrink-0">
+                  <div className="flex items-center gap-2.5 shrink-0">
                     <span className={clsx(
-                      "px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider",
-                      t.status === TaskStatus.COMPLETED ? "bg-emerald-50 text-emerald-600 border border-emerald-100" :
-                      t.status === TaskStatus.ON_HOLD ? "bg-red-50 text-red-600 border border-red-100" :
-                      "bg-amber-50 text-amber-600 border border-amber-100"
+                      "px-2 py-0.5 rounded text-[11px] font-semibold",
+                      t.status === TaskStatus.COMPLETED ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" :
+                      t.status === TaskStatus.ON_HOLD ? "bg-rose-500/10 text-rose-500 border border-rose-500/20" :
+                      "bg-amber-500/10 text-amber-500 border border-amber-500/20"
                     )}>{t.status}</span>
-                    <span className="font-mono text-xs text-slate-500 font-bold">{t.dueDate}</span>
+                    <span className="font-mono text-xs text-[var(--color-text-muted)]">{t.dueDate}</span>
                   </div>
                 </div>
               )) : (
-                <div className="py-8 text-center text-slate-400 text-xs">No high or critical deliverables mapped.</div>
+                <div className="py-8 text-center text-[var(--color-text-muted)] text-xs">No high or critical deliverables mapped.</div>
               )}
             </div>
           </div>
 
           {/* Governance & Steerco Panel */}
-          <div className="card p-6 shadow-sm">
-            <div className="flex justify-between items-center mb-6">
+          <div className="p-6 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-sm">
+            <div className="flex justify-between items-center mb-4">
               <div>
-                <h3 className="font-bold text-sm">Steering Decisions Log</h3>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Awaiting Sign-off vs Approved State</p>
+                <h3 className="font-bold text-sm text-[var(--color-text)]">Steering Decisions Log</h3>
+                <p className="text-xs text-[var(--color-text-muted)]">Executive Sign-offs and Architectural Direction</p>
               </div>
-              <button onClick={() => setView('risks')} className="text-xs font-bold text-indigo-600 hover:underline">View RAID</button>
+              <button 
+                onClick={() => setView('risks')} 
+                className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline cursor-pointer"
+              >
+                View RAID →
+              </button>
             </div>
 
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-[var(--color-divider)]">
               {decisions.slice(0, 5).map(d => (
-                <div key={d.id} className="py-3.5 flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="text-xs font-bold text-slate-900">{d.title}</div>
-                    <div className="text-[10px] text-slate-400 mt-1">Proposed: {d.proposedBy} • Approver: {d.approver}</div>
+                <div key={d.id} className="py-3 flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="text-xs font-semibold text-[var(--color-text)] truncate">{d.title}</div>
+                    <div className="text-xs text-[var(--color-text-muted)] mt-0.5">Proposed: {d.proposedBy} · Approver: {d.approver}</div>
                   </div>
                   <span className={clsx(
-                    "px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider shrink-0",
-                    d.status === 'Approved' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" :
-                    d.status === 'Rejected' ? "bg-rose-50 text-rose-600 border border-rose-100" :
-                    "bg-amber-50 text-amber-600 border border-amber-100"
+                    "px-2 py-0.5 rounded text-[11px] font-semibold shrink-0",
+                    d.status === 'Approved' ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" :
+                    d.status === 'Rejected' ? "bg-rose-500/10 text-rose-500 border border-rose-500/20" :
+                    "bg-amber-500/10 text-amber-500 border border-amber-500/20"
                   )}>{d.status}</span>
                 </div>
               ))}
               {decisions.length === 0 && (
-                <div className="py-8 text-center text-slate-400 text-xs">No strategic decisions logged. Navigate to RAID Register to log decisions.</div>
+                <div className="py-8 text-center text-[var(--color-text-muted)] text-xs">No strategic decisions logged. Navigate to RAID Register to log decisions.</div>
               )}
             </div>
           </div>
@@ -724,26 +762,31 @@ const OverviewView: React.FC = () => {
         </div>
 
         {/* Change History Delta Stream */}
-        <div className="card p-6 shadow-sm">
-          <div className="flex justify-between items-center mb-6">
+        <div className="p-6 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-sm">
+          <div className="flex justify-between items-center mb-4">
             <div>
-              <h3 className="font-bold text-sm">Project History Change Delta</h3>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Live Audit Trail Stream</p>
+              <h3 className="font-bold text-sm text-[var(--color-text)]">Project History Change Delta</h3>
+              <p className="text-xs text-[var(--color-text-muted)]">Live Audit Trail and Modification Stream</p>
             </div>
-            <button onClick={() => setView('log')} className="text-xs font-bold text-indigo-600 hover:underline">Full Log</button>
+            <button 
+              onClick={() => setView('log')} 
+              className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline cursor-pointer"
+            >
+              Full Log →
+            </button>
           </div>
 
-          <div className="divide-y divide-slate-100 max-h-60 overflow-y-auto custom-scroll">
+          <div className="divide-y divide-[var(--color-divider)] max-h-56 overflow-y-auto custom-scroll">
             {log.slice().reverse().slice(0, 6).map((l, i) => (
-              <div key={i} className="py-3 flex items-center gap-4 text-xs font-medium">
-                <div className="w-20 font-mono text-[10px] text-slate-400 shrink-0">{l.ts.split('T')[0]} {l.ts.split('T')[1]?.substring(0, 5)}</div>
-                <div className="w-16 text-[10px] font-black uppercase text-indigo-600 tracking-wider shrink-0">{l.action}</div>
-                <div className="flex-1 truncate text-slate-700 font-bold">{l.taskId}: {l.taskName}</div>
-                <div className="text-[10px] text-slate-400 shrink-0">{l.assignee}</div>
+              <div key={i} className="py-2.5 flex items-center gap-3 text-xs">
+                <div className="w-24 font-mono text-xs text-[var(--color-text-faint)] shrink-0">{l.ts.split('T')[0]} {l.ts.split('T')[1]?.substring(0, 5)}</div>
+                <div className="w-20 text-xs font-semibold uppercase text-[var(--color-primary-hex)] tracking-wider shrink-0">{l.action}</div>
+                <div className="flex-1 truncate text-[var(--color-text)] font-medium">{l.taskId ? `${l.taskId}: ` : ''}{l.taskName}</div>
+                <div className="text-xs text-[var(--color-text-muted)] shrink-0">{l.assignee}</div>
               </div>
             ))}
             {log.length === 0 && (
-              <div className="py-8 text-center text-slate-400 text-xs">No activity entries registered.</div>
+              <div className="py-6 text-center text-[var(--color-text-muted)] text-xs">No activity entries registered.</div>
             )}
           </div>
         </div>
