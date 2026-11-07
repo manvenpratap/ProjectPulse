@@ -123,8 +123,8 @@ Project Management Office (PMO)`;
             <h1 className="font-display text-lg font-bold tracking-tight text-[var(--color-text)]">
               Executive Reporting & Board Packs
             </h1>
-            <p className="text-[11px] text-[var(--color-text-muted)] font-medium uppercase tracking-wider">
-              Project Performance • CXO Briefings • Release Audits
+            <p className="text-xs text-[var(--color-text-muted)] font-medium">
+              Project Performance, CXO Briefings, and Release Audits
             </p>
           </div>
         </div>
@@ -156,7 +156,7 @@ Project Management Office (PMO)`;
                 key={type.id}
                 onClick={() => setReportType(type.id as any)}
                 className={clsx(
-                  "flex-1 min-w-[120px] flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-all shrink-0",
+                  "flex-1 min-w-[120px] flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] shrink-0",
                   reportType === type.id 
                     ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] shadow-sm" 
                     : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
@@ -174,21 +174,21 @@ Project Management Office (PMO)`;
             {/* Sheet Banner Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-10 border-b border-[var(--color-divider)] pb-8">
               <div>
-                <div className="px-3 py-1 bg-indigo-500/10 text-indigo-600 text-[10px] font-black uppercase tracking-widest rounded-full mb-3 inline-block">
-                  Official Project Pulse Telemetry Report
-                </div>
-                <h2 className="text-3xl font-display font-black tracking-tight text-[var(--color-text)]">{state.name}</h2>
+                <h2 className="text-3xl font-display font-black tracking-tight text-[var(--color-text)] flex items-center gap-3">
+                  <span>{state.name}</span>
+                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600">Telemetry Report</span>
+                </h2>
                 <p className="text-xs text-[var(--color-text-muted)] mt-1 font-medium">
                   {state.desc || 'Monolithic high-density project performance and governance dossier.'}
                 </p>
               </div>
               <div className="text-left sm:text-right shrink-0">
-                <div className="text-[10px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider mb-1">Generated At</div>
+                <div className="text-xs font-medium text-[var(--color-text-faint)] mb-1">Generated at</div>
                 <div className="text-xs font-mono font-bold text-[var(--color-text)]">
                   {new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                 </div>
                 <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 motion-safe:animate-pulse" />
                   Health Index: {health}%
                 </div>
               </div>
@@ -196,26 +196,26 @@ Project Management Office (PMO)`;
 
             {/* TAB 1: STATUS SUMMARY */}
             {reportType === 'status' && (
-              <div className="space-y-8 animate-in fade-in duration-300">
+              <div className="space-y-8 motion-safe:animate-in motion-safe:fade-in duration-300">
                 {/* 4 Core Metrics */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
                   <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-                    <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)]">Tasks Done</span>
+                    <span className="text-xs font-medium text-[var(--color-text-faint)]">Tasks done</span>
                     <div className="text-2xl font-mono font-bold text-emerald-600 mt-1">{completedTasks.length} / {totalTasks}</div>
                     <span className="text-[10px] text-[var(--color-text-muted)]">{progress}% completed</span>
                   </div>
                   <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-                    <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)]">ALM Deliveries</span>
+                    <span className="text-xs font-medium text-[var(--color-text-faint)]">ALM deliveries</span>
                     <div className="text-2xl font-mono font-bold text-indigo-600 mt-1">{state.deliveries?.length || 0}</div>
                     <span className="text-[10px] text-[var(--color-text-muted)]">Release packages</span>
                   </div>
                   <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-                    <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)]">Active RAID</span>
+                    <span className="text-xs font-medium text-[var(--color-text-faint)]">Active RAID</span>
                     <div className="text-2xl font-mono font-bold text-amber-600 mt-1">{activeRaids.length}</div>
                     <span className="text-[10px] text-[var(--color-text-muted)]">Risks & dependencies</span>
                   </div>
                   <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-                    <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)]">Overdue Items</span>
+                    <span className="text-xs font-medium text-[var(--color-text-faint)]">Overdue items</span>
                     <div className="text-2xl font-mono font-bold text-red-500 mt-1">{overdueTasks.length}</div>
                     <span className="text-[10px] text-[var(--color-text-muted)]">Need intervention</span>
                   </div>
@@ -224,18 +224,18 @@ Project Management Office (PMO)`;
                 {/* Progress Visual */}
                 <div className="space-y-2 p-5 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
                   <div className="flex justify-between items-center text-xs font-bold">
-                    <span className="uppercase text-[var(--color-text-muted)]">Total Delivery Momentum</span>
+                    <span className="text-xs font-medium text-[var(--color-text-muted)]">Total delivery momentum</span>
                     <span className="font-mono text-indigo-600">{progress}%</span>
                   </div>
                   <div className="h-3 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
-                    <div className="h-full bg-[var(--color-primary-hex)] rounded-full transition-all duration-700" style={{ width: `${progress}%` }} />
+                    <div className="h-full bg-[var(--color-primary-hex)] rounded-full" style={{ width: `${progress}%` }} />
                   </div>
                 </div>
 
                 {/* Key Executive Insights */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="p-5 rounded-2xl border border-[var(--color-divider)] space-y-3">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-1.5">
+                    <h4 className="text-xs font-bold text-[var(--color-text-faint)] flex items-center gap-1.5">
                       <TrendingUp size={14} className="text-indigo-600" />
                       Executive Highlights
                     </h4>
@@ -247,7 +247,7 @@ Project Management Office (PMO)`;
                   </div>
 
                   <div className="p-5 rounded-2xl border border-[var(--color-divider)] space-y-3">
-                    <h4 className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-1.5">
+                    <h4 className="text-xs font-bold text-[var(--color-text-faint)] flex items-center gap-1.5">
                       <ShieldAlert size={14} className="text-amber-500" />
                       Early Warnings & Bottlenecks
                     </h4>
@@ -316,7 +316,7 @@ Project Management Office (PMO)`;
                             <span className="font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
                               {r.name}
                               <span className={clsx(
-                                "px-2 py-0.5 rounded-full text-[9px] uppercase font-bold",
+                                "px-2 py-0.5 rounded-full text-xs font-medium",
                                 r.status === 'Released' ? "bg-emerald-500/10 text-emerald-600" : r.status === 'Active' ? "bg-blue-500/10 text-blue-600" : "bg-amber-500/10 text-amber-600"
                               )}>
                                 {r.status}
@@ -333,7 +333,7 @@ Project Management Office (PMO)`;
                         </div>
 
                         <div className="h-2 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
-                          <div className="h-full bg-indigo-600 rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+                          <div className="h-full bg-indigo-600 rounded-full" style={{ width: `${pct}%` }} />
                         </div>
                       </div>
                     );

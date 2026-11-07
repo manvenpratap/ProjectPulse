@@ -178,7 +178,7 @@ export const SprintRetroView: React.FC = () => {
 
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="h-10 px-4 bg-[var(--color-primary-hex)] hover:opacity-95 text-[var(--color-primary-text,#fff)] rounded-lg text-xs font-semibold flex items-center gap-2 transition-opacity shadow-sm cursor-pointer"
+                className="h-10 px-4 bg-[var(--color-primary-hex)] hover:opacity-95 text-[var(--color-primary-text)] rounded-lg text-xs font-semibold flex items-center gap-2 transition-opacity shadow-sm cursor-pointer"
                 aria-label="Add retro item"
               >
                 <Plus size={16} />
@@ -240,7 +240,7 @@ export const SprintRetroView: React.FC = () => {
             className={clsx(
               "px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer",
               activeCategoryFilter === 'all'
-                ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text,#fff)] shadow-sm"
+                ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-sm"
                 : "bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
             )}
           >
@@ -253,7 +253,7 @@ export const SprintRetroView: React.FC = () => {
               className={clsx(
                 "px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap flex items-center gap-2 transition-colors cursor-pointer",
                 activeCategoryFilter === cat.id
-                  ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text,#fff)] shadow-sm"
+                  ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-sm"
                   : "bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
               )}
             >
@@ -314,7 +314,7 @@ export const SprintRetroView: React.FC = () => {
                   {items.map(item => (
                     <div 
                       key={item.id}
-                      className="p-3.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] hover:border-[var(--color-border)] rounded-xl transition-all space-y-2.5 relative group"
+                      className="p-3.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] hover:border-[var(--color-border)] rounded-xl transition-colors duration-150 space-y-2.5 relative group"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <h3 className="text-xs font-semibold text-[var(--color-text)] leading-snug flex-1">
@@ -472,10 +472,10 @@ export const SprintRetroView: React.FC = () => {
                   onChange={(e) => setNewCategory(e.target.value as any)}
                   className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs text-[var(--color-text)] focus:outline-none cursor-pointer"
                 >
-                  <option value="went_well">🟢 What Went Well</option>
-                  <option value="needs_improvement">🟡 Areas for Growth / Friction</option>
-                  <option value="action_item">🔵 Action Commitment</option>
-                  <option value="kudos">🟣 Team Kudos & Shoutout</option>
+                  <option value="went_well">What Went Well</option>
+                  <option value="needs_improvement">Areas for Growth / Friction</option>
+                  <option value="action_item">Action Commitment</option>
+                  <option value="kudos">Team Kudos & Shoutout</option>
                 </select>
               </div>
 
@@ -556,7 +556,7 @@ export const SprintRetroView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-[var(--color-primary-hex)] text-[var(--color-primary-text,#fff)] hover:opacity-95 rounded-lg text-xs font-semibold transition-opacity shadow-sm cursor-pointer"
+                  className="px-4 py-2 bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] hover:opacity-95 rounded-lg text-xs font-semibold transition-opacity shadow-sm cursor-pointer"
                 >
                   Submit Item
                 </button>

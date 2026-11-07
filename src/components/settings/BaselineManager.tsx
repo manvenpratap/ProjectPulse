@@ -171,14 +171,14 @@ export const BaselineManager: React.FC = () => {
             <div 
               key={snap.id}
               className={clsx(
-                "p-5 rounded-2xl bg-[var(--color-surface)] border transition-all shadow-sm flex flex-col justify-between group",
+                "p-5 rounded-2xl bg-[var(--color-surface)] border transition-colors duration-150 shadow-sm flex flex-col justify-between group",
                 isSelected ? "border-[var(--color-primary-hex)] ring-2 ring-[var(--color-primary-highlight-hex)]" : "border-[var(--color-divider)] hover:border-[var(--color-text-faint)]"
               )}
             >
               <div>
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <div>
-                    <span className="text-[10px] font-mono font-bold text-[var(--color-primary-hex)] uppercase tracking-wider">{snap.id}</span>
+                    <span className="text-xs font-mono font-medium text-[var(--color-primary-hex)]">{snap.id}</span>
                     <h4 className="font-bold text-sm text-[var(--color-text)]">{snap.name}</h4>
                   </div>
                   <div className="flex items-center gap-1">
@@ -200,18 +200,18 @@ export const BaselineManager: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-[var(--color-surface-2)] text-xs mb-3">
                   <div>
-                    <span className="text-[9px] uppercase font-bold text-[var(--color-text-faint)] block">Captured On</span>
+                    <span className="text-xs font-medium text-[var(--color-text-faint)] block">Captured on</span>
                     <span className="font-mono font-semibold text-[var(--color-text)]">{fmtDate(snap.date)}</span>
                   </div>
                   <div>
-                    <span className="text-[9px] uppercase font-bold text-[var(--color-text-faint)] block">Tasks Recorded</span>
+                    <span className="text-xs font-medium text-[var(--color-text-faint)] block">Tasks recorded</span>
                     <span className="font-mono font-semibold text-[var(--color-text)]">{snap.items.length} tasks</span>
                   </div>
                 </div>
 
                 <div className="p-2.5 rounded-xl border border-[var(--color-divider)] space-y-1 text-xs mb-4">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase">Schedule Drift:</span>
+                    <span className="text-xs font-medium text-[var(--color-text-muted)]">Schedule drift:</span>
                     <span className={clsx("font-mono font-bold", totalVarianceDays > 0 ? "text-red-500" : totalVarianceDays < 0 ? "text-emerald-500" : "text-[var(--color-text-muted)]")}>
                       {totalVarianceDays > 0 ? `+${totalVarianceDays} days slip` : totalVarianceDays < 0 ? `${totalVarianceDays} days ahead` : 'Zero Drift'}
                     </span>
@@ -279,7 +279,7 @@ export const BaselineManager: React.FC = () => {
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
-                <tr className="border-b border-[var(--color-divider)] text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
+                <tr className="border-b border-[var(--color-divider)] text-xs font-semibold text-[var(--color-text-faint)]">
                   <th className="py-2.5 px-3">Task</th>
                   <th className="py-2.5 px-3">Baseline Target</th>
                   <th className="py-2.5 px-3">Current Due Date</th>
@@ -321,7 +321,7 @@ export const BaselineManager: React.FC = () => {
                         {item.baselineEffort}d
                       </td>
                       <td className="py-2.5 px-3">
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[var(--color-surface-2)] text-[var(--color-text)]">
+                        <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-surface-2)] text-[var(--color-text)]">
                           {currentTask?.status || 'Unknown'}
                         </span>
                       </td>
@@ -356,7 +356,7 @@ export const BaselineManager: React.FC = () => {
 
               <div className="p-6 space-y-4 text-xs font-semibold">
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1.5">
+                  <label className="text-xs font-medium text-[var(--color-text-faint)] block mb-1.5">
                     Baseline Name *
                   </label>
                   <input 
@@ -369,7 +369,7 @@ export const BaselineManager: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1.5">
+                  <label className="text-xs font-medium text-[var(--color-text-faint)] block mb-1.5">
                     Description & Context
                   </label>
                   <textarea 

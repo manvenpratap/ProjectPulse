@@ -211,7 +211,7 @@ const TimelineView: React.FC = () => {
           </div>
           <div>
             <h1 className="font-display text-lg font-bold tracking-tight">Project Timeline</h1>
-            <p className="text-[11px] text-[var(--color-text-muted)] font-medium uppercase tracking-wider">
+            <p className="text-xs text-[var(--color-text-muted)] font-medium">
               {tasksWithDates.length} Scheduled Tasks • Critical Path Optimized
             </p>
           </div>
@@ -224,7 +224,7 @@ const TimelineView: React.FC = () => {
                 key={z}
                 onClick={() => setZoom(z)}
                 className={clsx(
-                  "px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md transition-all",
+                  "px-3 py-1 text-xs font-semibold rounded-md transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]",
                   zoom === z ? "bg-white shadow-sm text-indigo-600" : "text-[var(--color-text-faint)] hover:text-[var(--color-text-muted)]"
                 )}
               >
@@ -241,19 +241,19 @@ const TimelineView: React.FC = () => {
       <div className="px-6 py-3 bg-[var(--color-surface)] border-y border-[var(--color-divider)] flex items-center justify-center gap-6">
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-blue-500 opacity-20 border border-blue-500"></div>
-          <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">In Progress</span>
+          <span className="text-xs font-medium text-[var(--color-text-muted)]">In progress</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-emerald-500 opacity-20 border border-emerald-500"></div>
-          <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">Completed</span>
+          <span className="text-xs font-medium text-[var(--color-text-muted)]">Completed</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-amber-500 opacity-20 border border-amber-500 border-dashed"></div>
-          <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">Blocked / Dependent</span>
+          <span className="text-xs font-medium text-[var(--color-text-muted)]">Blocked / dependent</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-3 h-3 rounded-full bg-red-500 opacity-20 border border-red-500"></div>
-          <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider">Overdue</span>
+          <span className="text-xs font-medium text-[var(--color-text-muted)]">Overdue</span>
         </div>
       </div>
 
@@ -273,18 +273,18 @@ const TimelineView: React.FC = () => {
                  <div className="flex justify-between items-start mb-2">
                     <span className="text-[10px] font-mono font-black text-indigo-600">{t.id}</span>
                     <span className={clsx(
-                      "px-2 py-0.5 rounded-full text-[9px] font-bold uppercase",
+                      "px-2 py-0.5 rounded-full text-xs font-medium",
                       t.status === TaskStatus.COMPLETED ? "bg-emerald-50 text-emerald-600" : "bg-blue-50 text-blue-600"
                     )}>{t.status}</span>
                  </div>
                  <h4 className="font-bold text-sm mb-3">{t.name}</h4>
-                 <div className="flex items-center justify-between text-[10px] font-medium text-[var(--color-text-faint)] uppercase tracking-wider">
+                 <div className="flex items-center justify-between text-xs font-medium text-[var(--color-text-faint)]">
                     <div className="flex items-center gap-2">
                       <CalendarDays size={12} />
                       {fmtDate(t.startDate)} - {fmtDate(t.dueDate)}
                     </div>
-                    {blocked && <span className="text-amber-600 font-black">LOCKED</span>}
-                    {overdue && <span className="text-red-500 font-black tracking-tighter">OVERDUE</span>}
+                    {blocked && <span className="text-amber-600 font-bold">Locked</span>}
+                    {overdue && <span className="text-red-500 font-bold">Overdue</span>}
                  </div>
               </div>
             );

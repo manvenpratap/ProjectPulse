@@ -90,7 +90,7 @@ const TeamView: React.FC = () => {
            <div className="card p-8 border-l-4 border-l-indigo-500">
               <div className="flex items-center gap-3 mb-6">
                  <Activity size={18} className="text-indigo-500" />
-                 <h3 className="font-bold text-sm uppercase tracking-widest text-[var(--color-text-faint)]">7D Team Pulse</h3>
+                 <h3 className="font-bold text-sm text-[var(--color-text-faint)]">7D Team Pulse</h3>
               </div>
               <div className="h-20 w-full">
                  <ResponsiveContainer width="100%" height="100%">
@@ -105,12 +105,12 @@ const TeamView: React.FC = () => {
            <div className="card p-8 border-l-4 border-l-emerald-500">
               <div className="flex items-center gap-3 mb-6">
                  <Award size={18} className="text-emerald-500" />
-                 <h3 className="font-bold text-sm uppercase tracking-widest text-[var(--color-text-faint)]">Quality Highs</h3>
+                 <h3 className="font-bold text-sm text-[var(--color-text-faint)]">Quality Highs</h3>
               </div>
               <div className="flex items-center justify-between">
                  <div>
                     <div className="text-2xl font-black text-emerald-600">92%</div>
-                    <p className="text-[10px] text-[var(--color-text-faint)] font-bold uppercase mt-1 italic">Avg Quality Score</p>
+                    <p className="text-xs text-[var(--color-text-faint)] font-medium mt-1 italic">Avg quality score</p>
                  </div>
                  <Zap size={32} className="text-emerald-100 fill-emerald-100" />
               </div>
@@ -125,7 +125,7 @@ const TeamView: React.FC = () => {
             const progress = memberTasks.length ? Math.round((doneCount / memberTasks.length) * 100) : 0;
             
             return (
-              <div key={member.id} className="card p-8 flex flex-col group relative overflow-hidden hover:scale-[1.02] transition-all duration-300 shadow-lg shadow-black/5 ring-1 ring-black/5">
+              <div key={member.id} className="card p-8 flex flex-col group relative overflow-hidden transition-colors duration-150 motion-safe:hover:scale-[1.01] shadow-lg shadow-black/5 ring-1 ring-black/5">
                 <div className="flex items-center gap-4 mb-8">
                   <div className={clsx(
                     "w-14 h-14 rounded-2xl flex items-center justify-center text-white font-display font-black text-xl shadow-xl transform group-hover:rotate-6 transition-transform",
@@ -135,7 +135,7 @@ const TeamView: React.FC = () => {
                   </div>
                   <div>
                     <h3 className="font-black text-base leading-tight text-[var(--color-text)]">{member.name}</h3>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-indigo-500 mt-1">
+                    <p className="text-xs font-semibold text-indigo-500 mt-1">
                       {member.role || 'Member'}
                     </p>
                   </div>
@@ -158,20 +158,20 @@ const TeamView: React.FC = () => {
 
                 <div className="pt-6 border-t border-[var(--color-divider)]">
                   <div className="flex justify-between items-center mb-3">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)]">Execution Maturity</span>
+                    <span className="text-xs font-medium text-[var(--color-text-faint)]">Execution maturity</span>
                     <span className="text-xs font-black text-indigo-600">{progress}%</span>
                   </div>
                   <div className="h-2 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden shadow-inner">
                     <div 
-                      className="h-full bg-indigo-500 rounded-full transition-all duration-1000"
+                      className="h-full bg-indigo-500 rounded-full"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
                 </div>
 
-                <div className="mt-8 grid grid-cols-2 gap-3 opacity-0 group-hover:opacity-100 transition-all transform translateY-4 group-hover:translate-Y-0">
-                  <Button variant="ghost" size="sm" className="text-[11px] font-black py-2.5 h-10 border-[var(--color-divider)] bg-[var(--color-surface-2)]">Tasks</Button>
-                  <Button variant="outline" size="sm" className="text-[11px] font-black py-2.5 h-10 border-[var(--color-divider)]">Profile</Button>
+                <div className="mt-8 grid grid-cols-2 gap-3 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+                  <Button variant="ghost" size="sm" className="text-[11px] font-bold py-2.5 h-10 border-[var(--color-divider)] bg-[var(--color-surface-2)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]">Tasks</Button>
+                  <Button variant="outline" size="sm" className="text-[11px] font-bold py-2.5 h-10 border-[var(--color-divider)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]">Profile</Button>
                 </div>
               </div>
             );
@@ -194,14 +194,14 @@ const TeamView: React.FC = () => {
           {/* Skills Coverage Matrix */}
           <div className="lg:col-span-7 card p-8 shadow-sm space-y-6">
             <div>
-              <h3 className="font-bold text-sm uppercase tracking-widest text-slate-455">Skills Coverage Matrix</h3>
-              <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Core architectural and framework competencies</p>
+              <h3 className="font-bold text-sm text-slate-700">Skills Coverage Matrix</h3>
+              <p className="text-xs text-slate-500 font-medium mt-1">Core architectural and framework competencies</p>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-100 text-[10px] font-black uppercase text-slate-400">
+                  <tr className="border-b border-slate-100 text-xs font-semibold text-slate-500">
                     <th className="py-3">Resource</th>
                     <th className="py-3">TypeScript</th>
                     <th className="py-3">React / Tailwind</th>
@@ -243,13 +243,13 @@ const TeamView: React.FC = () => {
           <div className="lg:col-span-5 card p-8 shadow-sm flex flex-col justify-between">
             <div className="space-y-6">
               <div>
-                <h3 className="font-bold text-sm uppercase tracking-widest text-slate-455">Capacity & Team Events</h3>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Planned leaves and birth dates</p>
+                <h3 className="font-bold text-sm text-slate-700">Capacity & Team Events</h3>
+                <p className="text-xs text-slate-500 font-medium mt-1">Planned leaves and birth dates</p>
               </div>
 
               <div className="space-y-4">
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                  <h4 className="text-xs font-black uppercase text-indigo-500 tracking-wider mb-2 flex items-center gap-1.5">
+                  <h4 className="text-xs font-bold text-indigo-500 mb-2 flex items-center gap-1.5">
                     <Cake size={14} /> Upcoming Birthday Celebrations
                   </h4>
                   <div className="space-y-2">
@@ -263,7 +263,7 @@ const TeamView: React.FC = () => {
                 </div>
 
                 <div className="p-4 rounded-xl bg-slate-50 border border-slate-100">
-                  <h4 className="text-xs font-black uppercase text-rose-500 tracking-wider mb-2 flex items-center gap-1.5">
+                  <h4 className="text-xs font-bold text-rose-500 mb-2 flex items-center gap-1.5">
                     <Users size={14} className="text-rose-500" /> Planned Time Off (Leaves)
                   </h4>
                   <div className="space-y-2 text-xs">

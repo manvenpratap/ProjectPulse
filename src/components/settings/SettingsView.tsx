@@ -50,7 +50,7 @@ const SettingsView: React.FC = () => {
             <button
               onClick={() => setActiveTab('parameters')}
               className={clsx(
-                "px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
+                "px-3 py-1.5 rounded-lg text-xs font-bold transition-colors duration-150 active:scale-95 flex items-center gap-1.5",
                 activeTab === 'parameters' 
                   ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] shadow-sm" 
                   : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
@@ -61,7 +61,7 @@ const SettingsView: React.FC = () => {
             <button
               onClick={() => setActiveTab('baselines')}
               className={clsx(
-                "px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5",
+                "px-3 py-1.5 rounded-lg text-xs font-bold transition-colors duration-150 active:scale-95 flex items-center gap-1.5",
                 activeTab === 'baselines' 
                   ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] shadow-sm" 
                   : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
@@ -81,12 +81,12 @@ const SettingsView: React.FC = () => {
               <div className="card p-6 space-y-6">
                 <div className="flex items-center gap-3 text-indigo-500 mb-2">
                   <Clock size={20} />
-                  <h3 className="text-sm font-black uppercase tracking-widest text-[var(--color-text)]">Work Cycles & Capacity</h3>
+                  <h3 className="text-sm font-bold text-[var(--color-text)]">Work Cycles & Capacity</h3>
                 </div>
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">
-                      Target Days Per Week
+                    <label className="text-xs font-semibold text-[var(--color-text-muted)]">
+                      Target days per week
                     </label>
                     <input 
                       type="number" 
@@ -96,8 +96,8 @@ const SettingsView: React.FC = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">
-                      Standard Work Days (Weekly)
+                    <label className="text-xs font-semibold text-[var(--color-text-muted)]">
+                      Standard work days (weekly)
                     </label>
                     <input 
                       type="number" 
@@ -113,7 +113,7 @@ const SettingsView: React.FC = () => {
               <div className="card p-6 space-y-6">
                 <div className="flex items-center gap-3 text-amber-500 mb-2">
                   <Bell size={20} />
-                  <h3 className="text-sm font-black uppercase tracking-widest text-[var(--color-text)]">Automated EWS Alerts</h3>
+                  <h3 className="text-sm font-bold text-[var(--color-text)]">Automated EWS alerts</h3>
                 </div>
                 <div className="space-y-2">
                   {[
@@ -123,7 +123,7 @@ const SettingsView: React.FC = () => {
                     { key: 'overloaded', label: 'Resource Congestion Detection' },
                     { key: 'stale', label: 'Stale Task Inactivity Notification' }
                   ].map(alert => (
-                    <label key={alert.key} className="flex items-center justify-between p-3 rounded-xl hover:bg-[var(--color-surface-2)] cursor-pointer group transition-all border border-transparent hover:border-[var(--color-divider)]">
+                    <label key={alert.key} className="flex items-center justify-between p-3 rounded-xl hover:bg-[var(--color-surface-2)] cursor-pointer group transition-colors duration-150 border border-transparent hover:border-[var(--color-divider)]">
                       <span className="text-xs font-bold text-[var(--color-text-muted)] group-hover:text-[var(--color-text)]">{alert.label}</span>
                       <input 
                         type="checkbox" 
@@ -141,7 +141,7 @@ const SettingsView: React.FC = () => {
             <div className="card p-6 bg-red-500/5 border-red-500/20">
               <div className="flex items-center gap-3 text-red-500 mb-4">
                 <Shield size={20} />
-                <h3 className="text-sm font-black uppercase tracking-widest">Destructive Operations</h3>
+                <h3 className="text-sm font-bold">Destructive operations</h3>
               </div>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex-1">
