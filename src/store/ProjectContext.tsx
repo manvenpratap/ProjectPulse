@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { 
-  ProjectState, Task, Member, Defect, ProjectReport, 
+  ProjectState, Task, Member, Defect, Delivery, ProjectReport, 
   LogEntry, TaskStatus, TaskPriority, CustomField 
 } from '../types';
 import { getDefaultState } from './defaultState';
@@ -18,6 +18,9 @@ interface ProjectContextType {
   deleteMember: (memberId: string) => void;
   saveDefect: (data: Partial<Defect>, defectId?: string) => void;
   deleteDefect: (defectId: string) => void;
+  saveDelivery: (data: Partial<Delivery>, deliveryId?: string) => void;
+  deleteDelivery: (deliveryId: string) => void;
+  batchUpdateDeliveries: (ids: string[], updates: Partial<Delivery>) => void;
   addLog: (action: string, taskId: string, taskName: string, field?: string, oldVal?: string, newVal?: string, comment?: string) => void;
   setView: (view: string) => void;
   setTheme: (theme: string) => void;
@@ -53,21 +56,37 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
-        // Basic migration/merge with default state to ensure new keys exist
         const defaultState = getDefaultState();
+        const sample = getWebSample();
+        const finalTheme = parsed.theme || 'pulse';
+        document.documentElement.setAttribute('data-theme', finalTheme);
+
         setState({ 
           ...defaultState, 
           ...parsed,
-          // Explicitly ensure critical arrays exist if parsed version is old
+          name: parsed.name || sample.name || 'Project Phoenix: Enterprise Rollout',
+          tasks: (parsed.tasks && parsed.tasks.length > 0) ? parsed.tasks : (sample.tasks || []),
+          members: (parsed.members && parsed.members.length > 0) ? parsed.members : (sample.members || []),
+          deliveries: (parsed.deliveries && parsed.deliveries.length > 0) ? parsed.deliveries : (sample.deliveries || []),
+          releases: (parsed.releases && parsed.releases.length > 0) ? parsed.releases : (sample.releases || []),
           features: parsed.features || defaultState.features || [],
-          dropdowns: parsed.dropdowns || defaultState.dropdowns || {},
+          dropdowns: { ...defaultState.dropdowns, ...(parsed.dropdowns || {}) },
           customFields: parsed.customFields || defaultState.customFields || [],
           defCustomFields: parsed.defCustomFields || defaultState.defCustomFields || [],
-          stepTemplates: parsed.stepTemplates || defaultState.stepTemplates || []
+          stepTemplates: parsed.stepTemplates || defaultState.stepTemplates || [],
+          theme: finalTheme
         });
       } catch (e) {
         console.error('Failed to load project data', e);
       }
+    } else {
+      const sample = getWebSample();
+      document.documentElement.setAttribute('data-theme', 'pulse');
+      setState({
+        ...getDefaultState(),
+        ...sample as any,
+        theme: 'pulse'
+      });
     }
     setIsLoading(false);
   }, []);
@@ -244,6 +263,101 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }));
   }, []);
 
+  const saveDelivery = useCallback((data: Partial<Delivery>, deliveryId?: string) => {
+    setState(prev => {
+      const linkedTasks = data.linkedTasks || [];
+      const linkedScreens = data.linkedScreens || [];
+      const totalLinked = linkedTasks.length + linkedScreens.length;
+      const linkedType: 'Multi' | 'Task' | 'Screen' | 'None' = 
+        totalLinked > 1 ? 'Multi' : (linkedTasks.length === 1 ? 'Task' : (linkedScreens.length === 1 ? 'Screen' : 'None'));
+
+      // Format linkedId for display (e.g. "TASK-001 : Task Name" or screen name)
+      let linkedId = '';
+      if (linkedTasks.length > 0) {
+        const firstTask = prev.tasks.find(t => t.id === linkedTasks[0]);
+        linkedId = firstTask ? `${firstTask.id} : ${firstTask.name}` : linkedTasks[0];
+        if (totalLinked > 1) linkedId += ` (+${totalLinked - 1})`;
+      } else if (linkedScreens.length > 0) {
+        linkedId = linkedScreens[0];
+        if (linkedScreens.length > 1) linkedId += ` (+${linkedScreens.length - 1})`;
+      }
+
+      if (deliveryId) {
+        return {
+          ...prev,
+          deliveries: (prev.deliveries || []).map(d => {
+            if (d.id !== deliveryId) return d;
+            return {
+              ...d,
+              ...data,
+              linkedType: data.linkedType || linkedType,
+              linkedId: data.linkedId || linkedId || d.linkedId,
+              updatedAt: nowISO()
+            };
+          })
+        };
+      } else {
+        const id = 'DEL-' + String(prev.nextDeliveryId || 1).padStart(3, '0');
+        const almId = data.almId || `ALM-${10000 + (prev.nextDeliveryId || 1)}`;
+        const pdn = data.pdn || `PDN-${new Date().getFullYear()}-${String(prev.nextDeliveryId || 1).padStart(3, '0')}`;
+
+        const newDelivery: Delivery = {
+          id,
+          almId,
+          name: data.name || 'Unnamed Delivery',
+          pdn,
+          pdnProcessingDate: data.pdnProcessingDate || todayStr(),
+          componentsDelivered: data.componentsDelivered || '',
+          category: data.category || 'GSP++ Delivery',
+          module: data.module || (prev.dropdowns.module?.[0] || 'Core Engine'),
+          moduleType: data.moduleType || 'Server',
+          releaseVersion: data.releaseVersion || (prev.dropdowns.version?.[0] || 'v1.1.0'),
+          environment: data.environment || 'QA',
+          almStatus: data.almStatus || 'New',
+          status: data.status || 'Scheduled',
+          signOffStatus: data.signOffStatus || 'Pending',
+          approver: data.approver || '',
+          smokeTestStatus: data.smokeTestStatus || 'Not Run',
+          reportedBy: data.reportedBy || '',
+          fixedBy: data.fixedBy || '',
+          targetDeliveryDate: data.targetDeliveryDate || todayStr(),
+          actualDeliveryDate: data.actualDeliveryDate || null,
+          leadTimeDays: data.leadTimeDays || 0,
+          variance: data.variance || 0,
+          linkedType,
+          linkedId,
+          linkedTasks,
+          linkedScreens,
+          rollbackPlan: data.rollbackPlan || '',
+          notes: data.notes || '',
+          createdAt: nowISO(),
+          updatedAt: nowISO(),
+          ...data
+        };
+
+        return {
+          ...prev,
+          deliveries: [...(prev.deliveries || []), newDelivery],
+          nextDeliveryId: (prev.nextDeliveryId || 1) + 1
+        };
+      }
+    });
+  }, []);
+
+  const deleteDelivery = useCallback((deliveryId: string) => {
+    setState(prev => ({
+      ...prev,
+      deliveries: (prev.deliveries || []).filter(d => d.id !== deliveryId)
+    }));
+  }, []);
+
+  const batchUpdateDeliveries = useCallback((ids: string[], updates: Partial<Delivery>) => {
+    setState(prev => ({
+      ...prev,
+      deliveries: (prev.deliveries || []).map(d => ids.includes(d.id) ? { ...d, ...updates, updatedAt: nowISO() } : d)
+    }));
+  }, []);
+
   const setView = useCallback((view: string) => {
     setState(prev => ({ ...prev, view }));
   }, []);
@@ -291,6 +405,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     <ProjectContext.Provider value={{ 
       state, createTask, updateTask, deleteTask, 
       saveMember, deleteMember, saveDefect, deleteDefect,
+      saveDelivery, deleteDelivery, batchUpdateDeliveries,
       addLog, setView, setTheme, updateSettings, updateProject,
       resetProject, loadSample, clearAllData, isLoading,
       searchTerm, setSearchTerm

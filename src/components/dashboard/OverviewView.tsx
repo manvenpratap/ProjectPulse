@@ -242,13 +242,14 @@ const OverviewView: React.FC = () => {
         </div>
 
         {/* Bento Grid */}
+        {/* Bento Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* Health Index Dial Component */}
-          <div className="card p-8 flex flex-col justify-between items-center text-center bg-gradient-to-br from-indigo-50/20 to-indigo-100/10 border-indigo-100/50 shadow-sm">
+          <div className="card p-8 flex flex-col justify-between items-center text-center bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
             <div className="space-y-1 text-center w-full">
-              <h3 className="font-black text-sm text-slate-850">Composite Health Index</h3>
-              <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">Real-Time Score Dial</p>
+              <h3 className="font-display font-bold text-sm uppercase text-[var(--color-text)]">Composite Health Index</h3>
+              <p className="text-[10px] font-mono font-bold text-[var(--color-primary-hex)] uppercase tracking-widest">Mathematical Formula Dial</p>
             </div>
 
             <div className="relative w-44 h-44 my-6 flex items-center justify-center">
@@ -257,7 +258,7 @@ const OverviewView: React.FC = () => {
                   cx="88" 
                   cy="88" 
                   r="72" 
-                  className="stroke-slate-100 fill-none" 
+                  className="stroke-[var(--color-surface-2)] fill-none" 
                   strokeWidth="14" 
                 />
                 <circle 
@@ -266,7 +267,7 @@ const OverviewView: React.FC = () => {
                   r="72" 
                   className={clsx(
                     "fill-none transition-all duration-1000",
-                    healthScore > 80 ? "stroke-emerald-500" : healthScore > 50 ? "stroke-amber-500" : "stroke-rose-500"
+                    healthScore > 80 ? "stroke-emerald-400" : healthScore > 50 ? "stroke-amber-400" : "stroke-rose-400"
                   )}
                   strokeWidth="14" 
                   strokeDasharray="452.3"
@@ -275,28 +276,28 @@ const OverviewView: React.FC = () => {
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-4xl font-display font-black tracking-tight text-slate-900">{healthScore}%</span>
-                <span className="text-[10px] font-bold text-slate-400 uppercase mt-1">Delivery confidence</span>
+                <span className="text-4xl font-mono font-black tracking-tight text-[var(--color-text)]">{healthScore}%</span>
+                <span className="text-[10px] font-mono uppercase text-[var(--color-text-muted)] mt-1">Health Score</span>
               </div>
             </div>
 
-            <div className="w-full grid grid-cols-2 gap-4 border-t border-slate-100 pt-6">
+            <div className="w-full grid grid-cols-2 gap-4 border-t border-[var(--color-divider)] pt-6">
               <div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase">Completed</div>
-                <div className="text-xl font-display font-black text-slate-800">{progressPct}%</div>
+                <div className="text-[10px] font-mono uppercase text-[var(--color-text-muted)]">Completed</div>
+                <div className="text-xl font-mono font-bold text-emerald-400">{progressPct}%</div>
               </div>
               <div>
-                <div className="text-[10px] font-bold text-slate-400 uppercase">Active backlog</div>
-                <div className="text-xl font-display font-black text-slate-800">{totalTasks - doneTasks.length} tasks</div>
+                <div className="text-[10px] font-mono uppercase text-[var(--color-text-muted)]">Active backlog</div>
+                <div className="text-xl font-mono font-bold text-[var(--color-text)]">{totalTasks - doneTasks.length} tasks</div>
               </div>
             </div>
           </div>
 
           {/* Early Warning System (EWS) */}
-          <div className="lg:col-span-2 card p-8 flex flex-col justify-between shadow-sm">
+          <div className="lg:col-span-2 card p-8 flex flex-col justify-between shadow-sm bg-[var(--color-surface)] border border-[var(--color-divider)]">
             <div className="space-y-1 mb-6">
-              <h3 className="font-bold text-sm">Early Warning System (EWS)</h3>
-              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Active Bottleneck and Slippage Alerts</p>
+              <h3 className="font-display font-bold text-sm uppercase text-[var(--color-text)]">Early Warning System (EWS)</h3>
+              <p className="text-[10px] font-mono font-bold text-[var(--color-text-muted)] uppercase tracking-widest">Active Bottleneck and Slippage Alerts</p>
             </div>
 
             <div className="space-y-4 flex-1">
@@ -304,10 +305,10 @@ const OverviewView: React.FC = () => {
                 <div 
                   key={alert.id} 
                   className={clsx(
-                    "p-4 rounded-2xl border flex gap-4 items-start transition-all",
-                    alert.type === 'critical' ? "bg-rose-50/50 border-rose-200/50 text-rose-800" :
-                    alert.type === 'warning' ? "bg-amber-50/50 border-amber-200/50 text-amber-800" :
-                    "bg-emerald-50/30 border-emerald-100 text-emerald-800"
+                    "p-4 rounded-xl border flex gap-4 items-start transition-all",
+                    alert.type === 'critical' ? "bg-rose-500/10 border-rose-500/30 text-rose-300" :
+                    alert.type === 'warning' ? "bg-amber-500/10 border-amber-500/30 text-amber-300" :
+                    "bg-emerald-500/10 border-emerald-500/30 text-emerald-300"
                   )}
                 >
                   <div className={clsx(
@@ -319,14 +320,66 @@ const OverviewView: React.FC = () => {
                     <alert.icon size={18} />
                   </div>
                   <div>
-                    <h4 className="font-black text-sm">{alert.label}</h4>
-                    <p className="text-xs opacity-90 leading-relaxed mt-1">{alert.desc}</p>
+                    <h4 className="font-bold text-sm text-[var(--color-text)]">{alert.label}</h4>
+                    <p className="text-xs text-[var(--color-text-muted)] leading-relaxed mt-1">{alert.desc}</p>
                   </div>
                 </div>
               ))}
             </div>
           </div>
 
+        </div>
+
+        {/* ALM Deliveries Snapshot Card */}
+        <div className="card p-6 border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-sm rounded-xl">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[10px] font-mono uppercase font-bold text-[var(--color-primary-hex)]">ALM Release Workstation</span>
+                <span className="text-xs text-[var(--color-text-faint)]">·</span>
+                <span className="text-xs text-[var(--color-text-muted)] font-mono">{(state.deliveries || []).length} Packages</span>
+              </div>
+              <h3 className="text-base font-display font-bold uppercase tracking-tight text-[var(--color-text)]">
+                Active Deployments & Release Verification Gates
+              </h3>
+            </div>
+            <button 
+              onClick={() => setView('deliveries')}
+              className="px-4 py-2 bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] hover:bg-[var(--color-primary-hex)] hover:text-[var(--color-primary-text)] rounded-lg text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 transition-all self-start md:self-auto cursor-pointer"
+            >
+              <span>Open ALM Workspace</span>
+              <ArrowRight size={14} />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg">
+              <span className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">Production Deployed</span>
+              <div className="text-xl font-mono font-bold text-emerald-400 mt-1">
+                {(state.deliveries || []).filter(d => d.status === 'Deployed').length}
+              </div>
+            </div>
+            <div className="p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg">
+              <span className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">In Pipeline</span>
+              <div className="text-xl font-mono font-bold text-sky-400 mt-1">
+                {(state.deliveries || []).filter(d => d.status === 'Ready for Deployment' || d.status === 'In Progress').length}
+              </div>
+            </div>
+            <div className="p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg">
+              <span className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">Pending Sign-off</span>
+              <div className="text-xl font-mono font-bold text-amber-400 mt-1">
+                {(state.deliveries || []).filter(d => d.signOffStatus === 'Pending').length}
+              </div>
+            </div>
+            <div className="p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg">
+              <span className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">Avg Cycle Lead</span>
+              <div className="text-xl font-mono font-bold text-[var(--color-text)] mt-1">
+                {(state.deliveries || []).filter(d => d.leadTimeDays > 0).length 
+                  ? ((state.deliveries || []).filter(d => d.leadTimeDays > 0).reduce((acc, d) => acc + d.leadTimeDays, 0) / (state.deliveries || []).filter(d => d.leadTimeDays > 0).length).toFixed(1)
+                  : '0'}d
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Milestone Roadmap Widget */}

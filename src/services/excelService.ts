@@ -51,7 +51,73 @@ export const exportProjectExcel = async (state: ProjectState) => {
     });
   });
 
-  // 3. RAID Sheet
+  // 3. Deliveries Sheet (ALM / PDN Release Workstation)
+  const dels = wb.addWorksheet('Deliveries');
+  dels.columns = [
+    { header: 'Delivery ID', key: 'id', width: 14 },
+    { header: 'ALM Defect ID', key: 'almId', width: 16 },
+    { header: 'Description - ALM Description', key: 'name', width: 42 },
+    { header: 'PDN Reference', key: 'pdn', width: 18 },
+    { header: 'PDN Processing Date', key: 'pdnProcessingDate', width: 18 },
+    { header: 'Components Delivered', key: 'componentsDelivered', width: 32 },
+    { header: 'Category', key: 'category', width: 20 },
+    { header: 'Module', key: 'module', width: 22 },
+    { header: 'Module Type', key: 'moduleType', width: 14 },
+    { header: 'Release Version', key: 'releaseVersion', width: 16 },
+    { header: 'Target Environment', key: 'environment', width: 16 },
+    { header: 'ALM Status', key: 'almStatus', width: 16 },
+    { header: 'Deployment Status', key: 'status', width: 20 },
+    { header: 'Sign-off Status', key: 'signOffStatus', width: 16 },
+    { header: 'Approver', key: 'approver', width: 20 },
+    { header: 'Smoke Test Status', key: 'smokeTestStatus', width: 16 },
+    { header: 'Reporter', key: 'reportedBy', width: 18 },
+    { header: 'Developer / Fixed By', key: 'fixedBy', width: 20 },
+    { header: 'Target Delivery Date', key: 'targetDeliveryDate', width: 18 },
+    { header: 'Actual Delivery Date', key: 'actualDeliveryDate', width: 18 },
+    { header: 'Lead Time (d)', key: 'leadTimeDays', width: 14 },
+    { header: 'Delay Variance (d)', key: 'variance', width: 16 },
+    { header: 'Linked Type', key: 'linkedType', width: 14 },
+    { header: 'Linked ID / Scope', key: 'linkedId', width: 28 },
+    { header: 'Linked Tasks', key: 'linkedTasks', width: 22 },
+    { header: 'Linked Screens', key: 'linkedScreens', width: 22 },
+    { header: 'Rollback Plan', key: 'rollbackPlan', width: 35 },
+    { header: 'Notes', key: 'notes', width: 35 },
+  ];
+
+  (state.deliveries || []).forEach(d => {
+    dels.addRow({
+      id: d.id,
+      almId: d.almId,
+      name: d.name,
+      pdn: d.pdn,
+      pdnProcessingDate: d.pdnProcessingDate,
+      componentsDelivered: d.componentsDelivered,
+      category: d.category,
+      module: d.module,
+      moduleType: d.moduleType,
+      releaseVersion: d.releaseVersion,
+      environment: d.environment,
+      almStatus: d.almStatus,
+      status: d.status,
+      signOffStatus: d.signOffStatus,
+      approver: d.approver,
+      smokeTestStatus: d.smokeTestStatus,
+      reportedBy: d.reportedBy,
+      fixedBy: d.fixedBy,
+      targetDeliveryDate: d.targetDeliveryDate,
+      actualDeliveryDate: d.actualDeliveryDate || '',
+      leadTimeDays: d.leadTimeDays || 0,
+      variance: d.variance || 0,
+      linkedType: d.linkedType,
+      linkedId: d.linkedId,
+      linkedTasks: d.linkedTasks?.join(', ') || '',
+      linkedScreens: d.linkedScreens?.join(', ') || '',
+      rollbackPlan: d.rollbackPlan || '',
+      notes: d.notes || ''
+    });
+  });
+
+  // 4. RAID Sheet
   const rs = wb.addWorksheet('RAID Items');
   rs.columns = [
     { header: 'ID', key: 'id', width: 12 },
@@ -83,7 +149,7 @@ export const exportProjectExcel = async (state: ProjectState) => {
     });
   });
 
-  // 4. Defects Sheet
+  // 5. Defects Sheet
   const dfs = wb.addWorksheet('Defects');
   dfs.columns = [
     { header: 'ID', key: 'id', width: 12 },
@@ -115,7 +181,7 @@ export const exportProjectExcel = async (state: ProjectState) => {
     });
   });
 
-  // 5. Decisions Sheet
+  // 6. Decisions Sheet
   const decs = wb.addWorksheet('Decisions');
   decs.columns = [
     { header: 'ID', key: 'id', width: 12 },
@@ -143,7 +209,51 @@ export const exportProjectExcel = async (state: ProjectState) => {
     });
   });
 
-  // 6. Logs Sheet
+  // 7. Team Members Sheet
+  const tms = wb.addWorksheet('Team Members');
+  tms.columns = [
+    { header: 'ID', key: 'id', width: 12 },
+    { header: 'Name', key: 'name', width: 25 },
+    { header: 'Role', key: 'role', width: 25 },
+    { header: 'Status', key: 'status', width: 15 },
+    { header: 'Reports To', key: 'reportsTo', width: 20 },
+    { header: 'Email', key: 'email', width: 25 },
+    { header: 'Phone', key: 'phone', width: 18 },
+  ];
+
+  (state.members || []).forEach(m => {
+    tms.addRow({
+      id: m.id,
+      name: m.name,
+      role: m.role,
+      status: m.status,
+      reportsTo: m.reportsTo,
+      email: m.email,
+      phone: m.phone
+    });
+  });
+
+  // 8. Releases Sheet
+  const rels = wb.addWorksheet('Releases');
+  rels.columns = [
+    { header: 'Release ID', key: 'id', width: 14 },
+    { header: 'Release Version', key: 'name', width: 20 },
+    { header: 'Start Date', key: 'startDate', width: 16 },
+    { header: 'Target Date', key: 'date', width: 16 },
+    { header: 'Status', key: 'status', width: 15 },
+  ];
+
+  (state.releases || []).forEach(rel => {
+    rels.addRow({
+      id: rel.id,
+      name: rel.name,
+      startDate: rel.startDate,
+      date: rel.date,
+      status: rel.status
+    });
+  });
+
+  // 9. Activity Logs Sheet
   const ls = wb.addWorksheet('Activity Logs');
   ls.columns = [
     { header: 'Timestamp', key: 'ts', width: 22 },
@@ -174,14 +284,14 @@ export const exportProjectExcel = async (state: ProjectState) => {
   });
 
   // Style headers on all worksheets
-  [ds, ts, rs, dfs, decs, ls].forEach(sheet => {
+  [ds, ts, dels, rs, dfs, decs, tms, rels, ls].forEach(sheet => {
     sheet.getRow(1).font = { bold: true };
     sheet.getRow(1).fill = { 
       type: 'pattern', 
       pattern: 'solid', 
-      fgColor: { argb: 'FF4F46E5' } 
+      fgColor: { argb: 'FF0D0D0F' } 
     };
-    sheet.getRow(1).font = { color: { argb: 'FFFFFFFF' }, bold: true };
+    sheet.getRow(1).font = { color: { argb: 'FF38BDF8' }, bold: true };
   });
 
   // Generate buffer and trigger download
@@ -222,7 +332,6 @@ export const importProjectExcel = async (file: File): Promise<Partial<ProjectSta
             module: row.getCell(8).text,
             dependsOn: row.getCell(9).text ? row.getCell(9).text.split(',').map((s: string) => s.trim()) : [],
             estDays: parseFloat(row.getCell(10).text) || 0,
-            // Defaulting others
             category: 'Feature',
             startDate: new Date().toISOString().split('T')[0],
             subtasks: [],
@@ -232,12 +341,55 @@ export const importProjectExcel = async (file: File): Promise<Partial<ProjectSta
           tasks.push(t);
         });
 
+        // Parse Deliveries Sheet if present
+        const deliveriesSheet = wb.getWorksheet('Deliveries');
+        const deliveries: any[] = [];
+        if (deliveriesSheet) {
+          deliveriesSheet.eachRow((row, i) => {
+            if (i === 1) return; // Skip header
+            const d: any = {
+              id: row.getCell(1).text,
+              almId: row.getCell(2).text,
+              name: row.getCell(3).text,
+              pdn: row.getCell(4).text,
+              pdnProcessingDate: row.getCell(5).text,
+              componentsDelivered: row.getCell(6).text,
+              category: row.getCell(7).text,
+              module: row.getCell(8).text,
+              moduleType: row.getCell(9).text || 'Server',
+              releaseVersion: row.getCell(10).text || 'v1.1.0',
+              environment: row.getCell(11).text || 'QA',
+              almStatus: row.getCell(12).text || 'New',
+              status: row.getCell(13).text || 'Scheduled',
+              signOffStatus: row.getCell(14).text || 'Pending',
+              approver: row.getCell(15).text || '',
+              smokeTestStatus: row.getCell(16).text || 'Not Run',
+              reportedBy: row.getCell(17).text || '',
+              fixedBy: row.getCell(18).text || '',
+              targetDeliveryDate: row.getCell(19).text || '',
+              actualDeliveryDate: row.getCell(20).text || null,
+              leadTimeDays: parseFloat(row.getCell(21).text) || 0,
+              variance: parseFloat(row.getCell(22).text) || 0,
+              linkedType: row.getCell(23).text || 'None',
+              linkedId: row.getCell(24).text || '',
+              linkedTasks: row.getCell(25).text ? row.getCell(25).text.split(',').map((s: string) => s.trim()) : [],
+              linkedScreens: row.getCell(26).text ? row.getCell(26).text.split(',').map((s: string) => s.trim()) : [],
+              rollbackPlan: row.getCell(27).text || '',
+              notes: row.getCell(28).text || '',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            };
+            if (d.name) deliveries.push(d);
+          });
+        }
+
         const dashboardSheet = wb.getWorksheet('Dashboard');
         const projectName = dashboardSheet?.getRow(2).getCell(2).text || 'Imported Project';
 
         resolve({
           name: projectName,
           tasks,
+          deliveries: deliveries.length > 0 ? deliveries : undefined,
           log: [{ 
             ts: new Date().toISOString(), 
             action: 'Imported from Excel', 
@@ -248,7 +400,7 @@ export const importProjectExcel = async (file: File): Promise<Partial<ProjectSta
             field: '',
             oldVal: '',
             newVal: '',
-            comment: 'Batch import from spreadsheet'
+            comment: `Batch import from spreadsheet (${tasks.length} tasks, ${deliveries.length} deliveries)`
           }]
         });
       } catch (err) {

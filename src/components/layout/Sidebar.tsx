@@ -19,8 +19,9 @@ import {
   BookOpen,
   FileText,
   Presentation,
-  ShieldAlert,
-  Settings as SettingsIcon
+  ShieldAlert, 
+  Settings as SettingsIcon,
+  Package
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -35,6 +36,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
 
   const navItems = [
     { id: 'overview', label: 'Executive Overview', icon: Presentation },
+    { id: 'deliveries', label: 'ALM Deliveries', icon: Package, badge: state.deliveries?.length },
     { id: 'tasks', label: 'Tasks Matrix', icon: ClipboardList },
     { id: 'timeline', label: 'Project Timeline', icon: GanttChart },
     { id: 'capacity', label: 'Capacity Plan', icon: BarChart3 },
@@ -81,7 +83,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
               title={!isOpen ? item.label : undefined}
             >
               <item.icon size={18} className={clsx("shrink-0", isActive && "text-[var(--color-primary-hex)]")} />
-              {isOpen && <span className="text-[13px]">{item.label}</span>}
+              {isOpen && (
+                <div className="flex items-center justify-between flex-1 min-w-0">
+                  <span className="text-[13px] truncate">{item.label}</span>
+                  {item.badge !== undefined && item.badge > 0 && (
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[var(--color-surface-2)] text-[var(--color-text-muted)] group-hover:text-[var(--color-text)] font-semibold">
+                      {item.badge}
+                    </span>
+                  )}
+                </div>
+              )}
             </button>
           );
         })}
@@ -94,15 +105,21 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
               </span>
             </div>
             <div className="px-1 space-y-2">
-              <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl p-3 grid grid-cols-2 gap-3">
+              <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl p-3 grid grid-cols-3 gap-2 text-center">
                 <div className="space-y-1">
                   <span className="text-[9px] uppercase font-bold text-[var(--color-text-faint)]">Tasks</span>
-                  <div className="text-[13px] font-mono font-bold leading-tight">{state.tasks.length}</div>
+                  <div className="text-[12px] font-mono font-bold leading-tight">{state.tasks.length}</div>
                 </div>
-                <div className="space-y-1 text-right">
+                <div className="space-y-1">
                   <span className="text-[9px] uppercase font-bold text-[var(--color-text-faint)]">Done</span>
-                  <div className="text-[13px] font-mono font-bold leading-tight text-emerald-500">
+                  <div className="text-[12px] font-mono font-bold leading-tight text-emerald-500">
                     {state.tasks.filter(t => t.status === 'Completed').length}
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[9px] uppercase font-bold text-[var(--color-text-faint)]">ALM</span>
+                  <div className="text-[12px] font-mono font-bold leading-tight text-[var(--color-primary-hex)]">
+                    {state.deliveries?.length || 0}
                   </div>
                 </div>
               </div>

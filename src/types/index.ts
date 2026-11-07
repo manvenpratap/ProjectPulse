@@ -151,12 +151,47 @@ export interface WidgetLayout {
   filters?: any;
 }
 
+export interface Delivery {
+  id: string; // "DEL-001"
+  almId: string; // "ALM-10001"
+  name: string; // ALM description / delivery scope
+  pdn: string; // "PDN-2026-001"
+  pdnProcessingDate: string; // YYYY-MM-DD
+  componentsDelivered: string; // Source files, SQL scripts, configs
+  category: string; // "GSP++ Delivery" | "Regression/NRT Defect" | "Feature Release" | "Hotfix"
+  module: string; // Application module
+  moduleType: string; // "Server" | "GUI" | "Interface" | "Service"
+  releaseVersion: string; // Target release version (e.g. "v1.1.0", "v2.0.0-Beta")
+  environment: string; // "Production" | "Staging" | "UAT" | "QA" | "Dev"
+  almStatus: string; // "New" | "Open" | "In Progress" | "Fixed" | "Ready for Test" | "Closed"
+  status: string; // "Scheduled" | "In Progress" | "Ready for Deployment" | "Deployed" | "Cancelled" | "Rolled Back"
+  signOffStatus: string; // "Pending" | "Approved" | "Rejected" | "Not Required"
+  approver: string; // Lead / Approver member name
+  smokeTestStatus: string; // "Not Run" | "Running" | "Passed" | "Failed"
+  reportedBy: string; // Reporter member name
+  fixedBy: string; // Developer member who delivered
+  targetDeliveryDate: string; // YYYY-MM-DD
+  actualDeliveryDate: string | null; // YYYY-MM-DD
+  leadTimeDays: number; // Cycle duration
+  variance: number; // Delay variance in days vs target
+  linkedType: 'Multi' | 'Task' | 'Screen' | 'None';
+  linkedId: string; // Display reference
+  linkedTasks: string[]; // Mapped task IDs
+  linkedScreens: string[]; // Linked screen names
+  rollbackPlan: string; // Rollback instructions
+  notes: string;
+  custom?: Record<string, any>;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ProjectState {
   name: string;
   desc: string;
   tasks: Task[];
   members: Member[];
   defects: Defect[];
+  deliveries: Delivery[];
   reports: ProjectReport[];
   raids: RaidItem[];
   decisions: Decision[];
@@ -175,6 +210,7 @@ export interface ProjectState {
   nextMemberId: number;
   nextSubId: number;
   nextDefectId: number;
+  nextDeliveryId: number;
   nextLogId: number;
   nextReportId: number;
   nextRaidId?: number;
@@ -258,6 +294,7 @@ export interface Baseline {
 export interface Release {
   id: string;
   name: string;
+  startDate?: string;
   date: string;
   status: 'Planned' | 'Active' | 'Released';
 }
