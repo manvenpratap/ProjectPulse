@@ -35,13 +35,17 @@ const LogView: React.FC = () => {
             <div className="relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
               <input 
-                className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl pl-9 pr-4 py-1.5 text-xs outline-none focus:border-[var(--color-primary-hex)] w-[240px] focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-[var(--color-text)]"
-                placeholder="Filter by actor or task..."
+                className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl pl-9 pr-3 sm:pr-4 py-1.5 text-xs outline-none focus:border-[var(--color-primary-hex)] w-28 sm:w-[240px] focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-[var(--color-text)]"
+                placeholder="Filter logs..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
+                aria-label="Filter logs"
               />
             </div>
-            <button className="p-2 rounded-xl text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] active:scale-95 cursor-pointer">
+            <button 
+              aria-label="Filter log entries"
+              className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-xl text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] active:scale-95 cursor-pointer"
+            >
               <Filter size={16} />
             </button>
           </div>

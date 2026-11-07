@@ -37,29 +37,34 @@ const TaskView: React.FC = () => {
               <button 
                 onClick={() => setViewMode('grid')}
                 className={clsx(
-                  "p-1.5 rounded-lg transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] cursor-pointer",
+                  "min-w-[36px] min-h-[36px] flex items-center justify-center p-2 rounded-lg transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] cursor-pointer",
                   viewMode === 'grid' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
                 title="Grid Matrix View"
+                aria-label="Grid Matrix View"
               >
                 <LayoutGrid size={16} />
               </button>
               <button 
                 onClick={() => setViewMode('board')}
                 className={clsx(
-                  "p-1.5 rounded-lg transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] cursor-pointer",
+                  "min-w-[36px] min-h-[36px] flex items-center justify-center p-2 rounded-lg transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] cursor-pointer",
                   viewMode === 'board' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
                 title="Kanban Board View"
+                aria-label="Kanban Board View"
               >
                 <Kanban size={16} />
               </button>
             </div>
-            <Button variant="outline" size="sm" onClick={() => exportProjectExcel(state)} className="mr-1 h-9 font-bold active:scale-95">
-              <FileSpreadsheet size={15} className="mr-1.5 text-emerald-500" /> Export Excel
+            <Button variant="outline" size="sm" onClick={() => exportProjectExcel(state)} className="mr-1 h-9 font-bold active:scale-95 px-2.5 sm:px-3">
+              <FileSpreadsheet size={15} className="text-emerald-500 sm:mr-1.5" />
+              <span className="hidden sm:inline">Export Excel</span>
             </Button>
-            <Button variant="primary" size="sm" onClick={handleAddNewTask} className="h-9 font-bold active:scale-95">
-              <Plus size={15} className="mr-1" /> New Task
+            <Button variant="primary" size="sm" onClick={handleAddNewTask} className="h-9 font-bold active:scale-95 px-2.5 sm:px-3">
+              <Plus size={15} className="sm:mr-1" />
+              <span className="hidden sm:inline">New Task</span>
+              <span className="sm:hidden">New</span>
             </Button>
           </div>
         }

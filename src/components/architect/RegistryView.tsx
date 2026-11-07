@@ -97,7 +97,7 @@ const RegistryView: React.FC = () => {
               <h4 className="text-xs font-semibold text-[var(--color-text-muted)]">Option Libraries</h4>
               <button 
                 onClick={() => setIsAddingLib(!isAddingLib)} 
-                className="p-1 px-2.5 bg-indigo-50 text-indigo-600 rounded-md text-xs font-medium hover:bg-indigo-600 hover:text-white transition-colors duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 cursor-pointer"
+                className="px-3 py-1.5 min-h-[34px] flex items-center justify-center bg-indigo-50 text-indigo-600 rounded-lg text-xs font-semibold hover:bg-indigo-600 hover:text-white transition-colors duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 cursor-pointer"
               >
                 {isAddingLib ? 'Cancel' : 'Add New'}
               </button>

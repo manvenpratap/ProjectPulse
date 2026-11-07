@@ -220,11 +220,11 @@ const CapacityView: React.FC = () => {
         title="Resource Capacity Planning"
         subtitle="Workload heatmap overlay and team leveling telemetry"
         actions={
-          <div className="flex items-center gap-3 bg-[var(--color-surface-2)] p-1 px-3 rounded-xl border border-[var(--color-divider)]">
-            <Settings2 size={14} className="text-[var(--color-text-muted)]" />
-            <div className="flex items-center gap-3 text-xs divide-x divide-[var(--color-divider)]">
-              <div className="flex items-center gap-1.5">
-                <span className="font-semibold text-[var(--color-text-muted)]">Cap/Wk:</span>
+          <div className="flex items-center gap-1.5 sm:gap-3 bg-[var(--color-surface-2)] p-1 px-2 sm:px-3 rounded-xl border border-[var(--color-divider)]">
+            <Settings2 size={14} className="text-[var(--color-text-muted)] shrink-0 hidden sm:block" />
+            <div className="flex items-center gap-1.5 sm:gap-3 text-xs divide-x divide-[var(--color-divider)]">
+              <div className="flex items-center gap-1">
+                <span className="font-semibold text-[var(--color-text-muted)] text-[10px] sm:text-xs"><span className="hidden sm:inline">Cap/</span>Wk:</span>
                 <input 
                   type="number" 
                   step="0.5"
@@ -232,18 +232,18 @@ const CapacityView: React.FC = () => {
                   max="7"
                   value={settings.daysPerWeek}
                   onChange={(e) => updateSettings({ daysPerWeek: parseFloat(e.target.value) })}
-                  className="w-10 text-center font-bold text-[var(--color-primary-hex)] bg-[var(--color-surface)] border border-[var(--color-divider)] rounded focus:outline-none focus:ring-1 focus:ring-[var(--color-primary-hex)] py-0.5"
+                  className="w-7 sm:w-10 text-center font-bold text-[var(--color-primary-hex)] bg-[var(--color-surface)] border border-[var(--color-divider)] rounded focus:outline-none focus:ring-1 focus:ring-[var(--color-primary-hex)] py-0.5 text-xs"
                 />
               </div>
-              <div className="flex items-center gap-1.5 pl-3">
-                <span className="font-semibold text-[var(--color-text-muted)]">Workdays/Wk:</span>
+              <div className="flex items-center gap-1 pl-1.5 sm:pl-3">
+                <span className="font-semibold text-[var(--color-text-muted)] text-[10px] sm:text-xs"><span className="hidden sm:inline">Work</span>days:</span>
                 <input 
                   type="number" 
                   max={7}
                   min={1}
                   value={settings.workDays}
                   onChange={(e) => updateSettings({ workDays: parseInt(e.target.value) })}
-                  className="w-10 text-center font-bold text-[var(--color-primary-hex)] bg-[var(--color-surface)] border border-[var(--color-divider)] rounded focus:outline-none focus:ring-1 focus:ring-[var(--color-primary-hex)] py-0.5"
+                  className="w-7 sm:w-10 text-center font-bold text-[var(--color-primary-hex)] bg-[var(--color-surface)] border border-[var(--color-divider)] rounded focus:outline-none focus:ring-1 focus:ring-[var(--color-primary-hex)] py-0.5 text-xs"
                 />
               </div>
             </div>
@@ -251,9 +251,9 @@ const CapacityView: React.FC = () => {
         }
       />
 
-      <div className="flex-1 overflow-hidden flex flex-col lg:flex-row">
+      <div className="flex-1 overflow-hidden flex flex-col lg:flex-row min-w-0 max-w-full">
         {/* Main interactive grid column */}
-        <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 space-y-6">
+        <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 space-y-6 min-w-0 max-w-full">
           
           {/* Active Summary Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -304,11 +304,11 @@ const CapacityView: React.FC = () => {
           <div className="bg-[var(--color-surface)] p-4 rounded-xl border border-[var(--color-divider)] shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
             
             {/* View Mode Tabs */}
-            <div className="flex items-center gap-1 bg-[var(--color-surface-2)] p-1 rounded-lg shrink-0 self-start">
+            <div className="flex items-center gap-1 bg-[var(--color-surface-2)] p-1 rounded-xl shrink-0 self-start">
               <button
                 onClick={() => setViewMode('classic')}
                 className={clsx(
-                  "px-3.5 py-1.5 rounded-md text-xs font-semibold transition-colors cursor-pointer",
+                  "px-3.5 py-2 min-h-[36px] flex items-center justify-center rounded-lg text-xs font-semibold transition-colors cursor-pointer active:scale-95",
                   viewMode === 'classic' 
                     ? "bg-[var(--color-surface)] text-[var(--color-text)] shadow-sm" 
                     : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
@@ -319,7 +319,7 @@ const CapacityView: React.FC = () => {
               <button
                 onClick={() => setViewMode('heatmap')}
                 className={clsx(
-                  "px-3.5 py-1.5 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5 cursor-pointer",
+                  "px-3.5 py-2 min-h-[36px] rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer active:scale-95",
                   viewMode === 'heatmap' 
                     ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-sm" 
                     : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
@@ -337,7 +337,7 @@ const CapacityView: React.FC = () => {
                   key={role}
                   onClick={() => setRoleFilter(role)}
                   className={clsx(
-                    "px-3 py-1 rounded-lg text-xs font-semibold transition-colors border cursor-pointer",
+                    "px-3 py-2 min-h-[36px] rounded-lg text-xs font-semibold transition-colors border cursor-pointer",
                     roleFilter === role 
                       ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] border-[var(--color-primary-hex)] shadow-sm" 
                       : "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:border-[var(--color-border)]"

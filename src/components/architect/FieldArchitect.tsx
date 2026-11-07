@@ -89,35 +89,39 @@ const FieldArchitect: React.FC = () => {
         title="Field Architect"
         subtitle="Extend the system data model with custom metadata attributes and entity schema"
         actions={
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1.5 p-1 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-1 p-0.5 sm:p-1 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl">
               <button 
                 onClick={() => setActiveTab('tasks')}
                 className={clsx(
-                  "px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 cursor-pointer",
+                  "px-2 sm:px-3 py-1.5 sm:py-2 min-h-[36px] flex items-center justify-center rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 cursor-pointer",
                   activeTab === 'tasks' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
-                Task Schema
+                <span className="hidden sm:inline">Task Schema</span>
+                <span className="sm:hidden">Tasks</span>
               </button>
               <button 
                 onClick={() => setActiveTab('defects')}
                 className={clsx(
-                  "px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 cursor-pointer",
+                  "px-2 sm:px-3 py-1.5 sm:py-2 min-h-[36px] flex items-center justify-center rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 cursor-pointer",
                   activeTab === 'defects' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
-                Defect Schema
+                <span className="hidden sm:inline">Defect Schema</span>
+                <span className="sm:hidden">Defects</span>
               </button>
             </div>
-            <Button variant="primary" size="sm" onClick={handleAddField} className="h-9 px-4 rounded-xl font-bold active:scale-95">
-              <Plus size={15} className="mr-1.5" /> Add Field
+            <Button variant="primary" size="sm" onClick={handleAddField} className="h-9 px-2.5 sm:px-4 rounded-xl font-bold active:scale-95 shrink-0">
+              <Plus size={15} className="sm:mr-1.5" />
+              <span className="hidden sm:inline">Add Field</span>
+              <span className="sm:hidden">Add</span>
             </Button>
           </div>
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full">
+      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full min-w-0 max-w-full">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
           <div className="lg:col-span-2 space-y-6">
             <div className="flex justify-between items-center px-2">

@@ -242,7 +242,7 @@ export const ReleaseRoadmap: React.FC = () => {
                 key={st}
                 onClick={() => setFilterStatus(st)}
                 className={clsx(
-                  "px-3 py-1.5 rounded-lg text-xs font-bold transition-colors duration-150 active:scale-[0.98] shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 cursor-pointer",
+                  "px-3 py-2 min-h-[36px] rounded-lg text-xs font-bold transition-colors duration-150 active:scale-[0.98] shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 cursor-pointer flex items-center justify-center",
                   filterStatus === st 
                     ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)]" 
                     : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)]"
@@ -295,15 +295,17 @@ export const ReleaseRoadmap: React.FC = () => {
                     <div className="flex items-center gap-1">
                       <button 
                         onClick={() => openEditModal(r)}
-                        className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors active:scale-95"
+                        className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors active:scale-95 cursor-pointer"
                         title="Edit Release"
+                        aria-label="Edit Release"
                       >
                         <Edit3 size={15} />
                       </button>
                       <button 
                         onClick={() => handleDeleteRelease(r.id, r.name)}
-                        className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-red-500 hover:bg-red-50 transition-colors active:scale-95"
+                        className="min-w-[36px] min-h-[36px] flex items-center justify-center rounded-lg text-[var(--color-text-muted)] hover:text-red-500 hover:bg-red-50 transition-colors active:scale-95 cursor-pointer"
                         title="Delete Release"
+                        aria-label="Delete Release"
                       >
                         <Trash2 size={15} />
                       </button>

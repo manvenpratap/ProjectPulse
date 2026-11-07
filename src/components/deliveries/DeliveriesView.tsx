@@ -230,49 +230,52 @@ export const DeliveriesView: React.FC = () => {
         title="Software Deliveries & Deployment Schedule"
         subtitle={`ALM / PDN Release Workstation • ${deliveries.length} Total Packages`}
         actions={
-          <div className="flex items-center gap-2 shrink-0 flex-wrap">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             {/* View Mode Switcher */}
             <div className="flex items-center p-0.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl">
               <button
                 onClick={() => setViewMode('table')}
+                aria-label="Table Matrix View"
                 className={clsx(
-                  "px-3 py-1 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer active:scale-95",
+                  "px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-95 min-h-[36px] min-w-[36px]",
                   viewMode === 'table' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
                 <Columns size={13} />
-                <span>Matrix</span>
+                <span className="hidden sm:inline">Matrix</span>
               </button>
               <button
                 onClick={() => setViewMode('kanban')}
+                aria-label="Pipeline Kanban View"
                 className={clsx(
-                  "px-3 py-1 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer active:scale-95",
+                  "px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-95 min-h-[36px] min-w-[36px]",
                   viewMode === 'kanban' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
                 <Kanban size={13} />
-                <span>Pipeline</span>
+                <span className="hidden sm:inline">Pipeline</span>
               </button>
               <button
                 onClick={() => setViewMode('heatmap')}
+                aria-label="3D Heatmaps View"
                 className={clsx(
-                  "px-3 py-1 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-colors cursor-pointer active:scale-95",
+                  "px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-95 min-h-[36px] min-w-[36px]",
                   viewMode === 'heatmap' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
                 <Activity size={13} />
-                <span>3D Heatmaps</span>
+                <span className="hidden sm:inline">Heatmaps</span>
               </button>
             </div>
 
-            <Button variant="outline" size="sm" onClick={() => exportProjectExcel(state)} title="Export Excel with Deliveries sheet" className="h-9 font-bold active:scale-95">
-              <FileSpreadsheet size={14} className="mr-1.5 text-emerald-500" />
-              <span>Export .xlsx</span>
+            <Button variant="outline" size="sm" onClick={() => exportProjectExcel(state)} title="Export Excel with Deliveries sheet" className="h-9 px-2.5 sm:px-3 font-bold active:scale-95 min-w-[36px]">
+              <FileSpreadsheet size={14} className="text-emerald-500 sm:mr-1.5" />
+              <span className="hidden sm:inline">Export</span>
             </Button>
 
-            <Button variant="primary" size="sm" onClick={handleOpenCreate} className="h-9 font-bold active:scale-95">
-              <Plus size={14} className="mr-1" />
-              <span>New Package</span>
+            <Button variant="primary" size="sm" onClick={handleOpenCreate} className="h-9 px-2.5 sm:px-3 font-bold active:scale-95 min-w-[36px]">
+              <Plus size={14} className="sm:mr-1" />
+              <span className="hidden sm:inline">New Package</span>
             </Button>
           </div>
         }

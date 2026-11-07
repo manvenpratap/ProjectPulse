@@ -17,17 +17,17 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   className = '',
 }) => {
   return (
-    <header className={`h-[60px] px-4 sm:px-6 lg:px-8 border-b border-[var(--color-divider)] bg-[var(--color-surface)]/80 backdrop-blur-md sticky top-0 z-20 flex items-center justify-between shrink-0 ${className}`}>
-      <div className="flex items-center gap-3 min-w-0">
+    <header className={`min-h-[56px] sm:min-h-[60px] py-2 px-4 sm:px-6 lg:px-8 border-b border-[var(--color-divider)] bg-[var(--color-surface)]/80 backdrop-blur-md sticky top-0 z-20 flex items-center justify-between gap-2 shrink-0 ${className}`}>
+      <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
         <div className="w-8 h-8 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-primary-hex)] flex items-center justify-center shrink-0">
           <Icon size={17} strokeWidth={2.2} />
         </div>
         <div className="min-w-0">
-          <h1 className="font-display text-base font-bold text-[var(--color-text)] tracking-tight leading-none truncate">
+          <h1 className="font-display text-sm sm:text-base font-bold text-[var(--color-text)] tracking-tight leading-none truncate">
             {title}
           </h1>
           {subtitle && (
-            <p className="text-xs text-[var(--color-text-muted)] font-medium mt-1 truncate">
+            <p className="text-[11px] sm:text-xs text-[var(--color-text-muted)] font-medium mt-1 truncate">
               {subtitle}
             </p>
           )}
@@ -35,7 +35,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
       </div>
 
       {actions && (
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 max-w-[60vw] sm:max-w-none">
           {actions}
         </div>
       )}

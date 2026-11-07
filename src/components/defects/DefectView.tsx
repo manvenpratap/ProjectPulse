@@ -41,24 +41,27 @@ const DefectView: React.FC = () => {
         title="Defect Workshop"
         subtitle={`${state.defects.length} Quality Issues • ${state.defects.filter(d => d.status === DefectStatus.NEW).length} Unaddressed`}
         actions={
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
               <input 
-                className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl pl-9 pr-4 py-1.5 text-xs outline-none focus:border-[var(--color-primary-hex)] w-[240px] focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-[var(--color-text)]"
-                placeholder="Search by ID, title or tags..."
+                className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl pl-9 pr-3 sm:pr-4 py-1.5 text-xs outline-none focus:border-[var(--color-primary-hex)] w-28 sm:w-[240px] focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-[var(--color-text)]"
+                placeholder="Search..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
+                aria-label="Search defects"
               />
             </div>
-            <Button variant="primary" size="sm" onClick={() => handleEdit(null)} className="h-9 px-4 active:scale-95">
-              <Plus size={15} className="mr-1.5" /> Log Defect
+            <Button variant="primary" size="sm" onClick={() => handleEdit(null)} className="h-9 px-2.5 sm:px-4 active:scale-95 shrink-0">
+              <Plus size={15} className="sm:mr-1.5" />
+              <span className="hidden sm:inline">Log Defect</span>
+              <span className="sm:hidden">Log</span>
             </Button>
           </div>
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full">
+      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full min-w-0 max-w-full">
         {filteredDefects.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredDefects.map((defect) => (

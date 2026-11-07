@@ -223,7 +223,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
             <button
               onClick={() => setDensity('compact')}
               className={clsx(
-                "px-2.5 py-1 rounded-lg text-xs font-medium transition-colors duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50",
+                "px-3 py-1.5 min-h-[36px] rounded-lg text-xs font-medium transition-colors duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 cursor-pointer",
                 density === 'compact' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-faint)]"
               )}
             >
@@ -232,7 +232,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
             <button
               onClick={() => setDensity('comfortable')}
               className={clsx(
-                "px-2.5 py-1 rounded-lg text-xs font-medium transition-colors duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50",
+                "px-3 py-1.5 min-h-[36px] rounded-lg text-xs font-medium transition-colors duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 cursor-pointer",
                 density === 'comfortable' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-faint)]"
               )}
             >
@@ -266,7 +266,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                       onClick={(e) => handleCycleStatus(task, e)}
                       title="Click to advance status"
                       className={clsx(
-                        "px-2 py-0.5 rounded-full text-xs font-medium border motion-safe:transition-transform active:scale-95",
+                        "px-2.5 py-1.5 min-h-[32px] rounded-full text-xs font-medium border motion-safe:transition-transform active:scale-95 inline-flex items-center justify-center cursor-pointer",
                         getStatusStyle(task.status)
                       )}
                     >
@@ -275,9 +275,9 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                     {task.subtasks.length > 0 && (
                       <button
                         onClick={(e) => toggleExpand(task.id, e)}
-                        className="flex items-center gap-1 text-xs font-medium text-indigo-500 px-1.5 py-0.5 rounded bg-indigo-500/10"
+                        className="flex items-center justify-center gap-1 text-xs font-medium text-indigo-500 px-2 py-1.5 min-h-[32px] rounded-lg bg-indigo-500/10 cursor-pointer"
                       >
-                        <CheckSquare size={10} /> {task.subtasks.filter(s => s.done).length}/{task.subtasks.length}
+                        <CheckSquare size={12} /> {task.subtasks.filter(s => s.done).length}/{task.subtasks.length}
                       </button>
                     )}
                   </div>

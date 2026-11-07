@@ -39,24 +39,24 @@ const SettingsView: React.FC = () => {
             <button
               onClick={() => setActiveTab('parameters')}
               className={clsx(
-                "px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 flex items-center gap-1.5",
+                "px-3 py-2 min-h-[36px] rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 flex items-center justify-center gap-1.5",
                 activeTab === 'parameters' 
                   ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" 
                   : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
               )}
             >
-              <Sliders size={14} /> System Parameters
+              <Sliders size={14} /> <span className="hidden sm:inline">System</span> Parameters
             </button>
             <button
               onClick={() => setActiveTab('baselines')}
               className={clsx(
-                "px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 flex items-center gap-1.5",
+                "px-3 py-2 min-h-[36px] rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 flex items-center justify-center gap-1.5",
                 activeTab === 'baselines' 
                   ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" 
                   : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
               )}
             >
-              <Camera size={14} /> Baseline Snapshots ({state.baselines?.length ? new Set(state.baselines.map(b => b.id)).size : 0})
+              <Camera size={14} /> Snapshots ({state.baselines?.length ? new Set(state.baselines.map(b => b.id)).size : 0})
             </button>
           </div>
         }

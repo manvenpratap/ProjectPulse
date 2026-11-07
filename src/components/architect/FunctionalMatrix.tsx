@@ -69,26 +69,28 @@ const FunctionalMatrix: React.FC = () => {
         title="Functional Matrix"
         subtitle="Map project strategy and functional scope to architectural entities and modules"
         actions={
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <div className="relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
               <input 
-                className="h-9 pl-9 pr-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs font-semibold focus:border-[var(--color-primary-hex)] outline-none w-56 transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
-                placeholder="Filter matrix..."
+                className="h-9 pl-9 pr-3 sm:pr-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs font-semibold focus:border-[var(--color-primary-hex)] outline-none w-28 sm:w-56 transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
+                placeholder="Filter..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <Button variant="primary" size="sm" onClick={handleAddFeature} className="h-9 rounded-xl font-bold px-4 active:scale-95">
-              <Plus size={15} className="mr-1.5" /> New Feature
+            <Button variant="primary" size="sm" onClick={handleAddFeature} className="h-9 rounded-xl font-bold px-2.5 sm:px-4 active:scale-95 shrink-0">
+              <Plus size={15} className="sm:mr-1.5" />
+              <span className="hidden sm:inline">New Feature</span>
+              <span className="sm:hidden">New</span>
             </Button>
           </div>
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full">
+      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full min-w-0">
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
            {filteredFeatures.map((f, i) => {
               const actualIdx = features.indexOf(f);
               const screens = f.screens || [];
@@ -96,22 +98,22 @@ const FunctionalMatrix: React.FC = () => {
               const avgProg = linkedTasks.length > 0 ? Math.round(linkedTasks.reduce((s,t) => s + (t.progress || 0), 0) / linkedTasks.length) : 0;
               
               return (
-                <div key={i} className="card p-8 flex flex-col relative overflow-hidden transition-colors duration-150">
+                <div key={i} className="card p-6 sm:p-8 flex flex-col relative overflow-hidden transition-colors duration-150 group">
                    <div className="absolute top-0 left-0 w-1 h-full bg-cyan-500 group-hover:w-2" />
                    
                    <div className="flex items-start justify-between mb-6">
                       <div className="space-y-1">
-                         <h3 className="font-black text-xl text-[var(--color-text)] leading-tight">{f.name}</h3>
+                         <h3 className="font-black text-lg sm:text-xl text-[var(--color-text)] leading-tight">{f.name}</h3>
                          <div className="flex items-center gap-2">
                             <ShieldCheck size={12} className="text-cyan-500" />
                             <span className="text-xs font-medium text-[var(--color-text-muted)]">Validated Feature</span>
                          </div>
                       </div>
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg active:scale-[0.98]" onClick={() => startEdit(actualIdx)}>
+                      <div className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex gap-1">
+                         <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg active:scale-[0.98]" onClick={() => startEdit(actualIdx)}>
                             <Edit2 size={14} />
                          </Button>
-                         <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-red-500 active:scale-[0.98]" onClick={() => removeFeature(actualIdx)}>
+                         <Button variant="ghost" size="icon" className="h-9 w-9 rounded-lg text-red-500 active:scale-[0.98]" onClick={() => removeFeature(actualIdx)}>
                             <Trash2 size={14} />
                          </Button>
                       </div>
@@ -147,7 +149,7 @@ const FunctionalMatrix: React.FC = () => {
 
                       <button 
                         onClick={() => setSelectedFeature(f)}
-                        className="flex items-center gap-2 text-xs font-semibold text-cyan-600 transition-colors duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 cursor-pointer"
+                        className="flex items-center gap-2 text-xs font-semibold text-cyan-600 py-2 min-h-[36px] transition-colors duration-150 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50 cursor-pointer"
                       >
                          View feature details <ArrowRight size={12} />
                       </button>

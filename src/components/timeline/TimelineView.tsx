@@ -843,47 +843,50 @@ export const TimelineView: React.FC = () => {
         actions={
           <div className="flex items-center gap-2 flex-wrap">
             {/* View Mode Toggle */}
-            <div className="flex bg-[var(--color-surface-2)] p-0.5 rounded-xl border border-[var(--color-divider)]">
+            <div className="flex bg-[var(--color-surface-2)] p-1 rounded-xl border border-[var(--color-divider)]">
               <button
                 onClick={() => setViewMode('swimlane')}
                 className={clsx(
-                  "px-2.5 py-1 text-xs font-semibold rounded-lg transition-colors duration-150 flex items-center gap-1.5",
+                  "px-2.5 py-1.5 min-h-[36px] min-w-[36px] text-xs font-semibold rounded-lg transition-colors duration-150 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95",
                   viewMode === 'swimlane'
                     ? "bg-[var(--color-surface)] shadow-sm text-[var(--color-primary-hex)]"
                     : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
                 title="Group into Module Swimlanes"
+                aria-label="Group into Module Swimlanes"
               >
-                <Layers size={13} />
+                <Layers size={14} />
                 <span className="hidden sm:inline">Swimlanes</span>
               </button>
               <button
                 onClick={() => setViewMode('flat')}
                 className={clsx(
-                  "px-2.5 py-1 text-xs font-semibold rounded-lg transition-colors duration-150 flex items-center gap-1.5",
+                  "px-2.5 py-1.5 min-h-[36px] min-w-[36px] text-xs font-semibold rounded-lg transition-colors duration-150 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95",
                   viewMode === 'flat'
                     ? "bg-[var(--color-surface)] shadow-sm text-[var(--color-primary-hex)]"
                     : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
                 title="Show flat chronological matrix"
+                aria-label="Show flat chronological matrix"
               >
-                <Filter size={13} />
+                <Filter size={14} />
                 <span className="hidden sm:inline">Flat</span>
               </button>
             </div>
 
             {/* Resolution Zoom Selector */}
-            <div className="flex bg-[var(--color-surface-2)] p-0.5 rounded-xl border border-[var(--color-divider)]">
+            <div className="flex bg-[var(--color-surface-2)] p-1 rounded-xl border border-[var(--color-divider)]">
               {(['day', 'week', 'month'] as const).map(z => (
                 <button
                   key={z}
                   onClick={() => setZoom(z)}
                   className={clsx(
-                    "px-2.5 py-1 text-xs font-semibold rounded-lg transition-colors duration-150 capitalize",
+                    "px-2.5 py-1.5 min-h-[36px] text-xs font-semibold rounded-lg transition-colors duration-150 capitalize cursor-pointer active:scale-95 flex items-center justify-center",
                     zoom === z 
                       ? "bg-[var(--color-surface)] shadow-sm text-[var(--color-primary-hex)]" 
                       : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                   )}
+                  aria-label={`Zoom ${z}`}
                 >
                   {z}
                 </button>
@@ -895,7 +898,7 @@ export const TimelineView: React.FC = () => {
               variant="outline" 
               size="sm" 
               onClick={jumpToToday}
-              className="text-xs font-semibold h-8"
+              className="text-xs font-semibold h-9 min-h-[36px] active:scale-95"
               title="Center timeline on today"
             >
               Today
@@ -925,12 +928,13 @@ export const TimelineView: React.FC = () => {
           <button
             onClick={() => setShowDeps(!showDeps)}
             className={clsx(
-              "px-2.5 py-1.5 rounded-lg border flex items-center gap-1.5 font-semibold transition-colors duration-150 active:scale-95",
+              "px-3 py-2 min-h-[36px] rounded-lg border flex items-center gap-1.5 font-semibold transition-colors duration-150 active:scale-95 cursor-pointer",
               showDeps 
                 ? "bg-amber-500/10 border-amber-500/40 text-amber-500" 
                 : "bg-[var(--color-surface-2)] border-[var(--color-divider)] text-[var(--color-text-muted)]"
             )}
             title="Toggle dependency connection lines"
+            aria-label="Toggle dependency connection lines"
           >
             <GitFork size={13} />
             <span>Deps</span>
@@ -940,12 +944,13 @@ export const TimelineView: React.FC = () => {
           <button
             onClick={() => setShowActuals(!showActuals)}
             className={clsx(
-              "px-2.5 py-1.5 rounded-lg border flex items-center gap-1.5 font-semibold transition-colors duration-150 active:scale-95",
+              "px-3 py-2 min-h-[36px] rounded-lg border flex items-center gap-1.5 font-semibold transition-colors duration-150 active:scale-95 cursor-pointer",
               showActuals 
                 ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-500" 
                 : "bg-[var(--color-surface-2)] border-[var(--color-divider)] text-[var(--color-text-muted)]"
             )}
             title="Toggle baseline vs actual completion date markers"
+            aria-label="Toggle baseline vs actual completion date markers"
           >
             <CalendarCheck2 size={13} />
             <span>Actuals</span>
@@ -955,12 +960,13 @@ export const TimelineView: React.FC = () => {
           <button
             onClick={() => setShowMonteCarlo(!showMonteCarlo)}
             className={clsx(
-              "px-2.5 py-1.5 rounded-lg border flex items-center gap-1.5 font-semibold transition-colors duration-150 active:scale-95",
+              "px-3 py-2 min-h-[36px] rounded-lg border flex items-center gap-1.5 font-semibold transition-colors duration-150 active:scale-95 cursor-pointer",
               showMonteCarlo 
                 ? "bg-purple-500/10 border-purple-500/40 text-purple-400" 
                 : "bg-[var(--color-surface-2)] border-[var(--color-divider)] text-[var(--color-text-muted)]"
             )}
             title="Toggle Monte Carlo probabilistic forecast bands"
+            aria-label="Toggle Monte Carlo probabilistic forecast bands"
           >
             <Cpu size={13} />
             <span>Forecast</span>
@@ -970,12 +976,13 @@ export const TimelineView: React.FC = () => {
           <button
             onClick={() => setOnlyCritical(!onlyCritical)}
             className={clsx(
-              "px-2.5 py-1.5 rounded-lg border flex items-center gap-1.5 font-semibold transition-colors duration-150 active:scale-95",
+              "px-3 py-2 min-h-[36px] rounded-lg border flex items-center gap-1.5 font-semibold transition-colors duration-150 active:scale-95 cursor-pointer",
               onlyCritical 
                 ? "bg-rose-500/10 border-rose-500/40 text-rose-400" 
                 : "bg-[var(--color-surface-2)] border-[var(--color-divider)] text-[var(--color-text-muted)]"
             )}
             title="Filter by critical blockers and overdue items"
+            aria-label="Filter by critical blockers and overdue items"
           >
             <AlertTriangle size={13} />
             <span>Critical Path</span>

@@ -153,26 +153,28 @@ export const SprintRetroView: React.FC = () => {
             <select
               value={selectedSprint}
               onChange={(e) => setSelectedSprint(e.target.value)}
-              className="h-9 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs font-semibold text-[var(--color-text)] focus:outline-none cursor-pointer"
+              className="h-9 px-2 sm:px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs font-semibold text-[var(--color-text)] focus:outline-none cursor-pointer max-w-[105px] sm:max-w-none truncate"
               aria-label="Select sprint period"
             >
-              <option value="Sprint 23">Sprint 23 (Current)</option>
-              <option value="Sprint 22">Sprint 22 (Prior)</option>
+              <option value="Sprint 23">Sprint 23</option>
+              <option value="Sprint 22">Sprint 22</option>
               <option value="Sprint 21">Sprint 21</option>
             </select>
             <Button
               variant="primary"
               size="sm"
               onClick={() => setIsModalOpen(true)}
-              className="h-9 px-4"
+              className="h-9 px-2.5 sm:px-4 active:scale-95 shrink-0"
             >
-              <Plus size={16} className="mr-1.5" /> Add Retro Item
+              <Plus size={16} className="sm:mr-1.5" />
+              <span className="hidden sm:inline">Add Retro Item</span>
+              <span className="sm:hidden">Add</span>
             </Button>
           </div>
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full space-y-6">
+      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full min-w-0 max-w-full space-y-6">
         {/* Sprint Vital Gauges */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Morale Index */}
@@ -219,11 +221,11 @@ export const SprintRetroView: React.FC = () => {
           </div>
 
         {/* 2. CATEGORY PILL FILTER BAR (Information Pyramid Level 2) */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scroll">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scroll max-w-full">
           <button
             onClick={() => setActiveCategoryFilter('all')}
             className={clsx(
-              "px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer",
+              "px-3.5 py-2 min-h-[36px] flex items-center justify-center rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer active:scale-95",
               activeCategoryFilter === 'all'
                 ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-sm"
                 : "bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
@@ -236,7 +238,7 @@ export const SprintRetroView: React.FC = () => {
               key={cat.id}
               onClick={() => setActiveCategoryFilter(cat.id)}
               className={clsx(
-                "px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap flex items-center gap-2 transition-colors cursor-pointer",
+                "px-3.5 py-2 min-h-[36px] rounded-lg text-xs font-semibold whitespace-nowrap flex items-center gap-2 transition-colors cursor-pointer active:scale-95",
                 activeCategoryFilter === cat.id
                   ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-sm"
                   : "bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
@@ -287,10 +289,10 @@ export const SprintRetroView: React.FC = () => {
                       setNewCategory(category.id as any);
                       setIsModalOpen(true);
                     }}
-                    className="p-1.5 hover:bg-[var(--color-surface-2)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] rounded-md transition-colors cursor-pointer"
+                    className="p-2 min-w-[36px] min-h-[36px] flex items-center justify-center hover:bg-[var(--color-surface-2)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] rounded-lg transition-colors cursor-pointer active:scale-95"
                     aria-label={`Add item to ${category.label}`}
                   >
-                    <Plus size={15} />
+                    <Plus size={16} />
                   </button>
                 </div>
 
