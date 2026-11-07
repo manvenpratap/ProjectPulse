@@ -20,6 +20,7 @@ import {
   Briefcase
 } from 'lucide-react';
 import clsx from 'clsx';
+import PageHeader from '../shared/PageHeader';
 import { TaskStatus } from '../../types';
 import { daysDiff, getBusinessDays } from '../../utils/projectUtils';
 
@@ -214,25 +215,16 @@ const CapacityView: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-hidden">
-      {/* Header */}
-      <div className="p-6 border-b border-[var(--color-divider)] flex flex-col md:flex-row md:items-center justify-between gap-4 shrink-0 bg-[var(--color-surface)] shadow-sm z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] flex items-center justify-center shrink-0 shadow-sm">
-            <BarChart3 size={22} />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold text-[var(--color-text)] tracking-tight">Resource Capacity Planning</h1>
-            <p className="text-xs text-[var(--color-text-muted)]">Workload heatmap overlay and team leveling telemetry</p>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Settings Console */}
-          <div className="flex items-center gap-3 bg-[var(--color-surface-2)] p-1.5 px-3 rounded-xl border border-[var(--color-divider)]">
+      <PageHeader
+        icon={BarChart3}
+        title="Resource Capacity Planning"
+        subtitle="Workload heatmap overlay and team leveling telemetry"
+        actions={
+          <div className="flex items-center gap-3 bg-[var(--color-surface-2)] p-1 px-3 rounded-xl border border-[var(--color-divider)]">
             <Settings2 size={14} className="text-[var(--color-text-muted)]" />
             <div className="flex items-center gap-3 text-xs divide-x divide-[var(--color-divider)]">
               <div className="flex items-center gap-1.5">
-                <span className="font-semibold text-[var(--color-text-muted)]">Cap/Wk</span>
+                <span className="font-semibold text-[var(--color-text-muted)]">Cap/Wk:</span>
                 <input 
                   type="number" 
                   step="0.5"
@@ -244,7 +236,7 @@ const CapacityView: React.FC = () => {
                 />
               </div>
               <div className="flex items-center gap-1.5 pl-3">
-                <span className="font-semibold text-[var(--color-text-muted)]">Workdays/Wk</span>
+                <span className="font-semibold text-[var(--color-text-muted)]">Workdays/Wk:</span>
                 <input 
                   type="number" 
                   max={7}
@@ -256,12 +248,12 @@ const CapacityView: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       <div className="flex-1 overflow-hidden flex flex-col lg:flex-row">
         {/* Main interactive grid column */}
-        <div className="flex-1 overflow-y-auto custom-scroll p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 space-y-6">
           
           {/* Active Summary Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

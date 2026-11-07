@@ -94,7 +94,7 @@ const StepTemplates: React.FC = () => {
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 max-w-[1400px] mx-auto w-full space-y-6">
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 w-full space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {templates.map((tpl, i) => {
             const totalEffort = tpl.steps.reduce((s, st) => s + st.effort, 0);

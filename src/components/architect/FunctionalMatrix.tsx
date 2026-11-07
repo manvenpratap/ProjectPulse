@@ -86,7 +86,7 @@ const FunctionalMatrix: React.FC = () => {
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 max-w-[1400px] mx-auto w-full">
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 w-full">
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
            {filteredFeatures.map((f, i) => {

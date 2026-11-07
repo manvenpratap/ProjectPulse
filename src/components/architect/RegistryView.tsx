@@ -89,7 +89,7 @@ const RegistryView: React.FC = () => {
         title="Pulse Registry"
         subtitle="Centralized option libraries, dropdown taxonomies, and entity lookups"
       />
-      <div className="flex-1 overflow-y-auto custom-scroll p-4 md:p-8 max-w-[1400px] mx-auto w-full flex flex-col lg:flex-row gap-6 md:gap-8">
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 w-full flex flex-col lg:flex-row gap-6 md:gap-8">
         {/* Sidebar */}
         <div className="w-full lg:w-80 flex flex-col bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl md:rounded-3xl overflow-hidden shadow-sm shrink-0 h-auto lg:h-[calc(100vh-140px)]">
           <div className="p-6 border-b border-[var(--color-divider)]">
@@ -168,7 +168,7 @@ const RegistryView: React.FC = () => {
         {/* Workspace */}
         <div className="flex-1 flex flex-col bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl md:rounded-3xl overflow-hidden shadow-sm relative min-h-[600px] lg:min-h-0">
           <div className="p-6 md:p-10 flex-1 overflow-y-auto custom-scroll">
-            <div className="max-w-3xl mx-auto">
+            <div className="w-full">
               <div className="flex flex-col md:flex-row justify-between items-start mb-8 md:mb-12 gap-6 md:gap-0">
                 <div>
                   <div className="flex items-center gap-3 mb-3 flex-wrap">

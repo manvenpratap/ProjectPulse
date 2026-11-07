@@ -132,8 +132,8 @@ Project Management Office (PMO)`;
       />
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto custom-scroll p-4 md:p-6 print:p-0">
-        <div className="max-w-5xl mx-auto space-y-6 flex flex-col items-center">
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 space-y-6 print:p-0">
+        <div className="w-full space-y-6">
           
           {/* Report Tab Selector */}
           <div className="w-full flex p-1 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl print:hidden shadow-sm overflow-x-auto">

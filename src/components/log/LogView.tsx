@@ -48,8 +48,8 @@ const LogView: React.FC = () => {
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-6">
-        <div className="max-w-4xl mx-auto space-y-10">
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 space-y-10">
+        <div className="w-full space-y-10">
           {(Object.entries(groupedLogs) as [string, LogEntry[]][]).map(([date, entries]) => (
             <div key={date} className="relative">
               {/* Day Label */}

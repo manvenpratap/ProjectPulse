@@ -166,7 +166,7 @@ export const ReleaseRoadmap: React.FC = () => {
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 max-w-[1400px] mx-auto w-full space-y-6">
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 w-full space-y-6">
 
         {/* KPI Telemetry Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

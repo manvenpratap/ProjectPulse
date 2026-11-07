@@ -56,7 +56,7 @@ const TeamView: React.FC = () => {
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 max-w-[1400px] mx-auto w-full space-y-12">
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 w-full space-y-12">
         {/* Motivation / Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
            {/* Velocity Leaderboard */}

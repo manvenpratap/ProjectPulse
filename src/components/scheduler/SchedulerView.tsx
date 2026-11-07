@@ -14,6 +14,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import clsx from 'clsx';
+import PageHeader from '../shared/PageHeader';
 import { addBusDays, fmtDate, todayStr } from '../../utils/projectUtils';
 
 const SchedulerView: React.FC = () => {
@@ -201,48 +202,36 @@ const SchedulerView: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-y-auto custom-scroll">
-      <div className="px-4 md:px-8 py-6 md:py-10 max-w-[1400px] mx-auto w-full space-y-8">
-        
-        {/* Header Block */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[var(--color-divider)]">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="px-2.5 py-0.5 bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 text-xs font-semibold rounded-md">
-                Intelligent Scheduling
-              </span>
-              <span className="text-[var(--color-text-faint)]">/</span>
-              <span className="text-xs font-mono font-medium text-[var(--color-text-muted)]">Copilot Sandbox</span>
-            </div>
-            <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-2">
-              Conflict Resolver &amp; Scheduler
-            </h1>
-            <p className="text-[var(--color-text-muted)] text-sm max-w-2xl leading-relaxed">
-              Analyze daily workloads, resolve resource bottlenecks, and adjust project timelines in a sandboxed execution context.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2.5">
+    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+      <PageHeader
+        icon={CalendarIcon}
+        title="Conflict Resolver & Scheduler"
+        subtitle="Analyze daily workloads, resolve resource bottlenecks, and adjust project timelines"
+        actions={
+          <div className="flex items-center gap-2">
             <button 
               onClick={() => handleShiftDates(-1)}
-              className="h-10 px-3.5 border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)] text-[var(--color-text)] rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+              className="h-9 px-3 border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)] text-[var(--color-text)] rounded-xl text-xs font-semibold transition-colors cursor-pointer active:scale-95"
             >
               Shift -1 Day
             </button>
             <button 
               onClick={() => handleShiftDates(1)}
-              className="h-10 px-3.5 border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)] text-[var(--color-text)] rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+              className="h-9 px-3 border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)] text-[var(--color-text)] rounded-xl text-xs font-semibold transition-colors cursor-pointer active:scale-95"
             >
               Shift +1 Day
             </button>
             <button 
               onClick={handleAutoBalance}
-              className="h-10 px-4 bg-[var(--color-primary-hex)] hover:opacity-95 text-[var(--color-primary-text)] rounded-lg text-xs font-semibold flex items-center gap-2 transition-opacity shadow-sm cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--color-primary-hex)]"
+              className="h-9 px-3.5 bg-[var(--color-primary-hex)] hover:opacity-95 text-[var(--color-primary-text)] rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-opacity shadow-sm cursor-pointer active:scale-95 focus-visible:outline-2 focus-visible:outline-[var(--color-primary-hex)]"
             >
               <Sparkles size={14} /> Auto-Balance
             </button>
           </div>
-        </div>
+        }
+      />
+
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 space-y-8">
 
         {/* Date Selector & Weekly Navigator */}
         <div className="flex items-center justify-between p-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl shadow-sm">

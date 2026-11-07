@@ -143,7 +143,7 @@ const ScaffolderView: React.FC = () => {
         title="Project Scaffolder"
         subtitle="Design modular architecture and fast-scaffold deliverable matrices and task hierarchies"
       />
-      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 max-w-[1400px] mx-auto w-full space-y-8">
+      <div className="flex-1 overflow-y-auto custom-scroll p-6 lg:p-8 w-full space-y-8">
         {renderStepStepper()}
 
         {step === 1 && (
