@@ -681,3 +681,209 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: 4px !important;
 }
 
+
+/* ═════════════════════════════════════════════════════════
+   CURATED SWISS THEMES FROM PROJECTPULSE MASTER SPEC
+   ═════════════════════════════════════════════════════════ */
+
+/* Terracotta — Mediterranean clay & warm earth */
+[data-theme="terracotta"] {
+  --color-display-font: 'Inter', sans-serif;
+  --color-bg: #f3f4f6;
+  --color-surface: #ffffff;
+  --color-surface-2: #fef3f2;
+  --color-surface-offset: #ffffff;
+  --color-text: #1c1917;
+  --color-text-muted: #57534e;
+  --color-text-faint: #a8a29e;
+  --color-primary-hex: #e05a47;
+  --color-primary-hover: #c94b3a;
+  --color-primary-highlight-hex: rgba(224, 90, 71, 0.12);
+  --color-border: #e5e7eb;
+  --color-divider: #f3f4f6;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+/* Fintech — Precision Wall Street banking */
+[data-theme="fintech"] {
+  --color-display-font: 'Fraunces', serif;
+  --color-bg: #f8f9fa;
+  --color-surface: #ffffff;
+  --color-surface-2: #f1f3f5;
+  --color-surface-offset: #ffffff;
+  --color-text: #0b192c;
+  --color-text-muted: #4a5568;
+  --color-text-faint: #a0aec0;
+  --color-primary-hex: #0b192c;
+  --color-primary-hover: #1e293b;
+  --color-primary-highlight-hex: rgba(11, 25, 44, 0.08);
+  --color-border: #e2e8f0;
+  --color-divider: #edf2f7;
+  --shadow-sm: 0 2px 6px rgba(11, 25, 44, 0.04);
+  --shadow-md: 0 4px 12px rgba(11, 25, 44, 0.06);
+  --shadow-lg: 0 12px 28px rgba(11, 25, 44, 0.08);
+}
+
+/* Bento — High-density structured modular grids */
+[data-theme="bento"] {
+  --color-display-font: 'Outfit', sans-serif;
+  --color-bg: #e2e8f0;
+  --color-surface: #ffffff;
+  --color-surface-2: #f8fafc;
+  --color-surface-offset: #ffffff;
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-text-faint: #cbd5e1;
+  --color-primary-hex: #ff5722;
+  --color-primary-hover: #e64a19;
+  --color-primary-highlight-hex: rgba(255, 87, 34, 0.15);
+  --color-border: #cbd5e1;
+  --color-divider: #e2e8f0;
+  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 16px 36px rgba(0, 0, 0, 0.12);
+}
+
+/* Codename — Crimson stealth operational dashboard */
+[data-theme="codename"] {
+  --color-display-font: 'Inter', sans-serif;
+  --color-bg: #f4f4f5;
+  --color-surface: #ffffff;
+  --color-surface-2: #fafafa;
+  --color-surface-offset: #ffffff;
+  --color-text: #18181b;
+  --color-text-muted: #71717a;
+  --color-text-faint: #d4d4d8;
+  --color-primary-hex: #e11d48;
+  --color-primary-hover: #be123c;
+  --color-primary-highlight-hex: rgba(225, 29, 72, 0.12);
+  --color-border: #e4e4e7;
+  --color-divider: #f4f4f5;
+  --shadow-sm: 0 2px 6px rgba(24, 24, 27, 0.05);
+  --shadow-md: 0 6px 16px rgba(24, 24, 27, 0.08);
+  --shadow-lg: 0 12px 30px rgba(24, 24, 27, 0.12);
+}
+
+/* Workflow — Deep indigo engineering cadence */
+[data-theme="workflow"] {
+  --color-display-font: 'Satoshi', sans-serif;
+  --color-bg: #eef2ff;
+  --color-surface: #ffffff;
+  --color-surface-2: #e0e7ff;
+  --color-surface-offset: #ffffff;
+  --color-text: #1e1b4b;
+  --color-text-muted: #6366f1;
+  --color-text-faint: #c7d2fe;
+  --color-primary-hex: #6366f1;
+  --color-primary-hover: #4f46e5;
+  --color-primary-highlight-hex: rgba(99, 102, 241, 0.15);
+  --color-border: #e0e7ff;
+  --color-divider: #eef2ff;
+  --shadow-sm: 0 4px 12px rgba(99, 102, 241, 0.06);
+  --shadow-md: 0 10px 30px rgba(99, 102, 241, 0.12);
+  --shadow-lg: 0 20px 40px rgba(99, 102, 241, 0.16);
+}
+
+/* Terminal — Hacker monospace developer aesthetic */
+[data-theme="terminal"] {
+  --color-display-font: 'JetBrains Mono', monospace;
+  --color-bg: #0d1117;
+  --color-surface: #161b22;
+  --color-surface-2: #21262d;
+  --color-surface-offset: #090d13;
+  --color-text: #c9d1d9;
+  --color-text-muted: #8b949e;
+  --color-text-faint: #484f58;
+  --color-primary-hex: #58a6ff;
+  --color-primary-hover: #79c0ff;
+  --color-primary-highlight-hex: rgba(88, 166, 255, 0.15);
+  --color-border: #30363d;
+  --color-divider: #21262d;
+}
+
+/* Paper Editorial — Elegant serif academic publication */
+[data-theme="paper-editorial"] {
+  --color-display-font: 'Fraunces', serif;
+  --color-bg: #fdf8f0;
+  --color-surface: #fffdf8;
+  --color-surface-2: #f8f1e4;
+  --color-surface-offset: #f0e8d5;
+  --color-text: #2c2523;
+  --color-text-muted: #6e645e;
+  --color-text-faint: #b3a89f;
+  --color-primary-hex: #8c4a2f;
+  --color-primary-hover: #703822;
+  --color-primary-highlight-hex: rgba(140, 74, 47, 0.1);
+  --color-border: #e8ded2;
+  --color-divider: #f0e8d5;
+}
+
+/* Aurora Studio — Soft glowing creative agency */
+[data-theme="aurora-studio"] {
+  --color-display-font: 'Satoshi', sans-serif;
+  --color-bg: #fafafe;
+  --color-surface: #ffffff;
+  --color-surface-2: #f0f0ff;
+  --color-surface-offset: #e8e8fc;
+  --color-text: #1a162b;
+  --color-text-muted: #5e5873;
+  --color-text-faint: #a5a0b8;
+  --color-primary-hex: #7c3aed;
+  --color-primary-hover: #6d28d9;
+  --color-primary-highlight-hex: rgba(124, 58, 237, 0.12);
+  --color-border: #e6e4f5;
+  --color-divider: #f0f0ff;
+}
+
+/* Obsidian Dark — Pure pitch-black OLED */
+[data-theme="obsidian-dark"] {
+  --color-display-font: 'JetBrains Mono', monospace;
+  --color-bg: #000000;
+  --color-surface: #0a0a0a;
+  --color-surface-2: #141414;
+  --color-surface-offset: #050505;
+  --color-text: #ededed;
+  --color-text-muted: #888888;
+  --color-text-faint: #444444;
+  --color-primary-hex: #00ff7f;
+  --color-primary-hover: #33ff99;
+  --color-primary-highlight-hex: rgba(0, 255, 127, 0.12);
+  --color-border: #222222;
+  --color-divider: #141414;
+}
+
+/* Origin — Clean minimalist foundational canvas */
+[data-theme="origin"] {
+  --color-display-font: 'Fraunces', serif;
+  --color-bg: #faf9f6;
+  --color-surface: #ffffff;
+  --color-surface-2: #f4f2ed;
+  --color-surface-offset: #f0ede6;
+  --color-text: #1c1917;
+  --color-text-muted: #57534e;
+  --color-text-faint: #a8a29e;
+  --color-primary-hex: #0f4c5c;
+  --color-primary-hover: #0a3541;
+  --color-primary-highlight-hex: rgba(15, 76, 92, 0.08);
+  --color-border: #e2ddd6;
+  --color-divider: #f0ede6;
+}
+
+/* Slate — Nordic amber twilight */
+[data-theme="slate"] {
+  --color-display-font: 'Outfit', sans-serif;
+  --color-bg: #1a1b2e;
+  --color-surface: #232440;
+  --color-surface-2: #2d2e50;
+  --color-surface-offset: #131422;
+  --color-text: #f1f5f9;
+  --color-text-muted: #94a3b8;
+  --color-text-faint: #64748b;
+  --color-primary-hex: #f59e0b;
+  --color-primary-hover: #d97706;
+  --color-primary-highlight-hex: rgba(245, 158, 11, 0.15);
+  --color-border: #363758;
+  --color-divider: #2a2b48;
+}

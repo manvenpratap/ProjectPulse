@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "ProjectPulse - Data Flow Pipeline",
+    "output": "dataflow.html",
+    "viewBox": [1080, 520],
+    "animation": "trace",
+    "quality_profile": "showcase"
+  },
+  "stages": [
+    { "label": "Inputs & Excels" },
+    { "label": "Parser Engine" },
+    { "label": "State Store 'P'" },
+    { "label": "Interactive Views" },
+    { "label": "Exports & Storage" }
+  ],
+  "nodes": [
+    { "id": "inputs", "type": "frontend", "label": "User Edits / Excel", "sublabel": ".xlsx, forms, clicks", "stage": 0, "row": 1, "tag": "source" },
+    { "id": "sheetjs", "type": "backend", "label": "SheetJS Parser", "sublabel": "binary workbook reader", "stage": 1, "row": 1, "tag": "parser" },
+    { "id": "state_p", "type": "database", "label": "Central State 'P'", "sublabel": "Tasks, Deliveries, RAID", "stage": 2, "row": 1, "tag": "state" },
+    { "id": "gantt_view", "type": "frontend", "label": "Gantt & Timeline", "sublabel": "reactive SVG / Canvas", "stage": 3, "row": 0, "tag": "views" },
+    { "id": "deliveries", "type": "frontend", "label": "Delivery Grid", "sublabel": "PDN release tracking", "stage": 3, "row": 2, "tag": "release" },
+    { "id": "local_db", "type": "database", "label": "LocalStorage Cache", "sublabel": "pp-data & IndexedDB", "stage": 4, "row": 1, "tag": "persist" }
+  ],
+  "flows": [
+    { "id": "f1", "from": "inputs", "to": "sheetjs", "label": "file drop", "classification": "binary stream", "variant": "emphasis" },
+    { "id": "f2", "from": "sheetjs", "to": "state_p", "label": "reconciled objects", "classification": "entity models", "variant": "emphasis" },
+    { "id": "f3", "from": "state_p", "to": "gantt_view", "label": "task trees", "classification": "WBS data", "variant": "emphasis" },
+    { "id": "f4", "from": "state_p", "to": "deliveries", "label": "release packages", "classification": "delivery status", "variant": "default" },
+    { "id": "f5", "from": "state_p", "to": "local_db", "label": "auto-save", "classification": "JSON string", "variant": "emphasis" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "Zero Cloud Dataflow", "items": ["100% of data processing occurs in browser memory", "Zero telemetry or project plans leave local client storage"] }
+  ]
+}

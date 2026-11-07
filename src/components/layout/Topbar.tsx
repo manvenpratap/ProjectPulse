@@ -22,7 +22,8 @@ import {
   BookOpen,
   Blocks,
   Component as ComponentIcon,
-  Menu
+  Menu,
+  Flag
 } from 'lucide-react';
 import clsx from 'clsx';
 import ThemeFlyout from './ThemeFlyout';
@@ -213,6 +214,13 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
                   <div className="px-3 py-2 text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-faint)]">
                     Project Architecture
                   </div>
+                  <button 
+                    onClick={() => { setIsActionsOpen(false); setView('releases'); }}
+                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors"
+                  >
+                    <Flag size={16} className="text-indigo-500" />
+                    <span>Release Roadmap...</span>
+                  </button>
                   <button 
                     onClick={() => { setIsActionsOpen(false); setView('scaffolder'); }}
                     className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors"

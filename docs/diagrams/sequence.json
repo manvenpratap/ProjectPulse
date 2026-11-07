@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": {
+    "title": "ProjectPulse - Bi-directional Excel Sync Sequence",
+    "output": "sequence.html",
+    "column_fit": "spread",
+    "animation": "trace",
+    "quality_profile": "showcase"
+  },
+  "participants": [
+    { "id": "pmo", "type": "external", "label": "Project Lead", "sublabel": "Browser Session" },
+    { "id": "ui", "type": "frontend", "label": "ProjectPulse UI", "sublabel": "DOM Event Loop" },
+    { "id": "sheetjs", "type": "backend", "label": "SheetJS Engine", "sublabel": "Binary Parser" },
+    { "id": "state", "type": "database", "label": "State Store 'P'", "sublabel": "In-Memory Schema" },
+    { "id": "storage", "type": "database", "label": "LocalStorage", "sublabel": "pp-data Key" }
+  ],
+  "segments": [
+    { "from": 150, "to": 260, "label": "Excel File Drop" },
+    { "from": 270, "to": 390, "label": "Entity Reconciliation" },
+    { "from": 400, "to": 510, "label": "View Re-render" }
+  ],
+  "messages": [
+    { "id": "m1", "from": "pmo", "to": "ui", "y": 160, "label": "Drop Project_Plan.xlsx", "variant": "emphasis" },
+    { "id": "m2", "from": "ui", "to": "sheetjs", "y": 200, "label": "Pass ArrayBuffer workbook", "variant": "emphasis" },
+    { "id": "m3", "from": "sheetjs", "to": "state", "y": 250, "label": "Parsed Tasks, Deliveries, Defects", "variant": "return" },
+    { "id": "m4", "from": "state", "to": "storage", "y": 310, "label": "Commit updated 'P' to pp-data", "variant": "emphasis" },
+    { "id": "m5", "from": "storage", "to": "state", "y": 360, "label": "Storage flushed", "variant": "return" },
+    { "id": "m6", "from": "state", "to": "ui", "y": 420, "label": "Dispatch stateChange event", "variant": "emphasis" },
+    { "id": "m7", "from": "ui", "to": "pmo", "y": 475, "label": "Gantt, Deliveries & Health gauges refreshed", "variant": "return" }
+  ],
+  "activations": [
+    { "participant": "ui", "from": 160, "to": 210, "type": "frontend" },
+    { "participant": "sheetjs", "from": 200, "to": 260, "type": "backend" },
+    { "participant": "state", "from": 250, "to": 430, "type": "database" },
+    { "participant": "ui", "from": 420, "to": 485, "type": "frontend" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "Zero Loss Sync", "items": ["Reconciles external spreadsheet edits without clobbering local audit history", "Instant local storage commit guarantees durability across page reloads"] }
+  ]
+}

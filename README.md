@@ -1,20 +1,111 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# ProjectPulse 2.0
 
-# Run and deploy your AI Studio app
+> **Enterprise Local-First Project Management Workstation**  
+> High-performance React 19 + TypeScript + Framer Motion project management cockpit. Built as an advanced, componentized upgrade to the single-HTML workstation, featuring 26+ curated themes, bi-directional multi-sheet Excel synchronization, offline local storage persistence, interactive SVG & Gantt scheduling, Release Roadmap governance, and software delivery tracking.
 
-This contains everything you need to run your app locally.
+---
 
-View your app in AI Studio: https://ai.studio/apps/71efd224-218d-4d1e-891f-a145a08795bf
+## 🏛️ System Architecture & Compiled Diagrams
 
-## Run Locally
+ProjectPulse architecture, delivery workflows, synchronization sequences, data pipelines, and workstation lifecycles are formally modeled and compiled via [Archify](https://github.com/tt-a1i/archify):
 
-**Prerequisites:**  Node.js
+* 📐 **System Architecture**: [Interactive HTML View](./docs/diagrams/architecture.html) | [Spec](./docs/diagrams/architecture.json)
+* 🔄 **Governance Workflow**: [Interactive HTML View](./docs/diagrams/workflow.html) | [Spec](./docs/diagrams/workflow.json)
+* ⚡ **Excel Sync Sequence**: [Interactive HTML View](./docs/diagrams/sequence.html) | [Spec](./docs/diagrams/sequence.json)
+* 🌊 **Data Flow Pipeline**: [Interactive HTML View](./docs/diagrams/dataflow.html) | [Spec](./docs/diagrams/dataflow.json)
+* ⏱️ **Workstation Lifecycle**: [Interactive HTML View](./docs/diagrams/lifecycle.html) | [Spec](./docs/diagrams/lifecycle.json)
 
+For detailed blueprints, sequence traces, and state machines, see [**`PROJECT_CONTEXT.md`**](./PROJECT_CONTEXT.md) and [`wiki/`](./wiki/).
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+* Node.js (v18+ recommended)
+* npm
+
+### Installation & Launch
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Configure environment (optional, for Gemini AI features)
+cp .env.example .env
+
+# 3. Start development server
+npm run dev
+```
+
+Open `http://localhost:3000` (or `http://localhost:5173`) in your browser.
+
+### Production Build
+```bash
+npm run build
+npm start
+```
+
+---
+
+## 🛠️ Key Capabilities & Operational Modules
+
+1. **Executive Overview Dashboard**: Health Index dial, Delivery Confidence meter, active RAID count, Early Warning System (EWS), and What-If Predictive Simulation Sandbox.
+2. **Live Velocity & Predictive Intelligence**: 4-week moving average completion velocity, Earned Value Management (EVM), Burndown / Burnup trajectories, and Cumulative Flow Diagrams (CFD).
+3. **Software Deliveries & Deployment Schedule**: Dedicated ALM / PDN release workstation, multi-entity linkage to parent tasks and screen specs, cycle lead time & variance metrics, smoke test sign-offs, and 3 Delivery Heatmap perspectives (`feat_screens`, `env_pipeline`, `del_impact`).
+4. **Release Roadmap & Version Governance**: Milestone version lifecycle (`Planned`, `Active`, `Released`), cycle start and target date synchronization, and mapped assets intelligence.
+5. **Hierarchical Tasks Matrix & Spreadsheet Grid**: Multi-tier WBS hierarchy, quick inline status cycling, subtask checklist expansion, column sorting, density adjustments (`compact` / `comfortable`), and module/release filters.
+6. **Project Timeline (Gantt)**: Interactive canvas/SVG roadmap, dynamic zoom levels (`day`, `week`, `month`), dependency blocker tracking, and milestone markers.
+7. **Intelligent Weekly Scheduler & Conflict Resolver**: Interactive resource heatmap grid, automated conflict detection, and heuristics.
+8. **Unified RAID Register**: Risk, Assumption, Issue, and Dependency scoring, threat matrices, mitigation owners, and due dates.
+9. **Defect Workshop**: QA bug logging, severity/priority matrices (S1-S4), direct task linkage, and resolution lifecycle tracking.
+10. **Executive Reporting & Board Packs**: One-click executive summaries, weekly stakeholder packs, milestone checklists, one-click CXO Email briefing generator, and filtered multi-tab Excel export.
+11. **Performance Baselines**: Capture point-in-time baseline snapshots, compare live drift against commitments, and auto-align schedules.
+12. **Team Capacity Hub**: Real-time FTE load distribution, leave schedules, role quotas, and cross-project utilization balancing.
+13. **Bi-Directional Excel Synchronization**: Production-grade ExcelJS engine generating multi-tab relational workbooks (Tasks, Deliveries, RAID, Defects, Decisions, Releases, Members) and round-trip state reconstruction.
+14. **26+ Curated Themes**: High-contrast, theme-adaptive CSS design tokens with fluid typography and light/dark mode overrides.
+
+---
+
+## 📁 Repository Structure
+
+```
+ProjectPulse 2.0/
+├── docs/                        # Compiled Archify diagrams, specs & manuals
+│   └── diagrams/                # 5 core Archify diagrams (.html + .json)
+├── wiki/                        # Markdown wiki documentation with vector diagrams
+├── src/
+│   ├── components/
+│   │   ├── architect/           # ReleaseRoadmap, Scaffolder, Matrix, StepTemplates
+│   │   ├── dashboard/           # OverviewView, Burndown, Velocity, Predictive, Heatmap
+│   │   ├── defects/             # Defect tracking & triage modal
+│   │   ├── deliveries/          # ALM / PDN Deliveries workstation & heatmap
+│   │   ├── layout/              # Sidebar, Topbar, ThemeFlyout, NotificationFlyout
+│   │   ├── log/                 # Audit & change journaling
+│   │   ├── reports/             # Executive Reporting & CXO Email Generator
+│   │   ├── risks/               # Unified RAID Register & Decision Matrix
+│   │   ├── scheduler/           # Weekly Resource Scheduler & Conflict Resolver
+│   │   ├── settings/            # System Configuration & BaselineManager
+│   │   ├── shared/              # Reusable UI primitives
+│   │   ├── tasks/               # TaskGrid, BoardView, TaskModal
+│   │   ├── team/                # Team Capacity & Member Directory
+│   │   └── timeline/            # Interactive Gantt & Roadmap
+│   ├── services/
+│   │   ├── aiService.ts         # Gemini AI Pulse intelligence
+│   │   ├── excelService.ts      # Bi-directional ExcelJS synchronization
+│   │   └── sampleData.ts        # Enterprise sample dataset
+│   ├── store/
+│   │   ├── ProjectContext.tsx   # Global reactive state provider
+│   │   └── defaultState.ts      # Authoritative schema factory
+│   ├── types/                   # Unified TypeScript schemas
+│   ├── index.css                # 26+ Curated theme design tokens & Tailwind
+│   └── App.tsx                  # Main router & layout shell
+├── server.ts                    # Node / Express SSR & API backend
+├── vite.config.ts               # Vite bundler configuration
+└── package.json                 # Project dependencies & build scripts
+```
+
+---
+
+## 📄 License
+
+MIT © [ProjectPulse Team](https://github.com/manvenpratap/ProjectPulse)

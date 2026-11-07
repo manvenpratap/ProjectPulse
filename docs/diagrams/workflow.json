@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "ProjectPulse - Project Governance & Delivery Workflow",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "output": "workflow.html"
+  },
+  "lanes": [
+    { "id": "pmo", "label": "Project Governance" },
+    { "id": "execution", "label": "Task & Defect Engine" },
+    { "id": "delivery", "label": "Software Deliveries & Releases" },
+    { "id": "sync", "label": "Excel Sync & Storage" }
+  ],
+  "phases": [
+    { "id": "p1", "label": "1. Plan", "fromCol": 0, "toCol": 1 },
+    { "id": "p2", "label": "2. Track", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
+    { "id": "p3", "label": "3. Deliver & Sync", "fromCol": 4, "toCol": 5 }
+  ],
+  "groups": [
+    { "id": "track_group", "label": "Execution & Milestones", "lane": "execution", "fromCol": 1, "toCol": 3, "variant": "emphasis" }
+  ],
+  "mainPath": ["define_milestones", "schedule_gantt", "log_defects", "stage_deliveries", "export_excel", "persist_local"],
+  "nodes": [
+    { "id": "define_milestones", "lane": "pmo", "col": 0, "type": "frontend", "label": "Project Setup", "sublabel": "name, team, KPIs", "width": 140 },
+    { "id": "schedule_gantt", "lane": "execution", "col": 1, "type": "backend", "label": "Gantt Scheduler", "sublabel": "WBS & dependencies", "width": 140 },
+    { "id": "log_defects", "lane": "execution", "col": 2, "type": "backend", "label": "Defects & RAID", "sublabel": "risk & issue triage", "width": 140 },
+    { "id": "stage_deliveries", "lane": "delivery", "col": 3, "type": "backend", "label": "Deliveries & PDN", "sublabel": "release packaging", "tag": "ship gate", "width": 140 },
+    { "id": "export_excel", "lane": "sync", "col": 4, "type": "backend", "label": "SheetJS Sync", "sublabel": "bi-directional .xlsx", "width": 140 },
+    { "id": "persist_local", "lane": "sync", "col": 5, "type": "database", "label": "Local Flush", "sublabel": "localStorage & IndexedDB", "tag": "saved", "width": 140 }
+  ],
+  "edges": [
+    { "id": "e1", "from": "define_milestones", "to": "schedule_gantt", "variant": "emphasis" },
+    { "id": "e2", "from": "schedule_gantt", "to": "log_defects", "variant": "default" },
+    { "id": "e3", "from": "log_defects", "to": "stage_deliveries", "label": "resolved fixes", "variant": "emphasis" },
+    { "id": "e4", "from": "stage_deliveries", "to": "export_excel", "label": "milestone status", "variant": "emphasis" },
+    { "id": "e5", "from": "export_excel", "to": "persist_local", "variant": "emphasis" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "Comprehensive Project Tracking", "items": ["Connects tasks, defects, RAID items, and software deliveries into unified KPIs", "Automatic export to Excel allows sharing with stakeholders without tool lock-in"] }
+  ]
+}

@@ -19,6 +19,7 @@ import ReportView from './components/reports/ReportView';
 import SettingsView from './components/settings/SettingsView';
 import OverviewView from './components/dashboard/OverviewView';
 import DeliveriesView from './components/deliveries/DeliveriesView';
+import ReleaseRoadmap from './components/architect/ReleaseRoadmap';
 import RAIDView from './components/risks/RAIDView';
 import SchedulerView from './components/scheduler/SchedulerView';
 import { motion, AnimatePresence } from 'motion/react';
@@ -43,6 +44,7 @@ const MainApp: React.FC = () => {
     switch (state.view) {
       case 'overview': return <OverviewView />;
       case 'deliveries': return <DeliveriesView />;
+      case 'releases': return <ReleaseRoadmap />;
       case 'tasks': return <TaskView />;
       case 'timeline': return <TimelineView />;
       case 'dash': return <DashboardView />;

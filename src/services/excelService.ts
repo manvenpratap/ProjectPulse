@@ -383,13 +383,131 @@ export const importProjectExcel = async (file: File): Promise<Partial<ProjectSta
           });
         }
 
+        // Parse RAID Items Sheet if present
+        const raidSheet = wb.getWorksheet('RAID Items') || wb.getWorksheet('RAID');
+        const raids: any[] = [];
+        if (raidSheet) {
+          raidSheet.eachRow((row, i) => {
+            if (i === 1) return;
+            const r: any = {
+              id: row.getCell(1).text || `RAID-${raids.length + 1}`,
+              type: row.getCell(2).text || 'Risk',
+              title: row.getCell(3).text || 'Untitled Item',
+              desc: row.getCell(4).text || '',
+              impact: row.getCell(5).text || 'Medium',
+              probability: row.getCell(6).text || 'Medium',
+              owner: row.getCell(7).text || '',
+              status: row.getCell(8).text || 'Active',
+              dueDate: row.getCell(9).text || '',
+              mitigation: row.getCell(10).text || '',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            };
+            if (r.title) raids.push(r);
+          });
+        }
+
+        // Parse Defects Sheet if present
+        const defectSheet = wb.getWorksheet('Defects');
+        const defects: any[] = [];
+        if (defectSheet) {
+          defectSheet.eachRow((row, i) => {
+            if (i === 1) return;
+            const df: any = {
+              id: row.getCell(1).text || `DEF-${defects.length + 1}`,
+              title: row.getCell(2).text || 'Untitled Defect',
+              type: row.getCell(3).text || 'Functional Bug',
+              severity: row.getCell(4).text || 'S3 - Medium',
+              priority: row.getCell(5).text || 'Medium',
+              status: row.getCell(6).text || 'New',
+              assignee: row.getCell(7).text || '',
+              reporter: row.getCell(8).text || '',
+              linkedType: row.getCell(9).text || 'Task',
+              linkedId: row.getCell(10).text || '',
+              desc: row.getCell(11).text || '',
+              steps: row.getCell(12).text || '',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            };
+            if (df.title) defects.push(df);
+          });
+        }
+
+        // Parse Decisions Sheet if present
+        const decSheet = wb.getWorksheet('Decisions');
+        const decisions: any[] = [];
+        if (decSheet) {
+          decSheet.eachRow((row, i) => {
+            if (i === 1) return;
+            const dc: any = {
+              id: row.getCell(1).text || `DEC-${decisions.length + 1}`,
+              title: row.getCell(2).text || 'Untitled Decision',
+              desc: row.getCell(3).text || '',
+              status: row.getCell(4).text || 'Pending Sign-off',
+              impact: row.getCell(5).text || 'Medium',
+              approver: row.getCell(6).text || '',
+              proposedBy: row.getCell(7).text || '',
+              rationale: row.getCell(8).text || '',
+              dueDate: row.getCell(9).text || '',
+              createdAt: new Date().toISOString(),
+              updatedAt: new Date().toISOString()
+            };
+            if (dc.title) decisions.push(dc);
+          });
+        }
+
+        // Parse Team Members Sheet if present
+        const memSheet = wb.getWorksheet('Team Members') || wb.getWorksheet('Members');
+        const members: any[] = [];
+        if (memSheet) {
+          memSheet.eachRow((row, i) => {
+            if (i === 1) return;
+            const m: any = {
+              id: row.getCell(1).text || `MEM-${members.length + 1}`,
+              name: row.getCell(2).text || 'Team Member',
+              role: row.getCell(3).text || 'Developer',
+              status: row.getCell(4).text || 'Active',
+              reportsTo: row.getCell(5).text || '',
+              email: row.getCell(6).text || '',
+              phone: row.getCell(7).text || '',
+              birthday: '',
+              plannedLeaves: []
+            };
+            if (m.name) members.push(m);
+          });
+        }
+
+        // Parse Releases Sheet if present
+        const relSheet = wb.getWorksheet('Releases');
+        const releases: any[] = [];
+        if (relSheet) {
+          relSheet.eachRow((row, i) => {
+            if (i === 1) return;
+            const rl: any = {
+              id: row.getCell(1).text || `rel-${releases.length + 1}`,
+              name: row.getCell(2).text || 'v1.0.0',
+              startDate: row.getCell(3).text || '',
+              date: row.getCell(4).text || '',
+              status: row.getCell(5).text || 'Planned'
+            };
+            if (rl.name) releases.push(rl);
+          });
+        }
+
         const dashboardSheet = wb.getWorksheet('Dashboard');
         const projectName = dashboardSheet?.getRow(2).getCell(2).text || 'Imported Project';
+        const projectDesc = dashboardSheet?.getRow(3).getCell(2).text || '';
 
         resolve({
           name: projectName,
+          desc: projectDesc,
           tasks,
           deliveries: deliveries.length > 0 ? deliveries : undefined,
+          raids: raids.length > 0 ? raids : undefined,
+          defects: defects.length > 0 ? defects : undefined,
+          decisions: decisions.length > 0 ? decisions : undefined,
+          members: members.length > 0 ? members : undefined,
+          releases: releases.length > 0 ? releases : undefined,
           log: [{ 
             ts: new Date().toISOString(), 
             action: 'Imported from Excel', 
@@ -400,7 +518,7 @@ export const importProjectExcel = async (file: File): Promise<Partial<ProjectSta
             field: '',
             oldVal: '',
             newVal: '',
-            comment: `Batch import from spreadsheet (${tasks.length} tasks, ${deliveries.length} deliveries)`
+            comment: `Relational import from workbook: ${tasks.length} tasks, ${deliveries.length} deliveries, ${raids.length} RAID, ${defects.length} defects, ${releases.length} releases`
           }]
         });
       } catch (err) {

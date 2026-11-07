@@ -1,0 +1,36 @@
+{
+  "schema_version": 2,
+  "diagram_type": "lifecycle",
+  "meta": {
+    "title": "ProjectPulse - Workstation Session Lifecycle",
+    "output": "lifecycle.html",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase"
+  },
+  "lanes": [
+    { "id": "main", "label": "Session Lifecycle" },
+    { "id": "sync", "label": "External Synchronization" },
+    { "id": "terminal", "label": "Terminal Exits" }
+  ],
+  "states": [
+    { "id": "boot", "type": "start", "label": "App Boot", "sublabel": "load projectpulse.html", "lane": "main", "col": 0, "step": "01", "tag": "init" },
+    { "id": "hydrate", "type": "active", "label": "Hydrate State", "sublabel": "read localStorage (pp-data)", "lane": "main", "col": 1, "step": "02", "tag": "read" },
+    { "id": "active", "type": "success", "label": "Workstation Live", "sublabel": "Gantt, RAID & Deliveries", "lane": "main", "col": 2, "step": "03", "tag": "active" },
+    { "id": "syncing", "type": "active", "label": "Excel Reconciling", "sublabel": "importing .xlsx sheets", "lane": "sync", "col": 2, "tag": "sync" },
+    { "id": "saved", "type": "success", "label": "State Persisted", "sublabel": "flushed to IndexedDB", "lane": "main", "col": 3, "step": "04", "tag": "saved" },
+    { "id": "exported", "type": "success", "label": "Reports Generated", "sublabel": "Word / Excel export", "lane": "terminal", "col": 4, "tag": "terminal" }
+  ],
+  "transitions": [
+    { "from": "boot", "to": "hydrate", "label": "DOM ready" },
+    { "from": "hydrate", "to": "active", "label": "render dashboard" },
+    { "from": "active", "to": "syncing", "label": "import excel", "variant": "emphasis" },
+    { "from": "syncing", "to": "saved", "label": "merge complete", "variant": "emphasis" },
+    { "from": "active", "to": "saved", "label": "user edits" },
+    { "from": "saved", "to": "active", "label": "ready" },
+    { "from": "saved", "to": "exported", "label": "export report", "variant": "emphasis" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Crash Resilient", "items": ["Every user keystroke or modal submission auto-persists to localStorage", "Workstation survives tab closure or power disruption without data loss"] }
+  ]
+}

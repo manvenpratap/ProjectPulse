@@ -21,7 +21,8 @@ import {
   Presentation,
   ShieldAlert, 
   Settings as SettingsIcon,
-  Package
+  Package,
+  Flag
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -37,6 +38,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
   const navItems = [
     { id: 'overview', label: 'Executive Overview', icon: Presentation },
     { id: 'deliveries', label: 'ALM Deliveries', icon: Package, badge: state.deliveries?.length },
+    { id: 'releases', label: 'Release Roadmap', icon: Flag, badge: state.releases?.length },
     { id: 'tasks', label: 'Tasks Matrix', icon: ClipboardList },
     { id: 'timeline', label: 'Project Timeline', icon: GanttChart },
     { id: 'capacity', label: 'Capacity Plan', icon: BarChart3 },

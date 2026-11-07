@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "ProjectPulse - Monolithic Workstation Architecture",
+    "output": "architecture.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "pmo_user", "type": "external", "label": "Project Manager", "sublabel": "Browser Cockpit", "pos": [40, 260], "size": [140, 60] },
+    { "id": "spa_core", "type": "frontend", "label": "ProjectPulse SPA", "sublabel": "projectpulse.html (~80k LOC)", "pos": [280, 260], "size": [140, 60], "tag": "Vanilla JS" },
+    { "id": "state_p", "type": "database", "label": "Global State 'P'", "sublabel": "Tasks, Deliveries, RAID", "pos": [520, 260], "size": [140, 60], "tag": "Reactive" },
+    { "id": "views_gantt", "type": "frontend", "label": "Gantt & Deliveries", "sublabel": "Milestones & PDN Release", "pos": [520, 110], "size": [140, 60] },
+    { "id": "theme_engine", "type": "frontend", "label": "20 Curated Themes", "sublabel": "Light / Dark Overrides", "pos": [520, 410], "size": [140, 60] },
+    { "id": "excel_sync", "type": "backend", "label": "Excel Sync Engine", "sublabel": "Bi-directional SheetJS", "pos": [780, 180], "size": [140, 60] },
+    { "id": "local_storage", "type": "database", "label": "Offline Persistence", "sublabel": "localStorage & IndexedDB", "pos": [780, 340], "size": [140, 60] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Browser Local-First Sandbox (Zero Server Required)", "wraps": ["spa_core", "state_p", "views_gantt", "theme_engine", "excel_sync", "local_storage"] },
+    { "kind": "security-group", "label": "State & Persistence Layer", "wraps": ["state_p", "local_storage"] }
+  ],
+  "connections": [
+    { "id": "c1", "from": "pmo_user", "to": "spa_core", "label": "interactive edit", "variant": "emphasis" },
+    { "id": "c2", "from": "spa_core", "to": "views_gantt", "fromSide": "top", "toSide": "left" },
+    { "id": "c3", "from": "spa_core", "to": "state_p", "label": "mutate state", "variant": "emphasis" },
+    { "id": "c4", "from": "spa_core", "to": "theme_engine", "fromSide": "bottom", "toSide": "left" },
+    { "id": "c5", "from": "state_p", "to": "excel_sync", "label": "bi-directional", "variant": "emphasis" },
+    { "id": "c6", "from": "state_p", "to": "local_storage", "fromSide": "bottom", "toSide": "left" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "Zero-Server Monolith", "items": ["Runs 100% in any modern browser without web server or backend API", "Single-file HTML with ~80,800 lines of Vanilla JS, CSS, and HTML5"] },
+    { "dot": "cyan", "title": "Enterprise Synchronization", "items": ["Bi-directional Excel workbook synchronization for project schedules", "Instant offline persistence to localStorage (`pp-data`) and IndexedDB"] }
+  ]
+}

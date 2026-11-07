@@ -36,7 +36,18 @@ const THEMES = [
   { id: 'play-dark', name: 'Play Dark', primary: '#ef4444', bg: '#2d0505', surface: '#450a0a', font: "'Nunito', sans-serif", desc: 'Fun turned dark with high-energy reds.' },
   { id: 'cyberpunk', name: 'Cyberpunk', primary: '#00f5d4', bg: '#0b051a', surface: '#150a2e', font: "'DM Mono', monospace", desc: 'Neon glitch aesthetic with high contrast.' },
   { id: 'glass', name: 'Glass', primary: '#3b82f6', bg: '#cbd5e1', surface: 'rgba(255,255,255,0.4)', font: "'Plus Jakarta Sans', sans-serif", desc: 'Frosted aesthetics with high transparency and blur.' },
-  { id: 'glass-dark', name: 'Glass Dark', primary: '#3b82f6', bg: '#020617', surface: 'rgba(15,23,42,0.5)', font: "'Plus Jakarta Sans', sans-serif", desc: 'Deep frosted glass in a midnight void.' }
+  { id: 'glass-dark', name: 'Glass Dark', primary: '#3b82f6', bg: '#020617', surface: 'rgba(15,23,42,0.5)', font: "'Plus Jakarta Sans', sans-serif", desc: 'Deep frosted glass in a midnight void.' },
+  { id: 'terracotta', name: 'Terracotta', primary: '#e05a47', bg: '#f3f4f6', surface: '#ffffff', font: "'Inter', sans-serif", desc: 'Mediterranean warmth with terracotta red tones.' },
+  { id: 'fintech', name: 'Fintech', primary: '#0b192c', bg: '#f8f9fa', surface: '#ffffff', font: "'Fraunces', serif", desc: 'Precision Wall Street corporate dark navy and gold.' },
+  { id: 'bento', name: 'Bento', primary: '#ff5722', bg: '#e2e8f0', surface: '#ffffff', font: "'Outfit', sans-serif", desc: 'High-density structured bento grid interface with neon orange accents.' },
+  { id: 'codename', name: 'Codename', primary: '#e11d48', bg: '#f4f4f5', surface: '#ffffff', font: "'Inter', sans-serif", desc: 'Crimson operational dashboard with high contrast.' },
+  { id: 'workflow', name: 'Workflow', primary: '#6366f1', bg: '#eef2ff', surface: '#ffffff', font: "'Satoshi', sans-serif", desc: 'Deep indigo engineering cadence and flow state.' },
+  { id: 'terminal', name: 'Terminal', primary: '#58a6ff', bg: '#0d1117', surface: '#161b22', font: "'JetBrains Mono', monospace", desc: 'Hacker developer terminal in GitHub midnight dark.' },
+  { id: 'paper-editorial', name: 'Editorial', primary: '#8c4a2f', bg: '#fdf8f0', surface: '#fffdf8', font: "'Fraunces', serif", desc: 'Academic publication grade serif and ivory parchment.' },
+  { id: 'aurora-studio', name: 'Studio', primary: '#7c3aed', bg: '#fafafe', surface: '#ffffff', font: "'Satoshi', sans-serif", desc: 'Vibrant creative agency design studio aesthetic.' },
+  { id: 'obsidian-dark', name: 'Obsidian OLED', primary: '#00ff7f', bg: '#000000', surface: '#0a0a0a', font: "'JetBrains Mono', monospace", desc: 'Pure pitch-black OLED mode with radioactive emerald highlights.' },
+  { id: 'origin', name: 'Origin', primary: '#0f4c5c', bg: '#faf9f6', surface: '#ffffff', font: "'Fraunces', serif", desc: 'Minimalist clean foundational canvas.' },
+  { id: 'slate', name: 'Slate Amber', primary: '#f59e0b', bg: '#1a1b2e', surface: '#232440', font: "'Outfit', sans-serif", desc: 'Nordic dusk with amber glow highlights.' }
 ];
 
 const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
