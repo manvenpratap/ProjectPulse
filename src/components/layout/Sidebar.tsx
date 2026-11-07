@@ -133,6 +133,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
       <div className="p-3 border-top border-[var(--color-divider)]">
         <button 
           onClick={toggle}
+          aria-label={isOpen ? "Collapse navigation sidebar" : "Expand navigation sidebar"}
           className="w-full flex items-center justify-center p-2 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] transition-colors"
         >
           {isOpen ? <ChevronLeft size={18} /> : <Menu size={18} />}

@@ -104,6 +104,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
         <div className="flex items-center gap-2 md:gap-3 min-w-0">
           <button 
             onClick={toggleSidebar}
+            aria-label="Toggle navigation menu"
             className="lg:hidden p-1.5 hover:bg-[var(--color-surface-2)] rounded-lg text-[var(--color-text-muted)] transition-colors"
           >
             <Menu size={20} />
@@ -269,7 +270,8 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
             <Button 
               variant="ghost" 
               size="icon" 
-              title="Smart Alerts" 
+              title="Smart Alerts"
+              aria-label="Smart Alerts and Notifications" 
               className={clsx("rounded-xl h-8 w-8 md:h-9 md:w-9 relative", isNotifOpen && "bg-[var(--color-surface-2)]")}
               onClick={() => setIsNotifOpen(!isNotifOpen)}
             >
@@ -284,7 +286,8 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
           <Button 
             variant="ghost" 
             size="icon" 
-            title="Appearance Settings" 
+            title="Appearance Settings"
+            aria-label="Appearance and Theme Settings" 
             className="rounded-xl h-8 w-8 md:h-9 md:w-9"
             onClick={() => setIsThemeOpen(true)}
           >
@@ -294,7 +297,8 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
           <Button 
             variant="ghost" 
             size="icon" 
-            title="Help & Guide" 
+            title="Help & Guide"
+            aria-label="Help and Guide" 
             className="rounded-xl h-8 w-8 md:h-9 md:w-9 hidden sm:flex"
             onClick={() => setIsHelpOpen(true)}
           >

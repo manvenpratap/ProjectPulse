@@ -887,3 +887,24 @@ h1, h2, h3, h4, h5, h6 {
   --color-border: #363758;
   --color-divider: #2a2b48;
 }
+
+/* ═════════════════════════════════════════════════════════
+   ACCESSIBILITY & INTERACTION POLISH (UI/UX PRO MAX)
+   ═════════════════════════════════════════════════════════ */
+
+/* Visible Focus Rings for Keyboard Navigation (WCAG 2.4.7) */
+:focus-visible {
+  outline: 2px solid var(--color-primary-hex);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Reduced Motion Override (WCAG 2.3.3) */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
