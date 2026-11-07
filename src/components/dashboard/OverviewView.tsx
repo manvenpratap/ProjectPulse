@@ -221,7 +221,7 @@ const OverviewView: React.FC = () => {
                 Executive Command Center
               </span>
               <span className="text-[var(--color-text-faint)]">/</span>
-              <span className="text-xs font-mono font-medium text-[var(--color-text-muted)]">
+              <span className="text-xs font-medium text-[var(--color-text-muted)]">
                 Steering Telemetry
               </span>
             </div>
@@ -235,7 +235,7 @@ const OverviewView: React.FC = () => {
           <div className="flex items-center gap-2.5">
             <button 
               onClick={() => exportProjectExcel(state)}
-              className="h-10 px-4 bg-[var(--color-surface)] border border-[var(--color-border)] hover:bg-[var(--color-surface-2)] text-[var(--color-text)] rounded-lg text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer"
+              className="h-10 px-4 bg-[var(--color-surface)] border border-[var(--color-border)] hover:bg-[var(--color-surface-2)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-[var(--color-text)] rounded-lg text-xs font-semibold flex items-center gap-2 motion-safe:transition-transform cursor-pointer"
               aria-label="Export project report to Excel"
             >
               <FileSpreadsheet size={15} className="text-emerald-500" /> 
@@ -244,7 +244,7 @@ const OverviewView: React.FC = () => {
             </button>
             <button 
               onClick={() => setView('dash')}
-              className="h-10 px-4 bg-[var(--color-primary-hex)] hover:opacity-95 text-[var(--color-primary-text,#ffffff)] rounded-lg text-xs font-semibold flex items-center gap-2 transition-opacity cursor-pointer shadow-sm"
+              className="h-10 px-4 bg-[var(--color-primary-hex)] hover:opacity-95 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-[var(--color-primary-text)] rounded-lg text-xs font-semibold flex items-center gap-2 motion-safe:transition-transform cursor-pointer shadow-sm"
               aria-label="Navigate to advanced telemetry dashboard"
             >
               <TrendingUp size={15} /> 
@@ -261,11 +261,11 @@ const OverviewView: React.FC = () => {
           <div className="p-6 rounded-xl flex flex-col justify-between items-center text-center bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
             <div className="space-y-1 text-center w-full">
               <h3 className="font-sans font-bold text-sm text-[var(--color-text)]">Composite Health Index</h3>
-              <p className="text-xs font-mono text-[var(--color-primary-hex)] font-semibold uppercase tracking-wider">Multi-factor Algorithmic Dial</p>
+              <p className="text-xs text-[var(--color-primary-hex)] font-medium">Multi-factor algorithmic dial</p>
             </div>
 
             <div className="relative w-40 h-40 my-5 flex items-center justify-center">
-              <svg className="w-full h-full transform -rotate-90">
+              <svg className="w-full h-full transform -rotate-90" role="img" aria-label="Project health indicator gauge">
                 <circle 
                   cx="80" 
                   cy="80" 
@@ -278,7 +278,7 @@ const OverviewView: React.FC = () => {
                   cy="80" 
                   r="64" 
                   className={clsx(
-                    "fill-none transition-all duration-1000",
+                    "fill-none transition-[stroke-dashoffset] duration-700 ease-out",
                     healthScore > 80 ? "stroke-emerald-500" : healthScore > 50 ? "stroke-amber-500" : "stroke-rose-500"
                   )}
                   strokeWidth="12" 
@@ -289,17 +289,17 @@ const OverviewView: React.FC = () => {
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span className="text-3xl font-mono font-bold tracking-tight text-[var(--color-text)]">{healthScore}%</span>
-                <span className="text-xs font-mono uppercase text-[var(--color-text-muted)] mt-0.5">Health Score</span>
+                <span className="text-xs text-[var(--color-text-muted)] mt-0.5">Health score</span>
               </div>
             </div>
 
             <div className="w-full grid grid-cols-2 gap-3 border-t border-[var(--color-divider)] pt-4">
               <div className="text-center p-2 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-                <div className="text-xs font-mono uppercase text-[var(--color-text-muted)]">Completed</div>
+                <div className="text-xs text-[var(--color-text-muted)]">Completed</div>
                 <div className="text-lg font-mono font-bold text-emerald-500">{progressPct}%</div>
               </div>
               <div className="text-center p-2 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-                <div className="text-xs font-mono uppercase text-[var(--color-text-muted)]">Backlog</div>
+                <div className="text-xs text-[var(--color-text-muted)]">Backlog</div>
                 <div className="text-lg font-mono font-bold text-[var(--color-text)]">{totalTasks - doneTasks.length} tasks</div>
               </div>
             </div>
@@ -310,7 +310,7 @@ const OverviewView: React.FC = () => {
             <div className="space-y-1 mb-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-sans font-bold text-sm text-[var(--color-text)]">Early Warning System (EWS)</h3>
-                <span className="text-xs font-mono px-2 py-0.5 rounded bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)]">
+                <span className="text-xs px-2 py-0.5 rounded bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)]">
                   {ewsAlerts.length} Active Notice{ewsAlerts.length > 1 ? 's' : ''}
                 </span>
               </div>
@@ -322,7 +322,7 @@ const OverviewView: React.FC = () => {
                 <div 
                   key={alert.id} 
                   className={clsx(
-                    "p-3.5 rounded-lg border flex gap-3.5 items-start transition-all",
+                    "p-3.5 rounded-lg border flex gap-3.5 items-start transition-colors duration-200",
                     alert.type === 'critical' ? "bg-rose-500/10 border-rose-500/25 text-rose-500" :
                     alert.type === 'warning' ? "bg-amber-500/10 border-amber-500/25 text-amber-500" :
                     "bg-emerald-500/10 border-emerald-500/25 text-emerald-500"
@@ -352,9 +352,9 @@ const OverviewView: React.FC = () => {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-mono uppercase font-bold text-[var(--color-primary-hex)]">ALM Release Workstation</span>
+                <span className="text-xs font-semibold text-[var(--color-primary-hex)]">ALM Release Workstation</span>
                 <span className="text-xs text-[var(--color-text-faint)]">·</span>
-                <span className="text-xs text-[var(--color-text-muted)] font-mono">{(state.deliveries || []).length} Packages</span>
+                <span className="text-xs text-[var(--color-text-muted)]">{(state.deliveries || []).length} Packages</span>
               </div>
               <h3 className="text-base font-sans font-bold tracking-tight text-[var(--color-text)]">
                 Active Deployments & Release Verification Gates
@@ -362,7 +362,7 @@ const OverviewView: React.FC = () => {
             </div>
             <button 
               onClick={() => setView('deliveries')}
-              className="px-3.5 py-1.5 bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] hover:bg-[var(--color-primary-hex)] hover:text-[var(--color-primary-text,#fff)] rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all self-start md:self-auto cursor-pointer"
+              className="px-3.5 py-1.5 bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] hover:bg-[var(--color-primary-hex)] hover:text-[var(--color-primary-text)] active:scale-[0.98] rounded-lg text-xs font-semibold flex items-center gap-1.5 motion-safe:transition-transform self-start md:self-auto cursor-pointer"
             >
               <span>Open ALM Workspace</span>
               <ArrowRight size={13} />
@@ -408,9 +408,10 @@ const OverviewView: React.FC = () => {
             </div>
             <button 
               onClick={() => setView('timeline')} 
-              className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline cursor-pointer"
+              className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
             >
-              View Timeline →
+              <span>View Timeline</span>
+              <ArrowRight size={13} className="shrink-0" />
             </button>
           </div>
           
@@ -422,7 +423,7 @@ const OverviewView: React.FC = () => {
                 return (
                   <div key={t.id} className="flex flex-col items-center text-center min-w-[160px] space-y-2.5 shrink-0">
                     <div className={clsx(
-                      "w-9 h-9 rounded-full flex items-center justify-center border-2 font-mono font-bold text-xs transition-all shadow-sm",
+                      "w-9 h-9 rounded-full flex items-center justify-center border-2 font-mono font-bold text-xs motion-safe:transition-transform duration-200 shadow-sm",
                       isDone 
                         ? "bg-emerald-500 text-white border-emerald-300" 
                         : "bg-[var(--color-surface)] text-[var(--color-primary-hex)] border-[var(--color-primary-hex)]"
@@ -458,9 +459,10 @@ const OverviewView: React.FC = () => {
             </div>
             <button 
               onClick={() => setView('capacity')} 
-              className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline cursor-pointer"
+              className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
             >
-              View Capacity →
+              <span>View Capacity</span>
+              <ArrowRight size={13} className="shrink-0" />
             </button>
           </div>
           
@@ -487,10 +489,10 @@ const OverviewView: React.FC = () => {
                       </span>
                     </div>
 
-                    <div className="w-full bg-[var(--color-surface-offset,#e2e8f0)] dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden mb-3">
+                    <div className="w-full bg-[var(--color-surface-offset)] h-1.5 rounded-full overflow-hidden mb-3">
                       <div 
                         className={clsx(
-                          "h-full rounded-full transition-all duration-700",
+                          "h-full rounded-full",
                           utilizationPct > 100 ? "bg-rose-500" :
                           utilizationPct > 60 ? "bg-amber-500" :
                           "bg-emerald-500"
@@ -505,7 +507,7 @@ const OverviewView: React.FC = () => {
                     {activeTasks.slice(0, 2).map(t => (
                       <div key={t.id} className="text-xs text-[var(--color-text)] font-medium flex justify-between gap-2">
                         <span className="truncate">• {t.name}</span>
-                        <span className="font-mono text-xs text-[var(--color-primary-hex)] shrink-0">{t.estDays}d</span>
+                        <span className="text-xs text-[var(--color-primary-hex)] shrink-0 font-medium">{t.estDays} days</span>
                       </div>
                     ))}
                     {activeTasks.length > 2 && (
@@ -528,7 +530,7 @@ const OverviewView: React.FC = () => {
               <div>
                 <div className="flex items-center gap-2 mb-1.5">
                   <Sparkles className="text-[var(--color-primary-hex)]" size={15} />
-                  <span className="text-xs font-mono font-bold uppercase text-[var(--color-primary-hex)] tracking-wider">
+                  <span className="text-xs font-semibold text-[var(--color-primary-hex)]">
                     Copilot Scenario Modeler
                   </span>
                 </div>
@@ -555,7 +557,7 @@ const OverviewView: React.FC = () => {
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-xs font-semibold text-[var(--color-text)]">
                     <span>Additional Engineering Resources</span>
-                    <span className="font-mono text-[var(--color-primary-hex)]">+{addEngineers} Headcount</span>
+                    <span className="text-xs font-semibold text-[var(--color-primary-hex)]">+{addEngineers} engineers</span>
                   </div>
                   <input 
                     type="range" 
@@ -575,7 +577,7 @@ const OverviewView: React.FC = () => {
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-xs font-semibold text-[var(--color-text)]">
                     <span>Scope Descoping / Backlog Reduction</span>
-                    <span className="font-mono text-[var(--color-primary-hex)]">-{scopeReduction}% Backlog</span>
+                    <span className="text-xs font-semibold text-[var(--color-primary-hex)]">-{scopeReduction}% scope</span>
                   </div>
                   <input 
                     type="range" 
@@ -595,7 +597,7 @@ const OverviewView: React.FC = () => {
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-xs font-semibold text-[var(--color-text)]">
                     <span>Timeline Schedule Compression</span>
-                    <span className="font-mono text-[var(--color-primary-hex)]">{timeCompression}% Acceleration</span>
+                    <span className="text-xs font-semibold text-[var(--color-primary-hex)]">{timeCompression}% faster</span>
                   </div>
                   <input 
                     type="range" 
@@ -660,19 +662,19 @@ const OverviewView: React.FC = () => {
                     onClick={handleCommitSimulation}
                     disabled={simulationCommitted}
                     className={clsx(
-                      "w-full h-10 rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-2 shadow-sm cursor-pointer",
+                      "w-full h-10 rounded-lg text-xs font-semibold whitespace-nowrap active:scale-[0.98] motion-safe:transition-transform flex items-center justify-center gap-2 shadow-sm cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed",
                       simulationCommitted 
                         ? "bg-emerald-600 text-white cursor-default" 
-                        : "bg-[var(--color-primary-hex)] hover:opacity-95 text-[var(--color-primary-text,#fff)]"
+                        : "bg-[var(--color-primary-hex)] hover:opacity-95 text-[var(--color-primary-text)]"
                     )}
                   >
                     {simulationCommitted ? (
                       <>
-                        <Check size={14} /> Simulation Committed
+                        <Check size={14} /> <span>Committed</span>
                       </>
                     ) : (
                       <>
-                        <Sparkles size={14} /> Commit Simulation to Live State
+                        <Sparkles size={14} /> <span>Commit Simulation</span>
                       </>
                     )}
                   </button>
@@ -694,9 +696,10 @@ const OverviewView: React.FC = () => {
               </div>
               <button 
                 onClick={() => setView('tasks')} 
-                className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline cursor-pointer"
+                className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
               >
-                View Tasks →
+                <span>View Tasks</span>
+                <ArrowRight size={13} className="shrink-0" />
               </button>
             </div>
 
@@ -732,9 +735,10 @@ const OverviewView: React.FC = () => {
               </div>
               <button 
                 onClick={() => setView('risks')} 
-                className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline cursor-pointer"
+                className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
               >
-                View RAID →
+                <span>View RAID</span>
+                <ArrowRight size={13} className="shrink-0" />
               </button>
             </div>
 
@@ -770,9 +774,10 @@ const OverviewView: React.FC = () => {
             </div>
             <button 
               onClick={() => setView('log')} 
-              className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline cursor-pointer"
+              className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
             >
-              Full Log →
+              <span>Full Log</span>
+              <ArrowRight size={13} className="shrink-0" />
             </button>
           </div>
 
@@ -780,7 +785,7 @@ const OverviewView: React.FC = () => {
             {log.slice().reverse().slice(0, 6).map((l, i) => (
               <div key={i} className="py-2.5 flex items-center gap-3 text-xs">
                 <div className="w-24 font-mono text-xs text-[var(--color-text-faint)] shrink-0">{l.ts.split('T')[0]} {l.ts.split('T')[1]?.substring(0, 5)}</div>
-                <div className="w-20 text-xs font-semibold uppercase text-[var(--color-primary-hex)] tracking-wider shrink-0">{l.action}</div>
+                <div className="w-20 text-xs font-semibold text-[var(--color-primary-hex)] shrink-0">{l.action}</div>
                 <div className="flex-1 truncate text-[var(--color-text)] font-medium">{l.taskId ? `${l.taskId}: ` : ''}{l.taskName}</div>
                 <div className="text-xs text-[var(--color-text-muted)] shrink-0">{l.assignee}</div>
               </div>

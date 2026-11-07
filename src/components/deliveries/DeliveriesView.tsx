@@ -229,15 +229,15 @@ export const DeliveriesView: React.FC = () => {
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-[var(--color-primary-hex)] font-bold">
+              <span className="text-xs font-semibold text-[var(--color-primary-hex)]">
                 ALM / PDN Release Workstation
               </span>
               <span className="text-[var(--color-text-faint)] text-xs">/</span>
-              <span className="text-xs text-[var(--color-text-muted)] font-mono">
+              <span className="text-xs text-[var(--color-text-muted)]">
                 {deliveries.length} Total Packages
               </span>
             </div>
-            <h1 className="text-2xl font-display font-extrabold tracking-tight uppercase">
+            <h1 className="text-2xl font-display font-bold tracking-tight">
               Software Deliveries & Deployment Schedule
             </h1>
           </div>
@@ -248,7 +248,7 @@ export const DeliveriesView: React.FC = () => {
               <button
                 onClick={() => setViewMode('table')}
                 className={clsx(
-                  "px-3 py-1.5 text-xs font-medium rounded-md flex items-center gap-1.5 transition-colors",
+                  "px-3 py-1.5 text-xs font-medium rounded-md flex items-center gap-1.5 transition-colors cursor-pointer",
                   viewMode === 'table' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm font-semibold" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
@@ -258,7 +258,7 @@ export const DeliveriesView: React.FC = () => {
               <button
                 onClick={() => setViewMode('kanban')}
                 className={clsx(
-                  "px-3 py-1.5 text-xs font-medium rounded-md flex items-center gap-1.5 transition-colors",
+                  "px-3 py-1.5 text-xs font-medium rounded-md flex items-center gap-1.5 transition-colors cursor-pointer",
                   viewMode === 'kanban' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm font-semibold" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
@@ -268,7 +268,7 @@ export const DeliveriesView: React.FC = () => {
               <button
                 onClick={() => setViewMode('heatmap')}
                 className={clsx(
-                  "px-3 py-1.5 text-xs font-medium rounded-md flex items-center gap-1.5 transition-colors",
+                  "px-3 py-1.5 text-xs font-medium rounded-md flex items-center gap-1.5 transition-colors cursor-pointer",
                   viewMode === 'heatmap' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm font-semibold" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
@@ -292,7 +292,7 @@ export const DeliveriesView: React.FC = () => {
         {/* Bento Telemetry Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">
           <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] p-3 rounded-lg">
-            <div className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">Deployed Live</div>
+            <div className="text-xs font-medium text-[var(--color-text-muted)]">Deployed Live</div>
             <div className="text-xl font-mono font-bold text-emerald-400 mt-1 flex items-baseline gap-1.5">
               <span>{telemetry.deployed}</span>
               <span className="text-[11px] font-normal text-[var(--color-text-muted)]">
@@ -303,7 +303,7 @@ export const DeliveriesView: React.FC = () => {
           </div>
 
           <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] p-3 rounded-lg">
-            <div className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">Ready / In Flight</div>
+            <div className="text-xs font-medium text-[var(--color-text-muted)]">Ready / In Flight</div>
             <div className="text-xl font-mono font-bold text-sky-400 mt-1 flex items-baseline gap-1.5">
               <span>{telemetry.ready + telemetry.inProgress}</span>
               <span className="text-[11px] font-normal text-[var(--color-text-muted)]">
@@ -314,7 +314,7 @@ export const DeliveriesView: React.FC = () => {
           </div>
 
           <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] p-3 rounded-lg">
-            <div className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">Pending Sign-Off</div>
+            <div className="text-xs font-medium text-[var(--color-text-muted)]">Pending Sign-Off</div>
             <div className="text-xl font-mono font-bold text-amber-400 mt-1">
               {telemetry.pendingSignoff}
             </div>
@@ -322,13 +322,13 @@ export const DeliveriesView: React.FC = () => {
           </div>
 
           <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] p-3 rounded-lg">
-            <div className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">Smoke Test Gates</div>
+            <div className="text-xs font-medium text-[var(--color-text-muted)]">Smoke Test Gates</div>
             <div className="text-xl font-mono font-bold mt-1 flex items-center gap-2">
               <span className={telemetry.failedSmoke > 0 ? "text-rose-400" : "text-emerald-400"}>
                 {telemetry.failedSmoke > 0 ? `${telemetry.failedSmoke} Fail` : '0 Fail'}
               </span>
               {telemetry.runningSmoke > 0 && (
-                <span className="text-[10px] text-cyan-400 font-mono animate-pulse">
+                <span className="text-[10px] text-cyan-400 font-mono motion-safe:animate-pulse">
                   ({telemetry.runningSmoke} Run)
                 </span>
               )}
@@ -337,7 +337,7 @@ export const DeliveriesView: React.FC = () => {
           </div>
 
           <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] p-3 rounded-lg">
-            <div className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">Avg Cycle Lead Time</div>
+            <div className="text-xs font-medium text-[var(--color-text-muted)]">Avg Cycle Lead Time</div>
             <div className="text-xl font-mono font-bold text-[var(--color-text)] mt-1">
               {telemetry.avgLeadTime} <span className="text-xs text-[var(--color-text-muted)]">days</span>
             </div>
@@ -345,7 +345,7 @@ export const DeliveriesView: React.FC = () => {
           </div>
 
           <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] p-3 rounded-lg">
-            <div className="text-[10px] uppercase font-bold text-[var(--color-text-muted)]">Delay Variance</div>
+            <div className="text-xs font-medium text-[var(--color-text-muted)]">Delay Variance</div>
             <div className={clsx(
               "text-xl font-mono font-bold mt-1",
               parseFloat(telemetry.avgVariance) > 0 ? "text-rose-400" : "text-emerald-400"
@@ -425,7 +425,7 @@ export const DeliveriesView: React.FC = () => {
           {/* Column Autofit Strategy (ProjectPulse standard) */}
           {viewMode === 'table' && (
             <div className="flex items-center gap-1.5 pl-2 border-l border-[var(--color-divider)]">
-              <span className="text-[10px] font-mono uppercase text-[var(--color-text-muted)]">Autofit:</span>
+              <span className="text-xs font-semibold text-[var(--color-text-muted)]">Autofit:</span>
               <select 
                 value={autofitStrategy}
                 onChange={e => setAutofitStrategy(e.target.value as AutofitStrategy)}
@@ -444,7 +444,7 @@ export const DeliveriesView: React.FC = () => {
           {/* Bulk Selection Actions Bar */}
           {selectedIds.size > 0 && (
             <div className="flex items-center gap-1.5 bg-[var(--color-primary-highlight-hex)] border border-[var(--color-primary-hex)]/30 rounded-lg px-2 py-1 ml-auto">
-              <span className="font-mono font-bold text-[11px] text-[var(--color-primary-hex)]">
+              <span className="font-semibold text-xs text-[var(--color-primary-hex)]">
                 {selectedIds.size} Selected
               </span>
               <button 
@@ -481,7 +481,7 @@ export const DeliveriesView: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-divider)] text-[10px] font-mono uppercase tracking-wider text-[var(--color-text-muted)] select-none">
+                  <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-divider)] text-xs font-semibold text-[var(--color-text-muted)] select-none">
                     <th className="p-3 w-10 text-center">
                       <input 
                         type="checkbox"
@@ -589,7 +589,7 @@ export const DeliveriesView: React.FC = () => {
                           <div className="flex items-center gap-2 text-[11px] text-[var(--color-text-muted)]">
                             <span className="font-medium text-[var(--color-text)]">{item.module}</span>
                             <span aria-hidden="true">·</span>
-                            <span className="text-[10px] uppercase font-mono">{item.category}</span>
+                            <span className="text-xs text-[var(--color-text-muted)]">{item.category}</span>
                             {item.componentsDelivered && (
                               <>
                                 <span aria-hidden="true">·</span>
@@ -604,7 +604,7 @@ export const DeliveriesView: React.FC = () => {
                         {/* Environment */}
                         <td className="p-3">
                           <span className={clsx(
-                            "px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold",
+                            "px-2 py-0.5 rounded text-xs font-medium",
                             item.environment === 'Production' && "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30",
                             item.environment === 'Staging' && "bg-sky-500/10 text-sky-400 border border-sky-500/30",
                             item.environment === 'UAT' && "bg-indigo-500/10 text-indigo-400 border border-indigo-500/30",
@@ -645,7 +645,7 @@ export const DeliveriesView: React.FC = () => {
                         <td className="p-3">
                           <div className="flex items-center gap-1.5 mb-1">
                             <span className={clsx(
-                              "text-[10px] font-bold uppercase",
+                              "text-xs font-semibold",
                               item.signOffStatus === 'Approved' && "text-emerald-400",
                               item.signOffStatus === 'Pending' && "text-amber-400",
                               item.signOffStatus === 'Rejected' && "text-rose-400",
@@ -660,9 +660,9 @@ export const DeliveriesView: React.FC = () => {
                         {/* Smoke Test */}
                         <td className="p-3">
                           <span className={clsx(
-                            "px-2 py-0.5 rounded text-[10px] font-mono uppercase font-bold inline-block",
+                            "px-2 py-0.5 rounded text-xs font-medium inline-block",
                             item.smokeTestStatus === 'Passed' && "bg-emerald-500/15 text-emerald-400",
-                            item.smokeTestStatus === 'Running' && "bg-cyan-500/15 text-cyan-400 animate-pulse",
+                            item.smokeTestStatus === 'Running' && "bg-cyan-500/15 text-cyan-400 motion-safe:animate-pulse",
                             item.smokeTestStatus === 'Failed' && "bg-rose-500/15 text-rose-400",
                             item.smokeTestStatus === 'Not Run' && "text-[var(--color-text-faint)]"
                           )}>
@@ -679,7 +679,7 @@ export const DeliveriesView: React.FC = () => {
                               </span>
                             </div>
                           ) : (
-                            <span className="text-[var(--color-text-faint)] text-xs">—</span>
+                            <span className="text-[var(--color-text-faint)] text-xs">None</span>
                           )}
                           {item.linkedScreens && item.linkedScreens.length > 0 && (
                             <div className="text-[10px] text-[var(--color-text-muted)] truncate max-w-[170px] mt-0.5">
@@ -766,7 +766,7 @@ export const DeliveriesView: React.FC = () => {
                 >
                   <div className="p-3 border-b border-[var(--color-divider)] bg-[var(--color-surface-2)]/50 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="font-display font-bold text-xs uppercase tracking-wider">
+                      <span className="font-bold text-xs">
                         {stageStatus}
                       </span>
                       <span className="px-1.5 py-0.2 bg-[var(--color-surface)] text-[var(--color-text-muted)] rounded font-mono text-[10px]">
@@ -780,7 +780,7 @@ export const DeliveriesView: React.FC = () => {
                       <div 
                         key={item.id}
                         onClick={() => handleOpenEdit(item)}
-                        className="bg-[var(--color-surface-2)] hover:border-[var(--color-primary-hex)] border border-[var(--color-divider)] p-3 rounded-lg cursor-pointer transition-all hover:shadow-md space-y-2"
+                        className="bg-[var(--color-surface-2)] hover:border-[var(--color-primary-hex)] border border-[var(--color-divider)] p-3 rounded-lg cursor-pointer transition-colors duration-150 space-y-2"
                       >
                         <div className="flex items-center justify-between text-[11px]">
                           <span className="font-mono font-bold text-[var(--color-primary-hex)]">
@@ -797,7 +797,7 @@ export const DeliveriesView: React.FC = () => {
 
                         <div className="flex items-center justify-between text-[10px] text-[var(--color-text-muted)] pt-1 border-t border-[var(--color-divider)]">
                           <span>{item.module}</span>
-                          <span className="font-mono uppercase font-bold text-sky-400">{item.environment}</span>
+                          <span className="font-medium text-xs text-sky-400">{item.environment}</span>
                         </div>
 
                         <div className="flex items-center justify-between pt-1">
@@ -868,7 +868,7 @@ export const DeliveriesView: React.FC = () => {
             {/* Perspective Picker */}
             <div className="flex items-center justify-between bg-[var(--color-surface)] border border-[var(--color-divider)] p-3 rounded-xl">
               <div>
-                <h3 className="font-display font-bold text-sm uppercase">Interactive Heatmap Perspectives</h3>
+                <h3 className="font-bold text-sm">Interactive Heatmap Perspectives</h3>
                 <p className="text-xs text-[var(--color-text-muted)]">
                   Pivot delivery density across application modules, screen coverage, and deployment pipelines.
                 </p>
@@ -908,7 +908,7 @@ export const DeliveriesView: React.FC = () => {
             {/* PERSPECTIVE 1: Feature x Screens */}
             {heatmapPerspective === 'feat_screens' && (
               <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl p-4">
-                <h4 className="text-xs font-mono uppercase font-bold text-[var(--color-text-muted)] mb-3">
+                <h4 className="text-xs font-semibold text-[var(--color-text-muted)] mb-3">
                   Module Density Matrix
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -927,7 +927,7 @@ export const DeliveriesView: React.FC = () => {
                         
                         <div className="w-full bg-[var(--color-surface)] h-2 rounded-full overflow-hidden flex">
                           <div 
-                            className="bg-emerald-500 h-full transition-all" 
+                            className="bg-emerald-500 h-full" 
                             style={{ width: `${modDeliveries.length ? (deployedCount / modDeliveries.length) * 100 : 0}%` }}
                             title={`${deployedCount} Deployed`}
                           />
@@ -956,7 +956,7 @@ export const DeliveriesView: React.FC = () => {
             {/* PERSPECTIVE 2: Environment Pipeline */}
             {heatmapPerspective === 'env_pipeline' && (
               <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl p-4 space-y-4">
-                <h4 className="text-xs font-mono uppercase font-bold text-[var(--color-text-muted)]">
+                <h4 className="text-xs font-semibold text-[var(--color-text-muted)]">
                   Multi-Release Environment Staging Flow
                 </h4>
                 <div className="grid grid-cols-5 gap-3 text-center">
@@ -965,9 +965,9 @@ export const DeliveriesView: React.FC = () => {
                     return (
                       <div key={env} className="space-y-2">
                         <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] p-2 rounded-lg">
-                          <div className="text-[10px] uppercase font-mono font-bold text-[var(--color-text-muted)]">Stage {idx + 1}</div>
+                          <div className="text-xs font-medium text-[var(--color-text-muted)]">Stage {idx + 1}</div>
                           <div className="font-bold text-sm text-[var(--color-primary-hex)]">{env}</div>
-                          <div className="text-[10px] font-mono text-[var(--color-text-muted)] mt-1">{envItems.length} active packages</div>
+                          <div className="text-xs text-[var(--color-text-muted)] mt-1">{envItems.length} active packages</div>
                         </div>
 
                         <div className="space-y-1.5 text-left">
@@ -992,7 +992,7 @@ export const DeliveriesView: React.FC = () => {
             {/* PERSPECTIVE 3: Payload Impact Matrix */}
             {heatmapPerspective === 'del_impact' && (
               <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl p-4">
-                <h4 className="text-xs font-mono uppercase font-bold text-[var(--color-text-muted)] mb-3">
+                <h4 className="text-xs font-semibold text-[var(--color-text-muted)] mb-3">
                   Lead Time vs Schedule Variance Scatter
                 </h4>
                 <div className="space-y-2">
@@ -1000,7 +1000,7 @@ export const DeliveriesView: React.FC = () => {
                     <div key={d.id} className="flex items-center gap-3 p-2 bg-[var(--color-surface-2)] rounded border border-[var(--color-divider)] text-xs">
                       <span className="font-mono font-bold text-[var(--color-primary-hex)] w-24 shrink-0">{d.almId}</span>
                       <span className="font-medium flex-1 truncate">{d.name}</span>
-                      <span className="font-mono text-[var(--color-text-muted)] w-20 text-right">{d.leadTimeDays}d cycle</span>
+                      <span className="text-xs text-[var(--color-text-muted)] w-20 text-right">{d.leadTimeDays} days</span>
                       <span className={clsx(
                         "font-mono font-bold w-16 text-right",
                         (d.variance || 0) > 0 ? "text-rose-400" : "text-emerald-400"
@@ -1124,7 +1124,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
           {/* Row 1: ALM ID & PDN */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] font-mono uppercase font-bold text-[var(--color-text-muted)]">ALM Defect / Ticket ID</label>
+              <label className="text-xs font-medium text-[var(--color-text-muted)]">ALM Defect / Ticket ID</label>
               <input 
                 type="text"
                 placeholder="e.g. ALM-10145"
@@ -1134,7 +1134,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
               />
             </div>
             <div>
-              <label className="text-[10px] font-mono uppercase font-bold text-[var(--color-text-muted)]">PDN Release Reference</label>
+              <label className="text-xs font-medium text-[var(--color-text-muted)]">PDN Release Reference</label>
               <input 
                 type="text"
                 placeholder="e.g. PDN-2026-004"
@@ -1147,7 +1147,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
 
           {/* Scope / Name */}
           <div>
-            <label className="text-[10px] font-mono uppercase font-bold text-[var(--color-text-muted)]">Delivery Scope / Description *</label>
+            <label className="text-xs font-medium text-[var(--color-text-muted)]">Delivery Scope / Description *</label>
             <input 
               type="text"
               required
@@ -1161,7 +1161,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
           {/* Row 2: Module, Environment, Version */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="text-[10px] font-mono uppercase font-bold text-[var(--color-text-muted)]">Module</label>
+              <label className="text-xs font-medium text-[var(--color-text-muted)]">Module</label>
               <select
                 value={module}
                 onChange={e => setModule(e.target.value)}
@@ -1173,7 +1173,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
               </select>
             </div>
             <div>
-              <label className="text-[10px] font-mono uppercase font-bold text-[var(--color-text-muted)]">Environment</label>
+              <label className="text-xs font-medium text-[var(--color-text-muted)]">Environment</label>
               <select
                 value={environment}
                 onChange={e => setEnvironment(e.target.value)}
@@ -1185,7 +1185,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
               </select>
             </div>
             <div>
-              <label className="text-[10px] font-mono uppercase font-bold text-[var(--color-text-muted)]">Target Release</label>
+              <label className="text-xs font-medium text-[var(--color-text-muted)]">Target Release</label>
               <select
                 value={releaseVersion}
                 onChange={e => setReleaseVersion(e.target.value)}
@@ -1203,7 +1203,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
           {/* Row 3: Statuses & Sign-Off */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="text-[10px] font-mono uppercase font-bold text-[var(--color-text-muted)]">Deployment Status</label>
+              <label className="text-xs font-medium text-[var(--color-text-muted)]">Deployment Status</label>
               <select
                 value={status}
                 onChange={e => setStatus(e.target.value)}
@@ -1215,7 +1215,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
               </select>
             </div>
             <div>
-              <label className="text-[10px] font-mono uppercase font-bold text-[var(--color-text-muted)]">Sign-off Status</label>
+              <label className="text-xs font-medium text-[var(--color-text-muted)]">Sign-off Status</label>
               <select
                 value={signOffStatus}
                 onChange={e => setSignOffStatus(e.target.value)}
@@ -1227,7 +1227,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
               </select>
             </div>
             <div>
-              <label className="text-[10px] font-mono uppercase font-bold text-[var(--color-text-muted)]">Smoke Test Gate</label>
+              <label className="text-xs font-medium text-[var(--color-text-muted)]">Smoke Test Gate</label>
               <select
                 value={smokeTestStatus}
                 onChange={e => setSmokeTestStatus(e.target.value)}
@@ -1243,7 +1243,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
           {/* Row 4: People & Dates */}
           <div className="grid grid-cols-3 gap-3">
             <div>
-              <label className="text-[10px] font-mono uppercase font-bold text-[var(--color-text-muted)]">Approver</label>
+              <label className="text-xs font-medium text-[var(--color-text-muted)]">Approver</label>
               <select
                 value={approver}
                 onChange={e => setApprover(e.target.value)}
@@ -1256,7 +1256,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
               </select>
             </div>
             <div>
-              <label className="text-[10px] font-mono uppercase font-bold text-[var(--color-text-muted)]">Developer / Fixed By</label>
+              <label className="text-xs font-medium text-[var(--color-text-muted)]">Developer / Fixed By</label>
               <select
                 value={fixedBy}
                 onChange={e => setFixedBy(e.target.value)}
@@ -1269,7 +1269,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
               </select>
             </div>
             <div>
-              <label className="text-[10px] font-mono uppercase font-bold text-[var(--color-text-muted)]">Target Date</label>
+              <label className="text-xs font-medium text-[var(--color-text-muted)]">Target Date</label>
               <input 
                 type="date"
                 value={targetDeliveryDate}
@@ -1281,7 +1281,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
 
           {/* Link Parent Tasks */}
           <div>
-            <label className="text-[10px] font-mono uppercase font-bold text-[var(--color-text-muted)]">
+            <label className="text-xs font-medium text-[var(--color-text-muted)]">
               Link Parent WBS Tasks ({selectedTasks.length} linked)
             </label>
             <div className="mt-1 p-2 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg max-h-32 overflow-y-auto space-y-1 custom-scroll">
@@ -1308,7 +1308,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
           {/* Components Delivered & Rollback Plan */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-[10px] font-mono uppercase font-bold text-[var(--color-text-muted)]">Components / Artifacts Delivered</label>
+              <label className="text-xs font-medium text-[var(--color-text-muted)]">Components / Artifacts Delivered</label>
               <textarea 
                 rows={2}
                 placeholder="e.g. auth-service.jar, main.tf, schema.sql"
@@ -1318,7 +1318,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
               />
             </div>
             <div>
-              <label className="text-[10px] font-mono uppercase font-bold text-[var(--color-text-muted)]">Contingency / Rollback Plan</label>
+              <label className="text-xs font-medium text-[var(--color-text-muted)]">Contingency / Rollback Plan</label>
               <textarea 
                 rows={2}
                 placeholder="e.g. argocd app rollback to sync revision 3409"

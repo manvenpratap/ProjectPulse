@@ -278,14 +278,16 @@ const RAIDView: React.FC = () => {
       <div className="px-4 md:px-8 py-8 md:py-12 max-w-[1400px] mx-auto w-full space-y-10">
         
         {/* Header Block */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-[var(--color-divider)]">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-6 border-b border-[var(--color-divider)]">
           <div>
-            <div className="flex items-center gap-3 mb-3">
-              <div className="px-3 py-1 bg-amber-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg">RAID & Governance</div>
-              <div className="w-1 h-1 rounded-full bg-[var(--color-divider)]" />
-              <span className="text-xs font-bold text-[var(--color-text-faint)] uppercase">Registry Active</span>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="px-2.5 py-0.5 bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 text-xs font-semibold rounded-md">
+                Risk & Governance
+              </span>
+              <span className="text-[var(--color-text-faint)]">/</span>
+              <span className="text-xs text-[var(--color-text-muted)] font-medium">RAID Register</span>
             </div>
-            <h1 className="font-display text-3xl md:text-4xl font-black tracking-tight text-[var(--color-text)] mb-3">Unified RAID Register</h1>
+            <h1 className="font-display text-2xl md:text-3xl font-bold tracking-tight text-[var(--color-text)] mb-2">Unified RAID Register</h1>
             <p className="text-[var(--color-text-muted)] text-sm max-w-xl leading-relaxed">
               Track project Risks, Assumptions, Issues, and Dependencies alongside steering Decisions.
             </p>
@@ -293,15 +295,15 @@ const RAIDView: React.FC = () => {
           <div className="flex items-center gap-3">
             <button 
               onClick={() => handleOpenRaidModal()}
-              className="h-12 px-6 bg-indigo-600 text-white rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:scale-[1.02] transition-transform"
+              className="h-10 px-4 bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] rounded-lg text-xs font-semibold flex items-center gap-2 active:scale-[0.98] motion-safe:transition-transform shadow-sm cursor-pointer"
             >
-              <PlusCircle size={16} /> Log RAID Item
+              <PlusCircle size={15} /> <span>Log RAID Item</span>
             </button>
             <button 
               onClick={() => handleOpenDecisionModal()}
-              className="h-12 px-6 bg-emerald-600 text-white rounded-xl font-bold text-xs uppercase tracking-wider flex items-center gap-2 hover:scale-[1.02] transition-transform"
+              className="h-10 px-4 bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-lg text-xs font-semibold flex items-center gap-2 active:scale-[0.98] motion-safe:transition-transform shadow-sm cursor-pointer"
             >
-              <FileText size={16} /> Log Decision
+              <FileText size={15} /> <span>Log Decision</span>
             </button>
           </div>
         </div>
@@ -321,16 +323,16 @@ const RAIDView: React.FC = () => {
                 key={tab.id}
                 onClick={() => { setActiveTab(tab.id as any); setMatrixFilter(null); }}
                 className={clsx(
-                  "py-2 px-4 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex items-center gap-2",
+                  "py-2 px-3.5 rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-[0.98] whitespace-nowrap flex items-center gap-2 cursor-pointer",
                   activeTab === tab.id 
-                    ? "bg-white text-indigo-600 shadow-sm border border-indigo-100" 
-                    : "text-[var(--color-text-muted)] hover:text-indigo-500"
+                    ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm border border-[var(--color-divider)]" 
+                    : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
-                {tab.label}
+                <span>{tab.label}</span>
                 <span className={clsx(
-                  "px-1.5 py-0.5 text-[9px] rounded-full",
-                  activeTab === tab.id ? "bg-indigo-50 text-indigo-600" : "bg-[var(--color-surface-3)]"
+                  "px-1.5 py-0.2 rounded-full text-xs font-mono",
+                  activeTab === tab.id ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)]" : "bg-[var(--color-surface-3)] text-[var(--color-text-muted)]"
                 )}>{tab.count}</span>
               </button>
             ))}
@@ -355,12 +357,12 @@ const RAIDView: React.FC = () => {
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <h3 className="font-bold text-sm">RAID Priority Matrix</h3>
-                  <p className="text-[10px] text-[var(--color-text-faint)] uppercase font-bold tracking-tight mt-1">Refining Impact vs Probability Density</p>
+                  <p className="text-xs text-[var(--color-text-muted)] mt-1">Impact vs probability distribution</p>
                 </div>
                 {matrixFilter && (
                   <button 
                     onClick={() => setMatrixFilter(null)}
-                    className="text-[10px] font-black text-rose-500 hover:underline uppercase tracking-widest"
+                    className="text-xs font-semibold text-rose-500 hover:underline cursor-pointer"
                   >
                     Clear Filter
                   </button>
@@ -368,10 +370,10 @@ const RAIDView: React.FC = () => {
               </div>
 
               <div className="flex gap-4 items-stretch">
-                <div className="writing-mode-vertical-lr rotate-180 text-[10px] font-black uppercase text-[var(--color-text-faint)] tracking-widest text-center flex items-center justify-center border-r border-[var(--color-divider)] pr-2">Impact</div>
+                <div className="text-xs font-semibold text-[var(--color-text-muted)] text-center flex items-center justify-center border-r border-[var(--color-divider)] pr-3 [writing-mode:vertical-lr] rotate-180">Impact</div>
                 <div className="flex-1 flex flex-col">
                   <div className="flex gap-4 items-stretch">
-                    <div className="grid grid-rows-3 gap-2 text-[10px] font-black text-[var(--color-text-muted)] text-right w-12 pr-2">
+                    <div className="grid grid-rows-3 gap-2 text-xs font-semibold text-[var(--color-text-muted)] text-right w-12 pr-2">
                       <div className="flex items-center justify-end h-12">High</div>
                       <div className="flex items-center justify-end h-12">Med</div>
                       <div className="flex items-center justify-end h-12">Low</div>
@@ -382,22 +384,22 @@ const RAIDView: React.FC = () => {
                       <div 
                         onClick={() => selectMatrixCell('High', 'Low')}
                         className={clsx(
-                          "bg-amber-500/10 text-amber-600 border border-amber-200/40 rounded-xl flex items-center justify-center font-black text-sm cursor-pointer h-12 hover:scale-105 transition-all",
-                          matrixFilter?.impact === 'High' && matrixFilter.prob === 'Low' && "ring-2 ring-indigo-500 bg-amber-500/20"
+                          "bg-amber-500/10 text-amber-600 border border-amber-200/40 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-12 transition-colors duration-150 active:scale-95",
+                          matrixFilter?.impact === 'High' && matrixFilter.prob === 'Low' && "ring-2 ring-[var(--color-primary-hex)] bg-amber-500/20"
                         )}
                       >{getCellCount('High', 'Low')}</div>
                       <div 
                         onClick={() => selectMatrixCell('High', 'Medium')}
                         className={clsx(
-                          "bg-orange-500/15 text-orange-600 border border-orange-200/40 rounded-xl flex items-center justify-center font-black text-sm cursor-pointer h-12 hover:scale-105 transition-all",
-                          matrixFilter?.impact === 'High' && matrixFilter.prob === 'Medium' && "ring-2 ring-indigo-500 bg-orange-500/25"
+                          "bg-orange-500/15 text-orange-600 border border-orange-200/40 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-12 transition-colors duration-150 active:scale-95",
+                          matrixFilter?.impact === 'High' && matrixFilter.prob === 'Medium' && "ring-2 ring-[var(--color-primary-hex)] bg-orange-500/25"
                         )}
                       >{getCellCount('High', 'Medium')}</div>
                       <div 
                         onClick={() => selectMatrixCell('High', 'High')}
                         className={clsx(
-                          "bg-rose-500/25 text-rose-600 border border-rose-200/50 rounded-xl flex items-center justify-center font-black text-sm cursor-pointer h-12 hover:scale-105 transition-all",
-                          matrixFilter?.impact === 'High' && matrixFilter.prob === 'High' && "ring-2 ring-indigo-500 bg-rose-500/40"
+                          "bg-rose-500/25 text-rose-600 border border-rose-200/50 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-12 transition-colors duration-150 active:scale-95",
+                          matrixFilter?.impact === 'High' && matrixFilter.prob === 'High' && "ring-2 ring-[var(--color-primary-hex)] bg-rose-500/40"
                         )}
                       >{getCellCount('High', 'High')}</div>
 
@@ -405,22 +407,22 @@ const RAIDView: React.FC = () => {
                       <div 
                         onClick={() => selectMatrixCell('Medium', 'Low')}
                         className={clsx(
-                          "bg-yellow-500/10 text-yellow-600 border border-yellow-100 rounded-xl flex items-center justify-center font-black text-sm cursor-pointer h-12 hover:scale-105 transition-all",
-                          matrixFilter?.impact === 'Medium' && matrixFilter.prob === 'Low' && "ring-2 ring-indigo-500 bg-yellow-500/20"
+                          "bg-yellow-500/10 text-yellow-600 border border-yellow-100 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-12 transition-colors duration-150 active:scale-95",
+                          matrixFilter?.impact === 'Medium' && matrixFilter.prob === 'Low' && "ring-2 ring-[var(--color-primary-hex)] bg-yellow-500/20"
                         )}
                       >{getCellCount('Medium', 'Low')}</div>
                       <div 
                         onClick={() => selectMatrixCell('Medium', 'Medium')}
                         className={clsx(
-                          "bg-amber-500/15 text-amber-600 border border-amber-200 rounded-xl flex items-center justify-center font-black text-sm cursor-pointer h-12 hover:scale-105 transition-all",
-                          matrixFilter?.impact === 'Medium' && matrixFilter.prob === 'Medium' && "ring-2 ring-indigo-500 bg-amber-500/25"
+                          "bg-amber-500/15 text-amber-600 border border-amber-200 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-12 transition-colors duration-150 active:scale-95",
+                          matrixFilter?.impact === 'Medium' && matrixFilter.prob === 'Medium' && "ring-2 ring-[var(--color-primary-hex)] bg-amber-500/25"
                         )}
                       >{getCellCount('Medium', 'Medium')}</div>
                       <div 
                         onClick={() => selectMatrixCell('Medium', 'High')}
                         className={clsx(
-                          "bg-orange-500/15 text-orange-600 border border-orange-200 rounded-xl flex items-center justify-center font-black text-sm cursor-pointer h-12 hover:scale-105 transition-all",
-                          matrixFilter?.impact === 'Medium' && matrixFilter.prob === 'High' && "ring-2 ring-indigo-500 bg-orange-500/35"
+                          "bg-orange-500/15 text-orange-600 border border-orange-200 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-12 transition-colors duration-150 active:scale-95",
+                          matrixFilter?.impact === 'Medium' && matrixFilter.prob === 'High' && "ring-2 ring-[var(--color-primary-hex)] bg-orange-500/35"
                         )}
                       >{getCellCount('Medium', 'High')}</div>
 
@@ -428,22 +430,22 @@ const RAIDView: React.FC = () => {
                       <div 
                         onClick={() => selectMatrixCell('Low', 'Low')}
                         className={clsx(
-                          "bg-emerald-500/10 text-emerald-600 border border-emerald-100 rounded-xl flex items-center justify-center font-black text-sm cursor-pointer h-12 hover:scale-105 transition-all",
-                          matrixFilter?.impact === 'Low' && matrixFilter.prob === 'Low' && "ring-2 ring-indigo-500 bg-emerald-500/20"
+                          "bg-emerald-500/10 text-emerald-600 border border-emerald-100 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-12 transition-colors duration-150 active:scale-95",
+                          matrixFilter?.impact === 'Low' && matrixFilter.prob === 'Low' && "ring-2 ring-[var(--color-primary-hex)] bg-emerald-500/20"
                         )}
                       >{getCellCount('Low', 'Low')}</div>
                       <div 
                         onClick={() => selectMatrixCell('Low', 'Medium')}
                         className={clsx(
-                          "bg-yellow-500/10 text-yellow-600 border border-yellow-100 rounded-xl flex items-center justify-center font-black text-sm cursor-pointer h-12 hover:scale-105 transition-all",
-                          matrixFilter?.impact === 'Low' && matrixFilter.prob === 'Medium' && "ring-2 ring-indigo-500 bg-yellow-500/20"
+                          "bg-yellow-500/10 text-yellow-600 border border-yellow-100 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-12 transition-colors duration-150 active:scale-95",
+                          matrixFilter?.impact === 'Low' && matrixFilter.prob === 'Medium' && "ring-2 ring-[var(--color-primary-hex)] bg-yellow-500/20"
                         )}
                       >{getCellCount('Low', 'Medium')}</div>
                       <div 
                         onClick={() => selectMatrixCell('Low', 'High')}
                         className={clsx(
-                          "bg-amber-500/10 text-amber-600 border border-amber-200 rounded-xl flex items-center justify-center font-black text-sm cursor-pointer h-12 hover:scale-105 transition-all",
-                          matrixFilter?.impact === 'Low' && matrixFilter.prob === 'High' && "ring-2 ring-indigo-500 bg-amber-500/30"
+                          "bg-amber-500/10 text-amber-600 border border-amber-200 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-12 transition-colors duration-150 active:scale-95",
+                          matrixFilter?.impact === 'Low' && matrixFilter.prob === 'High' && "ring-2 ring-[var(--color-primary-hex)] bg-amber-500/30"
                         )}
                       >{getCellCount('Low', 'High')}</div>
                     </div>
@@ -451,12 +453,12 @@ const RAIDView: React.FC = () => {
                 </div>
                 
                 <div className="flex ml-16 mt-2 flex-col gap-1">
-                  <div className="grid grid-cols-3 gap-2 text-[10px] font-black text-[var(--color-text-muted)] text-center">
+                  <div className="grid grid-cols-3 gap-2 text-xs font-semibold text-[var(--color-text-muted)] text-center">
                     <div>Low</div>
                     <div>Medium</div>
                     <div>High</div>
                   </div>
-                  <div className="text-[9px] font-black text-[var(--color-text-faint)] uppercase tracking-widest text-center mt-1">Probability</div>
+                  <div className="text-xs font-semibold text-[var(--color-text-muted)] text-center mt-1">Probability</div>
                 </div>
               </div>
             </div>
@@ -486,7 +488,7 @@ const RAIDView: React.FC = () => {
             <div className="overflow-x-auto custom-scroll">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[var(--color-surface-2)] text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] border-b border-[var(--color-divider)]">
+                  <tr className="bg-[var(--color-surface-2)] text-xs font-semibold text-[var(--color-text-muted)] border-b border-[var(--color-divider)]">
                     <th className="p-4">ID</th>
                     <th className="p-4">Decision Title</th>
                     <th className="p-4">Owner / Approver</th>
@@ -498,7 +500,7 @@ const RAIDView: React.FC = () => {
                 <tbody className="divide-y divide-[var(--color-divider)]">
                   {activeDecisions.length > 0 ? activeDecisions.map(d => (
                     <tr key={d.id} className="hover:bg-[var(--color-surface-offset)]/50 transition-colors">
-                      <td className="p-4 font-mono font-bold text-xs text-indigo-500">{d.id}</td>
+                      <td className="p-4 font-mono font-bold text-xs text-[var(--color-primary-hex)]">{d.id}</td>
                       <td className="p-4">
                         <div className="font-bold text-sm text-[var(--color-text)]">{d.title}</div>
                         <div className="text-xs text-[var(--color-text-muted)] mt-1 max-w-md">{d.desc}</div>
@@ -509,16 +511,16 @@ const RAIDView: React.FC = () => {
                       </td>
                       <td className="p-4">
                         <span className={clsx(
-                          "px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider",
-                          d.status === 'Approved' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" :
-                          d.status === 'Rejected' ? "bg-rose-50 text-rose-600 border border-rose-100" :
-                          "bg-amber-50 text-amber-600 border border-amber-100"
+                          "px-2 py-0.5 rounded text-xs font-medium",
+                          d.status === 'Approved' ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" :
+                          d.status === 'Rejected' ? "bg-rose-500/10 text-rose-500 border border-rose-500/20" :
+                          "bg-amber-500/10 text-amber-500 border border-amber-500/20"
                         )}>{d.status}</span>
                       </td>
                       <td className="p-4 font-mono text-xs text-[var(--color-text-faint)]">{d.dueDate}</td>
                       <td className="p-4 text-right">
                         <div className="flex gap-2 justify-end">
-                          <button onClick={() => handleOpenDecisionModal(d)} className="p-1 text-[var(--color-text-faint)] hover:text-indigo-500 transition-colors"><Edit2 size={14} /></button>
+                          <button onClick={() => handleOpenDecisionModal(d)} className="p-1 text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] transition-colors"><Edit2 size={14} /></button>
                           <button onClick={() => handleDeleteDecision(d.id)} className="p-1 text-[var(--color-text-faint)] hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
                         </div>
                       </td>
@@ -537,7 +539,7 @@ const RAIDView: React.FC = () => {
             <div className="overflow-x-auto custom-scroll">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[var(--color-surface-2)] text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] border-b border-[var(--color-divider)]">
+                  <tr className="bg-[var(--color-surface-2)] text-xs font-semibold text-[var(--color-text-muted)] border-b border-[var(--color-divider)]">
                     <th className="p-4 cursor-pointer" onClick={() => handleRaidSort('id')}>ID / Type</th>
                     <th className="p-4 cursor-pointer" onClick={() => handleRaidSort('title')}>Title & Context</th>
                     <th className="p-4 cursor-pointer" onClick={() => handleRaidSort('owner')}>Owner</th>
@@ -550,14 +552,14 @@ const RAIDView: React.FC = () => {
                 </thead>
                 <tbody className="divide-y divide-[var(--color-divider)]">
                   {activeFiltered.length > 0 ? activeFiltered.map(r => {
-                    const typeColor = r.type === 'Risk' ? 'text-rose-500 bg-rose-50 border-rose-100' :
-                      r.type === 'Assumption' ? 'text-indigo-500 bg-indigo-50 border-indigo-100' :
-                      r.type === 'Issue' ? 'text-amber-500 bg-amber-50 border-amber-100' : 'text-blue-500 bg-blue-50 border-blue-100';
+                    const typeColor = r.type === 'Risk' ? 'text-rose-500 bg-rose-500/10 border-rose-500/20' :
+                      r.type === 'Assumption' ? 'text-[var(--color-primary-hex)] bg-[var(--color-primary-highlight-hex)] border-[var(--color-primary-hex)]/20' :
+                      r.type === 'Issue' ? 'text-amber-500 bg-amber-500/10 border-amber-500/20' : 'text-blue-500 bg-blue-500/10 border-blue-500/20';
                     return (
                       <tr key={r.id} className="hover:bg-[var(--color-surface-offset)]/50 transition-colors">
                         <td className="p-4">
-                          <div className="font-mono font-bold text-xs text-indigo-500">{r.id}</div>
-                          <span className={clsx("px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider", typeColor)}>{r.type}</span>
+                          <div className="font-mono font-bold text-xs text-[var(--color-primary-hex)]">{r.id}</div>
+                          <span className={clsx("px-1.5 py-0.5 rounded text-xs font-medium border", typeColor)}>{r.type}</span>
                         </td>
                         <td className="p-4">
                           <div className="font-bold text-sm text-[var(--color-text)]">{r.title}</div>
@@ -569,20 +571,20 @@ const RAIDView: React.FC = () => {
                         </td>
                         <td className="p-4">
                           <span className={clsx(
-                            "px-2 py-0.5 rounded text-[10px] font-bold",
-                            r.severity.includes('Critical') || r.severity.includes('Major') ? "bg-rose-50 text-rose-600 border border-rose-100" : "bg-amber-50 text-amber-600 border border-amber-100"
+                            "px-2 py-0.5 rounded text-xs font-medium",
+                            r.severity.includes('Critical') || r.severity.includes('Major') ? "bg-rose-500/10 text-rose-500 border border-rose-500/20" : "bg-amber-500/10 text-amber-500 border border-amber-500/20"
                           )}>{r.severity.split(' ')[0]}</span>
                         </td>
                         <td className="p-4 text-xs text-[var(--color-text-muted)] max-w-xs">{r.mitigation}</td>
                         <td className="p-4">
                           <span className={clsx(
-                            "px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider",
-                            r.status === 'Closed' || r.status === 'Mitigated' ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-amber-50 text-amber-600 border border-amber-100"
+                            "px-2 py-0.5 rounded text-xs font-medium",
+                            r.status === 'Closed' || r.status === 'Mitigated' ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" : "bg-amber-500/10 text-amber-500 border border-amber-500/20"
                           )}>{r.status}</span>
                         </td>
                         <td className="p-4 text-right">
                           <div className="flex gap-2 justify-end">
-                            <button onClick={() => handleOpenRaidModal(r)} className="p-1 text-[var(--color-text-faint)] hover:text-indigo-500 transition-colors"><Edit2 size={14} /></button>
+                            <button onClick={() => handleOpenRaidModal(r)} className="p-1 text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] transition-colors"><Edit2 size={14} /></button>
                             <button onClick={() => handleDeleteRaid(r.id)} className="p-1 text-[var(--color-text-faint)] hover:text-red-500 transition-colors"><Trash2 size={14} /></button>
                           </div>
                         </td>
@@ -612,7 +614,7 @@ const RAIDView: React.FC = () => {
             <div className="p-6 overflow-y-auto space-y-4 flex-1 custom-scroll">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">RAID Type</label>
+                  <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">RAID Type</label>
                   <select 
                     className="w-full h-10 px-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500"
                     value={selectedRaid.type}
@@ -625,7 +627,7 @@ const RAIDView: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Owner</label>
+                  <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Owner</label>
                   <select 
                     className="w-full h-10 px-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500"
                     value={selectedRaid.owner}
@@ -637,7 +639,7 @@ const RAIDView: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Title</label>
+                <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Title</label>
                 <input 
                   type="text"
                   className="w-full h-10 px-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500"
@@ -648,7 +650,7 @@ const RAIDView: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Description</label>
+                <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Description</label>
                 <textarea 
                   className="w-full p-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500 min-h-20"
                   value={selectedRaid.desc}
@@ -659,7 +661,7 @@ const RAIDView: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Impact</label>
+                  <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Impact</label>
                   <select 
                     className="w-full h-10 px-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500"
                     value={selectedRaid.impact}
@@ -671,7 +673,7 @@ const RAIDView: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Probability</label>
+                  <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Probability</label>
                   <select 
                     className="w-full h-10 px-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500"
                     value={selectedRaid.probability || 'Medium'}
@@ -687,7 +689,7 @@ const RAIDView: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Severity</label>
+                  <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Severity</label>
                   <select 
                     className="w-full h-10 px-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500"
                     value={selectedRaid.severity}
@@ -700,7 +702,7 @@ const RAIDView: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Due Date</label>
+                  <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Due Date</label>
                   <input 
                     type="date"
                     className="w-full h-10 px-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500"
@@ -712,7 +714,7 @@ const RAIDView: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Status</label>
+                <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Status</label>
                 <select 
                   className="w-full h-10 px-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500"
                   value={selectedRaid.status}
@@ -727,7 +729,7 @@ const RAIDView: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Mitigation / Resolution Plan</label>
+                <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Mitigation / Resolution Plan</label>
                 <textarea 
                   className="w-full p-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500 min-h-20"
                   value={selectedRaid.mitigation}
@@ -755,7 +757,7 @@ const RAIDView: React.FC = () => {
             <div className="p-6 overflow-y-auto space-y-4 flex-1 custom-scroll">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Proposed By</label>
+                  <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Proposed By</label>
                   <select 
                     className="w-full h-10 px-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500"
                     value={selectedDecision.proposedBy}
@@ -765,7 +767,7 @@ const RAIDView: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Approver / Sign-off</label>
+                  <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Approver / Sign-off</label>
                   <select 
                     className="w-full h-10 px-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500"
                     value={selectedDecision.approver}
@@ -777,7 +779,7 @@ const RAIDView: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Title</label>
+                <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Title</label>
                 <input 
                   type="text"
                   className="w-full h-10 px-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500"
@@ -788,7 +790,7 @@ const RAIDView: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Description</label>
+                <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Description</label>
                 <textarea 
                   className="w-full p-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500 min-h-20"
                   value={selectedDecision.desc}
@@ -799,7 +801,7 @@ const RAIDView: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Decision Status</label>
+                  <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Decision Status</label>
                   <select 
                     className="w-full h-10 px-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500"
                     value={selectedDecision.status}
@@ -812,7 +814,7 @@ const RAIDView: React.FC = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Target Date</label>
+                  <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Target Date</label>
                   <input 
                     type="date"
                     className="w-full h-10 px-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500"
@@ -824,7 +826,7 @@ const RAIDView: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Rationale</label>
+                <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Rationale</label>
                 <textarea 
                   className="w-full p-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500 min-h-20"
                   value={selectedDecision.rationale}
@@ -834,7 +836,7 @@ const RAIDView: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-[var(--color-text-faint)] mb-2 block">Alternatives Considered</label>
+                <label className="text-xs font-medium text-[var(--color-text-muted)] mb-1.5 block">Alternatives Considered</label>
                 <textarea 
                   className="w-full p-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-bold outline-none focus:border-indigo-500 min-h-20"
                   value={selectedDecision.alternatives}

@@ -1,3 +1,4 @@
+/* Hallmark · genre modern-minimal · posture restrained · shape app screen · nav sticky · footer minimal */
 @import url('https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Inter:wght@100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Orbitron:wght@400..900&family=Outfit:wght@100..900&family=Paytone+One&family=Rajdhani:wght@300;400;500;600;700&family=Satoshi:wght@300;400;500;700;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&display=swap');
@@ -343,10 +344,7 @@
   content: "";
   position: fixed;
   inset: 0;
-  background: 
-    radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 40%),
-    radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 40%),
-    radial-gradient(circle at 50% 50%, rgba(244, 114, 182, 0.1) 0%, transparent 50%);
+  background: radial-gradient(circle at 50% 20%, var(--color-primary-highlight-hex) 0%, transparent 70%);
   pointer-events: none;
   z-index: -1;
 }
@@ -522,10 +520,7 @@
   content: "";
   position: fixed;
   inset: 0;
-  background: 
-    radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.2) 0%, transparent 50%),
-    radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.2) 0%, transparent 50%),
-    radial-gradient(circle at 50% 50%, rgba(244, 114, 182, 0.15) 0%, transparent 60%);
+  background: radial-gradient(circle at 50% 20%, var(--color-primary-highlight-hex) 0%, transparent 70%);
   pointer-events: none;
   z-index: -1;
 }
@@ -558,7 +553,7 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid var(--color-divider);
   border-radius: 20px;
   box-shadow: var(--shadow-sm);
-  transition: all 0.4s var(--tr-smooth);
+  transition: transform 0.2s var(--tr-smooth), border-color 0.2s var(--tr-smooth), box-shadow 0.2s var(--tr-smooth);
 }
 
 .card:hover {
@@ -600,51 +595,47 @@ h1, h2, h3, h4, h5, h6 {
 [data-theme="brutalist"] input,
 [data-theme="brutalist"] select,
 [data-theme="brutalist"] textarea {
-  border: 2px solid #ffffff !important;
-  box-shadow: 4px 4px 0px #ffffff !important;
+  border: 2px solid var(--color-border) !important;
+  box-shadow: var(--shadow-sm) !important;
   background-color: var(--color-surface) !important;
 }
 
 [data-theme="brutalist"] button:not(.btn-ghost):not(.p-1):not(.no-brutalist) {
-  border: 2px solid #ffffff !important;
-  box-shadow: 4px 4px 0px #ffffff !important;
+  border: 2px solid var(--color-border) !important;
+  box-shadow: var(--shadow-sm) !important;
 }
 
 [data-theme="brutalist"] button:not(.btn-ghost):not(.p-1):not(.no-brutalist):hover {
   transform: translate(-2px, -2px) !important;
-  box-shadow: 6px 6px 0px var(--color-primary-hex) !important;
+  box-shadow: var(--shadow-md) !important;
 }
 
 [data-theme="brutalist"] button:not(.btn-ghost):not(.p-1):not(.no-brutalist):active {
   transform: translate(2px, 2px) !important;
-  box-shadow: 2px 2px 0px #ffffff !important;
+  box-shadow: var(--shadow-sm) !important;
 }
 
 [data-theme="brutalist"] .badge,
 [data-theme="brutalist"] [class*="badge"] {
-  border: 2px solid #ffffff !important;
+  border: 2px solid var(--color-border) !important;
   border-radius: 0px !important;
-  font-weight: 800 !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.05em !important;
+  font-weight: 700 !important;
 }
 
 [data-theme="brutalist"] header {
-  border-bottom: 2px solid #ffffff !important;
+  border-bottom: 2px solid var(--color-border) !important;
 }
 
 [data-theme="brutalist"] aside,
 [data-theme="brutalist"] .sidebar-main {
-  border-right: 2px solid #ffffff !important;
+  border-right: 2px solid var(--color-border) !important;
 }
 
 [data-theme="brutalist"] h1,
 [data-theme="brutalist"] h2,
 [data-theme="brutalist"] h3 {
-  font-family: 'Syne', sans-serif !important;
+  font-family: var(--color-display-font) !important;
   font-weight: 800 !important;
-  text-transform: uppercase !important;
-  letter-spacing: -0.02em !important;
 }
 
 /* --- Pulse Theme Overrides --- */
@@ -656,7 +647,7 @@ h1, h2, h3, h4, h5, h6 {
   content: "";
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(circle, rgba(228, 228, 231, 0.03) 1px, transparent 1px);
+  background-image: radial-gradient(circle, var(--color-text-faint) 1px, transparent 1px);
   background-size: 32px 32px;
   pointer-events: none;
   z-index: 0;
@@ -665,17 +656,14 @@ h1, h2, h3, h4, h5, h6 {
 [data-theme="pulse"] h1,
 [data-theme="pulse"] h2,
 [data-theme="pulse"] h3 {
-  font-family: 'Syne', sans-serif !important;
+  font-family: var(--color-display-font) !important;
   font-weight: 800 !important;
-  text-transform: uppercase !important;
-  letter-spacing: -0.04em !important;
 }
 
 [data-theme="pulse"] .card,
 [data-theme="pulse"] .glass {
-  background: rgba(18, 18, 21, 0.8) !important;
-  backdrop-filter: blur(10px) !important;
-  border: 1px solid rgba(228, 228, 231, 0.1) !important;
+  background: var(--color-surface) !important;
+  border: 1px solid var(--color-border) !important;
   border-radius: 4px !important;
 }
 
