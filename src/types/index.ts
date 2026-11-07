@@ -197,6 +197,7 @@ export interface ProjectState {
   decisions: Decision[];
   baselines: Baseline[];
   releases: Release[];
+  retros?: RetroItem[];
   log: LogEntry[];
   features: Feature[];
   dropdowns: Record<string, string[]>;
@@ -297,6 +298,19 @@ export interface Release {
   startDate?: string;
   date: string;
   status: 'Planned' | 'Active' | 'Released';
+}
+
+export interface RetroItem {
+  id: string;
+  category: 'went_well' | 'needs_improvement' | 'action_item' | 'kudos';
+  title: string;
+  desc?: string;
+  author: string;
+  votes: number;
+  assignedTo?: string;
+  status?: 'Open' | 'In Progress' | 'Resolved';
+  targetSprint?: string;
+  createdAt: string;
 }
 
 export interface ProjectSettings {

@@ -12,6 +12,77 @@ export const getDefaultState = (): ProjectState => ({
   decisions: [],
   baselines: [],
   releases: [],
+  retros: [
+    {
+      id: 'RETRO-01',
+      category: 'went_well',
+      title: 'Automated CI/CD cut deployment time by 45%',
+      desc: 'The GitHub Actions pipeline optimization eliminated manual staging handoffs.',
+      author: 'Sarah Chen',
+      votes: 7,
+      createdAt: '2026-10-20'
+    },
+    {
+      id: 'RETRO-02',
+      category: 'went_well',
+      title: 'Zero regressions on ALM Release v1.1.0',
+      desc: 'Smoke test coverage caught 3 edge cases prior to staging promotion.',
+      author: 'Marcus Vance',
+      votes: 5,
+      createdAt: '2026-10-21'
+    },
+    {
+      id: 'RETRO-03',
+      category: 'needs_improvement',
+      title: 'API Gateway specs changed mid-sprint',
+      desc: 'Lack of frozen contracts delayed front-end mock integration by 2 full days.',
+      author: 'Elena Rostova',
+      votes: 9,
+      createdAt: '2026-10-22'
+    },
+    {
+      id: 'RETRO-04',
+      category: 'needs_improvement',
+      title: 'Flaky E2E test in payment sandbox',
+      desc: 'Intermittent third-party webhook timeout caused false negative builds.',
+      author: 'Devon Miles',
+      votes: 6,
+      createdAt: '2026-10-23'
+    },
+    {
+      id: 'RETRO-05',
+      category: 'action_item',
+      title: 'Introduce OpenAPI spec freeze 48h before sprint kick-off',
+      desc: 'Architecture lead must sign off contract before frontend tasks are assigned.',
+      author: 'David Kim',
+      assignedTo: 'Marcus Vance',
+      status: 'In Progress',
+      targetSprint: 'Sprint 24',
+      votes: 11,
+      createdAt: '2026-10-24'
+    },
+    {
+      id: 'RETRO-06',
+      category: 'action_item',
+      title: 'Implement synthetic test retries on webhook mock',
+      desc: 'Add deterministic mock server to avoid external sandbox network flakiness.',
+      author: 'Sarah Chen',
+      assignedTo: 'Devon Miles',
+      status: 'Open',
+      targetSprint: 'Sprint 24',
+      votes: 8,
+      createdAt: '2026-10-24'
+    },
+    {
+      id: 'RETRO-07',
+      category: 'kudos',
+      title: 'Kudos to Elena for squashing the S1 Blocker in record time!',
+      desc: 'Stayed late to patch the authorization header edge-case before release cut.',
+      author: 'Alex Morgan',
+      votes: 12,
+      createdAt: '2026-10-25'
+    }
+  ],
   log: [],
   features: [
     { name: 'Core Infrastructure', screens: ['Database Schema', 'Core Services', 'API Gateway'], desc: 'Fundamental system services and architecture.' },

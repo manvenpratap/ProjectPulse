@@ -69,6 +69,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
           members: (parsed.members && parsed.members.length > 0) ? parsed.members : (sample.members || []),
           deliveries: (parsed.deliveries && parsed.deliveries.length > 0) ? parsed.deliveries : (sample.deliveries || []),
           releases: (parsed.releases && parsed.releases.length > 0) ? parsed.releases : (sample.releases || []),
+          retros: (parsed.retros && parsed.retros.length > 0) ? parsed.retros : (defaultState.retros || []),
           features: parsed.features || defaultState.features || [],
           dropdowns: { ...defaultState.dropdowns, ...(parsed.dropdowns || {}) },
           customFields: parsed.customFields || defaultState.customFields || [],

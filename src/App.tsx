@@ -22,6 +22,7 @@ import DeliveriesView from './components/deliveries/DeliveriesView';
 import ReleaseRoadmap from './components/architect/ReleaseRoadmap';
 import RAIDView from './components/risks/RAIDView';
 import SchedulerView from './components/scheduler/SchedulerView';
+import SprintRetroView from './components/retro/SprintRetroView';
 import { motion, AnimatePresence } from 'motion/react';
 
 const MainApp: React.FC = () => {
@@ -58,6 +59,7 @@ const MainApp: React.FC = () => {
       case 'dropdowns': return <RegistryView />;
       case 'steps': return <StepTemplates />;
       case 'reports': return <ReportView />;
+      case 'retro': return <SprintRetroView />;
       case 'risks': return <RAIDView />;
       case 'scheduler': return <SchedulerView />;
       case 'settings': return <SettingsView />;

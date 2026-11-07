@@ -41,3 +41,4 @@ Never hardcode raw palette colors (e.g. `text-slate-800`, `bg-indigo-600`) in sh
 - **Cursor**: `cursor-pointer` on all clickable triggers, cards, and toggles
 - **Keyboard Navigation**: Focus rings `outline: 2px solid var(--color-primary-hex)` (WCAG 2.4.7 compliant)
 - **Reduced Motion**: Respects `@media (prefers-reduced-motion: reduce)` across Framer Motion and CSS animations
+

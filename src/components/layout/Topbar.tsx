@@ -23,7 +23,8 @@ import {
   Blocks,
   Component as ComponentIcon,
   Menu,
-  Flag
+  Flag,
+  Smile
 } from 'lucide-react';
 import clsx from 'clsx';
 import ThemeFlyout from './ThemeFlyout';
@@ -221,6 +222,13 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
                   >
                     <Flag size={16} className="text-indigo-500" />
                     <span>Release Roadmap...</span>
+                  </button>
+                  <button 
+                    onClick={() => { setIsActionsOpen(false); setView('retro'); }}
+                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors"
+                  >
+                    <Smile size={16} className="text-emerald-500" />
+                    <span>Sprint Retrospective...</span>
                   </button>
                   <button 
                     onClick={() => { setIsActionsOpen(false); setView('scaffolder'); }}

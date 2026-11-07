@@ -22,7 +22,8 @@ import {
   ShieldAlert, 
   Settings as SettingsIcon,
   Package,
-  Flag
+  Flag,
+  Smile
 } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -49,6 +50,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
     { id: 'scheduler', label: 'Intelligent Scheduler', icon: CalendarDays },
     { id: 'risks', label: 'RAID Register', icon: ShieldAlert },
     { id: 'reports', label: 'Pulse Reports', icon: FileText },
+    { id: 'retro', label: 'Sprint Retrospective', icon: Smile, badge: state.retros?.length },
     { id: 'defects', label: 'Defect Workshop', icon: Bug },
     { id: 'scaffolder', label: 'Project Architect', icon: Blocks },
     { id: 'fields', label: 'Field Architect', icon: Database },
