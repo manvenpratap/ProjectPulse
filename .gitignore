@@ -4,5 +4,7 @@ dist/
 coverage/
 .DS_Store
 *.log
+graphify-out/.rebuild.lock
+graphify-out/cache/
 .env*
 !.env.example
