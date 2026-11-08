@@ -13,7 +13,6 @@ import {
   Clock, 
   HelpCircle, 
   Users, 
-  Sparkles, 
   Layers,
   Activity,
   Milestone,
@@ -27,7 +26,8 @@ import {
   Zap,
   RotateCcw,
   FileSpreadsheet,
-  Command
+  Command,
+  Sliders
 } from 'lucide-react';
 import clsx from 'clsx';
 import Button from '../shared/Button';
@@ -536,9 +536,9 @@ const OverviewView: React.FC = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[var(--color-divider)]">
               <div>
                 <div className="flex items-center gap-2 mb-1.5">
-                  <Sparkles className="text-[var(--color-primary-hex)]" size={15} />
+                  <Sliders className="text-[var(--color-primary-hex)]" size={15} />
                   <span className="text-xs font-semibold text-[var(--color-primary-hex)]">
-                    Copilot Scenario Modeler
+                    Scenario Modeler
                   </span>
                 </div>
                 <h3 className="font-sans text-lg font-bold text-[var(--color-text)]">Strategic What-If Sandbox</h3>
@@ -682,7 +682,7 @@ const OverviewView: React.FC = () => {
                         </>
                       ) : (
                         <>
-                          <Sparkles size={14} /> <span>Commit Simulation</span>
+                          <Sliders size={14} /> <span>Commit Simulation</span>
                         </>
                       )}
                     </button>

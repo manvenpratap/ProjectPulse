@@ -18,7 +18,6 @@ import {
   RefreshCw,
   ExternalLink,
   ChevronRight,
-  Sparkles,
   ArrowRight,
   X
 } from 'lucide-react';

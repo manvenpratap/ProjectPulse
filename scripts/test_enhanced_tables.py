@@ -12,7 +12,7 @@ def test_enhanced_tables():
         time.sleep(1)
 
         # Handle SetupView if project not yet initialized in browser session
-        sample_btn = page.locator('button:has-text("Load Sample: Web")')
+        sample_btn = page.locator('button:has-text("Load Demo Database"), button:has-text("Load Sample: Web")')
         if sample_btn.count() > 0 and sample_btn.first.is_visible():
             print("SetupView detected - loading sample Web workspace...")
             sample_btn.first.click()

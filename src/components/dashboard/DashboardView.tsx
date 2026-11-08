@@ -31,7 +31,6 @@ import {
   DollarSign,
   Compass,
   Gauge,
-  Sparkles,
   RefreshCw,
   AlertTriangle
 } from 'lucide-react';
@@ -430,7 +429,7 @@ export const DashboardView: React.FC = () => {
         {/* TOP TAB CONTROLS (4 High-Agency Modes) */}
         <div className="flex border-b border-[var(--color-divider)] gap-4 sm:gap-8 overflow-x-auto custom-scroll pb-px">
           {[
-            { id: 'predictive', label: 'Predictive & AI Telemetry', icon: Sparkles },
+            { id: 'predictive', label: 'Monte Carlo & Predictive Telemetry', icon: TrendingUp },
             { id: 'flow', label: 'Delivery Flow & Velocity', icon: Flame },
             { id: 'evm', label: 'EVM & Financial Cockpit', icon: DollarSign },
             { id: 'quality', label: 'Quality & Governance', icon: ShieldCheck },
@@ -906,7 +905,7 @@ export const DashboardView: React.FC = () => {
                   )}>
                     <div className="flex justify-between items-center text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
                       <span>Q1: TARGET</span>
-                      <Sparkles size={12} />
+                      <TrendingUp size={12} />
                     </div>
                     <div>
                       <div className="text-xs font-bold text-[var(--color-text)]">Ahead & Under Budget</div>

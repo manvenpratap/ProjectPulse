@@ -18,7 +18,6 @@ import {
   Key,
   Shield,
   Layers,
-  Sparkles,
   Info
 } from 'lucide-react';
 import clsx from 'clsx';

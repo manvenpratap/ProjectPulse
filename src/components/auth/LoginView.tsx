@@ -6,7 +6,7 @@ import {
   ArrowRight, 
   Lock, 
   Mail, 
-  Sparkles, 
+  UserCheck, 
   User, 
   CheckCircle2, 
   AlertCircle 
@@ -54,11 +54,8 @@ export const LoginView: React.FC = () => {
 
   return (
     <div className="min-h-[100dvh] flex items-center justify-center p-4 bg-[var(--color-bg)] relative overflow-hidden select-none">
-      {/* Background Ambient Glow */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[var(--color-primary-hex)]/8 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-[350px] h-[350px] bg-indigo-500/5 rounded-full blur-3xl" />
-      </div>
+      {/* Clean architectural hairline grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--color-divider)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-divider)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30 pointer-events-none" />
 
       <motion.div 
         initial={{ opacity: 0, y: 16, scale: 0.98 }}
@@ -66,17 +63,17 @@ export const LoginView: React.FC = () => {
         transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
         className="w-full max-w-[440px] z-10"
       >
-        <div className="card p-6 sm:p-8 bg-[var(--color-surface)]/90 backdrop-blur-2xl border border-[var(--color-divider)] shadow-2xl rounded-3xl space-y-6">
+        <div className="card p-6 sm:p-8 bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xs rounded-2xl space-y-6">
           {/* Header */}
           <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[var(--color-primary-hex)] text-white shadow-md mx-auto mb-1">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--color-primary-hex)] text-white shadow-xs mx-auto mb-1">
               <Activity size={24} strokeWidth={2.4} />
             </div>
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--color-text)]">
               ProjectPulse 2.0
             </h1>
             <p className="text-xs text-[var(--color-text-muted)] font-medium">
-              Enterprise ALM & Strategic Delivery Engine
+              Enterprise Engineering Workstation & Delivery Cockpit
             </p>
           </div>
 
@@ -84,8 +81,8 @@ export const LoginView: React.FC = () => {
           <div className="space-y-2 pt-1">
             <div className="flex items-center justify-between text-[11px] font-semibold text-[var(--color-text-muted)] px-1">
               <span className="flex items-center gap-1.5">
-                <Sparkles size={12} className="text-[var(--color-primary-hex)]" />
-                Quick Demo Personas
+                <UserCheck size={13} className="text-[var(--color-primary-hex)]" />
+                Select Persona Session
               </span>
               <span className="text-[10px] text-[var(--color-text-faint)]">1-Click Switch</span>
             </div>

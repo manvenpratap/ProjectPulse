@@ -5,7 +5,6 @@ import {
   ShieldCheck, 
   LogOut, 
   Key, 
-  Sparkles, 
   Check, 
   ChevronRight,
   ShieldAlert,

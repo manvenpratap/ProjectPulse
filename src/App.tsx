@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './store/AuthContext';
 import { getAllNavItems } from './config/navigation';
 import Sidebar from './components/layout/Sidebar';
 import Topbar from './components/layout/Topbar';
+import OfflineBanner from './components/layout/OfflineBanner';
 import MobileBottomNav from './components/layout/MobileBottomNav';
 import LoginView from './components/auth/LoginView';
 import AccessDenied from './components/auth/AccessDenied';
@@ -124,6 +125,7 @@ const MainApp: React.FC = () => {
       </AnimatePresence>
       
       <div className="flex flex-col flex-1 min-w-0 h-full relative">
+        <OfflineBanner />
         <Topbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
         
         <main className="flex-1 overflow-hidden relative pb-[calc(56px+env(safe-area-inset-bottom,0px))] lg:pb-0">

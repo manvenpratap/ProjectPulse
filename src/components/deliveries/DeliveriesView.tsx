@@ -32,7 +32,6 @@ import {
   Activity,
   Layers2,
   FileCode,
-  Sparkles,
   Server,
   Monitor,
   GitBranch,
@@ -925,11 +924,42 @@ export const DeliveriesView: React.FC = () => {
 
                   {filteredDeliveries.length === 0 && (
                     <tr>
-                      <td colSpan={12} className="py-12 text-center text-[var(--color-text-muted)]">
-                        <Package size={32} className="mx-auto mb-2 opacity-40" />
-                        <div className="text-sm font-semibold">No delivery packages match your filter</div>
-                        <div className="text-xs text-[var(--color-text-faint)] mt-1">
-                          Try adjusting search keywords or clearing active environment filters.
+                      <td colSpan={12} className="py-12 text-center">
+                        <div className="max-w-md mx-auto p-6 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface-2)] space-y-3">
+                          <Package size={32} className="mx-auto text-[var(--color-text-muted)] opacity-60" />
+                          <div className="text-sm font-bold text-[var(--color-text)]">
+                            {deliveries.length === 0 ? "No delivery packages logged yet" : "No packages match active filters"}
+                          </div>
+                          <div className="text-xs text-[var(--color-text-muted)] leading-relaxed">
+                            {deliveries.length === 0 
+                              ? "The ALM Release Workstation tracks deployment packages, ALM defect tickets, and environment pipelines."
+                              : "Adjust search query or reset environment, release, and status filters."}
+                          </div>
+                          <div className="flex items-center justify-center gap-2 pt-1">
+                            {deliveries.length > 0 && (
+                              <button
+                                onClick={() => {
+                                  setFilterStatus('all');
+                                  setFilterEnv('all');
+                                  setFilterVersion('all');
+                                  setFilterSmoke('all');
+                                  setSearchQuery('');
+                                }}
+                                className="h-8 px-3.5 bg-[var(--color-surface)] hover:bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-lg text-xs font-semibold text-[var(--color-text)] transition-colors cursor-pointer"
+                              >
+                                Clear All Filters
+                              </button>
+                            )}
+                            <button
+                              onClick={() => {
+                                setEditingDelivery(null);
+                                setIsEditModalOpen(true);
+                              }}
+                              className="h-8 px-3.5 bg-[var(--color-primary-hex)] hover:opacity-90 text-[var(--color-primary-text)] rounded-lg text-xs font-bold transition-opacity cursor-pointer shadow-xs"
+                            >
+                              Create Package
+                            </button>
+                          </div>
                         </div>
                       </td>
                     </tr>
@@ -1253,11 +1283,64 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
   const [notes, setNotes] = useState(delivery?.notes || '');
   const [selectedTasks, setSelectedTasks] = useState<string[]>(delivery?.linkedTasks || []);
   const [selectedScreens, setSelectedScreens] = useState<string[]>(delivery?.linkedScreens || []);
+  const [hasDraft, setHasDraft] = useState(false);
+
+  useEffect(() => {
+    if (!delivery && isOpen) {
+      try {
+        const saved = localStorage.getItem('pp_draft_delivery');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed.name && !name) {
+            setHasDraft(true);
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [delivery, isOpen]);
+
+  useEffect(() => {
+    if (!delivery && isOpen && (name || almId || pdn)) {
+      localStorage.setItem('pp_draft_delivery', JSON.stringify({
+        name, almId, pdn, module, moduleType, category, releaseVersion, environment, status, approver
+      }));
+    }
+  }, [name, almId, pdn, module, moduleType, category, releaseVersion, environment, status, approver, delivery, isOpen]);
+
+  const restoreDraft = () => {
+    try {
+      const saved = localStorage.getItem('pp_draft_delivery');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.name) setName(parsed.name);
+        if (parsed.almId) setAlmId(parsed.almId);
+        if (parsed.pdn) setPdn(parsed.pdn);
+        if (parsed.module) setModule(parsed.module);
+        if (parsed.moduleType) setModuleType(parsed.moduleType);
+        if (parsed.category) setCategory(parsed.category);
+        if (parsed.releaseVersion) setReleaseVersion(parsed.releaseVersion);
+        if (parsed.environment) setEnvironment(parsed.environment);
+        if (parsed.status) setStatus(parsed.status);
+        if (parsed.approver) setApprover(parsed.approver);
+      }
+    } catch (e) {
+      // ignore
+    }
+    setHasDraft(false);
+  };
+
+  const discardDraft = () => {
+    localStorage.removeItem('pp_draft_delivery');
+    setHasDraft(false);
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
 
+    localStorage.removeItem('pp_draft_delivery');
     onSave({
       name,
       almId: almId.trim() || undefined,
@@ -1310,6 +1393,27 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
+        {hasDraft && (
+          <div className="flex items-center justify-between p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-medium">
+            <span>Unfinished package draft found from previous session.</span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={restoreDraft}
+                className="underline hover:no-underline font-semibold text-amber-700 dark:text-amber-300 cursor-pointer"
+              >
+                Restore Draft
+              </button>
+              <button
+                type="button"
+                onClick={discardDraft}
+                className="text-amber-600/70 hover:text-amber-800 text-[11px] cursor-pointer"
+              >
+                Discard
+              </button>
+            </div>
+          </div>
+        )}
         {/* Row 1: ALM ID & PDN */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>

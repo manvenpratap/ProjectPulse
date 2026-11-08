@@ -6,6 +6,8 @@ async def run_test():
         browser = await p.chromium.launch(headless=True)
         context = await browser.new_context(viewport={"width": 1440, "height": 900})
         page = await context.new_page()
+        page.on("console", lambda msg: print("BROWSER LOG:", msg.text))
+        page.on("pageerror", lambda err: print("BROWSER ERROR:", err))
 
         # Step 1: Open app with empty localStorage
         print("[1] Opening app with fresh clean state...")
@@ -17,7 +19,7 @@ async def run_test():
         # Should be on SetupView because state.name is empty
         setup_header = await page.text_content("h1")
         print("Setup View Header:", setup_header.replace("\n", " ").strip())
-        assert "Track. Log. Report." in setup_header, f"Expected SetupView, got: {setup_header}"
+        assert "Engineering Delivery Cockpit" in setup_header or "ProjectPulse" in setup_header, f"Expected SetupView, got: {setup_header}"
 
         # Verify no sample data is preloaded
         create_btn = page.locator("button:has-text('Create Blank Project')")

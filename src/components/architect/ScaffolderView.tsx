@@ -16,7 +16,6 @@ import {
   CheckCircle2,
   Database,
   Upload,
-  Sparkles,
   X,
   Check
 } from 'lucide-react';
@@ -487,7 +486,7 @@ const ScaffolderView: React.FC = () => {
                         className="text-left p-3 rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface-2)] hover:border-indigo-500/40 hover:bg-indigo-500/5 transition-all cursor-pointer group"
                       >
                         <div className="flex items-center gap-1.5 font-bold text-xs text-[var(--color-text)] group-hover:text-indigo-600 transition-colors">
-                          <Sparkles size={13} className="text-indigo-500" />
+                          <Layers size={13} className="text-indigo-500" />
                           <span className="truncate">{bp.name}</span>
                         </div>
                         <p className="text-[10px] text-[var(--color-text-muted)] mt-1 line-clamp-2 leading-relaxed">

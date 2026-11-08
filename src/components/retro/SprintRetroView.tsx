@@ -9,7 +9,6 @@ import {
   CheckCircle2, 
   AlertTriangle, 
   Heart, 
-  Sparkles, 
   Filter, 
   ArrowRight, 
   Clock, 

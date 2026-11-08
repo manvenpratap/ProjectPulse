@@ -18,7 +18,7 @@ import {
   ChevronLeft,
   Info,
   X,
-  Sparkles,
+  Cpu,
   Clock,
   Briefcase,
   AlertCircle,
@@ -520,7 +520,7 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
         {/* Resource Leveling Intelligent Recommendation Engine */}
         <div className="bg-[var(--color-surface)] p-4 rounded-2xl border border-[var(--color-divider)] space-y-2.5 shadow-xs">
           <h3 className="text-xs font-bold text-[var(--color-text)] flex items-center gap-1.5">
-            <Sparkles size={14} className="text-[var(--color-primary-hex)]" />
+            <Cpu size={14} className="text-[var(--color-primary-hex)]" />
             Allocation Advisory
           </h3>
           
@@ -614,8 +614,8 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
               )}
               title="Automatically reassign non-critical tasks from overloaded engineers to available peers"
             >
-              <Sparkles size={14} /> 
-              <span>AI Auto-Balance</span>
+              <Cpu size={14} /> 
+              <span>Balance Workload</span>
               {conflicts.length > 0 && (
                 <span className="ml-0.5 px-1.5 py-0.2 rounded-full bg-white/20 text-white font-mono text-[10px] font-bold">
                   {conflicts.length}
@@ -1044,8 +1044,8 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                   {/* Smart Suggestions & Copilot */}
                   <div className="p-5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs space-y-3">
                     <h2 className="font-bold text-sm flex items-center gap-2 text-[var(--color-text)]">
-                      <Sparkles className="text-[var(--color-primary-hex)]" size={16} />
-                      Scheduler Copilot Recommendations
+                      <Cpu className="text-[var(--color-primary-hex)]" size={16} />
+                      Leveling Heuristic Recommendations
                     </h2>
 
                     <div className="space-y-2.5">
@@ -1061,7 +1061,7 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                       onClick={handleAutoBalance}
                       className="w-full mt-2 h-9 px-3.5 bg-[var(--color-primary-hex)] hover:opacity-95 text-[var(--color-primary-text)] rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-opacity shadow-sm cursor-pointer active:scale-95"
                     >
-                      <Sparkles size={14} /> Auto-Balance Tasks
+                      <Cpu size={14} /> Balance Workload (Heuristic)
                     </button>
                   </div>
 
@@ -1386,7 +1386,7 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
           <div className="lg:hidden space-y-4 pt-2">
             <div className="border-b border-[var(--color-divider)] pb-2 flex items-center justify-between">
               <h3 className="font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
-                <Sparkles size={15} className="text-[var(--color-primary-hex)]" />
+                <TrendingUp size={15} className="text-[var(--color-primary-hex)]" />
                 Capacity Alerts & Leveling Advisory
               </h3>
             </div>

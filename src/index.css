@@ -46,15 +46,15 @@
 }
 
 :root {
-  --tr-base: 0.2s ease;
-  --tr-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  --tr-spring: 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  --tr-smooth: 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  --tr-base: 0.15s ease;
+  --tr-slow: 0.2s cubic-bezier(0.19, 1, 0.22, 1);
+  --tr-spring: 0.2s cubic-bezier(0.19, 1, 0.22, 1);
+  --tr-smooth: 0.18s cubic-bezier(0.23, 1, 0.32, 1);
   --apple-spring-default: cubic-bezier(0.23, 1, 0.32, 1);
   --apple-spring-snappy: cubic-bezier(0.19, 1, 0.22, 1);
-  --apple-spring-bouncy: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  --apple-shadow-card: 0 4px 24px -2px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
-  --apple-shadow-elevated: 0 16px 40px -8px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
+  --apple-spring-bouncy: cubic-bezier(0.19, 1, 0.22, 1);
+  --apple-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+  --apple-shadow-elevated: 0 4px 16px -2px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
 /* 1. NEXUS (Default) — Warm, refined SaaS */
@@ -1061,6 +1061,7 @@ html[data-color-mode="dark"][data-theme="paper-editorial"] {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+    transform: none !important;
   }
 }
 

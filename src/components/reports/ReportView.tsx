@@ -16,8 +16,7 @@ import {
   Package,
   ShieldAlert,
   Users,
-  Layers,
-  Sparkles
+  Layers
 } from 'lucide-react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';

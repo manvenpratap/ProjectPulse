@@ -6,7 +6,6 @@ import {
   Check, 
   ExternalLink, 
   X, 
-  Sparkles, 
   Sliders, 
   Calendar, 
   FileText,
@@ -529,7 +528,7 @@ export const CxoEmailModal: React.FC<CxoEmailModalProps> = ({ isOpen, onClose })
 
             <div className="p-3 rounded-xl bg-indigo-500/5 border border-indigo-500/15 text-[11px] text-[var(--color-text-muted)] space-y-1">
               <div className="flex items-center gap-1.5 font-bold text-indigo-600 dark:text-indigo-400">
-                <Sparkles size={13} />
+                <CheckCircle2 size={13} />
                 <span>Format Compatibility</span>
               </div>
               <p>Rich HTML incorporates inline CSS compatible with Outlook 2016+, Apple Mail, Gmail web & mobile.</p>

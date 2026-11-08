@@ -52,8 +52,26 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isAccessManagerOpen, setIsAccessManagerOpen] = useState(false);
   const [isCxoEmailOpen, setIsCxoEmailOpen] = useState(false);
+  const [isSlowNetwork, setIsSlowNetwork] = useState(false);
+  const [processingLatency, setProcessingLatency] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
+    if (conn) {
+      const updateNetworkStatus = () => {
+        if (['slow-2g', '2g', '3g'].includes(conn.effectiveType) || conn.saveData) {
+          setIsSlowNetwork(true);
+        } else {
+          setIsSlowNetwork(false);
+        }
+      };
+      updateNetworkStatus();
+      conn.addEventListener?.('change', updateNetworkStatus);
+      return () => conn.removeEventListener?.('change', updateNetworkStatus);
+    }
+  }, []);
 
   const smartAlerts = useMemo(() => {
     return computeAlerts(state).filter(a => !a.targetView || hasViewAccess(a.targetView));
@@ -67,11 +85,14 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setProcessingLatency(`Parsing & validating ${file.name} (${Math.round(file.size / 1024)} KB)...`);
     try {
       const importedData = await importProjectExcel(file);
       updateProject(importedData);
+      setProcessingLatency(null);
       alert('Project data imported successfully from Excel.');
     } catch (err: any) {
+      setProcessingLatency(null);
       alert('Failed to import Excel: ' + err.message);
     }
     // Reset file input so same file can be imported again if needed
@@ -316,6 +337,20 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
             {getHealthLabel(health)} {health}%
           </span>
         </div>
+
+        {processingLatency && (
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-medium motion-safe:animate-pulse">
+            <RefreshCw size={12} className="animate-spin" />
+            <span>{processingLatency}</span>
+          </div>
+        )}
+
+        {isSlowNetwork && !processingLatency && (
+          <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-600 dark:text-orange-400 text-[11px] font-medium" title="Connection latency detected. Local offline-first caching active.">
+            <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+            <span>Slow Link Active</span>
+          </div>
+        )}
 
         <div className="flex-1" />
 

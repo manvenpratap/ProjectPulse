@@ -16,6 +16,11 @@ def test_parity_features():
         page.goto("http://localhost:3000")
         page.wait_for_timeout(2000)
 
+        demo_btn = page.locator('button:has-text("Load Demo Database"), button:has-text("Load Sample: Web")')
+        if demo_btn.count() > 0 and demo_btn.first.is_visible():
+            demo_btn.first.click()
+            page.wait_for_timeout(1500)
+
         # -------------------------------------------------------------
         # 1. SMART ALERTS CENTER
         # -------------------------------------------------------------

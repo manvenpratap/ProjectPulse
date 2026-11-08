@@ -11,15 +11,17 @@ import {
   User, 
   Tag, 
   Clock, 
-  Activity,
-  Layers,
-  Flag,
-  Plus,
-  CheckSquare,
-  Trash2,
-  Zap,
-  List,
-  Lock
+  Activity, 
+  Layers, 
+  Flag, 
+  Plus, 
+  CheckSquare, 
+  Trash2, 
+  Zap, 
+  List, 
+  Lock,
+  CheckCircle2,
+  ArrowRight
 } from 'lucide-react';
 import { Subtask, StepTemplate } from '../../types';
 
@@ -30,10 +32,12 @@ interface TaskModalProps {
 }
 
 const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
-  const { state, createTask, updateTask, deleteTask } = useProject();
+  const { state, createTask, updateTask, deleteTask, setView } = useProject();
   const [formData, setFormData] = useState<Partial<Task>>({});
   const [showTemplates, setShowTemplates] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasDraft, setHasDraft] = useState(false);
+  const [createdReceipt, setCreatedReceipt] = useState<{ id: string; name: string } | null>(null);
 
   const blocked = formData.id ? isBlocked(formData as Task, state.tasks) : false;
   const blockedBy = formData.dependsOn?.filter(id => {
@@ -41,11 +45,34 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
     return t && t.status !== TaskStatus.COMPLETED;
   }) || [];
 
+  // Check for saved draft when creating new task (State 8: In-Flight Form Auto-Draft Preservation)
+  useEffect(() => {
+    if (!taskId && isOpen) {
+      const savedDraft = localStorage.getItem('pp_draft_task');
+      if (savedDraft) {
+        try {
+          const parsed = JSON.parse(savedDraft);
+          if (parsed && parsed.name) {
+            setHasDraft(true);
+          }
+        } catch (e) {}
+      }
+    }
+  }, [taskId, isOpen]);
+
+  // Auto-save draft when editing uncommitted new task
+  useEffect(() => {
+    if (!taskId && isOpen && formData.name && formData.name.trim().length > 0) {
+      localStorage.setItem('pp_draft_task', JSON.stringify(formData));
+    }
+  }, [formData, taskId, isOpen]);
+
   useEffect(() => {
     if (taskId) {
       const task = state.tasks.find(t => t.id === taskId);
       if (task) setFormData({ ...task });
     } else {
+      setCreatedReceipt(null);
       setFormData({
         name: '',
         status: TaskStatus.NOT_STARTED,
@@ -67,10 +94,13 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
 
     if (taskId) {
       updateTask(taskId, formData);
+      onClose();
     } else {
-      createTask(formData);
+      const created = createTask(formData);
+      localStorage.removeItem('pp_draft_task');
+      setHasDraft(false);
+      setCreatedReceipt({ id: created.id, name: created.name || 'Untitled Task' });
     }
-    onClose();
   };
 
   const addSubtask = () => {
@@ -137,35 +167,150 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
-      title={taskId ? `Edit Task: ${taskId}` : "New Project Task"}
-      size="lg"
+      onClose={() => {
+        setCreatedReceipt(null);
+        onClose();
+      }}
+      title={createdReceipt ? "Task Created" : taskId ? `Edit Task: ${taskId}` : "New Project Task"}
+      size={createdReceipt ? "md" : "lg"}
       footer={
-        <div className="flex justify-between items-center w-full">
-          {taskId ? (
+        createdReceipt ? (
+          <div className="flex justify-end w-full">
             <Button 
-              variant="ghost" 
+              variant="primary" 
               onClick={() => {
-                if (confirm('Permanently delete this task and all associated subtasks?')) {
-                  deleteTask(taskId);
-                  onClose();
-                }
+                setCreatedReceipt(null);
+                onClose();
               }} 
-              className="text-red-500 hover:bg-red-50"
+              className="rounded-xl px-5"
             >
-              <Trash2 size={16} className="mr-2" /> Delete Task
-            </Button>
-          ) : <div />}
-          <div className="flex gap-2">
-            <Button variant="ghost" onClick={onClose}>Cancel</Button>
-            <Button variant="primary" onClick={handleSave} disabled={!formData.name}>
-              {taskId ? 'Apply Changes' : 'Create Task'}
+              Done
             </Button>
           </div>
-        </div>
+        ) : (
+          <div className="flex justify-between items-center w-full">
+            {taskId ? (
+              <Button 
+                variant="ghost" 
+                onClick={() => {
+                  if (confirm('Permanently delete this task and all associated subtasks?')) {
+                    deleteTask(taskId);
+                    onClose();
+                  }
+                }} 
+                className="text-red-500 hover:bg-red-50"
+              >
+                <Trash2 size={16} className="mr-2" /> Delete Task
+              </Button>
+            ) : <div />}
+            <div className="flex gap-2">
+              <Button variant="ghost" onClick={onClose}>Cancel</Button>
+              <Button variant="primary" onClick={handleSave} disabled={!formData.name}>
+                {taskId ? 'Apply Changes' : 'Create Task'}
+              </Button>
+            </div>
+          </div>
+        )
       }
     >
-      <div className="space-y-6">
+      {createdReceipt ? (
+        <div className="py-4 px-1 flex flex-col items-center text-center space-y-5">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+            <CheckCircle2 size={28} />
+          </div>
+
+          <div className="space-y-1 max-w-md">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-[var(--color-surface-offset)] border border-[var(--color-divider)] font-mono text-xs text-[var(--color-text-muted)]">
+              <span>Task ID:</span>
+              <span className="font-bold text-[var(--color-text)]">{createdReceipt.id}</span>
+            </div>
+            <h3 className="text-base font-bold text-[var(--color-text)] tracking-tight">
+              {createdReceipt.name}
+            </h3>
+            <p className="text-xs text-[var(--color-text-muted)]">
+              Entity successfully registered in workspace state and linked to schedule dependencies.
+            </p>
+          </div>
+
+          <div className="w-full max-w-md border border-[var(--color-divider)] rounded-xl divide-y divide-[var(--color-divider)] bg-[var(--color-surface-2)]/50 text-left text-xs overflow-hidden">
+            <div className="p-2.5 flex justify-between items-center">
+              <span className="text-[var(--color-text-muted)]">Target Module</span>
+              <span className="font-semibold text-[var(--color-text)]">{formData.module || 'General'}</span>
+            </div>
+            <div className="p-2.5 flex justify-between items-center">
+              <span className="text-[var(--color-text-muted)]">Priority</span>
+              <span className="font-semibold text-[var(--color-text)]">{formData.priority || 'Medium'}</span>
+            </div>
+            <div className="p-2.5 flex justify-between items-center">
+              <span className="text-[var(--color-text-muted)]">Initial Status</span>
+              <span className="font-semibold text-[var(--color-text)]">{formData.status || 'Not Started'}</span>
+            </div>
+          </div>
+
+          <div className="w-full max-w-md pt-2 space-y-2">
+            <div className="text-[11px] font-semibold text-[var(--color-text-muted)] tracking-wider uppercase text-left">
+              Recommended Next Actions
+            </div>
+            <div className="grid grid-cols-1 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setCreatedReceipt(null);
+                  onClose();
+                  setView('tasks');
+                }}
+                className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-offset)] text-xs font-semibold text-[var(--color-text)] transition-colors cursor-pointer"
+              >
+                <span className="flex items-center gap-2">
+                  <List size={14} className="text-blue-500" />
+                  View in Task Matrix
+                </span>
+                <ArrowRight size={14} className="text-[var(--color-text-muted)]" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setCreatedReceipt(null);
+                  onClose();
+                  setView('capacity');
+                }}
+                className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-offset)] text-xs font-semibold text-[var(--color-text)] transition-colors cursor-pointer"
+              >
+                <span className="flex items-center gap-2">
+                  <Calendar size={14} className="text-emerald-500" />
+                  Plan in Capacity & Scheduler
+                </span>
+                <ArrowRight size={14} className="text-[var(--color-text-muted)]" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setCreatedReceipt(null);
+                  setFormData({
+                    name: '',
+                    status: TaskStatus.NOT_STARTED,
+                    priority: TaskPriority.MEDIUM,
+                    progress: 0,
+                    moduleType: 'Other',
+                    module: 'General',
+                    subtasks: []
+                  });
+                }}
+                className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-offset)] text-xs font-semibold text-[var(--color-text)] transition-colors cursor-pointer"
+              >
+                <span className="flex items-center gap-2">
+                  <Plus size={14} className="text-purple-500" />
+                  Create Another Task
+                </span>
+                <ArrowRight size={14} className="text-[var(--color-text-muted)]" />
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-6">
         {blocked && (
           <div className="flex items-start gap-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-top-2">
             <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
@@ -185,6 +330,35 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
           <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-[11px] font-bold rounded-xl flex items-center gap-2">
             <span className="w-1.5 h-1.5 bg-red-500 rounded-full motion-safe:animate-pulse" />
             {error}
+          </div>
+        )}
+
+        {hasDraft && !taskId && (
+          <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-between text-xs text-indigo-700 dark:text-indigo-300">
+            <span>Unsaved draft restored from earlier session.</span>
+            <div className="flex items-center gap-2">
+              <button 
+                type="button"
+                onClick={() => {
+                  const d = localStorage.getItem('pp_draft_task');
+                  if (d) setFormData(JSON.parse(d));
+                  setHasDraft(false);
+                }}
+                className="font-bold underline cursor-pointer"
+              >
+                Restore
+              </button>
+              <button 
+                type="button"
+                onClick={() => {
+                  localStorage.removeItem('pp_draft_task');
+                  setHasDraft(false);
+                }}
+                className="text-[11px] opacity-70 hover:opacity-100 cursor-pointer"
+              >
+                Discard
+              </button>
+            </div>
           </div>
         )}
 
@@ -280,6 +454,22 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
               value={formData.dueDate || ''}
               onChange={e => setFormData({ ...formData, dueDate: e.target.value })}
             />
+            {Boolean(formData.startDate && formData.dueDate && formData.dueDate < formData.startDate) && (
+              <div className="flex items-center justify-between text-[11px] text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/50 px-2.5 py-1 rounded-lg mt-1">
+                <span className="font-medium">Precedes start</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const start = new Date(formData.startDate!);
+                    start.setDate(start.getDate() + 5);
+                    setFormData({ ...formData, dueDate: start.toISOString().split('T')[0] });
+                  }}
+                  className="font-semibold underline hover:no-underline text-rose-700 dark:text-rose-300 ml-2 cursor-pointer"
+                >
+                  Snap +5d
+                </button>
+              </div>
+            )}
           </div>
 
           <div className="space-y-1.5">
@@ -293,6 +483,18 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
               value={formData.estDays || 0}
               onChange={e => setFormData({ ...formData, estDays: parseFloat(e.target.value) })}
             />
+            {Number(formData.estDays ?? 0) <= 0 && (
+              <div className="flex items-center justify-between text-[11px] text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 px-2.5 py-1 rounded-lg mt-1">
+                <span className="font-medium">Must be &gt; 0</span>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, estDays: 1 })}
+                  className="font-semibold underline hover:no-underline text-amber-700 dark:text-amber-300 ml-2 cursor-pointer"
+                >
+                  Set 1d
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -469,6 +671,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
           />
         </div>
       </div>
+      )}
     </Modal>
   );
 };

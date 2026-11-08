@@ -25,7 +25,6 @@ import {
   CheckCircle2,
   Clock,
   ShieldAlert,
-  Sparkles,
   Sprout,
   Briefcase,
   ExternalLink,
@@ -1408,7 +1407,7 @@ const TeamView: React.FC = () => {
           {/* Operational Insights Banner */}
           <div className="flex flex-wrap items-center gap-3 p-3 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] text-xs">
             <div className="font-bold text-[var(--color-primary-hex)] uppercase flex items-center gap-1">
-              <Sparkles size={13} /> Insights:
+              <TrendingUp size={13} /> Telemetry Insights:
             </div>
             {workloadData.highestEfficiencyMem && (
               <div className="flex items-center gap-1.5 text-[var(--color-text-muted)]">

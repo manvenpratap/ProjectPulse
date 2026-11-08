@@ -19,7 +19,6 @@ import {
   Layers,
   Flag,
   ArrowUpDown,
-  Sparkles,
   Trash2,
   Check,
   X,
@@ -238,14 +237,20 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
 
   if (!state.tasks.length) {
     return (
-      <div className="h-full flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-[var(--color-divider)] rounded-3xl opacity-60">
-        <div className="w-16 h-16 bg-[var(--color-surface-2)] rounded-full flex items-center justify-center mb-4">
-          <CheckCircle2 size={32} className="text-[var(--color-text-faint)]" />
+      <div className="h-full flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-[var(--color-divider)] rounded-2xl bg-[var(--color-surface)]">
+        <div className="w-14 h-14 bg-[var(--color-surface-2)] rounded-xl flex items-center justify-center mb-3 text-[var(--color-text-muted)]">
+          <Layers size={28} />
         </div>
-        <h3 className="text-lg font-bold mb-1">No tasks yet</h3>
-        <p className="text-sm text-[var(--color-text-muted)] max-w-xs">
-          Start by adding a task or importing your project from an Excel file.
+        <h3 className="text-base font-bold text-[var(--color-text)] mb-1">Work Breakdown Matrix is Empty</h3>
+        <p className="text-xs text-[var(--color-text-muted)] max-w-sm mb-5 leading-relaxed">
+          Create engineering tasks across modules or import an Excel database to unlock Gantt scheduling, critical path, and burnup telemetry.
         </p>
+        <button
+          onClick={onNewTask}
+          className="h-9 px-4 rounded-lg bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] text-xs font-bold shadow-xs hover:opacity-95 transition-opacity cursor-pointer flex items-center gap-1.5"
+        >
+          <Plus size={14} /> Create First Task
+        </button>
       </div>
     );
   }
@@ -909,12 +914,64 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                 </React.Fragment>
               );
             })}
+            {filteredTasks.length === 0 && (
+              <tr>
+                <td colSpan={13} className="py-12 text-center">
+                  <div className="max-w-md mx-auto p-6 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface-2)] space-y-3">
+                    <Layers size={28} className="mx-auto text-[var(--color-text-muted)] opacity-60" />
+                    <div className="text-sm font-bold text-[var(--color-text)]">No tasks match active filters</div>
+                    <div className="text-xs text-[var(--color-text-muted)] leading-relaxed">
+                      {searchTerm ? `Zero tasks found matching "${searchTerm}".` : 'No tasks found for the selected module, release, or priority filters.'}
+                    </div>
+                    <div className="flex items-center justify-center gap-2 pt-1">
+                      <button
+                        onClick={() => {
+                          setSelectedModule('all');
+                          setSelectedRelease('all');
+                          setSelectedStatus('all');
+                          setSelectedAssignee('all');
+                          setSelectedPriority('all');
+                          setSearchTerm('');
+                        }}
+                        className="h-8 px-3.5 bg-[var(--color-surface)] hover:bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-lg text-xs font-semibold text-[var(--color-text)] transition-colors cursor-pointer"
+                      >
+                        Clear All Filters
+                      </button>
+                      <button
+                        onClick={onNewTask}
+                        className="h-8 px-3.5 bg-[var(--color-primary-hex)] hover:opacity-90 text-[var(--color-primary-text)] rounded-lg text-xs font-bold transition-opacity cursor-pointer shadow-xs"
+                      >
+                        Create Task
+                      </button>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
 
       {/* ── 4. Mobile View Cards (Touch-friendly & responsive) ── */}
       <div className="grid grid-cols-1 gap-3 lg:hidden">
+        {filteredTasks.length === 0 && (
+          <div className="p-6 text-center rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] space-y-3">
+            <div className="text-xs font-bold text-[var(--color-text)]">No tasks match active filters</div>
+            <button
+              onClick={() => {
+                setSelectedModule('all');
+                setSelectedRelease('all');
+                setSelectedStatus('all');
+                setSelectedAssignee('all');
+                setSelectedPriority('all');
+                setSearchTerm('');
+              }}
+              className="h-8 px-3.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs font-semibold cursor-pointer"
+            >
+              Clear Filters
+            </button>
+          </div>
+        )}
         {filteredTasks.map((task) => {
           const overdue = daysDiff(task.dueDate)! < 0 && task.status !== TaskStatus.COMPLETED && task.status !== TaskStatus.CANCELLED;
           const blocked = isBlocked(task, state.tasks);

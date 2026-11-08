@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Check, Search, Sun, Moon, Sparkles, Palette } from 'lucide-react';
+import { X, Check, Search, Sun, Moon, Star, Palette } from 'lucide-react';
 import clsx from 'clsx';
 
 interface ThemeFlyoutProps {
@@ -858,7 +858,7 @@ const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
                             : "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-offset)] border border-[var(--color-border)]"
                         )}
                       >
-                        {cat === 'featured' && <Sparkles size={12} />}
+                        {cat === 'featured' && <Star size={12} />}
                         <span className="capitalize">{cat}</span>
                         <span className={clsx(
                           "text-[10px] px-1 rounded-sm",

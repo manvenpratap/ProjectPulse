@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { analyzeProject } from '../../services/aiService';
-import { Brain, Sparkles, RefreshCw, AlertCircle } from 'lucide-react';
+import { Brain, RefreshCw, AlertCircle } from 'lucide-react';
 import Button from '../shared/Button';
 import ReactMarkdown from 'react-markdown';
 
@@ -25,25 +25,26 @@ const AIPulseAnalysis: React.FC = () => {
   };
 
   return (
-    <div className="card h-full flex flex-col overflow-hidden bg-[var(--color-surface)] border border-[var(--color-divider)] relative shadow-sm rounded-2xl">
+    <div className="card h-full flex flex-col overflow-hidden bg-[var(--color-surface)] border border-[var(--color-divider)] relative shadow-xs rounded-xl">
       <div className="p-5 border-b border-[var(--color-divider)] flex items-center justify-between bg-[var(--color-surface-2)]">
         <div className="flex items-center gap-3">
-           <div className="w-9 h-9 rounded-xl bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] flex items-center justify-center shadow-sm">
+           <div className="w-9 h-9 rounded-lg bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] flex items-center justify-center shadow-xs">
              <Brain size={18} />
            </div>
            <div>
-             <h3 className="font-display font-bold text-sm text-[var(--color-text)] tracking-tight">AI Strategic Radar</h3>
-             <p className="text-xs text-[var(--color-text-muted)] font-medium">Predictive telemetry &amp; risks</p>
+             <h3 className="font-display font-bold text-sm text-[var(--color-text)] tracking-tight">Executive Telemetry Radar</h3>
+             <p className="text-xs text-[var(--color-text-muted)] font-medium">Predictive analysis &amp; risk advisory</p>
            </div>
         </div>
         <Button 
           variant="ghost" 
           size="sm" 
-          className="h-8 rounded-lg"
+          className="h-8 rounded-lg cursor-pointer"
           onClick={generateInsight}
           disabled={loading}
+          title="Refresh Analysis"
         >
-          {loading ? <RefreshCw size={14} className="motion-safe:animate-spin" /> : <Sparkles size={14} className="text-[var(--color-primary-hex)]" />}
+          <RefreshCw size={14} className={loading ? "motion-safe:animate-spin" : "text-[var(--color-primary-hex)]"} />
         </Button>
       </div>
 

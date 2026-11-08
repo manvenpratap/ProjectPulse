@@ -2,7 +2,7 @@ import React from 'react';
 import { useAuth } from '../../store/AuthContext';
 import { useProject } from '../../store/ProjectContext';
 import { getAllNavItems } from '../../config/navigation';
-import { ShieldAlert, Lock, ArrowLeft, UserCheck, Sparkles, Key } from 'lucide-react';
+import { ShieldAlert, Lock, ArrowLeft, UserCheck, Key } from 'lucide-react';
 import Button from '../shared/Button';
 
 interface AccessDeniedProps {
@@ -20,13 +20,13 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({ viewId, onOpenAccess
 
   return (
     <div className="h-full flex items-center justify-center p-4 sm:p-8 bg-[var(--color-bg)] select-none">
-      <div className="card p-8 sm:p-10 max-w-lg w-full text-center space-y-6 bg-[var(--color-surface)]/90 backdrop-blur-2xl border border-[var(--color-divider)] shadow-xl rounded-3xl">
-        <div className="w-16 h-16 rounded-3xl bg-amber-500/10 border border-amber-500/25 text-amber-500 flex items-center justify-center mx-auto shadow-2xs">
-          <ShieldAlert size={32} strokeWidth={2.2} />
+      <div className="card p-6 sm:p-8 max-w-lg w-full text-center space-y-5 bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xs rounded-2xl">
+        <div className="w-14 h-14 rounded-xl bg-amber-500/10 border border-amber-500/25 text-amber-500 flex items-center justify-center mx-auto shadow-2xs">
+          <ShieldAlert size={28} strokeWidth={2.2} />
         </div>
 
-        <div className="space-y-2">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-semibold border border-amber-500/20">
+        <div className="space-y-1.5">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-semibold border border-amber-500/20">
             <Lock size={12} /> Access Restricted
           </div>
           <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--color-text)]">
@@ -38,7 +38,7 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({ viewId, onOpenAccess
           </p>
         </div>
 
-        <div className="p-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-2xl text-left space-y-2">
+        <div className="p-3.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-left space-y-1.5">
           <div className="text-xs font-semibold text-[var(--color-text)] flex items-center gap-2">
             <Key size={14} className="text-[var(--color-primary-hex)]" />
             <span>Need access to this feature?</span>
@@ -48,13 +48,13 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({ viewId, onOpenAccess
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pt-2">
           <Button 
             variant="outline" 
             onClick={() => setView(fallbackView)}
-            className="w-full sm:w-auto h-11 px-5 rounded-xl font-semibold"
+            className="w-full sm:w-auto h-10 px-4 rounded-lg font-semibold text-xs"
           >
-            <ArrowLeft size={15} className="mr-1.5" /> Return to Workspace
+            <ArrowLeft size={14} className="mr-1.5" /> Return to Workspace
           </Button>
 
           {/* Quick Demo Switcher if current user is not admin */}
@@ -62,9 +62,9 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({ viewId, onOpenAccess
             <Button 
               variant="primary" 
               onClick={() => switchUser(adminUser.id)}
-              className="w-full sm:w-auto h-11 px-5 rounded-xl font-bold bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-sm"
+              className="w-full sm:w-auto h-10 px-4 rounded-lg font-bold text-xs bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-xs"
             >
-              <Sparkles size={15} className="mr-1.5" /> Switch to Admin ({adminUser.name.split(' ')[0]})
+              <UserCheck size={14} className="mr-1.5" /> Switch to Admin ({adminUser.name.split(' ')[0]})
             </Button>
           )}
 
@@ -72,9 +72,9 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({ viewId, onOpenAccess
             <Button 
               variant="primary" 
               onClick={onOpenAccessManager}
-              className="w-full sm:w-auto h-11 px-5 rounded-xl font-bold bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-sm"
+              className="w-full sm:w-auto h-10 px-4 rounded-lg font-bold text-xs bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-xs"
             >
-              <UserCheck size={15} className="mr-1.5" /> Manage Access
+              <UserCheck size={14} className="mr-1.5" /> Manage Access
             </Button>
           )}
         </div>

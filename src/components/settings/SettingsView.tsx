@@ -15,7 +15,6 @@ import {
   ShieldCheck,
   Users,
   UserCheck,
-  Sparkles,
   Lock,
   Unlock,
   FileSpreadsheet,
@@ -251,8 +250,8 @@ const SettingsView: React.FC = () => {
             </div>
 
             {/* Quick explanation footer */}
-            <div className="bg-[var(--color-surface-2)] p-4 rounded-2xl border border-[var(--color-divider)] flex items-center gap-3">
-              <Sparkles className="text-[var(--color-primary-hex)] shrink-0" size={18} />
+            <div className="bg-[var(--color-surface-2)] p-4 rounded-xl border border-[var(--color-divider)] flex items-center gap-3">
+              <Sliders className="text-[var(--color-primary-hex)] shrink-0" size={18} />
               <p className="text-xs text-[var(--color-text-muted)]">
                 Only users with the <strong className="text-[var(--color-text)]">Admin</strong> role can modify user roles, grant view overrides, or change system access matrices.
               </p>
@@ -372,7 +371,7 @@ const SettingsView: React.FC = () => {
                   className="h-10 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer"
                   onClick={handleLoadDemo}
                 >
-                  {isImporting ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                  {isImporting ? <Loader2 size={14} className="animate-spin" /> : <Database size={14} />}
                   <span>Load Demo Database</span>
                 </Button>
               </div>
