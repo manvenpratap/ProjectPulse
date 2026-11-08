@@ -64,8 +64,8 @@
     "hash": "fba8556dec4103363c7608cb7bc9f527"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/ThemeFlyout.tsx": {
-    "mtime": 1794083506.9873183,
-    "hash": "704ea895fa2fbaf737c94f7cf7b6ccd2"
+    "mtime": 1794107045.2253032,
+    "hash": "2032909e601ffd3a0de7508dff7b179d"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/UserProfileFlyout.tsx": {
     "mtime": 1794104902.4317617,
@@ -216,8 +216,8 @@
     "hash": "9b5f87a0e0caa5003dd2af86e3346a5e"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/store/ProjectContext.tsx": {
-    "mtime": 1794072341.9586802,
-    "hash": "e676087d4fcfaa8d8da6029dc3f89211"
+    "mtime": 1794107064.7910225,
+    "hash": "23ed8e3713eb877e580564b0065aa915"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/store/AuthContext.tsx": {
     "mtime": 1794104807.3136604,
@@ -258,13 +258,5 @@
   "/Volumes/Study/Projects/ProjectPulse 2.0/design-system/MASTER.md": {
     "mtime": 1794072105.019147,
     "hash": "c10df4bb23cf1788cd988959b89b9ce9"
-  },
-  "/Volumes/Study/Projects/ProjectPulse 2.0/capacity_mobile.png": {
-    "mtime": 1794105769.9404078,
-    "hash": "bf5f4412d1e42205bb60113f7b0ae5f5"
-  },
-  "/Volumes/Study/Projects/ProjectPulse 2.0/capacity_mobile_selected.png": {
-    "mtime": 1794105826.7158992,
-    "hash": "ff6c294fbe5505619a3410ca9e990920"
   }
 }

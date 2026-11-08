@@ -30,6 +30,7 @@
   --theme-play-color: #ef4444;
   --theme-cyberpunk-color: #00f5d4;
   --theme-glass-color: #60a5fa;
+  --theme-nova-color: #6366f1;
 
   --theme-nexus-dark-color: #0f4c5c;
   --theme-paper-dark-color: #d6d3d1;
@@ -41,6 +42,7 @@
   --theme-prism-dark-color: #ff006e;
   --theme-play-dark-color: #ef4444;
   --theme-glass-dark-color: #60a5fa;
+  --theme-nova-dark-color: #a78bfa;
 }
 
 :root {
@@ -920,6 +922,86 @@ button, a, [role="button"], .tappable {
   --color-primary-highlight-hex: rgba(15, 76, 92, 0.08);
   --color-border: #e2ddd6;
   --color-divider: #f0ede6;
+}
+
+html[data-color-mode="dark"][data-theme="origin"] {
+  --color-display-font: 'Fraunces', serif;
+  --color-bg: #111613;
+  --color-surface: #1a221d;
+  --color-surface-2: #243029;
+  --color-surface-offset: #0a0d0b;
+  --color-text: #e8ede5;
+  --color-text-muted: #9aab94;
+  --color-text-faint: #4d5c48;
+  --color-primary-hex: #4fb8a8;
+  --color-primary-hover: #72cbbe;
+  --color-primary-highlight-hex: rgba(79, 184, 168, 0.15);
+  --color-border: #2e3e35;
+  --color-divider: #1e2820;
+}
+
+/* Nova — Modern SaaS vibrant indigo */
+[data-theme="nova"] {
+  --color-display-font: 'Outfit', sans-serif;
+  --color-bg: #f5f6ff;
+  --color-surface: #ffffff;
+  --color-surface-2: #eef0fd;
+  --color-surface-offset: #f8f9ff;
+  --color-text: #0f0f2d;
+  --color-text-muted: #5b5c8a;
+  --color-text-faint: #b0b2d8;
+  --color-primary-hex: #6366f1;
+  --color-primary-hover: #4f46e5;
+  --color-primary-highlight-hex: rgba(99, 102, 241, 0.1);
+  --color-border: #d9dbf5;
+  --color-divider: #eef0fd;
+}
+
+[data-theme="nova-dark"],
+html[data-color-mode="dark"][data-theme="nova"] {
+  --color-display-font: 'Outfit', sans-serif;
+  --color-bg: #07070f;
+  --color-surface: #0f1020;
+  --color-surface-2: #181930;
+  --color-surface-offset: #04040c;
+  --color-text: #f0f0ff;
+  --color-text-muted: #9b9dc8;
+  --color-text-faint: #454668;
+  --color-primary-hex: #a78bfa;
+  --color-primary-hover: #c4b5fd;
+  --color-primary-highlight-hex: rgba(167, 139, 250, 0.15);
+  --color-border: #252646;
+  --color-divider: #16162a;
+}
+
+html[data-color-mode="dark"][data-theme="aurora-studio"] {
+  --color-bg: #0a0518;
+  --color-surface: #140d28;
+  --color-surface-2: #20153d;
+  --color-surface-offset: #05020c;
+  --color-text: #f3f0fa;
+  --color-text-muted: #a9a2bf;
+  --color-text-faint: #5a5270;
+  --color-primary-hex: #c084fc;
+  --color-primary-hover: #d8b4fe;
+  --color-primary-highlight-hex: rgba(192, 132, 252, 0.15);
+  --color-border: #2d1f52;
+  --color-divider: #1c1236;
+}
+
+html[data-color-mode="dark"][data-theme="paper-editorial"] {
+  --color-bg: #1a1410;
+  --color-surface: #261f1a;
+  --color-surface-2: #352c25;
+  --color-surface-offset: #100c09;
+  --color-text: #f5ece4;
+  --color-text-muted: #b8aba0;
+  --color-text-faint: #6e6258;
+  --color-primary-hex: #e07050;
+  --color-primary-hover: #ea8d72;
+  --color-primary-highlight-hex: rgba(224, 112, 80, 0.15);
+  --color-border: #3d322b;
+  --color-divider: #29211c;
 }
 
 /* Slate — Nordic amber twilight */

@@ -53,6 +53,10 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   // Load from localStorage
   useEffect(() => {
     const savedData = localStorage.getItem('pp-data');
+    const savedColorMode = localStorage.getItem('pp-color-mode');
+    if (savedColorMode) {
+      document.documentElement.setAttribute('data-color-mode', savedColorMode);
+    }
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
