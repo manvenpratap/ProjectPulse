@@ -43,7 +43,7 @@ const MainApp: React.FC = () => {
       const allNav = getAllNavItems();
       const firstAllowed = allNav.find(item => hasViewAccess(item.id))?.id;
       if (firstAllowed && firstAllowed !== state.view) {
-        setView(firstAllowed);
+        setView(firstAllowed, true);
       }
     }
   }, [isAuthenticated, currentUser?.id, state.view, hasViewAccess, setView]);

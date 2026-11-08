@@ -22,7 +22,7 @@ interface ProjectContextType {
   deleteDelivery: (deliveryId: string) => void;
   batchUpdateDeliveries: (ids: string[], updates: Partial<Delivery>) => void;
   addLog: (action: string, taskId: string, taskName: string, field?: string, oldVal?: string, newVal?: string, comment?: string) => void;
-  setView: (view: string) => void;
+  setView: (view: string, replace?: boolean) => void;
   setTheme: (theme: string) => void;
   updateSettings: (settings: Partial<ProjectState['settings']>) => void;
   resetProject: (name: string, desc: string, team: string[]) => void;
@@ -34,10 +34,39 @@ interface ProjectContextType {
   isLoading: boolean;
 }
 
+const VALID_VIEWS = new Set([
+  'overview', 'dash', 'reports', 'tasks', 'deliveries',
+  'timeline', 'releases', 'team', 'capacity', 'scheduler',
+  'defects', 'risks', 'retro', 'log', 'features',
+  'scaffolder', 'fields', 'steps', 'dropdowns', 'settings'
+]);
+
+export const getViewFromURL = (): string | null => {
+  if (typeof window === 'undefined') return null;
+  // 1. Check hash first: #/tasks or #tasks
+  const hash = window.location.hash.replace(/^#\/?/, '').split('?')[0].trim().toLowerCase();
+  if (hash && VALID_VIEWS.has(hash)) {
+    return hash === 'scheduler' ? 'capacity' : hash;
+  }
+  // 2. Check pathname: /tasks
+  const path = window.location.pathname.replace(/^\//, '').split('/')[0].trim().toLowerCase();
+  if (path && VALID_VIEWS.has(path)) {
+    return path === 'scheduler' ? 'capacity' : path;
+  }
+  return null;
+};
+
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [state, setState] = useState<ProjectState>(getDefaultState());
+  const [state, setState] = useState<ProjectState>(() => {
+    const base = getDefaultState();
+    const urlView = getViewFromURL();
+    if (urlView) {
+      base.view = urlView;
+    }
+    return base;
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -50,13 +79,16 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, []);
 
 
-  // Load from localStorage
+  // Load from localStorage & sync URL
   useEffect(() => {
     const savedData = localStorage.getItem('pp-data');
     const savedColorMode = localStorage.getItem('pp-color-mode');
     if (savedColorMode) {
       document.documentElement.setAttribute('data-color-mode', savedColorMode);
     }
+
+    const urlView = getViewFromURL();
+
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
@@ -65,9 +97,15 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         const finalTheme = parsed.theme || 'pulse';
         document.documentElement.setAttribute('data-theme', finalTheme);
 
+        const activeView = urlView || parsed.view || defaultState.view || 'overview';
+        if (typeof window !== 'undefined') {
+          window.history.replaceState({ view: activeView }, '', '#/' + activeView);
+        }
+
         setState({ 
           ...defaultState, 
           ...parsed,
+          view: activeView,
           name: parsed.name || sample.name || 'Project Phoenix: Enterprise Rollout',
           tasks: (parsed.tasks && parsed.tasks.length > 0) ? parsed.tasks : (sample.tasks || []),
           members: (parsed.members && parsed.members.length > 0) ? parsed.members : (sample.members || []),
@@ -87,13 +125,39 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     } else {
       const sample = getWebSample();
       document.documentElement.setAttribute('data-theme', 'pulse');
+      const activeView = urlView || 'overview';
+      if (typeof window !== 'undefined') {
+        window.history.replaceState({ view: activeView }, '', '#/' + activeView);
+      }
       setState({
         ...getDefaultState(),
         ...sample as any,
+        view: activeView,
         theme: 'pulse'
       });
     }
     setIsLoading(false);
+  }, []);
+
+  // Listen for browser Back/Forward navigation (popstate & hashchange)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const handleLocationChange = () => {
+      const targetView = getViewFromURL() || 'overview';
+      setState(prev => {
+        if (prev.view === targetView) return prev;
+        return { ...prev, view: targetView };
+      });
+    };
+
+    window.addEventListener('popstate', handleLocationChange);
+    window.addEventListener('hashchange', handleLocationChange);
+
+    return () => {
+      window.removeEventListener('popstate', handleLocationChange);
+      window.removeEventListener('hashchange', handleLocationChange);
+    };
   }, []);
 
   // Save to localStorage
@@ -363,8 +427,21 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }));
   }, []);
 
-  const setView = useCallback((view: string) => {
-    setState(prev => ({ ...prev, view }));
+  const setView = useCallback((view: string, replace = false) => {
+    setState(prev => {
+      if (prev.view === view) return prev;
+      return { ...prev, view };
+    });
+    if (typeof window !== 'undefined') {
+      const targetHash = '#/' + view;
+      if (window.location.hash !== targetHash) {
+        if (replace) {
+          window.history.replaceState({ view }, '', targetHash);
+        } else {
+          window.history.pushState({ view }, '', targetHash);
+        }
+      }
+    }
   }, []);
 
   const setTheme = useCallback((theme: string) => {
