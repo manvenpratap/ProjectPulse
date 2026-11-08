@@ -1,16 +1,16 @@
 # Graph Report - ProjectPulse 2.0  (2026-11-08)
 
 ## Corpus Check
-- 66 files · ~89,365 words
+- 66 files · ~90,658 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 277 nodes · 755 edges · 17 communities (16 shown, 1 thin omitted)
+- 277 nodes · 756 edges · 17 communities (16 shown, 1 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `aae5535d`
+- Built from commit: `408f24d1`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -38,7 +38,7 @@
 5. `todayStr()` - 17 edges
 6. `useAuth()` - 17 edges
 7. `TaskPriority` - 14 edges
-8. `Task` - 12 edges
+8. `Task` - 13 edges
 9. `getHealthScore()` - 11 edges
 10. `DefectStatus` - 8 edges
 
