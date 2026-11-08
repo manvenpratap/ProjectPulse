@@ -67,7 +67,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                   key={item.id}
                   onClick={() => setView(item.id)}
                   className={clsx(
-                    "px-3 py-1.5 min-h-[34px] rounded-lg text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition-all duration-150 cursor-pointer active:scale-96 shrink-0",
+                    "px-3 py-1.5 min-h-[36px] rounded-lg text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition-all duration-150 cursor-pointer active:scale-96 shrink-0",
                     isActive
                       ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm border border-[var(--color-divider)]"
                       : "text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)]/50"

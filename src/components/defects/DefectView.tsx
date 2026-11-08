@@ -202,7 +202,7 @@ const DefectView: React.FC = () => {
                 onClick={() => setViewMode('table')}
                 aria-label="Table View"
                 className={clsx(
-                  "p-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all cursor-pointer min-h-[34px]",
+                  "min-w-[34px] min-h-[34px] sm:min-w-0 p-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer",
                   viewMode === 'table' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
@@ -213,7 +213,7 @@ const DefectView: React.FC = () => {
                 onClick={() => setViewMode('cards')}
                 aria-label="Cards View"
                 className={clsx(
-                  "p-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all cursor-pointer min-h-[34px]",
+                  "min-w-[34px] min-h-[34px] sm:min-w-0 p-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer",
                   viewMode === 'cards' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >

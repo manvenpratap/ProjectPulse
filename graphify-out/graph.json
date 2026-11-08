@@ -1699,7 +1699,7 @@
       "label": "DeliveryModalProps",
       "file_type": "code",
       "source_file": "src/components/deliveries/DeliveriesView.tsx",
-      "source_location": "L1221",
+      "source_location": "L1223",
       "id": "deliveries_deliveriesview_deliverymodalprops",
       "community": 4,
       "norm_label": "deliverymodalprops"
@@ -1708,7 +1708,7 @@
       "label": "DeliveryModal()",
       "file_type": "code",
       "source_file": "src/components/deliveries/DeliveriesView.tsx",
-      "source_location": "L1228",
+      "source_location": "L1230",
       "id": "deliveries_deliveriesview_deliverymodal",
       "community": 4,
       "norm_label": "deliverymodal()"
@@ -4135,9 +4135,9 @@
       "source_file": "src/components/defects/DefectView.tsx",
       "source_location": "L25",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_defects_defectview_tsx",
-      "target": "types_index_defect",
-      "confidence_score": 1.0
+      "target": "types_index_defect"
     },
     {
       "relation": "imports",
@@ -4909,9 +4909,9 @@
       "source_file": "src/components/defects/DefectView.tsx",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_defects_defectview_tsx",
-      "target": "src_utils_projectutils_ts",
-      "confidence_score": 1.0
+      "target": "src_utils_projectutils_ts"
     },
     {
       "relation": "imports_from",
@@ -5173,9 +5173,9 @@
       "source_file": "src/components/defects/DefectView.tsx",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_defects_defectview_tsx",
-      "target": "utils_projectutils_todaystr",
-      "confidence_score": 1.0
+      "target": "utils_projectutils_todaystr"
     },
     {
       "relation": "imports",
@@ -5327,9 +5327,9 @@
       "source_file": "src/components/defects/DefectView.tsx",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_defects_defectview_tsx",
-      "target": "utils_projectutils_fmtdate",
-      "confidence_score": 1.0
+      "target": "utils_projectutils_fmtdate"
     },
     {
       "relation": "imports",
@@ -6232,9 +6232,9 @@
       "source_file": "src/components/tasks/TaskGrid.tsx",
       "source_location": "L39",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_tasks_taskgrid_tsx",
-      "target": "tasks_taskgrid_st_map",
-      "confidence_score": 1.0
+      "target": "tasks_taskgrid_st_map"
     },
     {
       "relation": "contains",
@@ -6242,9 +6242,9 @@
       "source_file": "src/components/tasks/TaskGrid.tsx",
       "source_location": "L48",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_tasks_taskgrid_tsx",
-      "target": "tasks_taskgrid_pri_map",
-      "confidence_score": 1.0
+      "target": "tasks_taskgrid_pri_map"
     },
     {
       "relation": "contains",
@@ -7986,9 +7986,9 @@
       "source_file": "src/components/defects/DefectView.tsx",
       "source_location": "L30",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_defects_defectview_tsx",
-      "target": "defects_defectview_viewmode",
-      "confidence_score": 1.0
+      "target": "defects_defectview_viewmode"
     },
     {
       "relation": "contains",
@@ -7996,9 +7996,9 @@
       "source_file": "src/components/defects/DefectView.tsx",
       "source_location": "L31",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_defects_defectview_tsx",
-      "target": "defects_defectview_densitymode",
-      "confidence_score": 1.0
+      "target": "defects_defectview_densitymode"
     },
     {
       "relation": "contains",
@@ -8006,9 +8006,9 @@
       "source_file": "src/components/defects/DefectView.tsx",
       "source_location": "L33",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_defects_defectview_tsx",
-      "target": "defects_defectview_def_st_map",
-      "confidence_score": 1.0
+      "target": "defects_defectview_def_st_map"
     },
     {
       "relation": "contains",
@@ -9285,9 +9285,9 @@
       "source_file": "src/components/deliveries/DeliveriesView.tsx",
       "source_location": "L50",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_deliveries_deliveriesview_tsx",
-      "target": "deliveries_deliveriesview_del_st_map",
-      "confidence_score": 1.0
+      "target": "deliveries_deliveriesview_del_st_map"
     },
     {
       "relation": "contains",
@@ -9295,9 +9295,9 @@
       "source_file": "src/components/deliveries/DeliveriesView.tsx",
       "source_location": "L59",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_deliveries_deliveriesview_tsx",
-      "target": "deliveries_deliveriesview_alm_st_map",
-      "confidence_score": 1.0
+      "target": "deliveries_deliveriesview_alm_st_map"
     },
     {
       "relation": "contains",
@@ -10083,5 +10083,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "d13feabcd05378f9547b0b2c7286703f39e24ddc"
+  "built_at_commit": "25e46cba581c486db04d5ce833fca1bc7a5e6235"
 }

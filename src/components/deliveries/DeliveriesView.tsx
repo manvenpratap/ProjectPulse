@@ -899,8 +899,9 @@ export const DeliveriesView: React.FC = () => {
                           <div className="flex items-center justify-center gap-1">
                             <button
                               onClick={() => handleOpenEdit(item)}
-                              className="p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded transition-colors cursor-pointer"
+                              className="w-7 h-7 flex items-center justify-center text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-lg transition-colors cursor-pointer"
                               title="Edit delivery"
+                              aria-label="Edit delivery"
                             >
                               <Edit3 size={13} />
                             </button>
@@ -910,8 +911,9 @@ export const DeliveriesView: React.FC = () => {
                                   deleteDelivery(item.id);
                                 }
                               }}
-                              className="p-1.5 text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 rounded transition-colors cursor-pointer"
+                              className="w-7 h-7 flex items-center justify-center text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
                               title="Delete delivery"
+                              aria-label="Delete delivery"
                             >
                               <Trash2 size={13} />
                             </button>
