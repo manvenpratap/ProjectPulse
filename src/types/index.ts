@@ -238,6 +238,8 @@ export interface Feature {
   desc: string;
   screens: string[];
   release?: string;
+  category?: string;
+  status?: string;
 }
 
 export interface RaidItem {
