@@ -33,7 +33,7 @@ import { motion, AnimatePresence } from 'motion/react';
 const MainApp: React.FC = () => {
   const { state, setView } = useProject();
   const { isAuthenticated, hasViewAccess } = useAuth();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default to closed for mobile-first
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
 
   // If not authenticated, prompt login

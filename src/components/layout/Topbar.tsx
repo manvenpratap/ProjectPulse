@@ -112,9 +112,9 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
           <button 
             onClick={toggleSidebar}
             aria-label="Toggle navigation menu"
-            className="lg:hidden min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-[var(--color-surface-2)] rounded-xl text-[var(--color-text-muted)] transition-colors active:scale-95 cursor-pointer"
+            className="min-h-[38px] min-w-[38px] flex items-center justify-center hover:bg-[var(--color-surface-2)] rounded-xl text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors active:scale-95 cursor-pointer"
           >
-            <Menu size={20} />
+            <Menu size={18} />
           </button>
           
           <div className="flex flex-col min-w-0">

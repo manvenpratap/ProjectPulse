@@ -16,6 +16,7 @@ import {
   ArrowUpDown, 
   FileSpreadsheet, 
   Check, 
+  CheckSquare,
   X, 
   ChevronDown, 
   ExternalLink, 
@@ -46,6 +47,27 @@ type ViewMode = 'table' | 'kanban' | 'heatmap';
 type HeatmapPerspective = 'feat_screens' | 'env_pipeline' | 'del_impact';
 type AutofitStrategy = 'all' | 'content-only' | 'header-only' | 'compact' | 'comfortable';
 
+const DEL_ST_MAP: Record<string, string> = {
+  'Deployed': 'deployed',
+  'Ready for Deployment': 'ready',
+  'In Progress': 'in-progress',
+  'Scheduled': 'scheduled',
+  'Cancelled': 'cancelled',
+  'Rolled Back': 'rolled-back',
+};
+
+const ALM_ST_MAP: Record<string, string> = {
+  'New': 'not-started',
+  'Open': 'in-progress',
+  'In Progress': 'in-progress',
+  'Fixed': 'fixed',
+  'Ready for Test': 'ready-test',
+  'Retest': 'under-review',
+  'Closed': 'completed',
+  'Rejected': 'rejected',
+  'Reopened': 'in-prep',
+};
+
 export const DeliveriesView: React.FC = () => {
   const { state, saveDelivery, deleteDelivery, batchUpdateDeliveries, setView } = useProject();
   const { deliveries = [], tasks = [], members = [], dropdowns = {} } = state;
@@ -62,6 +84,7 @@ export const DeliveriesView: React.FC = () => {
   const [filterVersion, setFilterVersion] = useState<string>('all');
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [filterSmoke, setFilterSmoke] = useState<string>('all');
+  const [showInlineFilters, setShowInlineFilters] = useState<boolean>(true);
   const [sortBy, setSortBy] = useState<keyof Delivery>('targetDeliveryDate');
   const [sortAsc, setSortAsc] = useState<boolean>(true);
 
@@ -169,6 +192,18 @@ export const DeliveriesView: React.FC = () => {
   const handleOpenEdit = (delivery: Delivery) => {
     setEditingDelivery(delivery);
     setIsModalOpen(true);
+  };
+
+  const handleBatchALMStatus = (almStatus: string) => {
+    if (!selectedIds.size) return;
+    batchUpdateDeliveries(Array.from(selectedIds), { almStatus });
+    setSelectedIds(new Set());
+  };
+
+  const handleBatchCategory = (category: string) => {
+    if (!selectedIds.size) return;
+    batchUpdateDeliveries(Array.from(selectedIds), { category });
+    setSelectedIds(new Set());
   };
 
   const handleBatchDeploy = () => {
@@ -417,51 +452,107 @@ export const DeliveriesView: React.FC = () => {
             ))}
           </select>
 
-          {/* Column Autofit Strategy (ProjectPulse standard) */}
+          {/* Column Autofit Strategy & Filter Toggle (ProjectPulse standard) */}
           {viewMode === 'table' && (
-            <div className="flex items-center gap-1.5 pl-2 border-l border-[var(--color-divider)]">
-              <span className="text-xs font-semibold text-[var(--color-text-muted)]">Autofit:</span>
-              <select 
-                value={autofitStrategy}
-                onChange={e => setAutofitStrategy(e.target.value as AutofitStrategy)}
-                className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-[var(--color-primary-hex)]"
-                title="Table column autofit engine layout mode"
+            <div className="flex items-center gap-2 pl-2 border-l border-[var(--color-divider)]">
+              <button
+                onClick={() => setShowInlineFilters(!showInlineFilters)}
+                className={clsx(
+                  "px-2.5 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 border transition-all cursor-pointer",
+                  showInlineFilters 
+                    ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border-[var(--color-primary-hex)]/30"
+                    : "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:text-[var(--color-text)]"
+                )}
+                title="Toggle column header filter row"
               >
-                <option value="comfortable">Comfortable</option>
-                <option value="compact">Compact Dense</option>
-                <option value="content-only">Wrap Content</option>
-                <option value="header-only">Header Bounds</option>
-                <option value="all">Full Fill</option>
-              </select>
+                <Filter size={12} />
+                <span>{showInlineFilters ? 'Filters Visible' : 'Show Filters'}</span>
+              </button>
+
+              <div className="flex items-center gap-1">
+                <span className="text-xs font-semibold text-[var(--color-text-muted)]">Autofit:</span>
+                <select 
+                  value={autofitStrategy}
+                  onChange={e => setAutofitStrategy(e.target.value as AutofitStrategy)}
+                  className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-[var(--color-primary-hex)]"
+                  title="Table column autofit engine layout mode"
+                >
+                  <option value="comfortable">Comfortable</option>
+                  <option value="compact">Compact Dense</option>
+                  <option value="content-only">Wrap Content</option>
+                  <option value="header-only">Header Bounds</option>
+                  <option value="all">Full Fill</option>
+                </select>
+              </div>
             </div>
           )}
 
           {/* Bulk Selection Actions Bar */}
           {selectedIds.size > 0 && (
-            <div className="flex items-center gap-1.5 bg-[var(--color-primary-highlight-hex)] border border-[var(--color-primary-hex)]/30 rounded-lg px-2 py-1 ml-auto">
-              <span className="font-semibold text-xs text-[var(--color-primary-hex)]">
+            <div className="flex items-center gap-2 bg-[var(--color-surface-2)] border-2 border-[var(--color-primary-hex)] rounded-xl px-3 py-1.5 ml-auto flex-wrap shadow-sm">
+              <span className="font-extrabold text-xs text-[var(--color-primary-hex)] flex items-center gap-1">
+                <CheckSquare size={13} />
                 {selectedIds.size} Selected
               </span>
+
+              <div className="h-4 w-px bg-[var(--color-divider)] hidden sm:block" />
+
+              {/* Batch ALM Status */}
+              <select
+                onChange={(e) => {
+                  if (e.target.value) handleBatchALMStatus(e.target.value);
+                  e.target.value = '';
+                }}
+                defaultValue=""
+                className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-2 py-1 text-xs cursor-pointer"
+              >
+                <option value="" disabled>Set ALM Status...</option>
+                {['New', 'Open', 'In Progress', 'Fixed', 'Ready for Test', 'Retest', 'Closed', 'Rejected', 'Reopened'].map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+
+              {/* Batch Category */}
+              <select
+                onChange={(e) => {
+                  if (e.target.value) handleBatchCategory(e.target.value);
+                  e.target.value = '';
+                }}
+                defaultValue=""
+                className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-2 py-1 text-xs cursor-pointer"
+              >
+                <option value="" disabled>Set Category...</option>
+                {['GSP++ Delivery', 'Regression/NRT Defect'].map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+
               <button 
                 onClick={handleBatchDeploy}
-                className="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[11px] font-semibold transition-colors"
+                className="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[11px] font-semibold transition-colors cursor-pointer"
                 title="Mark selected as Deployed"
               >
                 Deploy
               </button>
               <button 
                 onClick={handleBatchSignOff}
-                className="px-2 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded text-[11px] font-semibold transition-colors"
+                className="px-2 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded text-[11px] font-semibold transition-colors cursor-pointer"
                 title="Approve sign-off"
               >
                 Sign Off
               </button>
               <button 
                 onClick={handleBatchDelete}
-                className="p-1 hover:bg-rose-500/20 text-rose-400 rounded transition-colors"
+                className="p-1 hover:bg-rose-500/20 text-rose-500 rounded transition-colors cursor-pointer"
                 title="Delete selected packages"
               >
                 <Trash2 size={13} />
+              </button>
+              <button
+                onClick={() => setSelectedIds(new Set())}
+                className="text-[11px] text-[var(--color-text-muted)] hover:text-[var(--color-text)] underline cursor-pointer"
+              >
+                Deselect
               </button>
             </div>
           )}
@@ -474,90 +565,187 @@ export const DeliveriesView: React.FC = () => {
         {viewMode === 'table' && (
           <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left border-collapse min-w-[1250px] table-fixed">
                 <thead>
-                  <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-divider)] text-xs font-semibold text-[var(--color-text-muted)] select-none">
-                    <th className="p-3 w-10 text-center">
+                  <tr className="bg-[var(--color-surface-offset)] border-b-2 border-[var(--color-border)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)] select-none">
+                    <th className="p-2.5 w-10 text-center border-r border-[var(--color-divider)]">
                       <input 
                         type="checkbox"
                         checked={selectedIds.size > 0 && selectedIds.size === filteredDeliveries.length}
                         onChange={toggleSelectAll}
+                        aria-label="Select all deliverables"
                         className="rounded border-[var(--color-divider)] cursor-pointer"
                       />
                     </th>
-                    <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setSortBy('almId'); setSortAsc(!sortAsc); }}>
-                      <div className="flex items-center gap-1">
+                    <th className="p-2.5 w-11 text-center border-r border-[var(--color-divider)] td-rn font-mono text-[10px]">
+                      #
+                    </th>
+                    <th className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('almId'); setSortAsc(!sortAsc); }}>
+                      <div className="flex items-center justify-between gap-1">
                         <span>ALM ID / PDN</span>
-                        <ArrowUpDown size={11} />
+                        <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-3 min-w-[240px] cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setSortBy('name'); setSortAsc(!sortAsc); }}>
-                      <div className="flex items-center gap-1">
-                        <span>Delivery Scope / Description</span>
-                        <ArrowUpDown size={11} />
+                    <th className="p-2.5 min-w-[240px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('name'); setSortAsc(!sortAsc); }}>
+                      <div className="flex items-center justify-between gap-1">
+                        <span>DELIVERY SCOPE & DETAILS</span>
+                        <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setSortBy('environment'); setSortAsc(!sortAsc); }}>
-                      <div className="flex items-center gap-1">
-                        <span>Env</span>
-                        <ArrowUpDown size={11} />
+                    <th className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('almStatus'); setSortAsc(!sortAsc); }}>
+                      <div className="flex items-center justify-between gap-1">
+                        <span>ALM STATUS</span>
+                        <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setSortBy('status'); setSortAsc(!sortAsc); }}>
-                      <div className="flex items-center gap-1">
-                        <span>Status</span>
-                        <ArrowUpDown size={11} />
+                    <th className="p-2.5 w-26 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('environment'); setSortAsc(!sortAsc); }}>
+                      <div className="flex items-center justify-between gap-1">
+                        <span>ENV</span>
+                        <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setSortBy('releaseVersion'); setSortAsc(!sortAsc); }}>
-                      <div className="flex items-center gap-1">
-                        <span>Release</span>
-                        <ArrowUpDown size={11} />
+                    <th className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('status'); setSortAsc(!sortAsc); }}>
+                      <div className="flex items-center justify-between gap-1">
+                        <span>DEPLOY STATUS</span>
+                        <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setSortBy('signOffStatus'); setSortAsc(!sortAsc); }}>
-                      <div className="flex items-center gap-1">
-                        <span>Sign-off / Approver</span>
-                        <ArrowUpDown size={11} />
+                    <th className="p-2.5 w-26 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('releaseVersion'); setSortAsc(!sortAsc); }}>
+                      <div className="flex items-center justify-between gap-1">
+                        <span>RELEASE</span>
+                        <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setSortBy('smokeTestStatus'); setSortAsc(!sortAsc); }}>
-                      <div className="flex items-center gap-1">
-                        <span>Smoke Gate</span>
-                        <ArrowUpDown size={11} />
+                    <th className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('signOffStatus'); setSortAsc(!sortAsc); }}>
+                      <div className="flex items-center justify-between gap-1">
+                        <span>SIGN-OFF</span>
+                        <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-3">Linked Tasks / Screens</th>
-                    <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setSortBy('targetDeliveryDate'); setSortAsc(!sortAsc); }}>
-                      <div className="flex items-center gap-1">
-                        <span>Target Date</span>
-                        <ArrowUpDown size={11} />
+                    <th className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('smokeTestStatus'); setSortAsc(!sortAsc); }}>
+                      <div className="flex items-center justify-between gap-1">
+                        <span>SMOKE GATE</span>
+                        <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-3 text-right">Lead / Var</th>
-                    <th className="p-3 text-center w-14">Actions</th>
+                    <th className="p-2.5 w-32 border-r border-[var(--color-divider)]">LINKED SCOPE</th>
+                    <th className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('targetDeliveryDate'); setSortAsc(!sortAsc); }}>
+                      <div className="flex items-center justify-between gap-1">
+                        <span>TARGET DATE</span>
+                        <ArrowUpDown size={10} />
+                      </div>
+                    </th>
+                    <th className="p-2.5 w-24 text-right border-r border-[var(--color-divider)]">LEAD / VAR</th>
+                    <th className="p-2.5 text-center w-12"></th>
                   </tr>
+
+                  {/* Inline Column Filters Row */}
+                  {showInlineFilters && (
+                    <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-border)] text-xs">
+                      <th className="p-1 border-r border-[var(--color-divider)]"></th>
+                      <th className="p-1 border-r border-[var(--color-divider)]"></th>
+                      <th className="p-1 border-r border-[var(--color-divider)]">
+                        <span className="text-[10px] text-[var(--color-text-faint)] font-mono pl-1">—</span>
+                      </th>
+                      <th className="p-1 border-r border-[var(--color-divider)]">
+                        <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by topbar search</span>
+                      </th>
+                      {/* ALM Status Filter */}
+                      <th className="p-1 border-r border-[var(--color-divider)]">
+                        <select
+                          value={filterStatus}
+                          onChange={e => setFilterStatus(e.target.value)}
+                          className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none"
+                        >
+                          <option value="all">All</option>
+                          {['Scheduled', 'In Progress', 'Ready for Deployment', 'Deployed', 'Cancelled', 'Rolled Back'].map(s => (
+                            <option key={s} value={s}>{s}</option>
+                          ))}
+                        </select>
+                      </th>
+                      {/* Env Filter */}
+                      <th className="p-1 border-r border-[var(--color-divider)]">
+                        <select
+                          value={filterEnv}
+                          onChange={e => setFilterEnv(e.target.value)}
+                          className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none"
+                        >
+                          <option value="all">All</option>
+                          {['Production', 'Staging', 'UAT', 'QA', 'Dev'].map(e => (
+                            <option key={e} value={e}>{e}</option>
+                          ))}
+                        </select>
+                      </th>
+                      <th className="p-1 border-r border-[var(--color-divider)]"></th>
+                      {/* Version Filter */}
+                      <th className="p-1 border-r border-[var(--color-divider)]">
+                        <select
+                          value={filterVersion}
+                          onChange={e => setFilterVersion(e.target.value)}
+                          className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none"
+                        >
+                          <option value="all">All</option>
+                          {['v1.0.0', 'v1.1.0', 'v2.0.0-Beta', 'v2.1.0'].map(v => (
+                            <option key={v} value={v}>{v}</option>
+                          ))}
+                        </select>
+                      </th>
+                      <th className="p-1 border-r border-[var(--color-divider)]"></th>
+                      {/* Smoke filter */}
+                      <th className="p-1 border-r border-[var(--color-divider)]">
+                        <select
+                          value={filterSmoke}
+                          onChange={e => setFilterSmoke(e.target.value)}
+                          className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none"
+                        >
+                          <option value="all">All</option>
+                          {['Passed', 'Running', 'Failed', 'Not Run'].map(s => (
+                            <option key={s} value={s}>{s}</option>
+                          ))}
+                        </select>
+                      </th>
+                      <th className="p-1 border-r border-[var(--color-divider)]"></th>
+                      <th className="p-1 border-r border-[var(--color-divider)]"></th>
+                      <th className="p-1 border-r border-[var(--color-divider)]"></th>
+                      <th className="p-1 text-center">
+                        {(filterStatus !== 'all' || filterEnv !== 'all' || filterVersion !== 'all' || filterSmoke !== 'all') && (
+                          <button
+                            onClick={() => {
+                              setFilterStatus('all');
+                              setFilterEnv('all');
+                              setFilterVersion('all');
+                              setFilterSmoke('all');
+                            }}
+                            className="text-[10px] text-[var(--color-primary-hex)] hover:underline font-bold"
+                          >
+                            Reset
+                          </button>
+                        )}
+                      </th>
+                    </tr>
+                  )}
                 </thead>
                 <tbody className="divide-y divide-[var(--color-divider)]">
-                  {filteredDeliveries.map(item => {
+                  {filteredDeliveries.map((item, idx) => {
                     const isSelected = selectedIds.has(item.id);
-                    const rowClass = getAutofitRowClass();
+                    const isOverdue = daysDiff(item.targetDeliveryDate)! < 0 && item.status !== 'Deployed' && item.status !== 'Cancelled';
+                    const padY = autofitStrategy === 'compact' ? "py-1.5" : "py-3";
                     
                     return (
                       <tr 
                         key={item.id}
                         className={clsx(
-                          "hover:bg-[var(--color-surface-2)]/60 transition-colors group cursor-pointer",
-                          isSelected && "bg-[var(--color-primary-highlight-hex)]/40"
+                          "hover:bg-[var(--color-surface-2)]/60 transition-colors group cursor-pointer relative",
+                          isSelected && "bg-[var(--color-primary-highlight-hex)]/40",
+                          isOverdue && "is-overdue"
                         )}
                         onClick={(e) => {
-                          // Prevent modal open when clicking checkbox or action menu
                           if ((e.target as HTMLElement).closest('input[type="checkbox"]') || (e.target as HTMLElement).closest('button')) return;
                           handleOpenEdit(item);
                         }}
                       >
                         {/* Checkbox */}
-                        <td className="p-3 text-center" onClick={e => e.stopPropagation()}>
+                        <td className={clsx("p-2.5 text-center border-r border-[var(--color-divider)]", padY)} onClick={e => e.stopPropagation()}>
                           <input 
                             type="checkbox"
                             checked={isSelected}
@@ -566,8 +754,13 @@ export const DeliveriesView: React.FC = () => {
                           />
                         </td>
 
+                        {/* Row Num (#) */}
+                        <td className={clsx("p-2.5 text-center border-r border-[var(--color-divider)] td-rn font-mono", padY)}>
+                          {idx + 1}
+                        </td>
+
                         {/* ALM ID & PDN */}
-                        <td className="p-3">
+                        <td className={clsx("p-2.5 border-r border-[var(--color-divider)]", padY)}>
                           <div className="font-mono font-bold text-xs text-[var(--color-primary-hex)]">
                             {item.almId}
                           </div>
@@ -577,14 +770,14 @@ export const DeliveriesView: React.FC = () => {
                         </td>
 
                         {/* Name & Delivered Components */}
-                        <td className="p-3">
-                          <div className="font-semibold text-xs leading-tight mb-0.5 line-clamp-2">
+                        <td className={clsx("p-2.5 border-r border-[var(--color-divider)]", padY)}>
+                          <div className="font-bold text-xs leading-tight mb-0.5 line-clamp-2">
                             {item.name}
                           </div>
-                          <div className="flex items-center gap-2 text-[11px] text-[var(--color-text-muted)]">
-                            <span className="font-medium text-[var(--color-text)]">{item.module}</span>
+                          <div className="flex items-center gap-2 text-[10px] text-[var(--color-text-muted)] flex-wrap">
+                            <span className="font-bold text-[var(--color-text)]">{item.module}</span>
                             <span aria-hidden="true">·</span>
-                            <span className="text-xs text-[var(--color-text-muted)]">{item.category}</span>
+                            <span className="px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[9px] font-semibold">{item.category}</span>
                             {item.componentsDelivered && (
                               <>
                                 <span aria-hidden="true">·</span>
@@ -596,10 +789,18 @@ export const DeliveriesView: React.FC = () => {
                           </div>
                         </td>
 
+                        {/* ALM Status Badge */}
+                        <td className={clsx("p-2.5 border-r border-[var(--color-divider)]", padY)}>
+                          <span className={clsx("st-badge", `st-${ALM_ST_MAP[item.almStatus] || 'not-started'}`)}>
+                            <span className="dot" />
+                            <span>{item.almStatus}</span>
+                          </span>
+                        </td>
+
                         {/* Environment */}
-                        <td className="p-3">
+                        <td className={clsx("p-2.5 border-r border-[var(--color-divider)]", padY)}>
                           <span className={clsx(
-                            "px-2 py-0.5 rounded text-xs font-medium",
+                            "px-2 py-0.5 rounded text-[11px] font-semibold inline-block",
                             item.environment === 'Production' && "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30",
                             item.environment === 'Staging' && "bg-sky-500/10 text-sky-400 border border-sky-500/30",
                             item.environment === 'UAT' && "bg-indigo-500/10 text-indigo-400 border border-indigo-500/30",
@@ -610,34 +811,23 @@ export const DeliveriesView: React.FC = () => {
                           </span>
                         </td>
 
-                        {/* Status */}
-                        <td className="p-3">
-                          <div className="flex items-center gap-1.5">
-                            <span className={clsx(
-                              "w-2 h-2 rounded-full",
-                              item.status === 'Deployed' && "bg-emerald-500",
-                              item.status === 'Ready for Deployment' && "bg-sky-500",
-                              item.status === 'In Progress' && "bg-amber-500",
-                              item.status === 'Scheduled' && "bg-zinc-500",
-                              item.status === 'Cancelled' && "bg-rose-500",
-                              item.status === 'Rolled Back' && "bg-purple-500"
-                            )} />
-                            <span className="text-xs font-medium">{item.status}</span>
-                          </div>
-                          <span className="text-[10px] text-[var(--color-text-muted)] font-mono">
-                            ALM: {item.almStatus}
+                        {/* Deployment Status */}
+                        <td className={clsx("p-2.5 border-r border-[var(--color-divider)]", padY)}>
+                          <span className={clsx("st-badge", `st-${DEL_ST_MAP[item.status] || 'not-started'}`)}>
+                            <span className="dot" />
+                            <span>{item.status}</span>
                           </span>
                         </td>
 
                         {/* Release */}
-                        <td className="p-3">
-                          <span className="font-mono text-xs font-semibold px-2 py-0.5 bg-[var(--color-surface-2)] rounded border border-[var(--color-divider)]">
+                        <td className={clsx("p-2.5 border-r border-[var(--color-divider)]", padY)}>
+                          <span className="font-mono text-[11px] font-semibold px-2 py-0.5 bg-[var(--color-surface-2)] rounded border border-[var(--color-divider)]">
                             {item.releaseVersion}
                           </span>
                         </td>
 
                         {/* Sign-off & Approver */}
-                        <td className="p-3">
+                        <td className={clsx("p-2.5 border-r border-[var(--color-divider)]", padY)}>
                           <div className="flex items-center gap-1.5 mb-1">
                             <span className={clsx(
                               "text-xs font-semibold",
@@ -653,7 +843,7 @@ export const DeliveriesView: React.FC = () => {
                         </td>
 
                         {/* Smoke Test */}
-                        <td className="p-3">
+                        <td className={clsx("p-2.5 border-r border-[var(--color-divider)]", padY)}>
                           <span className={clsx(
                             "px-2 py-0.5 rounded text-xs font-medium inline-block",
                             item.smokeTestStatus === 'Passed' && "bg-emerald-500/15 text-emerald-400",
@@ -666,7 +856,7 @@ export const DeliveriesView: React.FC = () => {
                         </td>
 
                         {/* Linked Tasks / Screens */}
-                        <td className="p-3 max-w-[200px]">
+                        <td className={clsx("p-2.5 max-w-[200px] border-r border-[var(--color-divider)]", padY)}>
                           {item.linkedId ? (
                             <div className="flex items-center gap-1">
                               <span className="px-1.5 py-0.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded text-[10px] font-mono truncate max-w-[170px]" title={item.linkedId}>
@@ -674,7 +864,7 @@ export const DeliveriesView: React.FC = () => {
                               </span>
                             </div>
                           ) : (
-                            <span className="text-[var(--color-text-faint)] text-xs">None</span>
+                            <span className="text-[var(--color-text-faint)] text-xs">—</span>
                           )}
                           {item.linkedScreens && item.linkedScreens.length > 0 && (
                             <div className="text-[10px] text-[var(--color-text-muted)] truncate max-w-[170px] mt-0.5">
@@ -684,32 +874,32 @@ export const DeliveriesView: React.FC = () => {
                         </td>
 
                         {/* Target Date */}
-                        <td className="p-3">
-                          <div className="font-mono text-xs">{fmtDate(item.targetDeliveryDate)}</div>
+                        <td className={clsx("p-2.5 font-mono text-xs border-r border-[var(--color-divider)]", padY)}>
+                          <div>{fmtDate(item.targetDeliveryDate)}</div>
                           {item.actualDeliveryDate && (
-                            <div className="text-[10px] font-mono text-emerald-400">
+                            <div className="text-[10px] text-emerald-400">
                               Act: {fmtDate(item.actualDeliveryDate)}
                             </div>
                           )}
                         </td>
 
                         {/* Lead / Variance */}
-                        <td className="p-3 text-right font-mono text-xs">
+                        <td className={clsx("p-2.5 text-right font-mono text-xs border-r border-[var(--color-divider)]", padY)}>
                           <div>{item.leadTimeDays}d</div>
                           <div className={clsx(
                             "text-[10px]",
-                            (item.variance || 0) > 0 ? "text-rose-400" : ((item.variance || 0) < 0 ? "text-emerald-400" : "text-[var(--color-text-muted)]")
+                            (item.variance || 0) > 0 ? "text-rose-400 font-bold" : ((item.variance || 0) < 0 ? "text-emerald-400 font-bold" : "text-[var(--color-text-muted)]")
                           )}>
                             {(item.variance || 0) > 0 ? `+${item.variance}d` : `${item.variance || 0}d`}
                           </div>
                         </td>
 
                         {/* Actions */}
-                        <td className="p-3 text-center" onClick={e => e.stopPropagation()}>
+                        <td className={clsx("p-2 text-center", padY)} onClick={e => e.stopPropagation()}>
                           <div className="flex items-center justify-center gap-1">
                             <button
                               onClick={() => handleOpenEdit(item)}
-                              className="p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded transition-colors"
+                              className="p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded transition-colors cursor-pointer"
                               title="Edit delivery"
                             >
                               <Edit3 size={13} />
@@ -720,7 +910,7 @@ export const DeliveriesView: React.FC = () => {
                                   deleteDelivery(item.id);
                                 }
                               }}
-                              className="p-1.5 text-[var(--color-text-muted)] hover:text-rose-400 hover:bg-rose-500/10 rounded transition-colors"
+                              className="p-1.5 text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 rounded transition-colors cursor-pointer"
                               title="Delete delivery"
                             >
                               <Trash2 size={13} />
