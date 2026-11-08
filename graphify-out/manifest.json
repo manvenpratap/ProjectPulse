@@ -72,12 +72,16 @@
     "hash": "417268e4b81a43e1428f8cfd9641dc47"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/Topbar.tsx": {
-    "mtime": 1794108647.7903385,
-    "hash": "45899baf277101ae8a6b131a2a271e45"
+    "mtime": 1794111021.6931899,
+    "hash": "e501ccc1d57bf6673f903645fb9be422"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/MobileBottomNav.tsx": {
     "mtime": 1794084125.522195,
     "hash": "b37be2a2765bf8c356321272f04cb8d9"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/SmartAlertsCenter.tsx": {
+    "mtime": 1794110597.8461833,
+    "hash": "ccbb12d619e1372096015204179ff75f"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/Sidebar.tsx": {
     "mtime": 1794105092.8108258,
@@ -164,12 +168,12 @@
     "hash": "38385af5e1a2d267864422d549f8d74f"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/ScaffolderView.tsx": {
-    "mtime": 1794079517.4675908,
-    "hash": "708520043d2cfcdc520bf4d8d1d4965f"
+    "mtime": 1794110793.14405,
+    "hash": "95ac828ce864b3a2d5f291293f3eef74"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/RegistryView.tsx": {
-    "mtime": 1794080512.6406288,
-    "hash": "438a199a88df4b09f619043f89bfd6ce"
+    "mtime": 1794110844.2852046,
+    "hash": "f7cf40718253afb85d4b74432287a0dc"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/StepTemplates.tsx": {
     "mtime": 1794083506.7990234,
@@ -194,6 +198,10 @@
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/timeline/TimelineView.tsx": {
     "mtime": 1794084366.4328127,
     "hash": "d0d33563c689b6184a5882542cf11160"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/reports/CxoEmailModal.tsx": {
+    "mtime": 1794111050.9440556,
+    "hash": "ab598c456a57ad2a78b03c9454a39576"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/reports/ReportView.tsx": {
     "mtime": 1794079518.3591943,

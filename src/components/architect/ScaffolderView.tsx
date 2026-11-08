@@ -14,7 +14,11 @@ import {
   Layers,
   Monitor,
   CheckCircle2,
-  Database
+  Database,
+  Upload,
+  Sparkles,
+  X,
+  Check
 } from 'lucide-react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
@@ -36,6 +40,68 @@ const ScaffolderView: React.FC = () => {
   const [modules, setModules] = useState<ScaffoldModule[]>([
     { name: '', type: 'Server', assignee: '', priority: TaskPriority.MEDIUM, status: TaskStatus.NOT_STARTED, release: 'v1.0.0', screens: '' }
   ]);
+  const [isBulkOpen, setIsBulkOpen] = useState(false);
+  const [bulkText, setBulkText] = useState('');
+  const [importMode, setImportMode] = useState<'append' | 'replace'>('append');
+
+  const PRESET_BLUEPRINTS = [
+    {
+      name: 'Cloud Modernization Suite',
+      description: 'Microservices architecture with serverless events and auth gateway',
+      data: `Auth Gateway, Server, Sarah Jenkins, High, In Progress, v1.0.0, OAuth Token Flow|Session Validation\nOrder Pipeline, Server, Alex Rivera, High, Planned, v1.0.0, Checkout Pipeline|Payment Webhook\nCustomer Portal, GUI, Elena Rostova, Medium, In Progress, v1.1.0, Customer Dashboard|Account Settings|Billing Ledger\nObservability Mesh, Infrastructure, Marcus Vance, Low, Not Started, v1.2.0, Trace Exporter|Log Shipper`
+    },
+    {
+      name: 'Mobile Banking & FinTech',
+      description: 'Core banking ledger, biometrics, KYC, and card controls',
+      data: `Core Banking Ledger, Server, Sarah Jenkins, High, In Progress, v1.0.0, Double-entry Engine|Reconciliation Worker\nBiometric Auth, GUI, Elena Rostova, High, Planned, v1.0.0, FaceID Prompt|PIN Fallback|Device Trust Register\nPayment Rail, Server, Alex Rivera, High, Planned, v1.1.0, Wire Transfer Engine|Instant ACH Adapter\nCard Management, GUI, Elena Rostova, Medium, Not Started, v1.1.0, Virtual Cards|Spending Limits|Freeze Card`
+    },
+    {
+      name: 'Enterprise Analytics & AI',
+      description: 'Event streams, inference endpoints, and executive dashboards',
+      data: `Telemetry Ingestion, Server, Sarah Jenkins, High, In Progress, v1.0.0, Event Stream Consumer|Schema Validator\nModel Serving Cluster, Server, Marcus Vance, High, Planned, v1.0.0, Inference Endpoint|Batch Scorer\nExecutive Dashboard, GUI, Elena Rostova, Medium, In Progress, v1.1.0, KPI Executive Overview|Cohort Retention Matrix\nAlert Dispatcher, Server, Alex Rivera, Medium, Not Started, v1.2.0, PagerDuty Webhook|Slack Bot Channel`
+    }
+  ];
+
+  const handleBulkImport = () => {
+    const lines = bulkText.split('\n').filter(l => l.trim());
+    if (!lines.length) return;
+
+    const parsed: ScaffoldModule[] = [];
+    lines.forEach(line => {
+      const parts = line.split(/[,\t]/).map(p => p.trim());
+      if (parts[0]) {
+        const type = parts[1] || 'Server';
+        const assignee = parts[2] || '';
+        const priorityStr = (parts[3] || 'Medium').toLowerCase();
+        const priority = priorityStr.includes('crit') ? TaskPriority.CRITICAL : priorityStr.includes('high') ? TaskPriority.HIGH : priorityStr.includes('low') ? TaskPriority.LOW : TaskPriority.MEDIUM;
+        const statusStr = (parts[4] || 'Not Started').toLowerCase();
+        const status = statusStr.includes('prog') ? TaskStatus.IN_PROGRESS : statusStr.includes('comp') ? TaskStatus.COMPLETED : statusStr.includes('hold') ? TaskStatus.ON_HOLD : TaskStatus.NOT_STARTED;
+        const release = parts[5] || 'v1.0.0';
+        const screens = (parts[6] || '').split('|').map(s => s.trim()).filter(Boolean).join('\n');
+
+        parsed.push({
+          name: parts[0],
+          type,
+          assignee,
+          priority,
+          status,
+          release,
+          screens
+        });
+      }
+    });
+
+    if (parsed.length > 0) {
+      if (importMode === 'replace') {
+        setModules(parsed);
+      } else {
+        const currentValid = modules.filter(m => m.name.trim());
+        setModules([...currentValid, ...parsed]);
+      }
+      setIsBulkOpen(false);
+      setBulkText('');
+    }
+  };
 
   const addRow = () => {
     setModules([...modules, { name: '', type: 'Server', assignee: '', priority: TaskPriority.MEDIUM, status: TaskStatus.NOT_STARTED, release: 'v1.0.0', screens: '' }]);
@@ -154,11 +220,14 @@ const ScaffolderView: React.FC = () => {
                   <h2 className="text-lg font-bold">Module Blueprint</h2>
                   <p className="text-xs text-[var(--color-text-muted)] mt-0.5">Define core business domains and layers</p>
                 </div>
-                <div className="flex gap-3">
-                  <Button variant="outline" size="sm" onClick={addRow} className="h-10 px-6 font-bold rounded-xl border-[var(--color-divider)] bg-white/50 active:scale-[0.98]">
+                <div className="flex flex-wrap gap-2.5">
+                  <Button variant="outline" size="sm" onClick={() => setIsBulkOpen(true)} className="h-10 px-4 font-bold rounded-xl border-[var(--color-divider)] bg-white/50 active:scale-[0.98]">
+                    <Upload size={16} className="mr-2 text-indigo-600" /> Bulk Import & Presets
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={addRow} className="h-10 px-5 font-bold rounded-xl border-[var(--color-divider)] bg-white/50 active:scale-[0.98]">
                     <Plus size={16} className="mr-2" /> Add Module
                   </Button>
-                  <Button variant="primary" size="sm" onClick={() => setStep(2)} className="h-10 px-8 font-black rounded-xl active:scale-[0.98]">
+                  <Button variant="primary" size="sm" onClick={() => setStep(2)} className="h-10 px-7 font-black rounded-xl active:scale-[0.98]">
                     Next Step <ArrowRight size={16} className="ml-2" />
                   </Button>
                 </div>
@@ -380,6 +449,115 @@ const ScaffolderView: React.FC = () => {
                   ))}
                 </div>
              </div>
+          </div>
+        )}
+        {/* BULK IMPORT & ARCHITECTURE PRESETS MODAL */}
+        {isBulkOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm motion-safe:animate-in motion-safe:fade-in duration-150">
+            <div className="w-full max-w-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-2xl flex flex-col overflow-hidden max-h-[90vh]">
+              <div className="px-6 py-4 border-b border-[var(--color-divider)] flex items-center justify-between bg-[var(--color-surface-2)]">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-500/20">
+                    <Blocks size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-base font-bold text-[var(--color-text)]">Bulk Module & Architecture Presets</h3>
+                    <p className="text-xs text-[var(--color-text-muted)]">Import TSV/CSV or choose an enterprise stack preset</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={() => setIsBulkOpen(false)}
+                  className="w-8 h-8 rounded-xl flex items-center justify-center text-[var(--color-text-muted)] hover:bg-[var(--color-surface-offset)] hover:text-[var(--color-text)] transition-colors cursor-pointer"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="p-6 overflow-y-auto custom-scroll space-y-5">
+                {/* Architecture Presets */}
+                <div>
+                  <label className="text-xs font-bold text-[var(--color-text-faint)] uppercase tracking-wider mb-2 block">
+                    Choose Architecture Blueprint Preset
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                    {PRESET_BLUEPRINTS.map((bp, bidx) => (
+                      <button
+                        key={bidx}
+                        onClick={() => setBulkText(bp.data)}
+                        className="text-left p-3 rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface-2)] hover:border-indigo-500/40 hover:bg-indigo-500/5 transition-all cursor-pointer group"
+                      >
+                        <div className="flex items-center gap-1.5 font-bold text-xs text-[var(--color-text)] group-hover:text-indigo-600 transition-colors">
+                          <Sparkles size={13} className="text-indigo-500" />
+                          <span className="truncate">{bp.name}</span>
+                        </div>
+                        <p className="text-[10px] text-[var(--color-text-muted)] mt-1 line-clamp-2 leading-relaxed">
+                          {bp.description}
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* TSV / CSV Text Editor */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-bold text-[var(--color-text-faint)] uppercase tracking-wider">
+                      Module Blueprint Matrix (CSV / TSV)
+                    </label>
+                    <span className="text-[11px] font-mono text-[var(--color-text-faint)]">
+                      Name, Type, Assignee, Priority, Status, Release, Screens (Pipe-separated)
+                    </span>
+                  </div>
+                  <textarea
+                    value={bulkText}
+                    onChange={(e) => setBulkText(e.target.value)}
+                    rows={8}
+                    className="w-full text-xs font-mono p-3.5 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text)] placeholder:text-[var(--color-text-faint)] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                    placeholder={`Identity Gateway, Server, Bob, High, In Progress, v1.0.0, Login|MFA Setup\nAnalytics Dashboard, GUI, Alice, Medium, Not Started, v1.1.0, Overview|Drilldown`}
+                  />
+                </div>
+
+                {/* Import Mode */}
+                <div className="flex items-center justify-between p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                  <span className="text-xs font-medium text-[var(--color-text)]">Import Strategy</span>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setImportMode('append')}
+                      className={clsx(
+                        "px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer",
+                        importMode === 'append' ? "bg-indigo-600 text-white" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                      )}
+                    >
+                      Append to existing
+                    </button>
+                    <button
+                      onClick={() => setImportMode('replace')}
+                      className={clsx(
+                        "px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer",
+                        importMode === 'replace' ? "bg-indigo-600 text-white" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                      )}
+                    >
+                      Replace all
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-6 py-4 border-t border-[var(--color-divider)] bg-[var(--color-surface-2)] flex items-center justify-end gap-3">
+                <Button variant="ghost" size="sm" onClick={() => setIsBulkOpen(false)}>
+                  Cancel
+                </Button>
+                <Button 
+                  variant="primary" 
+                  size="sm" 
+                  onClick={handleBulkImport}
+                  disabled={!bulkText.trim()}
+                  className="font-bold shadow-sm"
+                >
+                  <Check size={14} className="mr-1.5" /> Import {bulkText.trim() ? `${bulkText.trim().split('\n').filter(Boolean).length} Module(s)` : 'Modules'}
+                </Button>
+              </div>
+            </div>
           </div>
         )}
       </div>

@@ -9,7 +9,11 @@ import {
   Database,
   ShieldCheck,
   Package,
-  Activity
+  Activity,
+  Upload,
+  Edit3,
+  X,
+  Check
 } from 'lucide-react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
@@ -21,10 +25,29 @@ const RegistryView: React.FC = () => {
   const [newValue, setNewValue] = useState('');
   const [newLibName, setNewLibName] = useState('');
   const [isAddingLib, setIsAddingLib] = useState(false);
+  const [isBulkOpen, setIsBulkOpen] = useState(false);
+  const [bulkText, setBulkText] = useState('');
 
   const dropdowns = state.dropdowns || {};
   const keys = Object.keys(dropdowns).sort();
   const values = dropdowns[selectedKey] || [];
+
+  const openBulkModal = () => {
+    setBulkText(values.join('\n'));
+    setIsBulkOpen(true);
+  };
+
+  const handleSaveBulk = () => {
+    const updated = bulkText.split('\n').map(v => v.trim()).filter(Boolean);
+    const deduplicated = Array.from(new Set(updated));
+    updateProject({
+      dropdowns: {
+        ...state.dropdowns,
+        [selectedKey]: deduplicated
+      }
+    });
+    setIsBulkOpen(false);
+  };
 
   const isReserved = ['status', 'priority', 'category', 'module', 'moduleType'].includes(selectedKey);
 
@@ -184,12 +207,15 @@ const RegistryView: React.FC = () => {
                   </p>
                 </div>
                 
-                <div className="flex gap-2">
-                   {!isReserved && (
-                     <Button variant="ghost" size="icon" className="h-10 w-10 text-red-500 rounded-xl active:scale-[0.98]" onClick={deleteSet}>
-                        <Trash2 size={20} />
-                     </Button>
-                   )}
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={openBulkModal} className="h-10 px-4 font-bold rounded-xl border-[var(--color-divider)] active:scale-[0.98]">
+                    <Upload size={15} className="mr-2 text-indigo-600" /> Bulk Edit Options
+                  </Button>
+                  {!isReserved && (
+                    <Button variant="ghost" size="icon" className="h-10 w-10 text-red-500 rounded-xl active:scale-[0.98]" onClick={deleteSet}>
+                       <Trash2 size={20} />
+                    </Button>
+                  )}
                 </div>
               </div>
 
@@ -248,6 +274,55 @@ const RegistryView: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* BULK EDIT OPTIONS MODAL (dd-bulk-flyout parity) */}
+      {isBulkOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm motion-safe:animate-in motion-safe:fade-in duration-150">
+          <div className="w-full max-w-lg bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-2xl flex flex-col overflow-hidden max-h-[85vh]">
+            <div className="px-6 py-4 border-b border-[var(--color-divider)] flex items-center justify-between bg-[var(--color-surface-2)]">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-500/20">
+                  <ListChecks size={18} />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-[var(--color-text)]">
+                    Bulk Edit: <span className="capitalize text-indigo-600 dark:text-indigo-400">{selectedKey.replace(/([A-Z])/g, ' $1')}</span>
+                  </h3>
+                  <p className="text-xs text-[var(--color-text-muted)]">One value per line. Duplicates automatically pruned.</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setIsBulkOpen(false)}
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-[var(--color-text-muted)] hover:bg-[var(--color-surface-offset)] hover:text-[var(--color-text)] transition-colors cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto custom-scroll space-y-4">
+              <textarea
+                value={bulkText}
+                onChange={(e) => setBulkText(e.target.value)}
+                rows={12}
+                className="w-full text-xs font-mono p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text)] focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all leading-relaxed"
+                placeholder="Option 1&#10;Option 2&#10;Option 3"
+              />
+              <p className="text-[11px] text-[var(--color-text-faint)]">
+                Lines will be trimmed and empty lines excluded upon save.
+              </p>
+            </div>
+
+            <div className="px-6 py-4 border-t border-[var(--color-divider)] bg-[var(--color-surface-2)] flex items-center justify-end gap-3">
+              <Button variant="ghost" size="sm" onClick={() => setIsBulkOpen(false)}>
+                Cancel
+              </Button>
+              <Button variant="primary" size="sm" onClick={handleSaveBulk} className="font-bold shadow-sm">
+                <Check size={14} className="mr-1.5" /> Save Values ({bulkText.split('\n').filter(s => s.trim()).length})
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

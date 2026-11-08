@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { getHealthScore } from '../../utils/projectUtils';
 import Button from '../shared/Button';
@@ -24,11 +24,14 @@ import {
   Component as ComponentIcon,
   Menu,
   Flag,
-  Smile
+  Smile,
+  Mail,
+  Share2
 } from 'lucide-react';
 import clsx from 'clsx';
 import ThemeFlyout from './ThemeFlyout';
-import NotificationFlyout from './NotificationFlyout';
+import SmartAlertsCenter, { computeAlerts } from './SmartAlertsCenter';
+import CxoEmailModal from '../reports/CxoEmailModal';
 import UserProfileFlyout from './UserProfileFlyout';
 import AccessManagerModal from '../auth/AccessManagerModal';
 import { useAuth } from '../../store/AuthContext';
@@ -48,8 +51,11 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isAccessManagerOpen, setIsAccessManagerOpen] = useState(false);
+  const [isCxoEmailOpen, setIsCxoEmailOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const smartAlerts = useMemo(() => computeAlerts(state), [state.tasks, state.members, state.defects, state.raids]);
 
   const handleImportClick = () => {
     fileInputRef.current?.click();
@@ -107,7 +113,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
 
   return (
     <>
-      <header className="h-[calc(54px+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] bg-[var(--color-surface)]/85 backdrop-blur-xl saturate-180 border-b border-[var(--color-divider)] flex items-center px-4 gap-3 md:gap-4 shrink-0 z-20 shadow-2xs sticky top-0">
+      <header className="h-[calc(54px+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] bg-[var(--color-surface)]/85 backdrop-blur-xl saturate-180 border-b border-[var(--color-divider)] flex items-center px-4 gap-3 md:gap-4 shrink-0 z-30 shadow-2xs sticky top-0">
         <div className="flex items-center gap-2 md:gap-3 min-w-0">
           <button 
             onClick={toggleSidebar}
@@ -141,7 +147,20 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
                   className="fixed inset-0 z-10" 
                   onClick={() => setIsActionsOpen(false)} 
                 />
-                <div className="absolute top-full left-0 mt-2 w-64 bg-[var(--color-surface)]/95 backdrop-blur-2xl border border-[var(--color-divider)] rounded-2xl shadow-xl z-20 py-2 overflow-hidden ring-1 ring-black/5 motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 duration-150 origin-top-left">
+                <div className="absolute top-full left-0 mt-2 w-64 bg-[var(--color-surface)]/95 backdrop-blur-2xl border border-[var(--color-divider)] rounded-2xl shadow-xl z-50 py-2 overflow-hidden ring-1 ring-black/5 motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 duration-150 origin-top-left">
+                  <div className="px-3 py-2 text-xs font-semibold text-[var(--color-text-faint)]">
+                    Share & Reports
+                  </div>
+                  <button 
+                    onClick={() => { setIsActionsOpen(false); setIsCxoEmailOpen(true); }}
+                    className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
+                  >
+                    <Mail size={16} className="text-indigo-500" />
+                    <span>Executive CXO Email Brief…</span>
+                  </button>
+
+                  <div className="h-[1px] bg-[var(--color-divider)] my-1" />
+
                   <div className="px-3 py-2 text-xs font-semibold text-[var(--color-text-faint)]">
                     Data & Persistence
                   </div>
@@ -284,17 +303,18 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
             <Button 
               variant="ghost" 
               size="icon" 
-              title="Smart Alerts"
-              aria-label="Smart Alerts and Notifications" 
+              title="Smart Alerts Center"
+              aria-label="Smart Alerts Center" 
               className={clsx("rounded-xl min-h-[40px] min-w-[40px] sm:min-h-[36px] sm:min-w-[36px] relative", isNotifOpen && "bg-[var(--color-surface-2)]")}
               onClick={() => setIsNotifOpen(!isNotifOpen)}
             >
               <Bell size={18} />
-              {overdueCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-[var(--color-surface)]" />
+              {smartAlerts.length > 0 && (
+                <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 bg-red-500 text-white rounded-full text-[9px] font-black flex items-center justify-center border-2 border-[var(--color-surface)] shadow-2xs">
+                  {smartAlerts.length > 9 ? '9+' : smartAlerts.length}
+                </span>
               )}
             </Button>
-            <NotificationFlyout isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
           </div>
 
           <Button 
@@ -360,6 +380,8 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
         </div>
       </header>
 
+      <SmartAlertsCenter isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
+      <CxoEmailModal isOpen={isCxoEmailOpen} onClose={() => setIsCxoEmailOpen(false)} />
       <ThemeFlyout isOpen={isThemeOpen} onClose={() => setIsThemeOpen(false)} />
       <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
       <AccessManagerModal isOpen={isAccessManagerOpen} onClose={() => setIsAccessManagerOpen(false)} />
