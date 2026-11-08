@@ -26,6 +26,7 @@ import { Defect, DefectStatus } from '../../types';
 import DefectModal from './DefectModal';
 import { fmtDate, todayStr } from '../../utils/projectUtils';
 import { motion, AnimatePresence } from 'motion/react';
+import TablePagination, { usePagination } from '../shared/TablePagination';
 
 type ViewMode = 'table' | 'cards';
 type DensityMode = 'comfortable' | 'compact';
@@ -185,6 +186,8 @@ const DefectView: React.FC = () => {
       return sortAsc ? cmp : -cmp;
     });
   }, [state.defects, search, filterStatus, filterSeverity, filterPriority, filterAssignee, sortBy, sortAsc]);
+
+  const pagination = usePagination<Defect>(filteredDefects, 10, 'pp_page_size_defects');
 
   const isAllSelected = filteredDefects.length > 0 && selectedIds.size === filteredDefects.length;
 
@@ -615,7 +618,7 @@ const DefectView: React.FC = () => {
               </thead>
 
               <tbody className="divide-y divide-[var(--color-divider)]">
-                {filteredDefects.map((defect, idx) => {
+                {pagination.paginatedItems.map((defect, idx) => {
                   const isSelected = selectedIds.has(defect.id);
                   const padY = density === 'compact' ? "py-1.5" : "py-3";
                   const isS1 = defect.severity?.startsWith('S1');
@@ -642,7 +645,7 @@ const DefectView: React.FC = () => {
 
                       {/* Row Num */}
                       <td className={clsx("p-2.5 text-center border-r border-[var(--color-divider)] td-rn font-mono", padY)}>
-                        {idx + 1}
+                        {pagination.startIndex + idx + 1}
                       </td>
 
                       {/* Edit Button */}
@@ -735,16 +738,26 @@ const DefectView: React.FC = () => {
                 })}
               </tbody>
             </table>
+            <TablePagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              totalItems={pagination.totalItems}
+              pageSize={pagination.pageSize}
+              onPageChange={pagination.setCurrentPage}
+              onPageSizeChange={pagination.setPageSize}
+              itemLabel="defects"
+            />
           </div>
         ) : (
           /* Cards View */
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredDefects.map((defect) => (
-              <div 
-                key={defect.id} 
-                className="card p-5 group hover:border-red-200 transition-colors duration-150 flex flex-col cursor-pointer active:scale-[0.98]"
-                onClick={() => handleEdit(defect.id)}
-              >
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {pagination.paginatedItems.map((defect) => (
+                <div 
+                  key={defect.id} 
+                  className="card p-5 group hover:border-red-200 transition-colors duration-150 flex flex-col cursor-pointer active:scale-[0.98]"
+                  onClick={() => handleEdit(defect.id)}
+                >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-2">
                     <span className="text-[11px] font-mono font-bold text-rose-500 bg-rose-500/10 border border-rose-500/20 px-1.5 py-0.5 rounded leading-none">
@@ -795,6 +808,17 @@ const DefectView: React.FC = () => {
                 </div>
               </div>
             ))}
+            </div>
+            <TablePagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              totalItems={pagination.totalItems}
+              pageSize={pagination.pageSize}
+              onPageChange={pagination.setCurrentPage}
+              onPageSizeChange={pagination.setPageSize}
+              itemLabel="defects"
+              className="rounded-2xl border border-[var(--color-divider)]"
+            />
           </div>
         )}
 

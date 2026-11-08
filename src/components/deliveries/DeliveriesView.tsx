@@ -41,6 +41,7 @@ import clsx from 'clsx';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
 import Modal from '../shared/Modal';
+import TablePagination, { usePagination } from '../shared/TablePagination';
 
 type ViewMode = 'table' | 'kanban' | 'heatmap';
 type HeatmapPerspective = 'feat_screens' | 'env_pipeline' | 'del_impact';
@@ -166,6 +167,8 @@ export const DeliveriesView: React.FC = () => {
         return 0;
       });
   }, [deliveries, filterEnv, filterStatus, filterVersion, filterCategory, filterSmoke, searchQuery, sortBy, sortAsc]);
+
+  const pagination = usePagination<Delivery>(filteredDeliveries, 10, 'pp_page_size_deliveries');
 
   // Handlers
   const toggleSelect = (id: string) => {
@@ -725,7 +728,7 @@ export const DeliveriesView: React.FC = () => {
                   )}
                 </thead>
                 <tbody className="divide-y divide-[var(--color-divider)]">
-                  {filteredDeliveries.map((item, idx) => {
+                  {pagination.paginatedItems.map((item, idx) => {
                     const isSelected = selectedIds.has(item.id);
                     const isOverdue = daysDiff(item.targetDeliveryDate)! < 0 && item.status !== 'Deployed' && item.status !== 'Cancelled';
                     const padY = autofitStrategy === 'compact' ? "py-1.5" : "py-3";
@@ -755,7 +758,7 @@ export const DeliveriesView: React.FC = () => {
 
                         {/* Row Num (#) */}
                         <td className={clsx("p-2.5 text-center border-r border-[var(--color-divider)] td-rn font-mono", padY)}>
-                          {idx + 1}
+                          {pagination.startIndex + idx + 1}
                         </td>
 
                         {/* ALM ID & PDN */}
@@ -967,6 +970,15 @@ export const DeliveriesView: React.FC = () => {
                 </tbody>
               </table>
             </div>
+            <TablePagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              totalItems={pagination.totalItems}
+              pageSize={pagination.pageSize}
+              onPageChange={pagination.setCurrentPage}
+              onPageSizeChange={pagination.setPageSize}
+              itemLabel="packages"
+            />
           </div>
         )}
 

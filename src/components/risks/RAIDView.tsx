@@ -29,6 +29,7 @@ import clsx from 'clsx';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
 import Modal from '../shared/Modal';
+import TablePagination, { usePagination } from '../shared/TablePagination';
 
 const RAIDView: React.FC = () => {
   const { state, updateProject, addLog } = useProject();
@@ -278,6 +279,9 @@ const RAIDView: React.FC = () => {
 
   const activeFiltered = getFilteredRaids();
   const activeDecisions = getFilteredDecisions();
+
+  const raidPagination = usePagination<RaidItem>(activeFiltered, 10, 'pp_page_size_raid');
+  const decisionPagination = usePagination<Decision>(activeDecisions, 10, 'pp_page_size_decisions');
 
   const getTypeStyle = (type: string) => {
     switch (type) {
@@ -675,7 +679,7 @@ const RAIDView: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[var(--color-divider)]">
-                    {activeDecisions.length > 0 ? activeDecisions.map(d => (
+                    {decisionPagination.paginatedItems.length > 0 ? decisionPagination.paginatedItems.map(d => (
                       <tr key={d.id} className="hover:bg-[var(--color-surface-offset)]/50 transition-colors">
                         <td className="p-4 font-mono font-bold text-xs text-[var(--color-primary-hex)]">{d.id}</td>
                         <td className="p-4">
@@ -719,6 +723,15 @@ const RAIDView: React.FC = () => {
                   </tbody>
                 </table>
               </div>
+              <TablePagination
+                currentPage={decisionPagination.currentPage}
+                totalPages={decisionPagination.totalPages}
+                totalItems={decisionPagination.totalItems}
+                pageSize={decisionPagination.pageSize}
+                onPageChange={decisionPagination.setCurrentPage}
+                onPageSizeChange={decisionPagination.setPageSize}
+                itemLabel="decisions"
+              />
             </div>
           </div>
         ) : (
@@ -825,7 +838,7 @@ const RAIDView: React.FC = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[var(--color-divider)]">
-                    {activeFiltered.length > 0 ? activeFiltered.map(r => (
+                    {raidPagination.paginatedItems.length > 0 ? raidPagination.paginatedItems.map(r => (
                       <tr key={r.id} className="hover:bg-[var(--color-surface-offset)]/50 transition-colors">
                         <td className="p-4">
                           <div className="font-mono font-bold text-xs text-[var(--color-primary-hex)]">{r.id}</div>
@@ -877,6 +890,15 @@ const RAIDView: React.FC = () => {
                   </tbody>
                 </table>
               </div>
+              <TablePagination
+                currentPage={raidPagination.currentPage}
+                totalPages={raidPagination.totalPages}
+                totalItems={raidPagination.totalItems}
+                pageSize={raidPagination.pageSize}
+                onPageChange={raidPagination.setCurrentPage}
+                onPageSizeChange={raidPagination.setPageSize}
+                itemLabel="RAID items"
+              />
             </div>
           </div>
         )}

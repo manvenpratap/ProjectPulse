@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import Button from '../shared/Button';
 import { motion, AnimatePresence } from 'motion/react';
+import TablePagination, { usePagination } from '../shared/TablePagination';
 
 interface TaskGridProps {
   onEditTask: (id: string) => void;
@@ -235,6 +236,8 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
     });
   }, [state.tasks, searchTerm, selectedModule, selectedRelease, selectedStatus, selectedAssignee, selectedPriority, sortField, sortAsc]);
 
+  const pagination = usePagination<Task>(filteredTasks, 10, 'pp_page_size_tasks');
+
   if (!state.tasks.length) {
     return (
       <div className="h-full flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-[var(--color-divider)] rounded-2xl bg-[var(--color-surface)]">
@@ -430,8 +433,9 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
       </AnimatePresence>
 
       {/* ── 3. Desktop Table (Full HTML System Standards) ── */}
-      <div className="hidden lg:block overflow-x-auto rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs">
-        <table className="w-full text-left border-collapse min-w-[1100px] table-fixed">
+      <div className="hidden lg:block rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse min-w-[1100px] table-fixed">
           <thead>
             {/* Header Row */}
             <tr className="bg-[var(--color-surface-offset)] border-b-2 border-[var(--color-border)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)] select-none">
@@ -667,7 +671,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
           </thead>
 
           <tbody className="divide-y divide-[var(--color-divider)]">
-            {filteredTasks.map((task, idx) => {
+            {pagination.paginatedItems.map((task, idx) => {
               const overdue = daysDiff(task.dueDate)! < 0 && task.status !== TaskStatus.COMPLETED && task.status !== TaskStatus.CANCELLED;
               const blocked = isBlocked(task, state.tasks);
               const isExpanded = expandedTasks.has(task.id);
@@ -698,7 +702,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
 
                     {/* Row Num */}
                     <td className={clsx("p-2.5 text-center border-r border-[var(--color-divider)] td-rn font-mono", padY)}>
-                      {idx + 1}
+                      {pagination.startIndex + idx + 1}
                     </td>
 
                     {/* Expand Subtasks Button */}
@@ -950,6 +954,16 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
             )}
           </tbody>
         </table>
+        </div>
+        <TablePagination
+          currentPage={pagination.currentPage}
+          totalPages={pagination.totalPages}
+          totalItems={pagination.totalItems}
+          pageSize={pagination.pageSize}
+          onPageChange={pagination.setCurrentPage}
+          onPageSizeChange={pagination.setPageSize}
+          itemLabel="tasks"
+        />
       </div>
 
       {/* ── 4. Mobile View Cards (Touch-friendly & responsive) ── */}
@@ -972,7 +986,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
             </button>
           </div>
         )}
-        {filteredTasks.map((task) => {
+        {pagination.paginatedItems.map((task) => {
           const overdue = daysDiff(task.dueDate)! < 0 && task.status !== TaskStatus.COMPLETED && task.status !== TaskStatus.CANCELLED;
           const blocked = isBlocked(task, state.tasks);
           const isExpanded = expandedTasks.has(task.id);
@@ -1046,6 +1060,18 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
             </div>
           );
         })}
+        {filteredTasks.length > 0 && (
+          <TablePagination
+            currentPage={pagination.currentPage}
+            totalPages={pagination.totalPages}
+            totalItems={pagination.totalItems}
+            pageSize={pagination.pageSize}
+            onPageChange={pagination.setCurrentPage}
+            onPageSizeChange={pagination.setPageSize}
+            itemLabel="tasks"
+            className="rounded-2xl border border-[var(--color-divider)]"
+          />
+        )}
       </div>
     </div>
   );

@@ -42,6 +42,7 @@ import MemberHierarchy from './MemberHierarchy';
 import PageHeader from '../shared/PageHeader';
 import { motion, AnimatePresence } from 'motion/react';
 import { getWeekNumber } from '../../utils/projectUtils';
+import TablePagination, { usePagination } from '../shared/TablePagination';
 
 const AVATAR_COLORS = [
   'bg-indigo-500 text-white',
@@ -114,6 +115,8 @@ const TeamView: React.FC = () => {
       );
     });
   }, [members, searchQuery, roleFilter, statusFilter]);
+
+  const pagination = usePagination<Member>(filteredMembers, 10, 'pp_page_size_team');
 
   // ══════════════════════════════════════════════════════════
   // TELEMETRY 1: Velocity Leaderboard (Top 3 in last 30 days)
@@ -1152,7 +1155,7 @@ const TeamView: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--color-divider)]">
-                  {filteredMembers.map((m, i) => {
+                  {pagination.paginatedItems.map((m, i) => {
                     const initials = m.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
                     const mTasks = tasks.filter(t => t.assignee === m.name);
                     const totalCount = mTasks.filter(t => t.status !== TaskStatus.CANCELLED).length;
@@ -1245,6 +1248,15 @@ const TeamView: React.FC = () => {
                   })}
                 </tbody>
               </table>
+              <TablePagination
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+                totalItems={pagination.totalItems}
+                pageSize={pagination.pageSize}
+                onPageChange={pagination.setCurrentPage}
+                onPageSizeChange={pagination.setPageSize}
+                itemLabel="members"
+              />
             </div>
           )}
 
