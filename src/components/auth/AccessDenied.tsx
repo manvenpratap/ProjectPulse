@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../../store/AuthContext';
 import { useProject } from '../../store/ProjectContext';
+import { getAllNavItems } from '../../config/navigation';
 import { ShieldAlert, Lock, ArrowLeft, UserCheck, Sparkles, Key } from 'lucide-react';
 import Button from '../shared/Button';
 
@@ -10,10 +11,12 @@ interface AccessDeniedProps {
 }
 
 export const AccessDenied: React.FC<AccessDeniedProps> = ({ viewId, onOpenAccessManager }) => {
-  const { currentUser, switchUser, users, isAdmin } = useAuth();
+  const { currentUser, switchUser, users, isAdmin, hasViewAccess } = useAuth();
   const { setView } = useProject();
 
   const adminUser = users.find(u => u.role === 'Admin');
+  const allNav = getAllNavItems();
+  const fallbackView = allNav.find(item => hasViewAccess(item.id))?.id || 'overview';
 
   return (
     <div className="h-full flex items-center justify-center p-4 sm:p-8 bg-[var(--color-bg)] select-none">
@@ -48,10 +51,10 @@ export const AccessDenied: React.FC<AccessDeniedProps> = ({ viewId, onOpenAccess
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
           <Button 
             variant="outline" 
-            onClick={() => setView('overview')}
+            onClick={() => setView(fallbackView)}
             className="w-full sm:w-auto h-11 px-5 rounded-xl font-semibold"
           >
-            <ArrowLeft size={15} className="mr-1.5" /> Return to Overview
+            <ArrowLeft size={15} className="mr-1.5" /> Return to Workspace
           </Button>
 
           {/* Quick Demo Switcher if current user is not admin */}

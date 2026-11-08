@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useProject } from '../../store/ProjectContext';
+import { useAuth } from '../../store/AuthContext';
 import { 
   Bell, 
   AlertCircle, 
@@ -165,13 +166,14 @@ export function computeAlerts(state: { tasks?: any[]; members?: any[]; defects?:
 
 export const SmartAlertsCenter: React.FC<SmartAlertsCenterProps> = ({ isOpen, onClose }) => {
   const { state, setView } = useProject();
+  const { hasViewAccess } = useAuth();
   const [activeTab, setActiveTab] = useState<'all' | 'critical' | 'warning' | 'dismissed'>('all');
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(() => new Set());
 
   // ══════ SMART ALERTS ENGINE (Matches projectpulse.html computeAlerts) ══════
   const allAlerts = useMemo(() => {
-    return computeAlerts(state);
-  }, [state.tasks, state.members, state.defects, state.raids]);
+    return computeAlerts(state).filter(a => !a.targetView || hasViewAccess(a.targetView));
+  }, [state.tasks, state.members, state.defects, state.raids, hasViewAccess]);
 
   const activeAlerts = useMemo(() => allAlerts.filter(a => !dismissedIds.has(a.id)), [allAlerts, dismissedIds]);
   const dismissedAlerts = useMemo(() => allAlerts.filter(a => dismissedIds.has(a.id)), [allAlerts, dismissedIds]);

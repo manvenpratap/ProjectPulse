@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ProjectProvider, useProject } from './store/ProjectContext';
 import { AuthProvider, useAuth } from './store/AuthContext';
+import { getAllNavItems } from './config/navigation';
 import Sidebar from './components/layout/Sidebar';
 import Topbar from './components/layout/Topbar';
 import MobileBottomNav from './components/layout/MobileBottomNav';
@@ -32,9 +33,20 @@ import { motion, AnimatePresence } from 'motion/react';
 
 const MainApp: React.FC = () => {
   const { state, setView } = useProject();
-  const { isAuthenticated, hasViewAccess } = useAuth();
+  const { isAuthenticated, hasViewAccess, currentUser } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
+
+  // If current screen is not permitted for the active user role, automatically route to the user's primary accessible screen
+  useEffect(() => {
+    if (isAuthenticated && !hasViewAccess(state.view)) {
+      const allNav = getAllNavItems();
+      const firstAllowed = allNav.find(item => hasViewAccess(item.id))?.id;
+      if (firstAllowed && firstAllowed !== state.view) {
+        setView(firstAllowed);
+      }
+    }
+  }, [isAuthenticated, currentUser?.id, state.view, hasViewAccess, setView]);
 
   // If not authenticated, prompt login
   if (!isAuthenticated) {

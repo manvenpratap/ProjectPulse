@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useProject } from '../../store/ProjectContext';
+import { useAuth } from '../../store/AuthContext';
 import { TaskStatus, TaskPriority, RaidItem, Decision } from '../../types';
 import { getHealthScore, daysDiff, addBusDays } from '../../utils/projectUtils';
 import { 
@@ -35,6 +36,7 @@ import { exportProjectExcel } from '../../services/excelService';
 
 const OverviewView: React.FC = () => {
   const { state, setView, updateProject, addLog } = useProject();
+  const { hasViewAccess, canPerform } = useAuth();
   const { tasks = [], raids = [], decisions = [], members = [], log = [] } = state;
 
   // 1. Calculate Core Health metrics
@@ -218,24 +220,28 @@ const OverviewView: React.FC = () => {
         subtitle="Composite delivery health, early warning bottleneck signals, and real-time simulation"
         actions={
           <div className="flex items-center gap-2.5">
-            <button 
-              onClick={() => exportProjectExcel(state)}
-              className="h-9 px-3.5 bg-[var(--color-surface)] border border-[var(--color-border)] hover:bg-[var(--color-surface-2)] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-[var(--color-text)] rounded-xl text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
-              aria-label="Export project report to Excel"
-            >
-              <FileSpreadsheet size={15} className="text-emerald-500" /> 
-              <span>Export Excel</span>
-              <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono rounded bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[var(--color-text-faint)]">⌘E</kbd>
-            </button>
-            <button 
-              onClick={() => setView('dash')}
-              className="h-9 px-3.5 bg-[var(--color-primary-hex)] hover:opacity-95 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-[var(--color-primary-text)] rounded-xl text-xs font-semibold flex items-center gap-2 cursor-pointer shadow-sm transition-opacity"
-              aria-label="Navigate to advanced telemetry dashboard"
-            >
-              <TrendingUp size={15} /> 
-              <span>Advanced Analytics</span>
-              <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono rounded bg-white/20 text-white">G D</kbd>
-            </button>
+            {canPerform('canExportExcel') && (
+              <button 
+                onClick={() => exportProjectExcel(state)}
+                className="h-9 px-3.5 bg-[var(--color-surface)] border border-[var(--color-border)] hover:bg-[var(--color-surface-2)] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-[var(--color-text)] rounded-xl text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
+                aria-label="Export project report to Excel"
+              >
+                <FileSpreadsheet size={15} className="text-emerald-500" /> 
+                <span>Export Excel</span>
+                <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono rounded bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[var(--color-text-faint)]">⌘E</kbd>
+              </button>
+            )}
+            {hasViewAccess('dash') && (
+              <button 
+                onClick={() => setView('dash')}
+                className="h-9 px-3.5 bg-[var(--color-primary-hex)] hover:opacity-95 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-[var(--color-primary-text)] rounded-xl text-xs font-semibold flex items-center gap-2 cursor-pointer shadow-sm transition-opacity"
+                aria-label="Navigate to advanced telemetry dashboard"
+              >
+                <TrendingUp size={15} /> 
+                <span>Advanced Analytics</span>
+                <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono rounded bg-white/20 text-white">G D</kbd>
+              </button>
+            )}
           </div>
         }
       />
@@ -355,13 +361,15 @@ const OverviewView: React.FC = () => {
                 Active Deployments & Release Verification Gates
               </h3>
             </div>
-            <button 
-              onClick={() => setView('deliveries')}
-              className="px-3.5 py-1.5 bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] hover:bg-[var(--color-primary-hex)] hover:text-[var(--color-primary-text)] active:scale-[0.98] rounded-lg text-xs font-semibold flex items-center gap-1.5 motion-safe:transition-transform self-start md:self-auto cursor-pointer"
-            >
-              <span>Open ALM Workspace</span>
-              <ArrowRight size={13} />
-            </button>
+            {hasViewAccess('deliveries') && (
+              <button 
+                onClick={() => setView('deliveries')}
+                className="px-3.5 py-1.5 bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] hover:bg-[var(--color-primary-hex)] hover:text-[var(--color-primary-text)] active:scale-[0.98] rounded-lg text-xs font-semibold flex items-center gap-1.5 motion-safe:transition-transform self-start md:self-auto cursor-pointer"
+              >
+                <span>Open ALM Workspace</span>
+                <ArrowRight size={13} />
+              </button>
+            )}
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -401,13 +409,15 @@ const OverviewView: React.FC = () => {
               <h3 className="font-bold text-sm tracking-tight text-[var(--color-text)]">Milestone Roadmap Timeline</h3>
               <p className="text-xs text-[var(--color-text-muted)]">Chronological checkpoint nodes, reached delivery gates, and target dates.</p>
             </div>
-            <button 
-              onClick={() => setView('timeline')} 
-              className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
-            >
-              <span>View Timeline</span>
-              <ArrowRight size={13} className="shrink-0" />
-            </button>
+            {hasViewAccess('timeline') && (
+              <button 
+                onClick={() => setView('timeline')} 
+                className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <span>View Timeline</span>
+                <ArrowRight size={13} className="shrink-0" />
+              </button>
+            )}
           </div>
           
           <div className="relative py-2">
@@ -452,13 +462,15 @@ const OverviewView: React.FC = () => {
               <h3 className="font-bold text-sm text-[var(--color-text)]">Resource Utilization Matrix</h3>
               <p className="text-xs text-[var(--color-text-muted)]">Individual engineer capacity load, active commitments, and utilization thresholds.</p>
             </div>
-            <button 
-              onClick={() => setView('capacity')} 
-              className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
-            >
-              <span>View Capacity</span>
-              <ArrowRight size={13} className="shrink-0" />
-            </button>
+            {hasViewAccess('capacity') && (
+              <button 
+                onClick={() => setView('capacity')} 
+                className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <span>View Capacity</span>
+                <ArrowRight size={13} className="shrink-0" />
+              </button>
+            )}
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -652,28 +664,30 @@ const OverviewView: React.FC = () => {
                   <p className="text-xs text-[var(--color-text-faint)]">FTE loading gap</p>
                 </div>
 
-                <div className="col-span-2 pt-3 border-t border-[var(--color-divider)] mt-1">
-                  <button 
-                    onClick={handleCommitSimulation}
-                    disabled={simulationCommitted}
-                    className={clsx(
-                      "w-full h-10 rounded-lg text-xs font-semibold whitespace-nowrap active:scale-[0.98] motion-safe:transition-transform flex items-center justify-center gap-2 shadow-sm cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed",
-                      simulationCommitted 
-                        ? "bg-emerald-600 text-white cursor-default" 
-                        : "bg-[var(--color-primary-hex)] hover:opacity-95 text-[var(--color-primary-text)]"
-                    )}
-                  >
-                    {simulationCommitted ? (
-                      <>
-                        <Check size={14} /> <span>Committed</span>
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles size={14} /> <span>Commit Simulation</span>
-                      </>
-                    )}
-                  </button>
-                </div>
+                {canPerform('canEditTask') && (
+                  <div className="col-span-2 pt-3 border-t border-[var(--color-divider)] mt-1">
+                    <button 
+                      onClick={handleCommitSimulation}
+                      disabled={simulationCommitted}
+                      className={clsx(
+                        "w-full h-10 rounded-lg text-xs font-semibold whitespace-nowrap active:scale-[0.98] motion-safe:transition-transform flex items-center justify-center gap-2 shadow-sm cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed",
+                        simulationCommitted 
+                          ? "bg-emerald-600 text-white cursor-default" 
+                          : "bg-[var(--color-primary-hex)] hover:opacity-95 text-[var(--color-primary-text)]"
+                      )}
+                    >
+                      {simulationCommitted ? (
+                        <>
+                          <Check size={14} /> <span>Committed</span>
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles size={14} /> <span>Commit Simulation</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -690,13 +704,15 @@ const OverviewView: React.FC = () => {
                   <h3 className="font-bold text-sm text-[var(--color-text)]">Critical Path Deliverables</h3>
                   <p className="text-xs text-[var(--color-text-muted)]">High & Critical Priority Telemetry Tasks</p>
                 </div>
-                <button 
-                  onClick={() => setView('tasks')} 
-                  className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
-                >
-                  <span>View Tasks</span>
-                  <ArrowRight size={13} className="shrink-0" />
-                </button>
+                {hasViewAccess('tasks') && (
+                  <button 
+                    onClick={() => setView('tasks')} 
+                    className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>View Tasks</span>
+                    <ArrowRight size={13} className="shrink-0" />
+                  </button>
+                )}
               </div>
 
               <div className="divide-y divide-[var(--color-divider)]">
@@ -731,13 +747,15 @@ const OverviewView: React.FC = () => {
                   <h3 className="font-bold text-sm text-[var(--color-text)]">Steering Decisions Log</h3>
                   <p className="text-xs text-[var(--color-text-muted)]">Executive Sign-offs and Architectural Direction</p>
                 </div>
-                <button 
-                  onClick={() => setView('risks')} 
-                  className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
-                >
-                  <span>View RAID</span>
-                  <ArrowRight size={13} className="shrink-0" />
-                </button>
+                {hasViewAccess('risks') && (
+                  <button 
+                    onClick={() => setView('risks')} 
+                    className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>View RAID</span>
+                    <ArrowRight size={13} className="shrink-0" />
+                  </button>
+                )}
               </div>
 
               <div className="divide-y divide-[var(--color-divider)]">
@@ -771,13 +789,15 @@ const OverviewView: React.FC = () => {
               <h3 className="font-bold text-sm text-[var(--color-text)]">Project History Change Delta</h3>
               <p className="text-xs text-[var(--color-text-muted)]">Live Audit Trail and Modification Stream</p>
             </div>
-            <button 
-              onClick={() => setView('log')} 
-              className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
-            >
-              <span>Full Log</span>
-              <ArrowRight size={13} className="shrink-0" />
-            </button>
+            {hasViewAccess('log') && (
+              <button 
+                onClick={() => setView('log')} 
+                className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <span>Full Log</span>
+                <ArrowRight size={13} className="shrink-0" />
+              </button>
+            )}
           </div>
 
           <div className="divide-y divide-[var(--color-divider)] max-h-56 overflow-y-auto custom-scroll">

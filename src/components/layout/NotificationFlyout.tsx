@@ -1,5 +1,6 @@
 import React from 'react';
 import { useProject } from '../../store/ProjectContext';
+import { useAuth } from '../../store/AuthContext';
 import { 
   Bell, 
   AlertCircle, 
@@ -20,6 +21,7 @@ interface NotificationFlyoutProps {
 
 const NotificationFlyout: React.FC<NotificationFlyoutProps> = ({ isOpen, onClose }) => {
   const { state, setView } = useProject();
+  const { hasViewAccess } = useAuth();
   
   const overdue = state.tasks.filter(t => daysDiff(t.dueDate)! < 0 && t.status !== TaskStatus.COMPLETED);
   const unassigned = state.tasks.filter(t => !t.assignee && t.status !== TaskStatus.COMPLETED && t.priority === 'Critical');
@@ -56,7 +58,7 @@ const NotificationFlyout: React.FC<NotificationFlyoutProps> = ({ isOpen, onClose
         bg: 'bg-indigo-50',
         target: 'timeline'
       }))
-  ];
+  ].filter(n => hasViewAccess(n.target));
 
   if (!isOpen) return null;
 
@@ -113,7 +115,7 @@ const NotificationFlyout: React.FC<NotificationFlyoutProps> = ({ isOpen, onClose
           )}
         </div>
 
-        {notifications.length > 0 && (
+        {notifications.length > 0 && hasViewAccess('tasks') && (
            <div className="p-4 border-t border-[var(--color-divider)] bg-[var(--color-surface-2)]/50">
               <button 
                 onClick={() => { setView('tasks'); onClose(); }}

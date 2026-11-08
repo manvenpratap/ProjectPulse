@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useProject } from '../../store/ProjectContext';
+import { useAuth } from '../../store/AuthContext';
 import { getHealthScore, daysDiff } from '../../utils/projectUtils';
 import { 
   Zap, 
@@ -76,6 +77,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 export const DashboardView: React.FC = () => {
   const { state, setView, loadSample } = useProject();
+  const { hasViewAccess } = useAuth();
   const { tasks = [], defects = [], raids = [], members = [], decisions = [], log = [] } = state;
 
   // Active Intelligence Mode
@@ -389,12 +391,14 @@ export const DashboardView: React.FC = () => {
             >
                Load Demo Data
             </button>
-            <button 
-              onClick={() => setView('tasks')}
-              className="h-11 px-6 bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text)] rounded-xl font-bold text-xs hover:bg-[var(--color-surface-2)] transition-all active:scale-[0.98] cursor-pointer"
-            >
-               Create First Task
-            </button>
+            {hasViewAccess('tasks') && (
+              <button 
+                onClick={() => setView('tasks')}
+                className="h-11 px-6 bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text)] rounded-xl font-bold text-xs hover:bg-[var(--color-surface-2)] transition-all active:scale-[0.98] cursor-pointer"
+              >
+                 Create First Task
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -652,8 +656,11 @@ export const DashboardView: React.FC = () => {
                       {agingData.staleList.slice(0, 4).map(st => (
                         <div 
                           key={st.id} 
-                          onClick={() => setView('tasks')}
-                          className="p-2.5 rounded-xl bg-[var(--color-surface-2)]/60 border border-[var(--color-divider)] flex items-center justify-between hover:bg-[var(--color-surface-offset)] transition-colors cursor-pointer"
+                          onClick={() => { if (hasViewAccess('tasks')) setView('tasks'); }}
+                          className={clsx(
+                            "p-2.5 rounded-xl bg-[var(--color-surface-2)]/60 border border-[var(--color-divider)] flex items-center justify-between transition-colors",
+                            hasViewAccess('tasks') ? "hover:bg-[var(--color-surface-offset)] cursor-pointer" : "cursor-default"
+                          )}
                         >
                           <div className="flex items-center gap-2.5 min-w-0 pr-2">
                             <span className={clsx("w-2 h-2 rounded-full shrink-0", st.inactiveDays >= 30 ? "bg-rose-500" : "bg-amber-500")} />

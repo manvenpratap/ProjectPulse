@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { useAuth } from '../../store/AuthContext';
 import { 
@@ -6,11 +6,10 @@ import {
   ChevronDown,
   ChevronRight,
   Activity,
-  Menu,
-  Lock
+  Menu
 } from 'lucide-react';
 import clsx from 'clsx';
-import { NAV_HUBS, getHubForView } from '../../config/navigation';
+import { NAV_HUBS } from '../../config/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface SidebarProps {
@@ -23,6 +22,21 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
   const { state } = useProject();
   const { hasViewAccess } = useAuth();
 
+  // Filter navigation hubs and items strictly based on role access
+  const visibleHubs = useMemo(() => {
+    return NAV_HUBS.map(hub => {
+      const allowedItems = hub.items.filter(item => hasViewAccess(item.id));
+      if (allowedItems.length === 0) return null;
+      return {
+        ...hub,
+        items: allowedItems,
+        defaultView: allowedItems.some(i => i.id === hub.defaultView) ? hub.defaultView : allowedItems[0].id
+      };
+    }).filter(Boolean) as (typeof NAV_HUBS[0])[];
+  }, [hasViewAccess]);
+
+  const currentHub = visibleHubs.find(h => h.items.some(i => i.id === state.view)) || visibleHubs[0] || NAV_HUBS[0];
+
   // Track which hubs are expanded in open mode (default to expanded for seamless discovery)
   const [expandedHubs, setExpandedHubs] = useState<Record<string, boolean>>(() => {
     const init: Record<string, boolean> = {};
@@ -32,9 +46,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
 
   // Ensure current hub is always expanded when view changes
   useEffect(() => {
-    const active = getHubForView(state.view);
-    setExpandedHubs(prev => ({ ...prev, [active.id]: true }));
-  }, [state.view]);
+    if (currentHub) {
+      setExpandedHubs(prev => ({ ...prev, [currentHub.id]: true }));
+    }
+  }, [currentHub]);
 
   const toggleHub = (hubId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -57,7 +72,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
     return hub.items.reduce((sum, item) => sum + (getItemBadge(item.id) || 0), 0);
   };
 
-  const currentHub = getHubForView(state.view);
+  const hasTaskAccess = hasViewAccess('tasks');
+  const hasDeliveryAccess = hasViewAccess('deliveries');
 
   return (
     <aside 
@@ -98,8 +114,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
       {/* Navigation Content */}
       <div className="flex-1 overflow-y-auto py-3 px-2 space-y-1.5 custom-scroll">
         {isOpen ? (
-          /* EXPANDED SIDEBAR: Structured Hub Groups */
-          NAV_HUBS.map((hub) => {
+          /* EXPANDED SIDEBAR: Filtered Hub Groups */
+          visibleHubs.map((hub) => {
             const isHubActive = currentHub.id === hub.id;
             const isExpanded = !!expandedHubs[hub.id];
             const HubIcon = hub.icon;
@@ -169,7 +185,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
                         const isItemActive = state.view === item.id;
                         const ItemIcon = item.icon;
                         const badge = getItemBadge(item.id);
-                        const hasAccess = hasViewAccess(item.id);
 
                         return (
                           <button
@@ -179,25 +194,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
                               "w-full flex items-center justify-between px-2.5 py-1.5 min-h-[34px] rounded-lg text-xs font-medium transition-colors duration-150 active:scale-[0.98] cursor-pointer group text-left",
                               isItemActive
                                 ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-semibold shadow-2xs"
-                                : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)]",
-                              !hasAccess && "opacity-60"
+                                : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)]"
                             )}
-                            title={!hasAccess ? `${item.label} (Access Restricted)` : item.description}
+                            title={item.description}
                           >
                             <div className="flex items-center gap-2 min-w-0">
                               <ItemIcon size={14} className={clsx("shrink-0", isItemActive ? "text-[var(--color-primary-hex)]" : "text-[var(--color-text-faint)] group-hover:text-[var(--color-text)]")} />
                               <span className="truncate">{item.label}</span>
                             </div>
-                            <div className="flex items-center gap-1.5">
-                              {!hasAccess && (
-                                <Lock size={11} className="text-[var(--color-text-faint)] shrink-0" />
-                              )}
-                              {badge !== undefined && badge > 0 && (
-                                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[var(--color-surface-2)] text-[var(--color-text-muted)] font-bold">
-                                  {badge}
-                                </span>
-                              )}
-                            </div>
+                            {badge !== undefined && badge > 0 && (
+                              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[var(--color-surface-2)] text-[var(--color-text-muted)] font-bold">
+                                {badge}
+                              </span>
+                            )}
                           </button>
                         );
                       })}
@@ -208,9 +217,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
             );
           })
         ) : (
-          /* COLLAPSED SIDEBAR: 6 Primary Hub Icons */
+          /* COLLAPSED SIDEBAR: Primary Visible Hub Icons */
           <div className="flex flex-col items-center space-y-2">
-            {NAV_HUBS.map((hub) => {
+            {visibleHubs.map((hub) => {
               const isHubActive = currentHub.id === hub.id;
               const HubIcon = hub.icon;
               const hubBadge = getHubBadge(hub);
@@ -238,8 +247,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
           </div>
         )}
 
-        {/* Workspace Quick Stats (Expanded Mode) */}
-        {isOpen && (
+        {/* Workspace Quick Stats (Expanded Mode - only shown if user has execution access) */}
+        {isOpen && (hasTaskAccess || hasDeliveryAccess) && (
           <div className="pt-4 pb-1 px-1">
             <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl p-2.5 grid grid-cols-3 gap-1.5 text-center">
               <div className="space-y-0.5">

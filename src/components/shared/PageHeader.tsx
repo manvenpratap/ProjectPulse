@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { LucideIcon } from 'lucide-react';
 import { useProject } from '../../store/ProjectContext';
+import { useAuth } from '../../store/AuthContext';
 import { getHubForView } from '../../config/navigation';
 import clsx from 'clsx';
 
@@ -22,8 +23,15 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   className = '',
 }) => {
   const { state, setView } = useProject();
+  const { hasViewAccess } = useAuth();
   const currentHub = getHubForView(state.view);
-  const showTabs = showHubTabs && currentHub && currentHub.items.length > 1;
+
+  // Filter sub-navigation tabs strictly based on user role access
+  const accessibleHubItems = useMemo(() => {
+    return currentHub?.items?.filter(item => hasViewAccess(item.id)) || [];
+  }, [currentHub, hasViewAccess]);
+
+  const showTabs = showHubTabs && accessibleHubItems.length > 1;
 
   return (
     <header className={`border-b border-[var(--color-divider)] bg-[var(--color-surface)]/85 backdrop-blur-xl saturate-180 sticky top-0 z-20 shrink-0 shadow-2xs ${className}`}>
@@ -59,7 +67,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             {currentHub.label}:
           </span>
           <div className="inline-flex items-center bg-[var(--color-surface-2)] p-1 rounded-xl border border-[var(--color-divider)] gap-1">
-            {currentHub.items.map((item) => {
+            {accessibleHubItems.map((item) => {
               const isActive = state.view === item.id;
               const ItemIcon = item.icon;
               return (

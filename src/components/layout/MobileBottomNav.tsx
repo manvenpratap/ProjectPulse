@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Presentation, ClipboardList, Users, ShieldAlert, Menu } from 'lucide-react';
 import clsx from 'clsx';
 import { useProject } from '../../store/ProjectContext';
-import { getHubForView } from '../../config/navigation';
+import { useAuth } from '../../store/AuthContext';
+import { NAV_HUBS, getHubForView } from '../../config/navigation';
 
 interface MobileBottomNavProps {
   currentView: string;
@@ -16,14 +17,30 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
   onOpenMore,
 }) => {
   const { state } = useProject();
+  const { hasViewAccess } = useAuth();
   const currentHub = getHubForView(currentView);
 
-  const primaryTabs = [
-    { hubId: 'analytics', id: 'overview', label: 'Analytics', icon: Presentation },
-    { hubId: 'execution', id: 'tasks', label: 'Execution', icon: ClipboardList, badge: state.deliveries?.length },
-    { hubId: 'team', id: 'team', label: 'Team', icon: Users },
-    { hubId: 'governance', id: 'defects', label: 'Quality', icon: ShieldAlert, badge: state.defects?.filter(d => d.status === 'New').length },
-  ];
+  // Filter mobile tabs so only accessible hubs and views are visible
+  const primaryTabs = useMemo(() => {
+    const rawTabs = [
+      { hubId: 'analytics', defaultId: 'overview', label: 'Analytics', icon: Presentation },
+      { hubId: 'execution', defaultId: 'tasks', label: 'Execution', icon: ClipboardList, badge: state.deliveries?.length },
+      { hubId: 'team', defaultId: 'team', label: 'Team', icon: Users },
+      { hubId: 'governance', defaultId: 'defects', label: 'Quality', icon: ShieldAlert, badge: state.defects?.filter(d => d.status === 'New').length },
+    ];
+
+    return rawTabs.map(tab => {
+      const hub = NAV_HUBS.find(h => h.id === tab.hubId);
+      if (!hub) return null;
+      const allowedItems = hub.items.filter(item => hasViewAccess(item.id));
+      if (allowedItems.length === 0) return null;
+      const targetId = allowedItems.some(i => i.id === tab.defaultId) ? tab.defaultId : allowedItems[0].id;
+      return {
+        ...tab,
+        id: targetId,
+      };
+    }).filter(Boolean) as { hubId: string; id: string; label: string; icon: any; badge?: number }[];
+  }, [hasViewAccess, state.deliveries?.length, state.defects]);
 
   const isMoreActive = currentHub.id === 'architecture' || currentHub.id === 'settings';
 
