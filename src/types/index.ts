@@ -83,6 +83,10 @@ export interface Member {
   email: string;
   phone: string;
   birthday: string;
+  empId?: string;
+  location?: string;
+  joinDate?: string;
+  skills?: string[] | string;
   plannedLeaves: Leave[];
 }
 
