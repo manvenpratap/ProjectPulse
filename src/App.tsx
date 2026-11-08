@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { ProjectProvider, useProject } from './store/ProjectContext';
+import { AuthProvider, useAuth } from './store/AuthContext';
 import Sidebar from './components/layout/Sidebar';
 import Topbar from './components/layout/Topbar';
 import MobileBottomNav from './components/layout/MobileBottomNav';
+import LoginView from './components/auth/LoginView';
+import AccessDenied from './components/auth/AccessDenied';
+import AccessManagerModal from './components/auth/AccessManagerModal';
 import TaskView from './components/tasks/TaskView';
 import TimelineView from './components/timeline/TimelineView';
 import DashboardView from './components/dashboard/DashboardView';
@@ -28,7 +32,14 @@ import { motion, AnimatePresence } from 'motion/react';
 
 const MainApp: React.FC = () => {
   const { state, setView } = useProject();
+  const { isAuthenticated, hasViewAccess } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Default to closed for mobile-first
+  const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
+
+  // If not authenticated, prompt login
+  if (!isAuthenticated) {
+    return <LoginView />;
+  }
 
   // Auto-close sidebar on mobile after navigation
   const handleNav = (v: any) => {
@@ -43,6 +54,16 @@ const MainApp: React.FC = () => {
   }
 
   const renderView = () => {
+    // Check role-based or custom access for the current view
+    if (!hasViewAccess(state.view)) {
+      return (
+        <AccessDenied 
+          viewId={state.view} 
+          onOpenAccessManager={() => setIsAccessModalOpen(true)} 
+        />
+      );
+    }
+
     switch (state.view) {
       case 'overview': return <OverviewView />;
       case 'deliveries': return <DeliveriesView />;
@@ -115,14 +136,22 @@ const MainApp: React.FC = () => {
           onOpenMore={() => setIsSidebarOpen(true)} 
         />
       </div>
+
+      {/* Access & Permissions Governance Modal */}
+      <AccessManagerModal 
+        isOpen={isAccessModalOpen} 
+        onClose={() => setIsAccessModalOpen(false)} 
+      />
     </div>
   );
 };
 
 export default function App() {
   return (
-    <ProjectProvider>
-      <MainApp />
-    </ProjectProvider>
+    <AuthProvider>
+      <ProjectProvider>
+        <MainApp />
+      </ProjectProvider>
+    </AuthProvider>
   );
 }

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useProject } from '../../store/ProjectContext';
+import { useAuth } from '../../store/AuthContext';
 import { 
   ChevronLeft,
   ChevronDown,
   ChevronRight,
   Activity,
-  Menu
+  Menu,
+  Lock
 } from 'lucide-react';
 import clsx from 'clsx';
 import { NAV_HUBS, getHubForView } from '../../config/navigation';
@@ -19,6 +21,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
   const { state } = useProject();
+  const { hasViewAccess } = useAuth();
 
   // Track which hubs are expanded in open mode (default to expanded for seamless discovery)
   const [expandedHubs, setExpandedHubs] = useState<Record<string, boolean>>(() => {
@@ -166,6 +169,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
                         const isItemActive = state.view === item.id;
                         const ItemIcon = item.icon;
                         const badge = getItemBadge(item.id);
+                        const hasAccess = hasViewAccess(item.id);
 
                         return (
                           <button
@@ -175,19 +179,25 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
                               "w-full flex items-center justify-between px-2.5 py-1.5 min-h-[34px] rounded-lg text-xs font-medium transition-colors duration-150 active:scale-[0.98] cursor-pointer group text-left",
                               isItemActive
                                 ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-semibold shadow-2xs"
-                                : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)]"
+                                : "text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)]",
+                              !hasAccess && "opacity-60"
                             )}
-                            title={item.description}
+                            title={!hasAccess ? `${item.label} (Access Restricted)` : item.description}
                           >
                             <div className="flex items-center gap-2 min-w-0">
                               <ItemIcon size={14} className={clsx("shrink-0", isItemActive ? "text-[var(--color-primary-hex)]" : "text-[var(--color-text-faint)] group-hover:text-[var(--color-text)]")} />
                               <span className="truncate">{item.label}</span>
                             </div>
-                            {badge !== undefined && badge > 0 && (
-                              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[var(--color-surface-2)] text-[var(--color-text-muted)] font-bold">
-                                {badge}
-                              </span>
-                            )}
+                            <div className="flex items-center gap-1.5">
+                              {!hasAccess && (
+                                <Lock size={11} className="text-[var(--color-text-faint)] shrink-0" />
+                              )}
+                              {badge !== undefined && badge > 0 && (
+                                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded-full bg-[var(--color-surface-2)] text-[var(--color-text-muted)] font-bold">
+                                  {badge}
+                                </span>
+                              )}
+                            </div>
                           </button>
                         );
                       })}

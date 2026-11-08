@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useProject } from '../../store/ProjectContext';
+import { useAuth } from '../../store/AuthContext';
 import { 
   Settings, 
   Bell, 
@@ -10,16 +11,25 @@ import {
   Save,
   Info,
   Sliders,
-  Database
+  Database,
+  ShieldCheck,
+  Users,
+  UserCheck,
+  Sparkles,
+  Lock,
+  Unlock
 } from 'lucide-react';
 import Button from '../shared/Button';
 import BaselineManager from './BaselineManager';
+import AccessManagerModal from '../auth/AccessManagerModal';
 import clsx from 'clsx';
 import PageHeader from '../shared/PageHeader';
 
 const SettingsView: React.FC = () => {
   const { state, updateSettings, clearAllData } = useProject();
-  const [activeTab, setActiveTab] = useState<'parameters' | 'baselines'>('parameters');
+  const { users, currentUser, rolePermissions, isAdmin, switchUser } = useAuth();
+  const [activeTab, setActiveTab] = useState<'parameters' | 'baselines' | 'access'>('parameters');
+  const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
 
   const handleClearData = () => {
     if (window.confirm('This will permanently delete all tasks, members, and project history. Are you absolutely certain?')) {
@@ -35,28 +45,39 @@ const SettingsView: React.FC = () => {
         title="System Configuration & Governance"
         subtitle="Manage operational telemetry, automated pulse alerts, and project baselines"
         actions={
-          <div className="flex items-center gap-1.5 p-1 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl">
+          <div className="flex items-center gap-1 p-0.5 sm:p-1 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl max-w-full overflow-x-auto no-scrollbar shrink">
             <button
               onClick={() => setActiveTab('parameters')}
               className={clsx(
-                "px-3 py-2 min-h-[36px] rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 flex items-center justify-center gap-1.5",
+                "px-2 sm:px-3 py-1.5 min-h-[34px] rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 flex items-center justify-center gap-1 shrink-0",
                 activeTab === 'parameters' 
                   ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" 
                   : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
               )}
             >
-              <Sliders size={14} /> <span className="hidden sm:inline">System</span> Parameters
+              <Sliders size={13} /> <span className="hidden md:inline">System </span>Params
             </button>
             <button
               onClick={() => setActiveTab('baselines')}
               className={clsx(
-                "px-3 py-2 min-h-[36px] rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 flex items-center justify-center gap-1.5",
+                "px-2 sm:px-3 py-1.5 min-h-[34px] rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 flex items-center justify-center gap-1 shrink-0",
                 activeTab === 'baselines' 
                   ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" 
                   : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
               )}
             >
-              <Camera size={14} /> Snapshots ({state.baselines?.length ? new Set(state.baselines.map(b => b.id)).size : 0})
+              <Camera size={13} /> <span className="hidden sm:inline">Snapshots</span><span className="sm:hidden">Snaps</span> ({state.baselines?.length ? new Set(state.baselines.map(b => b.id)).size : 0})
+            </button>
+            <button
+              onClick={() => setActiveTab('access')}
+              className={clsx(
+                "px-2 sm:px-3 py-1.5 min-h-[34px] rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 flex items-center justify-center gap-1 shrink-0",
+                activeTab === 'access' 
+                  ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" 
+                  : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+              )}
+            >
+              <ShieldCheck size={13} /> <span className="hidden md:inline">Roles & </span>Access
             </button>
           </div>
         }
@@ -66,6 +87,131 @@ const SettingsView: React.FC = () => {
 
         {activeTab === 'baselines' ? (
           <BaselineManager />
+        ) : activeTab === 'access' ? (
+          <div className="space-y-6">
+            {/* Header info card */}
+            <div className="card p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-[var(--color-surface)]/90 backdrop-blur-xl border border-[var(--color-divider)]">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center shrink-0">
+                  <ShieldCheck size={24} />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-[var(--color-text)]">
+                    Role-Based Access Control (RBAC) Governance
+                  </h3>
+                  <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
+                    Configure team personas, view restrictions, and fine-grained operation privileges across ProjectPulse.
+                  </p>
+                </div>
+              </div>
+              <Button 
+                variant="primary" 
+                onClick={() => setIsAccessModalOpen(true)}
+                className="h-11 px-5 rounded-xl font-bold bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shrink-0"
+              >
+                <UserCheck size={16} className="mr-2" />
+                Open Access Studio
+              </Button>
+            </div>
+
+            {/* Current Signed In User Banner */}
+            <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] flex items-center justify-center font-bold text-xs shadow-2xs">
+                  {currentUser?.name.charAt(0)}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-[var(--color-text)]">{currentUser?.name}</span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20">
+                      {currentUser?.role}
+                    </span>
+                    {isAdmin && (
+                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                        Admin Privileges Active
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-[11px] text-[var(--color-text-faint)] font-mono">{currentUser?.email}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-[var(--color-text-muted)] font-medium">Quick switch persona:</span>
+                <div className="flex items-center gap-1">
+                  {users.map(u => (
+                    <button
+                      key={u.id}
+                      onClick={() => switchUser(u.id)}
+                      className={clsx(
+                        "px-2.5 py-1 text-xs font-semibold rounded-lg transition-colors cursor-pointer",
+                        u.id === currentUser?.id 
+                          ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-2xs" 
+                          : "bg-[var(--color-surface)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] border border-[var(--color-divider)]"
+                      )}
+                    >
+                      {u.name.split(' ')[0]}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Users & Roles Roster Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {users.map(u => {
+                const perms = rolePermissions[u.role];
+                return (
+                  <div key={u.id} className="card p-5 space-y-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-center font-bold text-sm text-[var(--color-text)]">
+                          {u.name.charAt(0)}
+                        </div>
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <h4 className="text-sm font-bold text-[var(--color-text)]">{u.name}</h4>
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)]">
+                              {u.role}
+                            </span>
+                          </div>
+                          <p className="text-xs text-[var(--color-text-muted)]">{u.title || u.email}</p>
+                        </div>
+                      </div>
+                      {u.id === currentUser?.id && (
+                        <span className="text-[10px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20">
+                          Active
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="pt-2 border-t border-[var(--color-divider)] grid grid-cols-2 gap-2 text-[11px]">
+                      <div>
+                        <span className="text-[var(--color-text-faint)] block text-[10px] font-medium">VIEW ACCESS</span>
+                        <span className="font-semibold text-[var(--color-text)]">
+                          {u.allowedViews ? `${u.allowedViews.length} custom views` : (perms?.allowedViews.includes('*') ? 'All views (Universal)' : `${perms?.allowedViews.length || 0} views`)}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-[var(--color-text-faint)] block text-[10px] font-medium">WRITE CAPABILITIES</span>
+                        <span className="font-semibold text-[var(--color-text)]">
+                          {perms?.canCreate ? 'Create' : ''}{perms?.canEdit ? ' • Edit' : ''}{perms?.canDelete ? ' • Delete' : ''}{!perms?.canCreate && !perms?.canEdit ? 'Read-only' : ''}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Quick explanation footer */}
+            <div className="bg-[var(--color-surface-2)] p-4 rounded-2xl border border-[var(--color-divider)] flex items-center gap-3">
+              <Sparkles className="text-[var(--color-primary-hex)] shrink-0" size={18} />
+              <p className="text-xs text-[var(--color-text-muted)]">
+                Only users with the <strong className="text-[var(--color-text)]">Admin</strong> role can modify user roles, grant view overrides, or change system access matrices.
+              </p>
+            </div>
+          </div>
         ) : (
           <div className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -160,6 +306,12 @@ const SettingsView: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* Admin Access Manager Modal */}
+      <AccessManagerModal 
+        isOpen={isAccessModalOpen} 
+        onClose={() => setIsAccessModalOpen(false)} 
+      />
     </div>
   );
 };

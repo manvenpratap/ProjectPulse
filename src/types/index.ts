@@ -335,3 +335,35 @@ export interface ProjectSettings {
     staleDays: number;
   };
 }
+
+// -------------------------------------------------------------
+// Authentication & Role-Based Access Control (RBAC)
+// -------------------------------------------------------------
+
+export type UserRole = 'Admin' | 'Project Manager' | 'Developer' | 'Stakeholder';
+
+export interface RolePermissions {
+  role: UserRole;
+  description: string;
+  allowedViews: string[]; // List of view IDs or ['*'] for all
+  canCreateTask: boolean;
+  canEditTask: boolean;
+  canDeleteTask: boolean;
+  canManageSettings: boolean;
+  canManageUsers: boolean;
+  canExportExcel: boolean;
+  canManageDeliveries: boolean;
+  canManageReleases: boolean;
+  canManageRAID: boolean;
+}
+
+export interface UserAccount {
+  id: string;
+  email: string;
+  name: string;
+  role: UserRole;
+  title?: string;
+  avatar?: string;
+  allowedViews?: string[]; // Granular custom overrides
+  createdAt: string;
+}

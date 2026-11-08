@@ -29,6 +29,9 @@ import {
 import clsx from 'clsx';
 import ThemeFlyout from './ThemeFlyout';
 import NotificationFlyout from './NotificationFlyout';
+import UserProfileFlyout from './UserProfileFlyout';
+import AccessManagerModal from '../auth/AccessManagerModal';
+import { useAuth } from '../../store/AuthContext';
 
 import { exportProjectExcel, importProjectExcel } from '../../services/excelService';
 
@@ -38,10 +41,13 @@ interface TopbarProps {
 
 const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
   const { state, setView, setTheme, resetProject, searchTerm, setSearchTerm, updateProject } = useProject();
+  const { currentUser, canPerform } = useAuth();
   const [isThemeOpen, setIsThemeOpen] = useState(false);
   const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isAccessManagerOpen, setIsAccessManagerOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -315,19 +321,48 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
 
           <div className="w-[1px] h-5 bg-[var(--color-divider)] mx-0.5 md:mx-1 hidden sm:block" />
 
-          <Button 
-            variant="primary" 
-            size="sm" 
-            onClick={() => setView('tasks')}
-            className="h-9 rounded-xl shadow-sm px-3 md:px-4 text-xs font-semibold"
-          >
-            <Plus size={16} className="md:mr-1.5" /> <span className="hidden md:inline">New Task</span>
-          </Button>
+          {/* User Profile & Role Switcher */}
+          {currentUser && (
+            <div className="relative">
+              <button
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-xl hover:bg-[var(--color-surface-2)] transition-all cursor-pointer border border-transparent hover:border-[var(--color-divider)] active:scale-95"
+                title={`${currentUser.name} (${currentUser.role}) - Account & Access`}
+                aria-label="User Account and Access Controls"
+              >
+                <div className="w-7 h-7 rounded-lg bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold text-xs flex items-center justify-center shrink-0 border border-[var(--color-primary-hex)]/20 shadow-2xs">
+                  {currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                </div>
+                <div className="hidden xl:flex flex-col text-left leading-none">
+                  <span className="text-xs font-bold text-[var(--color-text)] truncate max-w-[90px]">{currentUser.name.split(' ')[0]}</span>
+                  <span className="text-[10px] text-[var(--color-text-faint)] font-medium mt-0.5">{currentUser.role}</span>
+                </div>
+              </button>
+
+              <UserProfileFlyout 
+                isOpen={isProfileOpen} 
+                onClose={() => setIsProfileOpen(false)} 
+                onOpenAccessManager={() => setIsAccessManagerOpen(true)}
+              />
+            </div>
+          )}
+
+          {canPerform('canCreateTask') && (
+            <Button 
+              variant="primary" 
+              size="sm" 
+              onClick={() => setView('tasks')}
+              className="h-9 rounded-xl shadow-sm px-3 md:px-4 text-xs font-semibold"
+            >
+              <Plus size={16} className="md:mr-1.5" /> <span className="hidden md:inline">New Task</span>
+            </Button>
+          )}
         </div>
       </header>
 
       <ThemeFlyout isOpen={isThemeOpen} onClose={() => setIsThemeOpen(false)} />
       <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+      <AccessManagerModal isOpen={isAccessManagerOpen} onClose={() => setIsAccessManagerOpen(false)} />
     </>
   );
 };

@@ -62,7 +62,8 @@ npm start
 11. **Performance Baselines**: Capture point-in-time baseline snapshots, compare live drift against commitments, and auto-align schedules.
 12. **Team Capacity Hub**: Real-time FTE load distribution, leave schedules, role quotas, and cross-project utilization balancing.
 13. **Bi-Directional Excel Synchronization**: Production-grade ExcelJS engine generating multi-tab relational workbooks (Tasks, Deliveries, RAID, Defects, Decisions, Releases, Members) and round-trip state reconstruction.
-14. **26+ Curated Themes**: High-contrast, theme-adaptive CSS design tokens with fluid typography and light/dark mode overrides.
+14. **Role-Based Access Control (RBAC) & Authentication**: Secure multi-persona session management (Admin, Project Manager, Developer, Stakeholder), route access guards (`AccessDenied`), quick persona switching for testing, and an Admin Governance Studio for live role assignment, granular view overrides, and user enrollment.
+15. **26+ Curated Themes**: High-contrast, theme-adaptive CSS design tokens with fluid typography and light/dark mode overrides.
 
 ---
 
@@ -76,10 +77,11 @@ ProjectPulse 2.0/
 ├── src/
 │   ├── components/
 │   │   ├── architect/           # ReleaseRoadmap, Scaffolder, Matrix, StepTemplates
+│   │   ├── auth/                # LoginView, AccessDenied guard, AccessManagerModal
 │   │   ├── dashboard/           # OverviewView, Burndown, Velocity, Predictive, Heatmap
 │   │   ├── defects/             # Defect tracking & triage modal
 │   │   ├── deliveries/          # ALM / PDN Deliveries workstation & heatmap
-│   │   ├── layout/              # Sidebar, Topbar, ThemeFlyout, NotificationFlyout
+│   │   ├── layout/              # Sidebar, Topbar, UserProfileFlyout, ThemeFlyout
 │   │   ├── log/                 # Audit & change journaling
 │   │   ├── reports/             # Executive Reporting & CXO Email Generator
 │   │   ├── risks/               # Unified RAID Register & Decision Matrix
@@ -94,6 +96,7 @@ ProjectPulse 2.0/
 │   │   ├── excelService.ts      # Bi-directional ExcelJS synchronization
 │   │   └── sampleData.ts        # Enterprise sample dataset
 │   ├── store/
+│   │   ├── AuthContext.tsx      # Multi-user RBAC session provider & permissions
 │   │   ├── ProjectContext.tsx   # Global reactive state provider
 │   │   └── defaultState.ts      # Authoritative schema factory
 │   ├── types/                   # Unified TypeScript schemas
