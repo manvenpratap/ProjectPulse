@@ -148,8 +148,8 @@
     "hash": "9cbdb1b09f2d44f7b684b22424fcb242"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/team/CapacityView.tsx": {
-    "mtime": 1794082845.774002,
-    "hash": "e177a346214c064e9613cd33b8a36096"
+    "mtime": 1794106316.2528036,
+    "hash": "7230522378cf00e040180313d23b2664"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/team/TeamView.tsx": {
     "mtime": 1794079518.7947352,
@@ -258,5 +258,13 @@
   "/Volumes/Study/Projects/ProjectPulse 2.0/design-system/MASTER.md": {
     "mtime": 1794072105.019147,
     "hash": "c10df4bb23cf1788cd988959b89b9ce9"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/capacity_mobile.png": {
+    "mtime": 1794105769.9404078,
+    "hash": "bf5f4412d1e42205bb60113f7b0ae5f5"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/capacity_mobile_selected.png": {
+    "mtime": 1794105826.7158992,
+    "hash": "ff6c294fbe5505619a3410ca9e990920"
   }
 }
