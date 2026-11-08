@@ -9,6 +9,10 @@ async def run_auth_verification():
         
         print("\n--- TEST 1: Initial Launch as Default Admin ---")
         await page.goto("http://localhost:3000")
+        await page.wait_for_timeout(1000)
+        if await page.locator("button:has-text('Load Demo Database')").is_visible():
+            await page.click("button:has-text('Load Demo Database')")
+            await page.wait_for_timeout(1000)
         await page.wait_for_selector("text=Executive Steering & Health Index", timeout=10000)
         
         # Verify Topbar contains the user avatar & Admin badge

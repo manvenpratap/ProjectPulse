@@ -6,7 +6,7 @@ import {
 import { getDefaultState } from './defaultState';
 import { nowISO, todayStr, getBusinessDays, addBusDays, getNextBusDay } from '../utils/projectUtils';
 
-import { getWebSample } from '../services/sampleData';
+import { importProjectExcel } from '../services/excelService';
 import confetti from 'canvas-confetti';
 
 interface ProjectContextType {
@@ -70,14 +70,25 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const loadSample = useCallback((type: 'web' | 'mobile') => {
-    const sample = getWebSample();
-    setState(prev => ({
-      ...getDefaultState(),
-      ...sample as any
-    }));
+  const loadSample = useCallback(async (_type?: 'web' | 'mobile') => {
+    try {
+      const res = await fetch('/demo_project_database.xlsx');
+      if (!res.ok) throw new Error('Demo database file not found');
+      const buffer = await res.arrayBuffer();
+      const imported = await importProjectExcel(buffer);
+      setState(prev => ({
+        ...getDefaultState(),
+        ...imported,
+        view: 'overview',
+        theme: prev.theme || 'pulse'
+      }));
+      if (typeof window !== 'undefined') {
+        window.history.replaceState({ view: 'overview' }, '', '#/overview');
+      }
+    } catch (e) {
+      console.error('Failed to load demo database:', e);
+    }
   }, []);
-
 
   // Load from localStorage & sync URL
   useEffect(() => {
@@ -93,7 +104,6 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       try {
         const parsed = JSON.parse(savedData);
         const defaultState = getDefaultState();
-        const sample = getWebSample();
         const finalTheme = parsed.theme || 'pulse';
         document.documentElement.setAttribute('data-theme', finalTheme);
 
@@ -106,32 +116,32 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
           ...defaultState, 
           ...parsed,
           view: activeView,
-          name: parsed.name || sample.name || 'Project Phoenix: Enterprise Rollout',
-          tasks: (parsed.tasks && parsed.tasks.length > 0) ? parsed.tasks : (sample.tasks || []),
-          members: (parsed.members && parsed.members.length > 0) ? parsed.members : (sample.members || []),
-          deliveries: (parsed.deliveries && parsed.deliveries.length > 0) ? parsed.deliveries : (sample.deliveries || []),
-          releases: (parsed.releases && parsed.releases.length > 0) ? parsed.releases : (sample.releases || []),
-          retros: (parsed.retros && parsed.retros.length > 0) ? parsed.retros : (defaultState.retros || []),
-          features: parsed.features || defaultState.features || [],
+          name: parsed.name || '',
+          tasks: parsed.tasks || [],
+          members: parsed.members || [],
+          deliveries: parsed.deliveries || [],
+          releases: parsed.releases || [],
+          retros: parsed.retros || [],
+          features: parsed.features || [],
           dropdowns: { ...defaultState.dropdowns, ...(parsed.dropdowns || {}) },
-          customFields: parsed.customFields || defaultState.customFields || [],
-          defCustomFields: parsed.defCustomFields || defaultState.defCustomFields || [],
+          customFields: parsed.customFields || [],
+          defCustomFields: parsed.defCustomFields || [],
           stepTemplates: parsed.stepTemplates || defaultState.stepTemplates || [],
           theme: finalTheme
         });
       } catch (e) {
         console.error('Failed to load project data', e);
+        setState(getDefaultState());
       }
     } else {
-      const sample = getWebSample();
+      const defaultState = getDefaultState();
       document.documentElement.setAttribute('data-theme', 'pulse');
       const activeView = urlView || 'overview';
       if (typeof window !== 'undefined') {
         window.history.replaceState({ view: activeView }, '', '#/' + activeView);
       }
       setState({
-        ...getDefaultState(),
-        ...sample as any,
+        ...defaultState,
         view: activeView,
         theme: 'pulse'
       });
@@ -162,8 +172,12 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   // Save to localStorage
   useEffect(() => {
-    if (!isLoading && state.name) {
-      localStorage.setItem('pp-data', JSON.stringify(state));
+    if (!isLoading) {
+      if (state.name) {
+        localStorage.setItem('pp-data', JSON.stringify(state));
+      } else {
+        localStorage.removeItem('pp-data');
+      }
     }
   }, [state, isLoading]);
 
@@ -480,6 +494,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }, []);
 
   const clearAllData = useCallback(() => {
+    localStorage.removeItem('pp-data');
     setState(getDefaultState());
   }, []);
 

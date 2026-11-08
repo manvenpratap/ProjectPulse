@@ -11,6 +11,9 @@ async def run_mobile_capacity_test():
         print("\n--- TEST 1: Launch and Navigate to Capacity on Mobile ---")
         await page.goto("http://localhost:3000")
         await page.wait_for_timeout(1000)
+        if await page.locator("button:has-text('Load Demo Database')").is_visible():
+            await page.click("button:has-text('Load Demo Database')")
+            await page.wait_for_timeout(1000)
 
         # Navigate to Team Hub then Capacity
         await page.click('nav[aria-label="Mobile Navigation"] button[aria-label="Team"]')

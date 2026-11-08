@@ -387,9 +387,9 @@ export const DashboardView: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button 
               onClick={() => loadSample('web')}
-              className="h-11 px-6 bg-indigo-600 text-white rounded-xl font-bold text-xs shadow-md transition-all active:scale-[0.98] cursor-pointer"
+              className="h-11 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md transition-all active:scale-[0.98] cursor-pointer"
             >
-               Load Demo Data
+               Load Demo Excel Database
             </button>
             {hasViewAccess('tasks') && (
               <button 

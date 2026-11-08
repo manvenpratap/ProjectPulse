@@ -93,15 +93,15 @@ ProjectPulse 2.0/
 │   │   └── timeline/            # Interactive Gantt & Roadmap
 │   ├── services/
 │   │   ├── aiService.ts         # Gemini AI Pulse intelligence
-│   │   ├── excelService.ts      # Bi-directional ExcelJS synchronization
-│   │   └── sampleData.ts        # Enterprise sample dataset
+│   │   └── excelService.ts      # Bi-directional ExcelJS synchronization
 │   ├── store/
 │   │   ├── AuthContext.tsx      # Multi-user RBAC session provider & permissions
 │   │   ├── ProjectContext.tsx   # Global reactive state provider
-│   │   └── defaultState.ts      # Authoritative schema factory
+│   │   └── defaultState.ts      # Authoritative clean schema factory (0 sample data)
 │   ├── types/                   # Unified TypeScript schemas
 │   ├── index.css                # 26+ Curated theme design tokens & Tailwind
 │   └── App.tsx                  # Main router & layout shell
+├── demo_project_database.xlsx   # Full enterprise showcase workbook (24 tasks, 12 deliveries, etc.)
 ├── server.ts                    # Node / Express SSR & API backend
 ├── vite.config.ts               # Vite bundler configuration
 └── package.json                 # Project dependencies & build scripts

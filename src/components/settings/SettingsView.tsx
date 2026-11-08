@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { useAuth } from '../../store/AuthContext';
 import { 
@@ -17,24 +17,70 @@ import {
   UserCheck,
   Sparkles,
   Lock,
-  Unlock
+  Unlock,
+  FileSpreadsheet,
+  Download,
+  UploadCloud,
+  Loader2
 } from 'lucide-react';
 import Button from '../shared/Button';
 import BaselineManager from './BaselineManager';
 import AccessManagerModal from '../auth/AccessManagerModal';
+import { exportProjectExcel, importProjectExcel } from '../../services/excelService';
 import clsx from 'clsx';
 import PageHeader from '../shared/PageHeader';
 
 const SettingsView: React.FC = () => {
-  const { state, updateSettings, clearAllData } = useProject();
+  const { state, updateSettings, updateProject, loadSample, clearAllData } = useProject();
   const { users, currentUser, rolePermissions, isAdmin, switchUser } = useAuth();
   const [activeTab, setActiveTab] = useState<'parameters' | 'baselines' | 'access'>('parameters');
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleClearData = () => {
     if (window.confirm('This will permanently delete all tasks, members, and project history. Are you absolutely certain?')) {
       clearAllData();
       window.location.reload();
+    }
+  };
+
+  const handleExportExcel = async () => {
+    try {
+      await exportProjectExcel(state);
+    } catch (e: any) {
+      alert('Export failed: ' + e.message);
+    }
+  };
+
+  const handleImportExcel = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setIsImporting(true);
+      const data = await importProjectExcel(file);
+      updateProject(data);
+      alert('Project database imported successfully.');
+    } catch (e: any) {
+      alert('Import failed: ' + e.message);
+    } finally {
+      setIsImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleLoadDemo = async () => {
+    if (!window.confirm('Load the comprehensive demo Excel database? This will populate 24 tasks, 12 deliveries, 10 team members, RAID items, and defect registers.')) {
+      return;
+    }
+    try {
+      setIsImporting(true);
+      await loadSample('web');
+      alert('Demo database loaded successfully.');
+    } catch (e: any) {
+      alert('Failed to load demo database: ' + e.message);
+    } finally {
+      setIsImporting(false);
     }
   };
 
@@ -272,6 +318,63 @@ const SettingsView: React.FC = () => {
                     </label>
                   ))}
                 </div>
+              </div>
+            </div>
+
+            {/* Excel Portability & Database */}
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              onChange={handleImportExcel} 
+              accept=".xlsx" 
+              className="hidden" 
+            />
+
+            <div className="card p-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 text-indigo-500">
+                  <FileSpreadsheet size={20} />
+                  <div>
+                    <h3 className="text-sm font-bold text-[var(--color-text)]">Excel Database & Master Portability</h3>
+                    <p className="text-[11px] text-[var(--color-text-muted)] mt-0.5">
+                      Export state or import relational Excel workbooks (.xlsx) with tasks, ALM deliveries, RAID, and team rosters.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="h-10 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
+                  onClick={handleExportExcel}
+                >
+                  <Download size={14} className="text-indigo-500" />
+                  <span>Export Master Excel</span>
+                </Button>
+
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  disabled={isImporting}
+                  className="h-10 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {isImporting ? <Loader2 size={14} className="animate-spin text-indigo-500" /> : <UploadCloud size={14} className="text-indigo-500" />}
+                  <span>Import Excel File</span>
+                </Button>
+
+                <Button 
+                  variant="primary" 
+                  size="sm" 
+                  disabled={isImporting}
+                  className="h-10 text-xs font-bold flex items-center justify-center gap-2 cursor-pointer"
+                  onClick={handleLoadDemo}
+                >
+                  {isImporting ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} />}
+                  <span>Load Demo Database</span>
+                </Button>
               </div>
             </div>
 
