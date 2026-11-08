@@ -243,10 +243,10 @@ const OverviewView: React.FC = () => {
       <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full space-y-8 pb-16">
 
         {/* Bento Grid: Health Dial + EWS */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 grid-flow-dense gap-6 items-stretch">
           
           {/* Health Index Dial Component */}
-          <div className="card p-6 flex flex-col justify-between items-center text-center">
+          <div className="card-glass p-6 flex flex-col justify-between items-center text-center">
             <div className="space-y-1 text-center w-full">
               <h3 className="font-bold text-sm tracking-tight text-[var(--color-text)]">Composite Health Index</h3>
               <p className="text-xs text-[var(--color-primary-hex)] font-medium">Multi-factor algorithmic dial</p>
@@ -294,15 +294,22 @@ const OverviewView: React.FC = () => {
           </div>
 
           {/* Early Warning System (EWS) */}
-          <div className="card p-6 lg:col-span-2 flex flex-col justify-between">
-            <div className="space-y-1 mb-4">
+          <div className="card-glass p-6 lg:col-span-2 flex flex-col justify-between">
+            <div className="space-y-2 mb-4">
               <div className="flex items-center justify-between">
                 <h3 className="font-bold text-sm tracking-tight text-[var(--color-text)]">Early Warning System (EWS)</h3>
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)] font-medium">
-                  {ewsAlerts.length} Active Notice{ewsAlerts.length > 1 ? 's' : ''}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1 font-mono text-[11px] px-2.5 py-0.5 rounded-full bg-rose-500/10 text-rose-500 border border-rose-500/20 font-semibold">
+                    Critical: {ewsAlerts.filter(a => a.type === 'critical').length}
+                  </span>
+                  <span className="inline-flex items-center gap-1 font-mono text-[11px] px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/20 font-semibold">
+                    Warning: {ewsAlerts.filter(a => a.type === 'warning').length}
+                  </span>
+                </div>
               </div>
-              <p className="text-xs text-[var(--color-text-muted)]">Real-time telemetry scan for schedule slips, high RAID impacts, and resource overloading.</p>
+              <p className="text-xs text-[var(--color-text-muted)] leading-relaxed">
+                Real-time telemetry scan for schedule slips, high RAID impacts, and resource overloading across delivery streams.
+              </p>
             </div>
 
             <div className="space-y-3 flex-1">
@@ -336,7 +343,7 @@ const OverviewView: React.FC = () => {
         </div>
 
         {/* ALM Deliveries Snapshot Card */}
-        <div className="card p-6">
+        <div className="card-glass p-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -388,7 +395,7 @@ const OverviewView: React.FC = () => {
         </div>
 
         {/* Milestone Roadmap Widget */}
-        <div className="card p-6">
+        <div className="card-glass p-6">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h3 className="font-bold text-sm tracking-tight text-[var(--color-text)]">Milestone Roadmap Timeline</h3>
@@ -439,7 +446,7 @@ const OverviewView: React.FC = () => {
         </div>
 
         {/* Resource Utilization Widget */}
-        <div className="card p-6">
+        <div className="card-glass p-6">
           <div className="flex justify-between items-center mb-6">
             <div>
               <h3 className="font-bold text-sm text-[var(--color-text)]">Resource Utilization Matrix</h3>
@@ -512,7 +519,7 @@ const OverviewView: React.FC = () => {
         </div>
 
         {/* What-If Sandbox Dashboard Widget (Linear / Telemetry Cockpit) */}
-        <div className="card p-6 md:p-8 relative overflow-hidden">
+        <div className="card-glass p-6 md:p-8 relative overflow-hidden">
           <div className="relative z-10 space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-[var(--color-divider)]">
               <div>
@@ -673,88 +680,92 @@ const OverviewView: React.FC = () => {
         </div>
 
         {/* Governance & Critical Path Split Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 grid-flow-dense gap-6 items-stretch">
           
           {/* Critical Path Deliverables */}
-          <div className="p-6 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-sm">
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h3 className="font-bold text-sm text-[var(--color-text)]">Critical Path Deliverables</h3>
-                <p className="text-xs text-[var(--color-text-muted)]">High & Critical Priority Telemetry Tasks</p>
-              </div>
-              <button 
-                onClick={() => setView('tasks')} 
-                className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                <span>View Tasks</span>
-                <ArrowRight size={13} className="shrink-0" />
-              </button>
-            </div>
-
-            <div className="divide-y divide-[var(--color-divider)]">
-              {criticalMilestones.length > 0 ? criticalMilestones.map(t => (
-                <div key={t.id} className="py-3 flex items-center justify-between gap-4">
-                  <div className="truncate flex-1">
-                    <div className="text-xs font-semibold text-[var(--color-text)] truncate">{t.name}</div>
-                    <div className="text-xs text-[var(--color-text-muted)] font-mono mt-0.5">{t.id} · {t.assignee || 'Unassigned'}</div>
-                  </div>
-                  <div className="flex items-center gap-2.5 shrink-0">
-                    <span className={clsx(
-                      "px-2 py-0.5 rounded text-[11px] font-semibold",
-                      t.status === TaskStatus.COMPLETED ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" :
-                      t.status === TaskStatus.ON_HOLD ? "bg-rose-500/10 text-rose-500 border border-rose-500/20" :
-                      "bg-amber-500/10 text-amber-500 border border-amber-500/20"
-                    )}>{t.status}</span>
-                    <span className="font-mono text-xs text-[var(--color-text-muted)]">{t.dueDate}</span>
-                  </div>
+          <div className="card-glass p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <div>
+                  <h3 className="font-bold text-sm text-[var(--color-text)]">Critical Path Deliverables</h3>
+                  <p className="text-xs text-[var(--color-text-muted)]">High & Critical Priority Telemetry Tasks</p>
                 </div>
-              )) : (
-                <div className="py-8 text-center text-[var(--color-text-muted)] text-xs">No high or critical deliverables mapped.</div>
-              )}
+                <button 
+                  onClick={() => setView('tasks')} 
+                  className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <span>View Tasks</span>
+                  <ArrowRight size={13} className="shrink-0" />
+                </button>
+              </div>
+
+              <div className="divide-y divide-[var(--color-divider)]">
+                {criticalMilestones.length > 0 ? criticalMilestones.map(t => (
+                  <div key={t.id} className="py-3 flex items-center justify-between gap-4">
+                    <div className="truncate flex-1">
+                      <div className="text-xs font-semibold text-[var(--color-text)] truncate">{t.name}</div>
+                      <div className="text-xs text-[var(--color-text-muted)] font-mono mt-0.5">{t.id} · {t.assignee || 'Unassigned'}</div>
+                    </div>
+                    <div className="flex items-center gap-2.5 shrink-0">
+                      <span className={clsx(
+                        "px-2 py-0.5 rounded text-[11px] font-semibold",
+                        t.status === TaskStatus.COMPLETED ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" :
+                        t.status === TaskStatus.ON_HOLD ? "bg-rose-500/10 text-rose-500 border border-rose-500/20" :
+                        "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+                      )}>{t.status}</span>
+                      <span className="font-mono text-xs text-[var(--color-text-muted)]">{t.dueDate}</span>
+                    </div>
+                  </div>
+                )) : (
+                  <div className="py-8 text-center text-[var(--color-text-muted)] text-xs">No high or critical deliverables mapped.</div>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Governance & Steerco Panel */}
-          <div className="p-6 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-sm">
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h3 className="font-bold text-sm text-[var(--color-text)]">Steering Decisions Log</h3>
-                <p className="text-xs text-[var(--color-text-muted)]">Executive Sign-offs and Architectural Direction</p>
-              </div>
-              <button 
-                onClick={() => setView('risks')} 
-                className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
-              >
-                <span>View RAID</span>
-                <ArrowRight size={13} className="shrink-0" />
-              </button>
-            </div>
-
-            <div className="divide-y divide-[var(--color-divider)]">
-              {decisions.slice(0, 5).map(d => (
-                <div key={d.id} className="py-3 flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="text-xs font-semibold text-[var(--color-text)] truncate">{d.title}</div>
-                    <div className="text-xs text-[var(--color-text-muted)] mt-0.5">Proposed: {d.proposedBy} · Approver: {d.approver}</div>
-                  </div>
-                  <span className={clsx(
-                    "px-2 py-0.5 rounded text-[11px] font-semibold shrink-0",
-                    d.status === 'Approved' ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" :
-                    d.status === 'Rejected' ? "bg-rose-500/10 text-rose-500 border border-rose-500/20" :
-                    "bg-amber-500/10 text-amber-500 border border-amber-500/20"
-                  )}>{d.status}</span>
+          <div className="card-glass p-6 flex flex-col justify-between">
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <div>
+                  <h3 className="font-bold text-sm text-[var(--color-text)]">Steering Decisions Log</h3>
+                  <p className="text-xs text-[var(--color-text-muted)]">Executive Sign-offs and Architectural Direction</p>
                 </div>
-              ))}
-              {decisions.length === 0 && (
-                <div className="py-8 text-center text-[var(--color-text-muted)] text-xs">No strategic decisions logged. Navigate to RAID Register to log decisions.</div>
-              )}
+                <button 
+                  onClick={() => setView('risks')} 
+                  className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer"
+                >
+                  <span>View RAID</span>
+                  <ArrowRight size={13} className="shrink-0" />
+                </button>
+              </div>
+
+              <div className="divide-y divide-[var(--color-divider)]">
+                {decisions.slice(0, 5).map(d => (
+                  <div key={d.id} className="py-3 flex items-start justify-between gap-4">
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-semibold text-[var(--color-text)] truncate">{d.title}</div>
+                      <div className="text-xs text-[var(--color-text-muted)] mt-0.5">Proposed: {d.proposedBy} · Approver: {d.approver}</div>
+                    </div>
+                    <span className={clsx(
+                      "px-2 py-0.5 rounded text-[11px] font-semibold shrink-0",
+                      d.status === 'Approved' ? "bg-emerald-500/10 text-emerald-500 border border-emerald-500/20" :
+                      d.status === 'Rejected' ? "bg-rose-500/10 text-rose-500 border border-rose-500/20" :
+                      "bg-amber-500/10 text-amber-500 border border-amber-500/20"
+                    )}>{d.status}</span>
+                  </div>
+                ))}
+                {decisions.length === 0 && (
+                  <div className="py-8 text-center text-[var(--color-text-muted)] text-xs">No strategic decisions logged. Navigate to RAID Register to log decisions.</div>
+                )}
+              </div>
             </div>
           </div>
 
         </div>
 
         {/* Change History Delta Stream */}
-        <div className="p-6 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-sm">
+        <div className="card-glass p-6">
           <div className="flex justify-between items-center mb-4">
             <div>
               <h3 className="font-bold text-sm text-[var(--color-text)]">Project History Change Delta</h3>

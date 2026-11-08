@@ -33,12 +33,12 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-highlight-hex)] border border-[var(--color-primary-hex)]/15 text-[var(--color-primary-hex)] flex items-center justify-center shrink-0 shadow-2xs">
             <Icon size={17} strokeWidth={2.2} />
           </div>
-          <div className="min-w-0">
-            <h1 className="text-sm sm:text-base font-bold text-[var(--color-text)] tracking-tight leading-none truncate">
+          <div className="min-w-0 max-w-4xl">
+            <h1 className="text-sm sm:text-base md:text-lg font-display font-black text-[var(--color-text)] tracking-tight leading-snug truncate">
               {title}
             </h1>
             {subtitle && (
-              <p className="text-[11px] sm:text-xs text-[var(--color-text-muted)] font-medium mt-1 truncate">
+              <p className="text-[11px] sm:text-xs text-[var(--color-text-muted)] font-medium mt-0.5 truncate max-w-3xl">
                 {subtitle}
               </p>
             )}

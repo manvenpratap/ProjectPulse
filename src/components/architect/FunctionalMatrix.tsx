@@ -660,7 +660,7 @@ export const FunctionalMatrix: React.FC = () => {
       <div className="flex-1 overflow-auto custom-scroll p-4 sm:p-6 lg:p-8 min-w-0">
         {/* ── VIEW MODE 1: GRID MATRIX CARDS (Matches projectpulse.html) ── */}
         {viewMode === 'matrix' && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-flow-dense gap-5 sm:gap-6 items-stretch">
             {filteredFeatures.map((f, idx) => {
               const actualIdx = features.indexOf(f);
               const mObj = featureMetrics[f.name] || {
@@ -682,7 +682,7 @@ export const FunctionalMatrix: React.FC = () => {
                 <div 
                   key={f.name + idx}
                   className={clsx(
-                    "bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs hover:shadow-md transition-all flex flex-col relative overflow-hidden group border-l-4",
+                    "card-glass border-l-4 rounded-2xl shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col relative overflow-hidden group",
                     healthColor
                   )}
                 >
