@@ -95,7 +95,7 @@ const MainApp: React.FC = () => {
       case 'reports': return <ReportView />;
       case 'retro': return <SprintRetroView />;
       case 'risks': return <RAIDView />;
-      case 'scheduler': return <SchedulerView />;
+      case 'scheduler': return <CapacityView initialMode="schedule" />;
       case 'settings': return <SettingsView />;
       default: return <OverviewView />;
     }

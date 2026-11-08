@@ -56,25 +56,24 @@ export const NAV_HUBS: NavHub[] = [
     id: 'execution',
     label: 'Work Execution',
     icon: ClipboardList,
-    description: 'Tasks, ALM delivery packages, timelines, roadmaps and scheduling',
+    description: 'Tasks, ALM delivery packages, timelines and release roadmaps',
     defaultView: 'tasks',
     items: [
       { id: 'tasks', label: 'Tasks Matrix', shortLabel: 'Tasks', icon: ClipboardList, description: 'Spreadsheet grid and Kanban board' },
       { id: 'deliveries', label: 'ALM Deliveries', shortLabel: 'Deliveries', icon: Package, description: 'Delivery packages and 3D heatmaps' },
       { id: 'timeline', label: 'Project Timeline', shortLabel: 'Timeline', icon: GanttChart, description: 'Gantt chart with swimlane tracking' },
       { id: 'releases', label: 'Release Roadmap', shortLabel: 'Roadmap', icon: Flag, description: 'Release milestones and version gating' },
-      { id: 'scheduler', label: 'Intelligent Scheduler', shortLabel: 'Scheduler', icon: CalendarDays, description: 'Autonomous scheduling and auto-leveling' },
     ]
   },
   {
     id: 'team',
     label: 'Team & Capacity',
     icon: Users,
-    description: 'Team directory, resource hierarchy and capacity modeling',
+    description: 'Team directory, resource hierarchy, capacity modeling and scheduling',
     defaultView: 'team',
     items: [
       { id: 'team', label: 'Team Hub', shortLabel: 'Team', icon: Users, description: 'Team directory and hierarchy graph' },
-      { id: 'capacity', label: 'Capacity Plan', shortLabel: 'Capacity', icon: BarChart3, description: 'Workload heatmap and team leveling' },
+      { id: 'capacity', label: 'Capacity & Scheduling', shortLabel: 'Capacity', icon: BarChart3, description: 'Workload heatmap, daily scheduling and AI leveling' },
     ]
   },
   {
