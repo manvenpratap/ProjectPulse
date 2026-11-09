@@ -192,16 +192,16 @@
     "hash": "85c27e52ecc811a57cba25f79c222241"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/ScaffolderView.tsx": {
-    "mtime": 1794127381.751613,
-    "hash": "75dc18afa68d6d55575461e124d86ba6"
+    "mtime": 1794253659.677692,
+    "hash": "88e0e6deca26b9c0ccc82159b8a7fe28"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/RegistryView.tsx": {
     "mtime": 1794251527.9971712,
     "hash": "f72920819c8015302ab7bd9f1442ff0f"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/StepTemplates.tsx": {
-    "mtime": 1794251528.3932767,
-    "hash": "317e9939c0dc1256a4f67d253e22f517"
+    "mtime": 1794253640.4712641,
+    "hash": "7d3473e369114dc1e9ff43694f52de6e"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/FieldArchitect.tsx": {
     "mtime": 1794246395.1296356,
@@ -236,7 +236,7 @@
     "hash": "cb37bd15eefd76da1a5e9a511fed9910"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/services/exportService.ts": {
-    "mtime": 1794253004.735094,
+    "mtime": 1794253530.0716212,
     "hash": "2f5fe79bf9960d130bfccfdc7eafcb48"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/services/aiService.ts": {

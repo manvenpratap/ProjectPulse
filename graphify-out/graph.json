@@ -1717,7 +1717,7 @@
       "label": "ScaffoldModule",
       "file_type": "code",
       "source_file": "src/components/architect/ScaffolderView.tsx",
-      "source_location": "L26",
+      "source_location": "L27",
       "id": "architect_scaffolderview_scaffoldmodule",
       "community": 3,
       "norm_label": "scaffoldmodule"
@@ -1726,7 +1726,7 @@
       "label": "ScaffolderView()",
       "file_type": "code",
       "source_file": "src/components/architect/ScaffolderView.tsx",
-      "source_location": "L36",
+      "source_location": "L37",
       "id": "architect_scaffolderview_scaffolderview",
       "community": 3,
       "norm_label": "scaffolderview()"
@@ -1798,7 +1798,7 @@
       "label": "STANDARD_BLUEPRINT_PRESETS",
       "file_type": "code",
       "source_file": "src/components/architect/StepTemplates.tsx",
-      "source_location": "L46",
+      "source_location": "L47",
       "id": "architect_steptemplates_standard_blueprint_presets",
       "community": 0,
       "norm_label": "standard_blueprint_presets"
@@ -1807,7 +1807,7 @@
       "label": "getCategoryMeta()",
       "file_type": "code",
       "source_file": "src/components/architect/StepTemplates.tsx",
-      "source_location": "L118",
+      "source_location": "L119",
       "id": "architect_steptemplates_getcategorymeta",
       "community": 0,
       "norm_label": "getcategorymeta()"
@@ -1816,7 +1816,7 @@
       "label": "PHASE_COLORS",
       "file_type": "code",
       "source_file": "src/components/architect/StepTemplates.tsx",
-      "source_location": "L138",
+      "source_location": "L139",
       "id": "architect_steptemplates_phase_colors",
       "community": 0,
       "norm_label": "phase_colors"
@@ -1825,7 +1825,7 @@
       "label": "SyncStep",
       "file_type": "code",
       "source_file": "src/components/architect/StepTemplates.tsx",
-      "source_location": "L152",
+      "source_location": "L153",
       "id": "architect_steptemplates_syncstep",
       "community": 0,
       "norm_label": "syncstep"
@@ -1834,7 +1834,7 @@
       "label": "smartSyncSubtasks()",
       "file_type": "code",
       "source_file": "src/components/architect/StepTemplates.tsx",
-      "source_location": "L157",
+      "source_location": "L158",
       "id": "architect_steptemplates_smartsyncsubtasks",
       "community": 0,
       "norm_label": "smartsyncsubtasks()"
@@ -1843,7 +1843,7 @@
       "label": "StepTemplates()",
       "file_type": "code",
       "source_file": "src/components/architect/StepTemplates.tsx",
-      "source_location": "L244",
+      "source_location": "L245",
       "id": "architect_steptemplates_steptemplates",
       "community": 0,
       "norm_label": "steptemplates()"
@@ -10510,9 +10510,9 @@
       "source_file": "src/components/shared/ShareExportMenu.tsx",
       "source_location": "L17",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_shared_shareexportmenu_tsx",
-      "target": "services_exportservice_exportprojectjson",
-      "confidence_score": 1.0
+      "target": "services_exportservice_exportprojectjson"
     },
     {
       "relation": "imports",
@@ -10587,9 +10587,9 @@
       "source_file": "src/components/shared/ShareExportMenu.tsx",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_shared_shareexportmenu_tsx",
-      "target": "services_excelservice_exportfeaturematrixexcel",
-      "confidence_score": 1.0
+      "target": "services_excelservice_exportfeaturematrixexcel"
     },
     {
       "relation": "imports",
@@ -10598,9 +10598,9 @@
       "source_file": "src/components/shared/ShareExportMenu.tsx",
       "source_location": "L27",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_shared_shareexportmenu_tsx",
-      "target": "services_excelservice_downloaddeliverytemplate",
-      "confidence_score": 1.0
+      "target": "services_excelservice_downloaddeliverytemplate"
     },
     {
       "relation": "contains",
@@ -13228,9 +13228,9 @@
       "source_file": "src/services/exportService.ts",
       "source_location": "L617",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_exportservice_ts",
-      "target": "services_exportservice_exportprojectjson",
-      "confidence_score": 1.0
+      "target": "services_exportservice_exportprojectjson"
     },
     {
       "relation": "contains",
@@ -13302,9 +13302,9 @@
       "source_file": "src/services/exportService.ts",
       "source_location": "L642",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_exportservice_exportprojectjson",
-      "target": "services_exportservice_saveblob",
-      "confidence_score": 1.0
+      "target": "services_exportservice_saveblob"
     },
     {
       "relation": "calls",
@@ -13357,9 +13357,9 @@
       "source_file": "src/services/exportService.ts",
       "source_location": "L618",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_exportservice_exportprojectjson",
-      "target": "services_exportservice_getfilestamp",
-      "confidence_score": 1.0
+      "target": "services_exportservice_getfilestamp"
     },
     {
       "relation": "calls",
@@ -15324,5 +15324,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "3f15ec1c53e41426e2fe61b116a7f6290b2c8e7d"
+  "built_at_commit": "10b4189dcd055c7c29d8e9cc053ac503dc1c0ebb"
 }

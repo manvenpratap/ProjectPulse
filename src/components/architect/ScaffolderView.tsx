@@ -7,6 +7,7 @@ import {
   Plus, 
   Trash2, 
   Copy, 
+  CopyPlus,
   Zap, 
   ArrowRight, 
   ArrowLeft,
@@ -368,8 +369,8 @@ const ScaffolderView: React.FC = () => {
                         </td>
                         <td className="p-2">
                           <div className="flex items-center gap-1 justify-center">
-                            <button onClick={() => duplicateRow(i)} className="p-2 text-[var(--color-text-faint)] hover:text-indigo-600 transition-colors"><Copy size={16}/></button>
-                            <button onClick={() => removeRow(i)} className="p-2 text-[var(--color-text-faint)] hover:text-red-600 transition-colors"><Trash2 size={16}/></button>
+                            <button onClick={() => duplicateRow(i)} title="Duplicate Row" className="p-2 text-[var(--color-text-faint)] hover:text-indigo-600 transition-colors cursor-pointer"><CopyPlus size={16}/></button>
+                            <button onClick={() => removeRow(i)} title="Remove Row" className="p-2 text-[var(--color-text-faint)] hover:text-red-600 transition-colors cursor-pointer"><Trash2 size={16}/></button>
                           </div>
                         </td>
                       </tr>

@@ -14,6 +14,7 @@ import {
   ChevronUp,
   ChevronDown,
   Copy,
+  CopyPlus,
   Search,
   AlertTriangle,
   RefreshCw,
@@ -963,7 +964,7 @@ const StepTemplates: React.FC = () => {
                           title="Duplicate blueprint"
                           className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors cursor-pointer"
                         >
-                          <Copy size={13} />
+                          <CopyPlus size={13} />
                         </button>
                         <button
                           type="button"
@@ -1134,7 +1135,7 @@ const StepTemplates: React.FC = () => {
                             title="Duplicate"
                             className="p-1 rounded text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
                           >
-                            <Copy size={13} />
+                            <CopyPlus size={13} />
                           </button>
                           <button
                             onClick={() => startEdit(i)}
@@ -1455,7 +1456,7 @@ const StepTemplates: React.FC = () => {
                                   title="Duplicate phase"
                                   className="p-1 rounded text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)] cursor-pointer"
                                 >
-                                  <Copy size={13} />
+                                  <CopyPlus size={13} />
                                 </button>
                                 <button
                                   type="button"
