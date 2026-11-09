@@ -564,10 +564,10 @@ export const DeliveriesView: React.FC = () => {
         {viewMode === 'table' && (
           <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[1250px] table-fixed">
+              <table className="w-full text-left border-collapse min-w-[1250px]">
                 <thead>
                   <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)]/60 text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] select-none">
-                    <th className="p-2.5 w-10 text-center">
+                    <th className="px-2.5 py-2 w-10 text-center">
                       <input 
                         type="checkbox"
                         checked={selectedIds.size > 0 && selectedIds.size === filteredDeliveries.length}
@@ -576,66 +576,66 @@ export const DeliveriesView: React.FC = () => {
                         className="rounded border-[var(--color-divider)] cursor-pointer"
                       />
                     </th>
-                    <th className="p-2.5 w-11 text-center td-rn font-mono text-[10px]" title="Sequential package index">
+                    <th className="px-2 py-2 w-11 text-center td-rn font-mono text-[10px]" title="Sequential package index">
                       #
                     </th>
-                    <th className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors" onClick={() => { setSortBy('almId'); setSortAsc(!sortAsc); }} title="Application Lifecycle Management tracking ID and Package Delivery Note code. Click to sort.">
+                    <th className="px-3 py-2 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('almId'); setSortAsc(!sortAsc); }} title="Application Lifecycle Management tracking ID and Package Delivery Note code. Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>ALM ID / PDN</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 min-w-[240px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors" onClick={() => { setSortBy('name'); setSortAsc(!sortAsc); }} title="Package title and delivery scope narrative. Click to sort.">
+                    <th className="px-3 py-2 min-w-[260px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('name'); setSortAsc(!sortAsc); }} title="Package title and delivery scope narrative. Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>DELIVERY SCOPE & DETAILS</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors" onClick={() => { setSortBy('almStatus'); setSortAsc(!sortAsc); }} title="Current delivery lifecycle status (New, Scheduled, In Progress, Ready for Deployment, Closed). Click to sort.">
+                    <th className="px-3 py-2 w-32 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('almStatus'); setSortAsc(!sortAsc); }} title="Current delivery lifecycle status (New, Scheduled, In Progress, Ready for Deployment, Closed). Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>ALM STATUS</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 w-26 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors" onClick={() => { setSortBy('environment'); setSortAsc(!sortAsc); }} title="Target deployment infrastructure tier (DEV, SIT, UAT, STAGING, PROD). Click to sort.">
+                    <th className="px-3 py-2 w-24 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('environment'); setSortAsc(!sortAsc); }} title="Target deployment infrastructure tier (DEV, SIT, UAT, STAGING, PROD). Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>ENV</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors" onClick={() => { setSortBy('status'); setSortAsc(!sortAsc); }} title="Deployment pipeline status (Pending, Deployed, Verified, Rolled Back). Click to sort.">
+                    <th className="px-3 py-2 w-32 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('status'); setSortAsc(!sortAsc); }} title="Deployment pipeline status (Pending, Deployed, Verified, Rolled Back). Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>DEPLOY STATUS</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 w-26 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors" onClick={() => { setSortBy('releaseVersion'); setSortAsc(!sortAsc); }} title="Mapped release vehicle (e.g. v1.0.0, Q3 Release). Click to sort.">
+                    <th className="px-3 py-2 w-24 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('releaseVersion'); setSortAsc(!sortAsc); }} title="Mapped release vehicle (e.g. v1.0.0, Q3 Release). Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>RELEASE</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors" onClick={() => { setSortBy('signOffStatus'); setSortAsc(!sortAsc); }} title="Quality and stakeholder sign-off status (Pending, Approved, Conditionally Approved, Rejected). Click to sort.">
+                    <th className="px-3 py-2 w-32 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('signOffStatus'); setSortAsc(!sortAsc); }} title="Quality and stakeholder sign-off status (Pending, Approved, Conditionally Approved, Rejected). Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>SIGN-OFF</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors" onClick={() => { setSortBy('smokeTestStatus'); setSortAsc(!sortAsc); }} title="Automated smoke test gate status (Passed, Failed, In Progress, Blocked). Click to sort.">
+                    <th className="px-3 py-2 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('smokeTestStatus'); setSortAsc(!sortAsc); }} title="Automated smoke test gate status (Passed, Failed, In Progress, Blocked). Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>SMOKE GATE</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 w-32" title="Total count of tasks and GUI screens bundled into this delivery note">LINKED SCOPE</th>
-                    <th className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors" onClick={() => { setSortBy('targetDeliveryDate'); setSortAsc(!sortAsc); }} title="Scheduled calendar delivery date. Click to sort.">
+                    <th className="px-3 py-2 w-32 whitespace-nowrap" title="Total count of tasks and GUI screens bundled into this delivery note">LINKED SCOPE</th>
+                    <th className="px-3 py-2 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('targetDeliveryDate'); setSortAsc(!sortAsc); }} title="Scheduled calendar delivery date. Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>TARGET DATE</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 w-24 text-right" title="Lead time and schedule variance against baseline target">LEAD / VAR</th>
-                    <th className="p-2.5 text-center w-12"></th>
+                    <th className="px-3 py-2 w-24 text-right whitespace-nowrap" title="Lead time and schedule variance against baseline target">LEAD / VAR</th>
+                    <th className="px-2 py-2 text-center w-10"></th>
                   </tr>
 
                   {/* Inline Column Filters Row */}
@@ -724,11 +724,11 @@ export const DeliveriesView: React.FC = () => {
                     </tr>
                   )}
                 </thead>
-                <tbody className="divide-y divide-[var(--color-divider)]">
+                <tbody className="divide-y divide-[var(--color-divider)]/40">
                   {pagination.paginatedItems.map((item, idx) => {
                     const isSelected = selectedIds.has(item.id);
                     const isOverdue = daysDiff(item.targetDeliveryDate)! < 0 && item.status !== 'Deployed' && item.status !== 'Cancelled';
-                    const padY = autofitStrategy === 'compact' ? "py-1.5" : "py-3";
+                    const padY = autofitStrategy === 'compact' ? "py-1.5" : "py-2";
                     
                     return (
                       <tr 
@@ -736,7 +736,7 @@ export const DeliveriesView: React.FC = () => {
                         className={clsx(
                           "group hover:bg-[var(--color-surface-2)]/70 transition-colors cursor-pointer relative",
                           isSelected && "bg-[var(--color-primary-highlight-hex)]/40",
-                          isOverdue && "is-overdue"
+                          isOverdue && "is-overdue border-l-4 border-l-rose-500 bg-rose-500/[0.02]"
                         )}
                         onClick={(e) => {
                           if ((e.target as HTMLElement).closest('input[type="checkbox"]') || (e.target as HTMLElement).closest('button')) return;
@@ -744,7 +744,7 @@ export const DeliveriesView: React.FC = () => {
                         }}
                       >
                         {/* Checkbox */}
-                        <td className={clsx("p-2.5 text-center", padY)} onClick={e => e.stopPropagation()}>
+                        <td className={clsx("px-2.5 text-center", padY)} onClick={e => e.stopPropagation()}>
                           <input 
                             type="checkbox"
                             checked={isSelected}
@@ -754,42 +754,43 @@ export const DeliveriesView: React.FC = () => {
                         </td>
 
                         {/* Row Num (#) */}
-                        <td className={clsx("p-2.5 text-center td-rn font-mono", padY)}>
+                        <td className={clsx("px-2 text-center td-rn font-mono text-[10px] text-[var(--color-text-faint)]", padY)}>
                           {pagination.startIndex + idx + 1}
                         </td>
 
                         {/* ALM ID & PDN */}
-                        <td className={clsx("p-2.5", padY)}>
-                          <div className="font-mono font-bold text-xs text-[var(--color-primary-hex)]">
-                            {item.almId}
-                          </div>
-                          <div className="font-mono text-[10px] text-[var(--color-text-muted)]">
-                            {item.pdn}
+                        <td className={clsx("px-3 whitespace-nowrap", padY)}>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-mono font-bold text-xs text-[var(--color-primary-hex)]">
+                              {item.almId}
+                            </span>
+                            {item.pdn && (
+                              <span className="font-mono text-[10px] text-[var(--color-text-muted)] opacity-70">
+                                ({item.pdn})
+                              </span>
+                            )}
                           </div>
                         </td>
 
                         {/* Name & Delivered Components */}
-                        <td className={clsx("p-2.5", padY)}>
-                          <div className="font-bold text-xs leading-tight mb-0.5 line-clamp-2">
-                            {item.name}
-                          </div>
-                          <div className="flex items-center gap-2 text-[10px] text-[var(--color-text-muted)] flex-wrap">
-                            <span className="font-bold text-[var(--color-text)]">{item.module}</span>
-                            <span aria-hidden="true">·</span>
-                            <span className="px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[9px] font-semibold">{item.category}</span>
-                            {item.componentsDelivered && (
-                              <>
-                                <span aria-hidden="true">·</span>
-                                <span className="font-mono text-[10px] text-[var(--color-text-faint)] truncate max-w-[150px]">
-                                  {item.componentsDelivered}
-                                </span>
-                              </>
+                        <td className={clsx("px-3 max-w-[340px]", padY)}>
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span className="font-bold text-xs leading-tight truncate text-[var(--color-text)]" title={item.name}>
+                              {item.name}
+                            </span>
+                            <span className="shrink-0 text-[10px] text-[var(--color-text-muted)] font-mono">
+                              ({item.module})
+                            </span>
+                            {item.category && (
+                              <span className="shrink-0 px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[9px] font-semibold text-[var(--color-text-muted)]">
+                                {item.category}
+                              </span>
                             )}
                           </div>
                         </td>
 
                         {/* ALM Status Badge */}
-                        <td className={clsx("p-2.5", padY)}>
+                        <td className={clsx("px-3 whitespace-nowrap", padY)}>
                           <span className={clsx("st-badge", `st-${ALM_ST_MAP[item.almStatus] || 'not-started'}`)}>
                             <span className="dot" />
                             <span>{item.almStatus}</span>
@@ -797,7 +798,7 @@ export const DeliveriesView: React.FC = () => {
                         </td>
 
                         {/* Environment */}
-                        <td className={clsx("p-2.5", padY)}>
+                        <td className={clsx("px-3 whitespace-nowrap", padY)}>
                           <span className={clsx(
                             "px-2 py-0.5 rounded text-[11px] font-semibold inline-block",
                             item.environment === 'Production' && "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30",
@@ -811,7 +812,7 @@ export const DeliveriesView: React.FC = () => {
                         </td>
 
                         {/* Deployment Status */}
-                        <td className={clsx("p-2.5", padY)}>
+                        <td className={clsx("px-3 whitespace-nowrap", padY)}>
                           <span className={clsx("st-badge", `st-${DEL_ST_MAP[item.status] || 'not-started'}`)}>
                             <span className="dot" />
                             <span>{item.status}</span>
@@ -819,15 +820,15 @@ export const DeliveriesView: React.FC = () => {
                         </td>
 
                         {/* Release */}
-                        <td className={clsx("p-2.5", padY)}>
+                        <td className={clsx("px-3 whitespace-nowrap", padY)}>
                           <span className="font-mono text-[11px] font-semibold px-2 py-0.5 bg-[var(--color-surface-2)] rounded border border-[var(--color-divider)]">
                             {item.releaseVersion}
                           </span>
                         </td>
 
                         {/* Sign-off & Approver */}
-                        <td className={clsx("p-2.5", padY)}>
-                          <div className="flex items-center gap-1.5 mb-1">
+                        <td className={clsx("px-3 whitespace-nowrap", padY)}>
+                          <div className="flex items-center gap-1.5">
                             <span className={clsx(
                               "text-xs font-semibold",
                               item.signOffStatus === 'Approved' && "text-emerald-400",
@@ -837,12 +838,16 @@ export const DeliveriesView: React.FC = () => {
                             )}>
                               {item.signOffStatus}
                             </span>
+                            {item.approver && (
+                              <span className="text-[10px] text-[var(--color-text-faint)]">
+                                ({item.approver.split(' ')[0]})
+                              </span>
+                            )}
                           </div>
-                          {renderAvatar(item.approver, 'Approver: ')}
                         </td>
 
                         {/* Smoke Test */}
-                        <td className={clsx("p-2.5", padY)}>
+                        <td className={clsx("px-3 whitespace-nowrap", padY)}>
                           <span className={clsx(
                             "px-2 py-0.5 rounded text-xs font-medium inline-block",
                             item.smokeTestStatus === 'Passed' && "bg-emerald-500/15 text-emerald-400",
@@ -855,46 +860,41 @@ export const DeliveriesView: React.FC = () => {
                         </td>
 
                         {/* Linked Tasks / Screens */}
-                        <td className={clsx("p-2.5 max-w-[200px]", padY)}>
+                        <td className={clsx("px-3 max-w-[180px] whitespace-nowrap truncate", padY)}>
                           {item.linkedId ? (
-                            <div className="flex items-center gap-1">
-                              <span className="px-1.5 py-0.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded text-[10px] font-mono truncate max-w-[170px]" title={item.linkedId}>
-                                {item.linkedId}
-                              </span>
-                            </div>
+                            <span className="px-1.5 py-0.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded text-[10px] font-mono truncate" title={item.linkedId}>
+                              {item.linkedId}
+                            </span>
                           ) : (
                             <span className="text-[var(--color-text-faint)] text-xs">—</span>
-                          )}
-                          {item.linkedScreens && item.linkedScreens.length > 0 && (
-                            <div className="text-[10px] text-[var(--color-text-muted)] truncate max-w-[170px] mt-0.5">
-                              Screens: {item.linkedScreens.join(', ')}
-                            </div>
                           )}
                         </td>
 
                         {/* Target Date */}
-                        <td className={clsx("p-2.5 font-mono text-xs", padY)}>
-                          <div>{fmtDate(item.targetDeliveryDate)}</div>
-                          {item.actualDeliveryDate && (
-                            <div className="text-[10px] text-emerald-400">
-                              Act: {fmtDate(item.actualDeliveryDate)}
-                            </div>
-                          )}
+                        <td className={clsx("px-3 font-mono text-xs whitespace-nowrap", padY)}>
+                          <div className="flex items-center gap-1">
+                            <span>{fmtDate(item.targetDeliveryDate)}</span>
+                            {item.actualDeliveryDate && (
+                              <span className="text-[10px] text-emerald-400" title={`Actual: ${fmtDate(item.actualDeliveryDate)}`}>
+                                ✓
+                              </span>
+                            )}
+                          </div>
                         </td>
 
                         {/* Lead / Variance */}
-                        <td className={clsx("p-2.5 text-right font-mono text-xs", padY)}>
-                          <div>{item.leadTimeDays}d</div>
-                          <div className={clsx(
+                        <td className={clsx("px-3 text-right font-mono text-xs whitespace-nowrap", padY)}>
+                          <span className="mr-1">{item.leadTimeDays}d</span>
+                          <span className={clsx(
                             "text-[10px]",
                             (item.variance || 0) > 0 ? "text-rose-400 font-bold" : ((item.variance || 0) < 0 ? "text-emerald-400 font-bold" : "text-[var(--color-text-muted)]")
                           )}>
                             {(item.variance || 0) > 0 ? `+${item.variance}d` : `${item.variance || 0}d`}
-                          </div>
+                          </span>
                         </td>
 
                         {/* Actions */}
-                        <td className={clsx("p-2 text-center", padY)} onClick={e => e.stopPropagation()}>
+                        <td className={clsx("px-2 text-center whitespace-nowrap", padY)} onClick={e => e.stopPropagation()}>
                           <div className="flex items-center justify-center gap-1">
                             <button
                               onClick={() => handleOpenEdit(item)}

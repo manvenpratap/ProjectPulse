@@ -417,11 +417,11 @@ const DefectView: React.FC = () => {
         {/* ── 3. Table View (Enterprise Defect Matrix from projectpulse.html) ── */}
         {viewMode === 'table' ? (
           <div className="overflow-x-auto rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs max-w-full">
-            <table className="w-full text-left border-collapse min-w-[1050px] table-fixed">
+            <table className="w-full text-left border-collapse min-w-[1050px]">
               <thead>
                 <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)]/60 text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] select-none">
                   {/* Bulk Checkbox */}
-                  <th className="p-2.5 w-10 text-center">
+                  <th className="px-2.5 py-2 w-10 text-center">
                     <input 
                       type="checkbox"
                       checked={isAllSelected}
@@ -432,17 +432,17 @@ const DefectView: React.FC = () => {
                   </th>
 
                   {/* Row Number (#) */}
-                  <th className="p-2.5 w-11 text-center td-rn font-mono text-[10px]" title="Sequential defect index">
+                  <th className="px-2 py-2 w-11 text-center td-rn font-mono text-[10px]" title="Sequential defect index">
                     #
                   </th>
 
                   {/* Edit Action */}
-                  <th className="p-2.5 w-10 text-center" title="Quick edit defect"></th>
+                  <th className="px-1 py-2 w-10 text-center" title="Quick edit defect"></th>
 
                   {/* Defect ID */}
                   <th 
                     onClick={() => handleSort('id')}
-                    className="p-2.5 w-26 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
+                    className="px-3 py-2 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
                     title="Unique defect tracking identifier (e.g. DEF-101). Click to sort."
                   >
                     <div className="flex items-center justify-between gap-1">
@@ -456,7 +456,7 @@ const DefectView: React.FC = () => {
                   {/* Title / Summary */}
                   <th 
                     onClick={() => handleSort('title')}
-                    className="p-2.5 min-w-[260px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
+                    className="px-3 py-2 min-w-[280px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
                     title="Summary of the issue, failure symptom, or regression. Click to sort."
                   >
                     <div className="flex items-center justify-between gap-1">
@@ -470,7 +470,7 @@ const DefectView: React.FC = () => {
                   {/* Severity */}
                   <th 
                     onClick={() => handleSort('severity')}
-                    className="p-2.5 w-30 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
+                    className="px-3 py-2 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
                     title="Impact severity tier (S1-Blocker, S2-Critical, S3-Major, S4-Minor). Click to sort."
                   >
                     <div className="flex items-center justify-between gap-1">
@@ -484,7 +484,7 @@ const DefectView: React.FC = () => {
                   {/* Priority */}
                   <th 
                     onClick={() => handleSort('priority')}
-                    className="p-2.5 w-26 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors text-center"
+                    className="px-2 py-2 w-24 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors text-center whitespace-nowrap"
                     title="Fix urgency for triage and sprint allocation. Click to sort."
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -498,7 +498,7 @@ const DefectView: React.FC = () => {
                   {/* Status */}
                   <th 
                     onClick={() => handleSort('status')}
-                    className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
+                    className="px-3 py-2 w-32 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
                     title="Resolution lifecycle state (New, Open, In Progress, Resolved, Retest, Closed). Click to sort."
                   >
                     <div className="flex items-center justify-between gap-1">
@@ -512,7 +512,7 @@ const DefectView: React.FC = () => {
                   {/* Assignee */}
                   <th 
                     onClick={() => handleSort('assignee')}
-                    className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
+                    className="px-3 py-2 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
                     title="Assigned engineer or QA lead investigating the defect. Click to sort."
                   >
                     <div className="flex items-center justify-between gap-1">
@@ -524,14 +524,14 @@ const DefectView: React.FC = () => {
                   </th>
 
                   {/* Linked Item */}
-                  <th className="p-2.5 w-32" title="Associated task ID or GUI screen origin">
+                  <th className="px-3 py-2 w-32 whitespace-nowrap" title="Associated task ID or GUI screen origin">
                     LINKED ITEM
                   </th>
 
                   {/* Updated Date */}
                   <th 
                     onClick={() => handleSort('updatedAt')}
-                    className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors text-right"
+                    className="px-3 py-2 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors text-right whitespace-nowrap"
                     title="Timestamp of last modification or comment. Click to sort."
                   >
                     <div className="flex items-center justify-end gap-1">
@@ -627,10 +627,10 @@ const DefectView: React.FC = () => {
                 )}
               </thead>
 
-              <tbody className="divide-y divide-[var(--color-divider)]">
+              <tbody className="divide-y divide-[var(--color-divider)]/40">
                 {pagination.paginatedItems.map((defect, idx) => {
                   const isSelected = selectedIds.has(defect.id);
-                  const padY = density === 'compact' ? "py-1.5" : "py-3";
+                  const padY = density === 'compact' ? "py-1.5" : "py-2";
                   const isS1 = defect.severity?.startsWith('S1');
 
                   return (
@@ -640,11 +640,11 @@ const DefectView: React.FC = () => {
                       className={clsx(
                         "group hover:bg-[var(--color-surface-2)]/70 transition-colors cursor-pointer relative",
                         isSelected && "bg-[var(--color-primary-highlight-hex)]/40",
-                        isS1 && "is-overdue"
+                        isS1 && "is-overdue border-l-4 border-l-rose-500 bg-rose-500/[0.02]"
                       )}
                     >
                       {/* Checkbox */}
-                      <td className={clsx("p-2.5 text-center", padY)} onClick={e => e.stopPropagation()}>
+                      <td className={clsx("px-2.5 text-center", padY)} onClick={e => e.stopPropagation()}>
                         <input 
                           type="checkbox"
                           checked={isSelected}
@@ -654,12 +654,12 @@ const DefectView: React.FC = () => {
                       </td>
 
                       {/* Row Num */}
-                      <td className={clsx("p-2.5 text-center td-rn font-mono", padY)}>
+                      <td className={clsx("px-2 text-center td-rn font-mono text-[10px] text-[var(--color-text-faint)]", padY)}>
                         {pagination.startIndex + idx + 1}
                       </td>
 
                       {/* Edit Button */}
-                      <td className={clsx("p-1 text-center", padY)} onClick={e => e.stopPropagation()}>
+                      <td className={clsx("px-1 text-center", padY)} onClick={e => e.stopPropagation()}>
                         <button
                           onClick={() => handleEdit(defect.id)}
                           className="w-5 h-5 inline-flex items-center justify-center rounded hover:bg-[var(--color-surface-offset)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer"
@@ -670,24 +670,26 @@ const DefectView: React.FC = () => {
                       </td>
 
                       {/* Defect ID */}
-                      <td className={clsx("p-2.5 font-mono font-bold text-[11px] text-rose-500", padY)}>
+                      <td className={clsx("px-3 font-mono font-bold text-[11px] text-rose-500 whitespace-nowrap", padY)}>
                         {defect.id}
                       </td>
 
                       {/* Summary & Scope */}
-                      <td className={clsx("p-2.5", padY)}>
-                        <div className="font-bold text-xs text-[var(--color-text)] leading-tight truncate">
-                          {defect.title}
+                      <td className={clsx("px-3 max-w-[340px]", padY)}>
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className="font-bold text-xs text-[var(--color-text)] leading-tight truncate" title={defect.title}>
+                            {defect.title}
+                          </span>
+                          {defect.desc && (
+                            <span className="text-[10px] text-[var(--color-text-muted)] truncate hidden xl:inline max-w-[160px] shrink-0" title={defect.desc}>
+                              · {defect.desc}
+                            </span>
+                          )}
                         </div>
-                        {defect.desc && (
-                          <div className="text-[10px] text-[var(--color-text-muted)] truncate max-w-sm mt-0.5">
-                            {defect.desc}
-                          </div>
-                        )}
                       </td>
 
                       {/* Severity */}
-                      <td className={clsx("p-2.5", padY)}>
+                      <td className={clsx("px-3 whitespace-nowrap", padY)}>
                         <span className={clsx(
                           "px-2 py-0.5 rounded text-[10px] font-bold font-mono inline-block",
                           defect.severity?.startsWith('S1') ? "bg-rose-500/15 text-rose-500 border border-rose-500/30" :
@@ -700,14 +702,14 @@ const DefectView: React.FC = () => {
                       </td>
 
                       {/* Priority */}
-                      <td className={clsx("p-2.5 text-center", padY)}>
+                      <td className={clsx("px-2 text-center whitespace-nowrap", padY)}>
                         <span className={clsx("pri-badge", `pri-${(defect.priority || 'medium').toLowerCase()}`)}>
                           {defect.priority || 'Medium'}
                         </span>
                       </td>
 
                       {/* Status */}
-                      <td className={clsx("p-2.5", padY)}>
+                      <td className={clsx("px-3 whitespace-nowrap", padY)}>
                         <button
                           onClick={(e) => handleCycleStatus(defect, e)}
                           title="Click to cycle status"
@@ -719,7 +721,7 @@ const DefectView: React.FC = () => {
                       </td>
 
                       {/* Assignee */}
-                      <td className={clsx("p-2.5", padY)}>
+                      <td className={clsx("px-3 whitespace-nowrap", padY)}>
                         {defect.assignee ? (
                           <div className="flex items-center gap-1.5">
                             <div className="w-5 h-5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold text-[9px] flex items-center justify-center shrink-0 border border-[var(--color-primary-hex)]/30">
@@ -735,12 +737,12 @@ const DefectView: React.FC = () => {
                       </td>
 
                       {/* Linked Scope */}
-                      <td className={clsx("p-2.5 font-mono text-[11px] text-[var(--color-text-muted)] truncate", padY)}>
+                      <td className={clsx("px-3 font-mono text-[11px] text-[var(--color-text-muted)] truncate whitespace-nowrap", padY)}>
                         {defect.linkedId ? `${defect.linkedType || 'Task'}: ${defect.linkedId}` : '—'}
                       </td>
 
                       {/* Updated Date */}
-                      <td className={clsx("p-2.5 font-mono text-[10px] text-right text-[var(--color-text-faint)]", padY)}>
+                      <td className={clsx("px-3 font-mono text-[10px] text-right text-[var(--color-text-faint)] whitespace-nowrap", padY)}>
                         {defect.updatedAt ? fmtDate(defect.updatedAt) : fmtDate(defect.createdAt)}
                       </td>
                     </tr>

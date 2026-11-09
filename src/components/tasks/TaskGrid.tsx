@@ -435,12 +435,12 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
       {/* ── 3. Desktop Table (Linear-grade Precision Data Grid) ── */}
       <div className="hidden lg:block rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs overflow-hidden">
         <div className="overflow-x-auto custom-scroll">
-          <table className="w-full text-left border-collapse min-w-[1100px] table-fixed">
+          <table className="w-full text-left border-collapse min-w-[1100px]">
           <thead>
             {/* Header Row */}
             <tr className="bg-[var(--color-surface-offset)]/90 backdrop-blur-md border-b border-[var(--color-border)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)] select-none">
               {/* Checkbox Column */}
-              <th className="p-2.5 w-10 text-center">
+              <th className="px-2.5 py-2 w-10 text-center">
                 <input 
                   type="checkbox"
                   checked={isAllSelected}
@@ -451,17 +451,17 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               </th>
 
               {/* Row Num Column (#) */}
-              <th className="p-2.5 w-11 text-center td-rn font-mono text-[10px]" title="Sequential row index">
+              <th className="px-2 py-2 w-11 text-center td-rn font-mono text-[10px]" title="Sequential row index">
                 #
               </th>
 
               {/* Expand Column */}
-              <th className="p-2.5 w-8 text-center" title="Expand or collapse subtasks"></th>
+              <th className="px-1 py-2 w-8 text-center" title="Expand or collapse subtasks"></th>
 
               {/* Task ID */}
               <th 
                 onClick={() => handleSort('id')}
-                className="p-2.5 w-24 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
+                className="px-3 py-2 w-24 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
                 title="Unique persistent task identifier (e.g. T-101). Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
@@ -475,7 +475,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               {/* Module & Screen */}
               <th 
                 onClick={() => handleSort('module')}
-                className="p-2.5 w-40 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
+                className="px-3 py-2 w-44 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
                 title="Functional architectural domain of the codebase this task impacts. Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
@@ -489,7 +489,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               {/* Task Name & Checklist */}
               <th 
                 onClick={() => handleSort('name')}
-                className="p-2.5 min-w-[280px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
+                className="px-3 py-2 min-w-[320px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
                 title="Task title and subtask checklist status. Indented rows indicate child subtasks. Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
@@ -503,7 +503,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               {/* Status */}
               <th 
                 onClick={() => handleSort('status')}
-                className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
+                className="px-3 py-2 w-32 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
                 title="Current task lifecycle state (Not Started, In Progress, Review, Completed, On Hold, Cancelled). Click badge in rows to quick-cycle. Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
@@ -517,7 +517,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               {/* Priority */}
               <th 
                 onClick={() => handleSort('priority')}
-                className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors text-center"
+                className="px-2 py-2 w-24 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors text-center whitespace-nowrap"
                 title="Execution urgency (Critical, High, Medium, Low). Prioritizes linear capacity leveling. Click to sort."
               >
                 <div className="flex items-center justify-center gap-1">
@@ -531,7 +531,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               {/* Assignee */}
               <th 
                 onClick={() => handleSort('assignee')}
-                className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
+                className="px-3 py-2 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
                 title="Accountable module owner or developer. Subtask contributors roll up automatically. Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
@@ -545,7 +545,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               {/* Due Date */}
               <th 
                 onClick={() => handleSort('dueDate')}
-                className="p-2.5 w-32 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
+                className="px-3 py-2 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
                 title="Planned feasibility target completion date. Evaluated against Baseline Due Date. Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
@@ -559,7 +559,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               {/* Progress */}
               <th 
                 onClick={() => handleSort('progress')}
-                className="p-2.5 w-32 text-right cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
+                className="px-3 py-2 w-28 text-right cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
                 title="Granular completion percentage (0–100%). Click or slide to adjust. Click to sort."
               >
                 <div className="flex items-center justify-end gap-1">
@@ -571,7 +571,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               </th>
 
               {/* Actions Column */}
-              <th className="p-2.5 w-12 text-center"></th>
+              <th className="px-2 py-2 w-10 text-center"></th>
             </tr>
 
             {/* Inline Column Filters Row (Matching projectpulse.html) */}
@@ -685,7 +685,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               const isExpanded = expandedTasks.has(task.id);
               const isSelected = selectedTaskIds.has(task.id);
               const isMilestone = (task.startDate && task.startDate === task.dueDate) || task.subtasks.some(s => s.name.toLowerCase().includes('milestone'));
-              const padY = density === 'compact' ? "py-2" : "py-3.5";
+              const padY = density === 'compact' ? "py-1.5" : "py-2";
 
               return (
                 <React.Fragment key={task.id}>
@@ -699,7 +699,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                     )}
                   >
                     {/* Checkbox */}
-                    <td className={clsx("p-2.5 text-center", padY)} onClick={e => e.stopPropagation()}>
+                    <td className={clsx("px-2.5 text-center", padY)} onClick={e => e.stopPropagation()}>
                       <input 
                         type="checkbox"
                         checked={isSelected}
@@ -709,12 +709,12 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                     </td>
 
                     {/* Row Num */}
-                    <td className={clsx("p-2.5 text-center td-rn font-mono text-[10px] text-[var(--color-text-faint)]", padY)}>
+                    <td className={clsx("px-2 text-center td-rn font-mono text-[10px] text-[var(--color-text-faint)]", padY)}>
                       {pagination.startIndex + idx + 1}
                     </td>
 
                     {/* Expand Subtasks Button */}
-                    <td className={clsx("p-1 text-center", padY)}>
+                    <td className={clsx("px-1 text-center", padY)}>
                       {task.subtasks.length > 0 ? (
                         <button
                           onClick={(e) => toggleExpand(task.id, e)}
@@ -727,7 +727,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                     </td>
 
                     {/* Task ID */}
-                    <td className={clsx("p-2.5 font-mono font-bold text-[11px] text-[var(--color-primary-hex)]", padY)}>
+                    <td className={clsx("px-3 font-mono font-bold text-[11px] text-[var(--color-primary-hex)] whitespace-nowrap", padY)}>
                       <div className="flex items-center gap-1.5">
                         {blocked && <Lock size={11} className="text-amber-500 shrink-0" title="Blocked by dependency" />}
                         <span className="hover:underline">{task.id}</span>
@@ -735,49 +735,54 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                     </td>
 
                     {/* Module & Scope */}
-                    <td className={clsx("p-2.5", padY)}>
-                      <div className="flex flex-col gap-0.5">
-                        <span className="text-xs font-semibold text-[var(--color-text)] truncate max-w-[140px]">
+                    <td className={clsx("px-3 whitespace-nowrap", padY)}>
+                      <div className="flex items-center gap-1.5 truncate max-w-[170px]">
+                        <span className="text-xs font-medium text-[var(--color-text)] truncate" title={task.module}>
                           {task.module}
                         </span>
-                        <span className="text-[10px] text-[var(--color-text-muted)] font-mono truncate">
-                          {task.moduleType || 'Server'}
-                        </span>
+                        {task.moduleType && (
+                          <span className="text-[9.5px] text-[var(--color-text-muted)] font-mono shrink-0 opacity-60">
+                            ({task.moduleType})
+                          </span>
+                        )}
                       </div>
                     </td>
 
                     {/* Task Name & Checklist */}
-                    <td className={clsx("p-2.5", padY)}>
-                      <div className="flex items-center gap-2 flex-wrap">
-                        {isMilestone && <span title="Milestone">🚩</span>}
-                        <span className="text-xs font-bold text-[var(--color-text)] leading-snug group-hover:text-[var(--color-primary-hex)] transition-colors">
+                    <td className={clsx("px-3 max-w-[420px]", padY)}>
+                      <div className="flex items-center gap-2 min-w-0">
+                        {isMilestone && <span title="Milestone" className="shrink-0">🚩</span>}
+                        <span 
+                          className="text-xs font-semibold text-[var(--color-text)] truncate group-hover:text-[var(--color-primary-hex)] transition-colors cursor-pointer"
+                          title={task.screenName ? `${task.name} (Screen: ${task.screenName})` : task.name}
+                        >
                           {task.name}
                         </span>
                         {task.release && (
-                          <span className="px-1.5 py-0.2 rounded-md bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)] text-[9px] font-mono font-bold">
+                          <span className="shrink-0 px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)] text-[9px] font-mono font-semibold">
                             {task.release}
                           </span>
                         )}
                         {task.subtasks.length > 0 && (
                           <button
                             onClick={(e) => toggleExpand(task.id, e)}
-                            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-[10px] font-semibold text-indigo-500 transition-colors cursor-pointer"
+                            className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-[10px] font-semibold text-indigo-500 transition-colors cursor-pointer"
                             title="Toggle Checklist"
                           >
                             <CheckSquare size={10} />
                             <span>{task.subtasks.filter(s => s.done).length}/{task.subtasks.length}</span>
                           </button>
                         )}
+                        {task.screenName && (
+                          <span className="shrink-0 text-[10px] text-[var(--color-text-faint)] font-mono hidden 2xl:inline truncate max-w-[120px]">
+                            · {task.screenName}
+                          </span>
+                        )}
                       </div>
-                      {task.screenName && (
-                        <div className="text-[10px] text-[var(--color-text-muted)] font-mono mt-0.5">
-                          Screen: {task.screenName}
-                        </div>
-                      )}
                     </td>
 
                     {/* Status Pill (st-badge) */}
-                    <td className={clsx("p-2.5", padY)}>
+                    <td className={clsx("px-3 whitespace-nowrap", padY)}>
                       <button
                         onClick={(e) => handleCycleStatus(task, e)}
                         title="Click to cycle status"
@@ -789,14 +794,14 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                     </td>
 
                     {/* Priority Pill (pri-badge) */}
-                    <td className={clsx("p-2.5 text-center", padY)}>
+                    <td className={clsx("px-2 text-center whitespace-nowrap", padY)}>
                       <span className={clsx("pri-badge shadow-2xs", `pri-${PRI_MAP[task.priority] || 'medium'}`)}>
                         {task.priority}
                       </span>
                     </td>
 
                     {/* Assignee */}
-                    <td className={clsx("p-2.5", padY)}>
+                    <td className={clsx("px-3 whitespace-nowrap", padY)}>
                       {task.assignee ? (
                         <div className="flex items-center gap-2">
                           <div className="w-5 h-5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold text-[9px] flex items-center justify-center shrink-0 border border-[var(--color-primary-hex)]/30 shadow-2xs">
@@ -812,7 +817,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                     </td>
 
                     {/* Due Date */}
-                    <td className={clsx("p-2.5 font-mono text-[11px]", padY)}>
+                    <td className={clsx("px-3 font-mono text-[11px] whitespace-nowrap", padY)}>
                       <div className="flex items-center gap-1.5">
                         <span className={clsx(
                           overdue ? "text-rose-500 font-bold" : "text-[var(--color-text-muted)]"
@@ -828,7 +833,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                     </td>
 
                     {/* Progress Bar */}
-                    <td className={clsx("p-2.5 text-right", padY)}>
+                    <td className={clsx("px-3 text-right whitespace-nowrap", padY)}>
                       <div className="flex items-center justify-end gap-2.5">
                         <span className="text-[11px] font-mono tabular-nums font-bold text-[var(--color-text)]">{task.progress}%</span>
                         <div className="w-16 h-1.5 bg-[var(--color-surface-2)] rounded-full overflow-hidden border border-[var(--color-divider)]/40 shadow-inner">
@@ -844,10 +849,10 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                     </td>
 
                     {/* Row Actions */}
-                    <td className={clsx("p-2 text-center", padY)} onClick={e => e.stopPropagation()}>
+                    <td className={clsx("px-2 text-center whitespace-nowrap", padY)} onClick={e => e.stopPropagation()}>
                       <button
                         onClick={() => onEditTask(task.id)}
-                        className="p-1.5 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors opacity-70 group-hover:opacity-100 cursor-pointer"
+                        className="p-1 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors opacity-70 group-hover:opacity-100 cursor-pointer"
                         title="Edit task"
                       >
                         <MoreHorizontal size={14} />
@@ -863,47 +868,47 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                         className="bg-[var(--color-surface-2)]/30 hover:bg-[var(--color-surface-2)]/70 transition-colors text-xs border-b border-[var(--color-divider)]/30"
                       >
                         {/* Blank check */}
-                        <td className="p-2 text-center"></td>
+                        <td className="px-2.5 py-1.5 text-center"></td>
 
                         {/* Subtask Row Number (e.g. 1.1, 1.2) */}
-                        <td className="p-2 text-center font-mono text-[9px] text-[var(--color-text-faint)]">
+                        <td className="px-2 py-1.5 text-center font-mono text-[9px] text-[var(--color-text-faint)]">
                           {pagination.startIndex + idx + 1}.{sIdx + 1}
                         </td>
 
                         {/* Hierarchy Indicator */}
-                        <td className="p-1 text-center font-mono text-[var(--color-text-faint)]">
+                        <td className="px-1 py-1.5 text-center font-mono text-[var(--color-text-faint)]">
                           └
                         </td>
 
                         {/* Subtask ID */}
-                        <td className="p-2 font-mono text-[10px] text-[var(--color-text-muted)]">
+                        <td className="px-3 py-1.5 font-mono text-[10px] text-[var(--color-text-muted)] whitespace-nowrap">
                           {st.id}
                         </td>
 
                         {/* Scope */}
-                        <td className="p-2 text-[11px] text-[var(--color-text-muted)] italic">
+                        <td className="px-3 py-1.5 text-[11px] text-[var(--color-text-muted)] italic whitespace-nowrap">
                           Subtask
                         </td>
 
                         {/* Subtask Name & Checklist toggle */}
-                        <td className="p-2">
+                        <td className="px-3 py-1.5 max-w-[420px]">
                           <div 
                             onClick={(e) => handleToggleSubtask(task, st.id, e)}
-                            className="flex items-center gap-2 cursor-pointer group/st"
+                            className="flex items-center gap-2 cursor-pointer group/st min-w-0"
                           >
                             {st.done ? (
                               <CheckSquare size={13} className="text-emerald-500 shrink-0" />
                             ) : (
                               <Square size={13} className="text-[var(--color-text-faint)] group-hover/st:text-[var(--color-primary-hex)] shrink-0" />
                             )}
-                            <span className={clsx("text-xs font-medium transition-colors", st.done ? "line-through text-[var(--color-text-muted)]" : "text-[var(--color-text)]")}>
+                            <span className={clsx("text-xs font-medium transition-colors truncate", st.done ? "line-through text-[var(--color-text-muted)]" : "text-[var(--color-text)]")}>
                               {st.name}
                             </span>
                           </div>
                         </td>
 
                         {/* Subtask Status */}
-                        <td className="p-2">
+                        <td className="px-3 py-1.5 whitespace-nowrap">
                           <span className={clsx("st-badge text-[9px] py-0.5", st.done ? "st-completed" : "st-in-progress")}>
                             <span className="dot" />
                             <span>{st.done ? 'Completed' : 'In Progress'}</span>
@@ -911,26 +916,26 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                         </td>
 
                         {/* Priority */}
-                        <td className="p-2 text-center">
+                        <td className="px-2 py-1.5 text-center whitespace-nowrap">
                           <span className="text-[10px] text-[var(--color-text-faint)]">—</span>
                         </td>
 
                         {/* Assignee */}
-                        <td className="p-2">
+                        <td className="px-3 py-1.5 whitespace-nowrap">
                           <span className="text-[11px] text-[var(--color-text-muted)]">{st.assignee || '—'}</span>
                         </td>
 
                         {/* Due Date */}
-                        <td className="p-2 text-[10px] font-mono text-[var(--color-text-faint)]">
+                        <td className="px-3 py-1.5 text-[10px] font-mono text-[var(--color-text-faint)] whitespace-nowrap">
                           {st.dueDate ? fmtDate(st.dueDate) : '—'}
                         </td>
 
                         {/* Progress */}
-                        <td className="p-2 text-right">
+                        <td className="px-3 py-1.5 text-right whitespace-nowrap">
                           <span className="text-[10px] font-mono text-[var(--color-text-muted)]">{st.done ? '100%' : '0%'}</span>
                         </td>
 
-                        <td className="p-2"></td>
+                        <td className="px-2 py-1.5"></td>
                       </tr>
                     );
                   })}
