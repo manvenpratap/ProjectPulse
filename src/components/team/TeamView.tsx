@@ -1142,10 +1142,10 @@ const TeamView: React.FC = () => {
 
           {/* VIEW MODE 2: LIST VIEW (Tabular) */}
           {viewMode === 'list' && (
-            <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs overflow-x-auto custom-scroll">
+            <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs overflow-auto max-h-[calc(100vh-280px)] custom-scroll relative">
               <table className="w-full border-collapse text-left text-xs min-w-[850px]">
-                <thead>
-                  <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)]/60 text-[var(--color-text-muted)] font-bold text-[10px] uppercase tracking-widest select-none">
+                <thead className="sticky top-0 z-20 bg-[var(--color-surface-offset)] shadow-[0_1px_0_0_var(--color-divider)]">
+                  <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[var(--color-text-muted)] font-bold text-[10px] uppercase tracking-widest select-none">
                     <th className="px-3.5 py-2 w-52" title="Team member full name and primary delivery role">Member</th>
                     <th className="px-3.5 py-2 w-24" title="Enterprise employee badge or ID code">Emp ID</th>
                     <th className="px-3.5 py-2 w-28 whitespace-nowrap" title="Employment availability status (Active, On Leave, Inactive)">Status</th>

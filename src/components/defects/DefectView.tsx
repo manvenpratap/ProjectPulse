@@ -416,10 +416,10 @@ const DefectView: React.FC = () => {
 
         {/* ── 3. Table View (Enterprise Defect Matrix from projectpulse.html) ── */}
         {viewMode === 'table' ? (
-          <div className="overflow-x-auto rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs max-w-full">
+          <div className="overflow-auto max-h-[calc(100vh-280px)] rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs max-w-full custom-scroll relative">
             <table className="w-full text-left border-collapse min-w-[1050px]">
-              <thead>
-                <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)]/60 text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] select-none">
+              <thead className="sticky top-0 z-20 bg-[var(--color-surface-offset)] shadow-[0_1px_0_0_var(--color-divider)]">
+                <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] select-none">
                   {/* Bulk Checkbox */}
                   <th className="px-2.5 py-2 w-10 text-center">
                     <input 
@@ -545,7 +545,7 @@ const DefectView: React.FC = () => {
 
                 {/* Inline Filters Row */}
                 {showInlineFilters && (
-                  <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-border)] text-xs">
+                  <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-border)] text-xs shadow-xs">
                     <th className="p-1"></th>
                     <th className="p-1"></th>
                     <th className="p-1"></th>

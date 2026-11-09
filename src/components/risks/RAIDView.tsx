@@ -668,10 +668,10 @@ const RAIDView: React.FC = () => {
 
             {/* Desktop Table View (>= md) */}
             <div className="hidden md:block card p-0 overflow-hidden">
-              <div className="overflow-x-auto custom-scroll">
+              <div className="overflow-auto max-h-[calc(100vh-320px)] custom-scroll relative">
                 <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)]/60 text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] select-none">
+                  <thead className="sticky top-0 z-20 bg-[var(--color-surface-offset)] shadow-[0_1px_0_0_var(--color-divider)]">
+                    <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] select-none">
                       <th className="px-3 py-2 w-20 font-mono text-[10px]" title="Unique decision identifier (e.g. DEC-101)">ID</th>
                       <th className="px-3 py-2 min-w-[280px]" title="Strategic steering decision topic and context">Decision Title</th>
                       <th className="px-3 py-2 w-44 whitespace-nowrap" title="Accountable executive or steering lead">Owner / Approver</th>
@@ -835,10 +835,10 @@ const RAIDView: React.FC = () => {
 
             {/* Desktop Table View (>= md) */}
             <div className="hidden md:block card p-0 overflow-hidden">
-              <div className="overflow-x-auto custom-scroll">
+              <div className="overflow-auto max-h-[calc(100vh-320px)] custom-scroll relative">
                 <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)]/60 text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] select-none">
+                  <thead className="sticky top-0 z-20 bg-[var(--color-surface-offset)] shadow-[0_1px_0_0_var(--color-divider)]">
+                    <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] select-none">
                       <th className="px-3 py-2 w-28 cursor-pointer select-none whitespace-nowrap" onClick={() => handleRaidSort('id')} title="Identifier and RAID category: Risk, Assumption, Issue, or Dependency. Click to sort.">ID / Type</th>
                       <th className="px-3 py-2 min-w-[260px] cursor-pointer select-none whitespace-nowrap" onClick={() => handleRaidSort('title')} title="Summary of the risk event or blocker condition. Click to sort.">Title & Context</th>
                       <th className="px-3 py-2 w-32 cursor-pointer select-none whitespace-nowrap" onClick={() => handleRaidSort('owner')} title="Team member responsible for monitoring and mitigation. Click to sort.">Owner</th>

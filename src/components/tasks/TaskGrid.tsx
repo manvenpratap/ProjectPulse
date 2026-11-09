@@ -434,11 +434,11 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
 
       {/* ── 3. Desktop Table (Linear-grade Precision Data Grid) ── */}
       <div className="hidden lg:block rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs overflow-hidden">
-        <div className="overflow-x-auto custom-scroll">
+        <div className="overflow-auto max-h-[calc(100vh-280px)] custom-scroll relative">
           <table className="w-full text-left border-collapse min-w-[1100px]">
-          <thead>
+          <thead className="sticky top-0 z-20 bg-[var(--color-surface-offset)] shadow-[0_1px_0_0_var(--color-divider)]">
             {/* Header Row */}
-            <tr className="bg-[var(--color-surface-offset)]/90 backdrop-blur-md border-b border-[var(--color-border)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)] select-none">
+            <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)] select-none">
               {/* Checkbox Column */}
               <th className="px-2.5 py-2 w-10 text-center">
                 <input 
@@ -576,23 +576,23 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
 
             {/* Inline Column Filters Row (Matching projectpulse.html) */}
             {showInlineFilters && (
-              <tr className="bg-[var(--color-surface-2)]/60 border-b border-[var(--color-divider)] text-xs">
+              <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-divider)] text-xs shadow-xs">
                 {/* Empty check / rn / expand */}
-                <th className="p-1.5"></th>
-                <th className="p-1.5"></th>
-                <th className="p-1.5"></th>
+                <th className="p-1"></th>
+                <th className="p-1"></th>
+                <th className="p-1"></th>
 
                 {/* ID filter dummy */}
-                <th className="p-1.5">
+                <th className="p-1">
                   <span className="text-[10px] text-[var(--color-text-faint)] font-mono pl-1">—</span>
                 </th>
 
                 {/* Module filter */}
-                <th className="p-1.5">
+                <th className="p-1">
                   <select
                     value={selectedModule}
                     onChange={e => setSelectedModule(e.target.value)}
-                    className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-2 py-1 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
+                    className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
                   >
                     <option value="all">All Modules</option>
                     {modules.map(m => (
@@ -602,16 +602,16 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                 </th>
 
                 {/* Name filter */}
-                <th className="p-1.5">
+                <th className="p-1">
                   <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by search</span>
                 </th>
 
                 {/* Status filter */}
-                <th className="p-1.5">
+                <th className="p-1">
                   <select
                     value={selectedStatus}
                     onChange={e => setSelectedStatus(e.target.value)}
-                    className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-2 py-1 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
+                    className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
                   >
                     <option value="all">All Statuses</option>
                     {Object.values(TaskStatus).map(s => (
@@ -621,11 +621,11 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                 </th>
 
                 {/* Priority filter */}
-                <th className="p-1.5">
+                <th className="p-1">
                   <select
                     value={selectedPriority}
                     onChange={e => setSelectedPriority(e.target.value)}
-                    className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-2 py-1 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
+                    className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
                   >
                     <option value="all">All</option>
                     {Object.values(TaskPriority).map(p => (
@@ -635,11 +635,11 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                 </th>
 
                 {/* Assignee filter */}
-                <th className="p-1.5">
+                <th className="p-1">
                   <select
                     value={selectedAssignee}
                     onChange={e => setSelectedAssignee(e.target.value)}
-                    className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-2 py-1 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
+                    className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
                   >
                     <option value="all">All Team</option>
                     {assignees.map(a => (
@@ -649,16 +649,16 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                 </th>
 
                 {/* Date */}
-                <th className="p-1.5">
+                <th className="p-1">
                   <span className="text-[10px] text-[var(--color-text-faint)] pl-1">—</span>
                 </th>
 
                 {/* Progress */}
-                <th className="p-1.5">
+                <th className="p-1">
                   <span className="text-[10px] text-[var(--color-text-faint)] pl-1">—</span>
                 </th>
 
-                <th className="p-1.5 text-center">
+                <th className="p-1 text-center">
                   {(selectedModule !== 'all' || selectedStatus !== 'all' || selectedAssignee !== 'all' || selectedPriority !== 'all') && (
                     <button
                       onClick={() => {

@@ -563,10 +563,10 @@ export const DeliveriesView: React.FC = () => {
         {/* VIEW MODE 1: MATRIX TABLE */}
         {viewMode === 'table' && (
           <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
+            <div className="overflow-auto max-h-[calc(100vh-280px)] custom-scroll relative">
               <table className="w-full text-left border-collapse min-w-[1250px]">
-                <thead>
-                  <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)]/60 text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] select-none">
+                <thead className="sticky top-0 z-20 bg-[var(--color-surface-offset)] shadow-[0_1px_0_0_var(--color-divider)]">
+                  <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] select-none">
                     <th className="px-2.5 py-2 w-10 text-center">
                       <input 
                         type="checkbox"
@@ -640,7 +640,7 @@ export const DeliveriesView: React.FC = () => {
 
                   {/* Inline Column Filters Row */}
                   {showInlineFilters && (
-                    <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-border)] text-xs">
+                    <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-border)] text-xs shadow-xs">
                       <th className="p-1"></th>
                       <th className="p-1"></th>
                       <th className="p-1">
