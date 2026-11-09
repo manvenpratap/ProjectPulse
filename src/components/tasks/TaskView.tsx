@@ -76,7 +76,7 @@ const TaskView: React.FC = () => {
       {/* Task Content */}
       <div className="flex-1 overflow-auto custom-scroll p-4 sm:p-6 lg:p-8">
         {viewMode === 'grid' ? (
-           <TaskGrid onEditTask={handleEditTask} />
+           <TaskGrid onEditTask={handleEditTask} onNewTask={handleAddNewTask} />
         ) : (
            <BoardView onEditTask={handleEditTask} />
         )}

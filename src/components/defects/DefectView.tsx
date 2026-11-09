@@ -28,6 +28,7 @@ import DefectModal from './DefectModal';
 import { fmtDate, todayStr } from '../../utils/projectUtils';
 import { motion, AnimatePresence } from 'motion/react';
 import TablePagination, { usePagination } from '../shared/TablePagination';
+import DataTable, { ColumnDef } from '../shared/DataTable';
 
 type ViewMode = 'table' | 'cards';
 type DensityMode = 'comfortable' | 'compact';
@@ -191,6 +192,211 @@ const DefectView: React.FC = () => {
   const pagination = usePagination<Defect>(filteredDefects, 10, 'pp_page_size_defects');
 
   const isAllSelected = filteredDefects.length > 0 && selectedIds.size === filteredDefects.length;
+
+  const columns = useMemo<ColumnDef<Defect>[]>(() => [
+    {
+      id: 'edit',
+      header: '',
+      headerTitle: 'Quick edit defect',
+      width: 'w-8',
+      align: 'center',
+      cell: (defect) => (
+        <button
+          onClick={(e) => { e.stopPropagation(); handleEdit(defect.id); }}
+          className="w-5 h-5 inline-flex items-center justify-center rounded hover:bg-[var(--color-surface-offset)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer"
+          title="Edit details"
+        >
+          <Edit2 size={12} />
+        </button>
+      )
+    },
+    {
+      id: 'id',
+      header: 'DEFECT ID',
+      headerTitle: 'Persistent defect identifier (e.g. DEF-001). Click to sort.',
+      sortable: true,
+      width: 'w-24',
+      filter: <span className="text-[10px] text-[var(--color-text-faint)] font-mono pl-1">—</span>,
+      cell: (defect) => (
+        <span className="font-mono font-bold text-[11px] text-rose-500 whitespace-nowrap">
+          {defect.id}
+        </span>
+      )
+    },
+    {
+      id: 'title',
+      header: 'SUMMARY & SCOPE',
+      headerTitle: 'Summary of the issue, failure symptom, or regression. Click to sort.',
+      sortable: true,
+      width: 'min-w-[280px]',
+      filter: <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by search</span>,
+      cell: (defect) => (
+        <div className="flex items-center gap-1.5 min-w-0 max-w-[340px]">
+          <span className="font-bold text-xs text-[var(--color-text)] leading-tight truncate" title={defect.title}>
+            {defect.title}
+          </span>
+          {defect.desc && (
+            <span className="text-[10px] text-[var(--color-text-muted)] truncate hidden xl:inline max-w-[160px] shrink-0" title={defect.desc}>
+              · {defect.desc}
+            </span>
+          )}
+        </div>
+      )
+    },
+    {
+      id: 'severity',
+      header: 'SEVERITY',
+      headerTitle: 'Impact severity tier (S1-Blocker, S2-Critical, S3-Major, S4-Minor). Click to sort.',
+      sortable: true,
+      width: 'w-28',
+      filter: (
+        <select
+          value={filterSeverity}
+          onChange={e => setFilterSeverity(e.target.value)}
+          className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
+        >
+          <option value="all">All Severities</option>
+          {severities.map(s => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+      ),
+      cell: (defect) => (
+        <span className={clsx(
+          "px-2 py-0.5 rounded text-[10px] font-bold font-mono inline-block whitespace-nowrap",
+          defect.severity?.startsWith('S1') ? "bg-rose-500/15 text-rose-500 border border-rose-500/30" :
+          defect.severity?.startsWith('S2') ? "bg-amber-500/15 text-amber-600 border border-amber-500/30" :
+          defect.severity?.startsWith('S3') ? "bg-blue-500/15 text-blue-600 border border-blue-500/30" :
+          "bg-slate-500/15 text-slate-600 border border-slate-500/30"
+        )}>
+          {defect.severity || 'S2 - High'}
+        </span>
+      )
+    },
+    {
+      id: 'priority',
+      header: 'PRIORITY',
+      headerTitle: 'Fix urgency for triage and sprint allocation. Click to sort.',
+      sortable: true,
+      width: 'w-24',
+      align: 'center',
+      filter: (
+        <select
+          value={filterPriority}
+          onChange={e => setFilterPriority(e.target.value)}
+          className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
+        >
+          <option value="all">All</option>
+          {priorities.map(p => (
+            <option key={p} value={p}>{p}</option>
+          ))}
+        </select>
+      ),
+      cell: (defect) => (
+        <span className={clsx("pri-badge", `pri-${(defect.priority || 'medium').toLowerCase()}`)}>
+          {defect.priority || 'Medium'}
+        </span>
+      )
+    },
+    {
+      id: 'status',
+      header: 'STATUS',
+      headerTitle: 'Resolution lifecycle state (New, Open, In Progress, Resolved, Retest, Closed). Click to sort.',
+      sortable: true,
+      width: 'w-32',
+      filter: (
+        <select
+          value={filterStatus}
+          onChange={e => setFilterStatus(e.target.value)}
+          className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
+        >
+          <option value="all">All Statuses</option>
+          {Object.values(DefectStatus).map(s => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+      ),
+      cell: (defect) => (
+        <button
+          onClick={(e) => handleCycleStatus(defect, e)}
+          title="Click to cycle status"
+          className={clsx("st-badge cursor-pointer", `st-${DEF_ST_MAP[defect.status] || 'not-started'}`)}
+        >
+          <span className="dot" />
+          <span>{defect.status}</span>
+        </button>
+      )
+    },
+    {
+      id: 'assignee',
+      header: 'ASSIGNEE',
+      headerTitle: 'Assigned engineer or QA lead investigating the defect. Click to sort.',
+      sortable: true,
+      width: 'w-36',
+      filter: (
+        <select
+          value={filterAssignee}
+          onChange={e => setFilterAssignee(e.target.value)}
+          className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
+        >
+          <option value="all">All Team</option>
+          {assignees.map(a => (
+            <option key={a} value={a}>{a}</option>
+          ))}
+        </select>
+      ),
+      cell: (defect) => defect.assignee ? (
+        <div className="flex items-center gap-1.5 whitespace-nowrap">
+          <div className="w-5 h-5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold text-[9px] flex items-center justify-center shrink-0 border border-[var(--color-primary-hex)]/30">
+            {defect.assignee.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase()}
+          </div>
+          <span className="text-xs font-medium text-[var(--color-text)] truncate max-w-[100px]">
+            {defect.assignee}
+          </span>
+        </div>
+      ) : (
+        <span className="text-[11px] text-[var(--color-text-faint)] italic">Unassigned</span>
+      )
+    },
+    {
+      id: 'linkedId',
+      header: 'LINKED ITEM',
+      headerTitle: 'Associated task ID or GUI screen origin',
+      width: 'w-32',
+      filter: <span className="text-[10px] text-[var(--color-text-faint)] pl-1">—</span>,
+      cell: (defect) => (
+        <span className="font-mono text-[11px] text-[var(--color-text-muted)] truncate whitespace-nowrap">
+          {defect.linkedId ? `${defect.linkedType || 'Task'}: ${defect.linkedId}` : '—'}
+        </span>
+      )
+    },
+    {
+      id: 'updatedAt',
+      header: 'UPDATED',
+      headerTitle: 'Timestamp of last modification or comment. Click to sort.',
+      sortable: true,
+      width: 'w-28',
+      align: 'right',
+      filter: (filterStatus !== 'all' || filterSeverity !== 'all' || filterPriority !== 'all' || filterAssignee !== 'all') ? (
+        <button
+          onClick={() => {
+            setFilterStatus('all');
+            setFilterSeverity('all');
+            setFilterPriority('all');
+            setFilterAssignee('all');
+          }}
+          className="text-[10px] text-[var(--color-primary-hex)] hover:underline font-bold"
+        >
+          Reset
+        </button>
+      ) : null,
+      cell: (defect) => (
+        <span className="font-mono text-[10px] text-right text-[var(--color-text-faint)] whitespace-nowrap">
+          {defect.updatedAt ? fmtDate(defect.updatedAt) : fmtDate(defect.createdAt)}
+        </span>
+      )
+    }
+  ], [severities, filterSeverity, priorities, filterPriority, filterStatus, assignees, filterAssignee]);
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)] text-[var(--color-text)]">
@@ -414,352 +620,28 @@ const DefectView: React.FC = () => {
           )}
         </AnimatePresence>
 
-        {/* ── 3. Table View (Enterprise Defect Matrix from projectpulse.html) ── */}
+        {/* ── 3. Table View (Enterprise Defect Matrix powered by generic DataTable) ── */}
         {viewMode === 'table' ? (
-          <div className="overflow-auto max-h-[calc(100vh-280px)] rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs max-w-full custom-scroll relative">
-            <table className="w-full text-left border-collapse min-w-[1050px]">
-              <thead className="sticky top-0 z-20 bg-[var(--color-surface-offset)] shadow-[0_1px_0_0_var(--color-divider)]">
-                <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] select-none">
-                  {/* Bulk Checkbox */}
-                  <th className="px-2.5 py-2 w-10 text-center">
-                    <input 
-                      type="checkbox"
-                      checked={isAllSelected}
-                      onChange={toggleSelectAll}
-                      aria-label="Select all defects"
-                      className="rounded border-[var(--color-divider)] cursor-pointer"
-                    />
-                  </th>
-
-                  {/* Row Number (#) */}
-                  <th className="px-2 py-2 w-11 text-center td-rn font-mono text-[10px]" title="Sequential defect index">
-                    #
-                  </th>
-
-                  {/* Edit Action */}
-                  <th className="px-1 py-2 w-10 text-center" title="Quick edit defect"></th>
-
-                  {/* Defect ID */}
-                  <th 
-                    onClick={() => handleSort('id')}
-                    className="px-3 py-2 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
-                    title="Unique defect tracking identifier (e.g. DEF-101). Click to sort."
-                  >
-                    <div className="flex items-center justify-between gap-1">
-                      <span>DEFECT ID</span>
-                      <span className={clsx("text-[9px]", sortBy === 'id' ? "text-[var(--color-primary-hex)] font-bold" : "opacity-35")}>
-                        {sortBy === 'id' ? (sortAsc ? '↑' : '↓') : '↕'}
-                      </span>
-                    </div>
-                  </th>
-
-                  {/* Title / Summary */}
-                  <th 
-                    onClick={() => handleSort('title')}
-                    className="px-3 py-2 min-w-[280px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
-                    title="Summary of the issue, failure symptom, or regression. Click to sort."
-                  >
-                    <div className="flex items-center justify-between gap-1">
-                      <span>SUMMARY & SCOPE</span>
-                      <span className={clsx("text-[9px]", sortBy === 'title' ? "text-[var(--color-primary-hex)] font-bold" : "opacity-35")}>
-                        {sortBy === 'title' ? (sortAsc ? '↑' : '↓') : '↕'}
-                      </span>
-                    </div>
-                  </th>
-
-                  {/* Severity */}
-                  <th 
-                    onClick={() => handleSort('severity')}
-                    className="px-3 py-2 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
-                    title="Impact severity tier (S1-Blocker, S2-Critical, S3-Major, S4-Minor). Click to sort."
-                  >
-                    <div className="flex items-center justify-between gap-1">
-                      <span>SEVERITY</span>
-                      <span className={clsx("text-[9px]", sortBy === 'severity' ? "text-[var(--color-primary-hex)] font-bold" : "opacity-35")}>
-                        {sortBy === 'severity' ? (sortAsc ? '↑' : '↓') : '↕'}
-                      </span>
-                    </div>
-                  </th>
-
-                  {/* Priority */}
-                  <th 
-                    onClick={() => handleSort('priority')}
-                    className="px-2 py-2 w-24 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors text-center whitespace-nowrap"
-                    title="Fix urgency for triage and sprint allocation. Click to sort."
-                  >
-                    <div className="flex items-center justify-center gap-1">
-                      <span>PRIORITY</span>
-                      <span className={clsx("text-[9px]", sortBy === 'priority' ? "text-[var(--color-primary-hex)] font-bold" : "opacity-35")}>
-                        {sortBy === 'priority' ? (sortAsc ? '↑' : '↓') : '↕'}
-                      </span>
-                    </div>
-                  </th>
-
-                  {/* Status */}
-                  <th 
-                    onClick={() => handleSort('status')}
-                    className="px-3 py-2 w-32 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
-                    title="Resolution lifecycle state (New, Open, In Progress, Resolved, Retest, Closed). Click to sort."
-                  >
-                    <div className="flex items-center justify-between gap-1">
-                      <span>STATUS</span>
-                      <span className={clsx("text-[9px]", sortBy === 'status' ? "text-[var(--color-primary-hex)] font-bold" : "opacity-35")}>
-                        {sortBy === 'status' ? (sortAsc ? '↑' : '↓') : '↕'}
-                      </span>
-                    </div>
-                  </th>
-
-                  {/* Assignee */}
-                  <th 
-                    onClick={() => handleSort('assignee')}
-                    className="px-3 py-2 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
-                    title="Assigned engineer or QA lead investigating the defect. Click to sort."
-                  >
-                    <div className="flex items-center justify-between gap-1">
-                      <span>ASSIGNEE</span>
-                      <span className={clsx("text-[9px]", sortBy === 'assignee' ? "text-[var(--color-primary-hex)] font-bold" : "opacity-35")}>
-                        {sortBy === 'assignee' ? (sortAsc ? '↑' : '↓') : '↕'}
-                      </span>
-                    </div>
-                  </th>
-
-                  {/* Linked Item */}
-                  <th className="px-3 py-2 w-32 whitespace-nowrap" title="Associated task ID or GUI screen origin">
-                    LINKED ITEM
-                  </th>
-
-                  {/* Updated Date */}
-                  <th 
-                    onClick={() => handleSort('updatedAt')}
-                    className="px-3 py-2 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors text-right whitespace-nowrap"
-                    title="Timestamp of last modification or comment. Click to sort."
-                  >
-                    <div className="flex items-center justify-end gap-1">
-                      <span>UPDATED</span>
-                      <span className={clsx("text-[9px]", sortBy === 'updatedAt' ? "text-[var(--color-primary-hex)] font-bold" : "opacity-35")}>
-                        {sortBy === 'updatedAt' ? (sortAsc ? '↑' : '↓') : '↕'}
-                      </span>
-                    </div>
-                  </th>
-                </tr>
-
-                {/* Inline Filters Row */}
-                {showInlineFilters && (
-                  <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-border)] text-xs shadow-xs">
-                    <th className="p-1"></th>
-                    <th className="p-1"></th>
-                    <th className="p-1"></th>
-                    <th className="p-1">
-                      <span className="text-[10px] text-[var(--color-text-faint)] font-mono pl-1">—</span>
-                    </th>
-                    <th className="p-1">
-                      <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by topbar search</span>
-                    </th>
-                    {/* Severity Filter */}
-                    <th className="p-1">
-                      <select
-                        value={filterSeverity}
-                        onChange={e => setFilterSeverity(e.target.value)}
-                        className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
-                      >
-                        <option value="all">All Severities</option>
-                        {severities.map(s => (
-                          <option key={s} value={s}>{s}</option>
-                        ))}
-                      </select>
-                    </th>
-                    {/* Priority Filter */}
-                    <th className="p-1">
-                      <select
-                        value={filterPriority}
-                        onChange={e => setFilterPriority(e.target.value)}
-                        className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
-                      >
-                        <option value="all">All</option>
-                        {priorities.map(p => (
-                          <option key={p} value={p}>{p}</option>
-                        ))}
-                      </select>
-                    </th>
-                    {/* Status Filter */}
-                    <th className="p-1">
-                      <select
-                        value={filterStatus}
-                        onChange={e => setFilterStatus(e.target.value)}
-                        className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
-                      >
-                        <option value="all">All Statuses</option>
-                        {Object.values(DefectStatus).map(s => (
-                          <option key={s} value={s}>{s}</option>
-                        ))}
-                      </select>
-                    </th>
-                    {/* Assignee Filter */}
-                    <th className="p-1">
-                      <select
-                        value={filterAssignee}
-                        onChange={e => setFilterAssignee(e.target.value)}
-                        className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
-                      >
-                        <option value="all">All Team</option>
-                        {assignees.map(a => (
-                          <option key={a} value={a}>{a}</option>
-                        ))}
-                      </select>
-                    </th>
-                    <th className="p-1"></th>
-                    <th className="p-1 text-center">
-                      {(filterStatus !== 'all' || filterSeverity !== 'all' || filterPriority !== 'all' || filterAssignee !== 'all') && (
-                        <button
-                          onClick={() => {
-                            setFilterStatus('all');
-                            setFilterSeverity('all');
-                            setFilterPriority('all');
-                            setFilterAssignee('all');
-                          }}
-                          className="text-[10px] text-[var(--color-primary-hex)] hover:underline font-bold"
-                        >
-                          Reset
-                        </button>
-                      )}
-                    </th>
-                  </tr>
-                )}
-              </thead>
-
-              <tbody className="divide-y divide-[var(--color-divider)]/40">
-                {pagination.paginatedItems.map((defect, idx) => {
-                  const isSelected = selectedIds.has(defect.id);
-                  const padY = density === 'compact' ? "py-1.5" : "py-2";
-                  const isS1 = defect.severity?.startsWith('S1');
-
-                  return (
-                    <tr
-                      key={defect.id}
-                      onClick={() => handleEdit(defect.id)}
-                      className={clsx(
-                        "group hover:bg-[var(--color-surface-2)]/70 transition-colors cursor-pointer relative",
-                        isSelected && "bg-[var(--color-primary-highlight-hex)]/40",
-                        isS1 && "is-overdue bg-rose-500/[0.02]"
-                      )}
-                    >
-                      {/* Checkbox */}
-                      <td className={clsx("px-2.5 text-center", padY)} onClick={e => e.stopPropagation()}>
-                        <input 
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={(e) => toggleSelect(defect.id, e as any)}
-                          className="rounded border-[var(--color-divider)] cursor-pointer"
-                        />
-                      </td>
-
-                      {/* Row Num */}
-                      <td className={clsx("px-2 text-center td-rn font-mono text-[10px] text-[var(--color-text-faint)]", padY)}>
-                        {pagination.startIndex + idx + 1}
-                      </td>
-
-                      {/* Edit Button */}
-                      <td className={clsx("px-1 text-center", padY)} onClick={e => e.stopPropagation()}>
-                        <button
-                          onClick={() => handleEdit(defect.id)}
-                          className="w-5 h-5 inline-flex items-center justify-center rounded hover:bg-[var(--color-surface-offset)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer"
-                          title="Edit details"
-                        >
-                          <Edit2 size={12} />
-                        </button>
-                      </td>
-
-                      {/* Defect ID */}
-                      <td className={clsx("px-3 font-mono font-bold text-[11px] text-rose-500 whitespace-nowrap", padY)}>
-                        {defect.id}
-                      </td>
-
-                      {/* Summary & Scope */}
-                      <td className={clsx("px-3 max-w-[340px]", padY)}>
-                        <div className="flex items-center gap-1.5 min-w-0">
-                          <span className="font-bold text-xs text-[var(--color-text)] leading-tight truncate" title={defect.title}>
-                            {defect.title}
-                          </span>
-                          {defect.desc && (
-                            <span className="text-[10px] text-[var(--color-text-muted)] truncate hidden xl:inline max-w-[160px] shrink-0" title={defect.desc}>
-                              · {defect.desc}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* Severity */}
-                      <td className={clsx("px-3 whitespace-nowrap", padY)}>
-                        <span className={clsx(
-                          "px-2 py-0.5 rounded text-[10px] font-bold font-mono inline-block",
-                          defect.severity?.startsWith('S1') ? "bg-rose-500/15 text-rose-500 border border-rose-500/30" :
-                          defect.severity?.startsWith('S2') ? "bg-amber-500/15 text-amber-600 border border-amber-500/30" :
-                          defect.severity?.startsWith('S3') ? "bg-blue-500/15 text-blue-600 border border-blue-500/30" :
-                          "bg-slate-500/15 text-slate-600 border border-slate-500/30"
-                        )}>
-                          {defect.severity || 'S2 - High'}
-                        </span>
-                      </td>
-
-                      {/* Priority */}
-                      <td className={clsx("px-2 text-center whitespace-nowrap", padY)}>
-                        <span className={clsx("pri-badge", `pri-${(defect.priority || 'medium').toLowerCase()}`)}>
-                          {defect.priority || 'Medium'}
-                        </span>
-                      </td>
-
-                      {/* Status */}
-                      <td className={clsx("px-3 whitespace-nowrap", padY)}>
-                        <button
-                          onClick={(e) => handleCycleStatus(defect, e)}
-                          title="Click to cycle status"
-                          className={clsx("st-badge cursor-pointer", `st-${DEF_ST_MAP[defect.status] || 'not-started'}`)}
-                        >
-                          <span className="dot" />
-                          <span>{defect.status}</span>
-                        </button>
-                      </td>
-
-                      {/* Assignee */}
-                      <td className={clsx("px-3 whitespace-nowrap", padY)}>
-                        {defect.assignee ? (
-                          <div className="flex items-center gap-1.5">
-                            <div className="w-5 h-5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold text-[9px] flex items-center justify-center shrink-0 border border-[var(--color-primary-hex)]/30">
-                              {defect.assignee.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase()}
-                            </div>
-                            <span className="text-xs font-medium text-[var(--color-text)] truncate max-w-[100px]">
-                              {defect.assignee}
-                            </span>
-                          </div>
-                        ) : (
-                          <span className="text-[11px] text-[var(--color-text-faint)] italic">Unassigned</span>
-                        )}
-                      </td>
-
-                      {/* Linked Scope */}
-                      <td className={clsx("px-3 font-mono text-[11px] text-[var(--color-text-muted)] truncate whitespace-nowrap", padY)}>
-                        {defect.linkedId ? `${defect.linkedType || 'Task'}: ${defect.linkedId}` : '—'}
-                      </td>
-
-                      {/* Updated Date */}
-                      <td className={clsx("px-3 font-mono text-[10px] text-right text-[var(--color-text-faint)] whitespace-nowrap", padY)}>
-                        {defect.updatedAt ? fmtDate(defect.updatedAt) : fmtDate(defect.createdAt)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-            <TablePagination
-              currentPage={pagination.currentPage}
-              totalPages={pagination.totalPages}
-              totalItems={pagination.totalItems}
-              pageSize={pagination.pageSize}
-              onPageChange={pagination.setCurrentPage}
-              onPageSizeChange={pagination.setPageSize}
-              itemLabel="defects"
-            />
-          </div>
+          <DataTable<Defect>
+            data={filteredDefects}
+            columns={columns}
+            keyField="id"
+            density={density}
+            showInlineFilters={showInlineFilters}
+            sortField={sortBy}
+            sortAsc={sortAsc}
+            onSort={(f) => handleSort(f as any)}
+            selectable
+            selectedIds={selectedIds}
+            onToggleSelect={toggleSelect}
+            onToggleSelectAll={toggleSelectAll}
+            isAllSelected={isAllSelected}
+            showRowNumbers
+            pagination={pagination}
+            itemLabel="defects"
+            onRowClick={(defect) => handleEdit(defect.id)}
+            rowClassName={(defect) => defect.severity?.startsWith('S1') ? "is-overdue bg-rose-500/[0.02]" : ""}
+          />
         ) : (
           /* Cards View */
           <div className="space-y-4">

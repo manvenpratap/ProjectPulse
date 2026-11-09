@@ -29,9 +29,11 @@ import {
 import Button from '../shared/Button';
 import { motion, AnimatePresence } from 'motion/react';
 import TablePagination, { usePagination } from '../shared/TablePagination';
+import DataTable, { ColumnDef } from '../shared/DataTable';
 
 interface TaskGridProps {
   onEditTask: (id: string) => void;
+  onNewTask?: () => void;
 }
 
 type DensityMode = 'comfortable' | 'compact';
@@ -52,7 +54,7 @@ const PRI_MAP: Record<string, string> = {
   [TaskPriority.LOW]: 'low',
 };
 
-const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
+const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask, onNewTask }) => {
   const { state, searchTerm, updateTask, deleteTask } = useProject();
   const [selectedModule, setSelectedModule] = useState<string>('all');
   const [selectedRelease, setSelectedRelease] = useState<string>('all');
@@ -258,6 +260,259 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
     );
   }
 
+  const columns = useMemo<ColumnDef<Task>[]>(() => [
+    {
+      id: 'id',
+      header: 'TASK ID',
+      headerTitle: 'Unique persistent task identifier (e.g. T-101). Click to sort.',
+      sortable: true,
+      width: 'w-24',
+      filter: <span className="text-[10px] text-[var(--color-text-faint)] font-mono pl-1">—</span>,
+      cell: (task) => {
+        const blocked = isBlocked(task, state.tasks);
+        return (
+          <div className="flex items-center gap-1.5 font-mono font-bold text-[11px] text-[var(--color-primary-hex)] whitespace-nowrap">
+            {blocked && <Lock size={11} className="text-amber-500 shrink-0" title="Blocked by dependency" />}
+            <span className="hover:underline">{task.id}</span>
+          </div>
+        );
+      }
+    },
+    {
+      id: 'module',
+      header: 'MODULE & SCOPE',
+      headerTitle: 'Functional architectural domain of the codebase this task impacts. Click to sort.',
+      sortable: true,
+      width: 'w-44',
+      filter: (
+        <select
+          value={selectedModule}
+          onChange={e => setSelectedModule(e.target.value)}
+          className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
+        >
+          <option value="all">All Modules</option>
+          {modules.map(m => (
+            <option key={m} value={m}>{m}</option>
+          ))}
+        </select>
+      ),
+      cell: (task) => (
+        <div className="flex items-center gap-1.5 truncate max-w-[170px] whitespace-nowrap">
+          <span className="text-xs font-medium text-[var(--color-text)] truncate" title={task.module}>
+            {task.module}
+          </span>
+          {task.moduleType && (
+            <span className="text-[9.5px] text-[var(--color-text-muted)] font-mono shrink-0 opacity-60">
+              ({task.moduleType})
+            </span>
+          )}
+        </div>
+      )
+    },
+    {
+      id: 'name',
+      header: 'TASK NAME & CHECKLIST',
+      headerTitle: 'Task title and subtask checklist status. Indented rows indicate child subtasks. Click to sort.',
+      sortable: true,
+      width: 'min-w-[320px]',
+      filter: <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by search</span>,
+      cell: (task) => {
+        const isMilestone = (task.startDate && task.startDate === task.dueDate) || task.subtasks.some(s => s.name.toLowerCase().includes('milestone'));
+        return (
+          <div className="flex items-center gap-2 min-w-0 max-w-[420px]">
+            {isMilestone && <span title="Milestone" className="shrink-0">🚩</span>}
+            <span 
+              className="text-xs font-semibold text-[var(--color-text)] truncate group-hover:text-[var(--color-primary-hex)] transition-colors cursor-pointer"
+              title={task.screenName ? `${task.name} (Screen: ${task.screenName})` : task.name}
+            >
+              {task.name}
+            </span>
+            {task.release && (
+              <span className="shrink-0 px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)] text-[9px] font-mono font-semibold">
+                {task.release}
+              </span>
+            )}
+            {task.subtasks.length > 0 && (
+              <button
+                onClick={(e) => toggleExpand(task.id, e)}
+                className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-[10px] font-semibold text-indigo-500 transition-colors cursor-pointer"
+                title="Toggle Checklist"
+              >
+                <CheckSquare size={10} />
+                <span>{task.subtasks.filter(s => s.done).length}/{task.subtasks.length}</span>
+              </button>
+            )}
+            {task.screenName && (
+              <span className="shrink-0 text-[10px] text-[var(--color-text-faint)] font-mono hidden 2xl:inline truncate max-w-[120px]">
+                · {task.screenName}
+              </span>
+            )}
+          </div>
+        );
+      }
+    },
+    {
+      id: 'status',
+      header: 'STATUS',
+      headerTitle: 'Current task lifecycle state (Not Started, In Progress, Review, Completed, On Hold, Cancelled). Click badge in rows to quick-cycle. Click to sort.',
+      sortable: true,
+      width: 'w-32',
+      filter: (
+        <select
+          value={selectedStatus}
+          onChange={e => setSelectedStatus(e.target.value)}
+          className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
+        >
+          <option value="all">All Statuses</option>
+          {Object.values(TaskStatus).map(s => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+      ),
+      cell: (task) => (
+        <button
+          onClick={(e) => handleCycleStatus(task, e)}
+          title="Click to cycle status"
+          className={clsx("st-badge cursor-pointer shadow-2xs active:scale-95", `st-${ST_MAP[task.status] || 'not-started'}`)}
+        >
+          <span className="dot" />
+          <span>{task.status}</span>
+        </button>
+      )
+    },
+    {
+      id: 'priority',
+      header: 'PRIORITY',
+      headerTitle: 'Execution urgency (Critical, High, Medium, Low). Prioritizes linear capacity leveling. Click to sort.',
+      sortable: true,
+      width: 'w-24',
+      align: 'center',
+      filter: (
+        <select
+          value={selectedPriority}
+          onChange={e => setSelectedPriority(e.target.value)}
+          className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
+        >
+          <option value="all">All</option>
+          {Object.values(TaskPriority).map(p => (
+            <option key={p} value={p}>{p}</option>
+          ))}
+        </select>
+      ),
+      cell: (task) => (
+        <span className={clsx("pri-badge shadow-2xs", `pri-${PRI_MAP[task.priority] || 'medium'}`)}>
+          {task.priority}
+        </span>
+      )
+    },
+    {
+      id: 'assignee',
+      header: 'ASSIGNEE',
+      headerTitle: 'Accountable module owner or developer. Subtask contributors roll up automatically. Click to sort.',
+      sortable: true,
+      width: 'w-36',
+      filter: (
+        <select
+          value={selectedAssignee}
+          onChange={e => setSelectedAssignee(e.target.value)}
+          className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
+        >
+          <option value="all">All Team</option>
+          {assignees.map(a => (
+            <option key={a} value={a}>{a}</option>
+          ))}
+        </select>
+      ),
+      cell: (task) => task.assignee ? (
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold text-[9px] flex items-center justify-center shrink-0 border border-[var(--color-primary-hex)]/30 shadow-2xs">
+            {task.assignee.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase()}
+          </div>
+          <span className="text-xs font-medium text-[var(--color-text)] truncate max-w-[120px]">
+            {task.assignee}
+          </span>
+        </div>
+      ) : (
+        <span className="text-[11px] text-[var(--color-text-faint)] italic">—</span>
+      )
+    },
+    {
+      id: 'dueDate',
+      header: 'DUE DATE',
+      headerTitle: 'Planned feasibility target completion date. Evaluated against Baseline Due Date. Click to sort.',
+      sortable: true,
+      width: 'w-36',
+      filter: <span className="text-[10px] text-[var(--color-text-faint)] pl-1">—</span>,
+      cell: (task) => {
+        const overdue = daysDiff(task.dueDate)! < 0 && task.status !== TaskStatus.COMPLETED && task.status !== TaskStatus.CANCELLED;
+        return (
+          <div className="flex items-center gap-1.5 font-mono text-[11px] whitespace-nowrap">
+            <span className={clsx(overdue ? "text-rose-500 font-bold" : "text-[var(--color-text-muted)]")}>
+              {fmtDate(task.dueDate)}
+            </span>
+            {overdue && (
+              <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-rose-500/10 text-rose-500 border border-rose-500/20">
+                Overdue
+              </span>
+            )}
+          </div>
+        );
+      }
+    },
+    {
+      id: 'progress',
+      header: 'PROGRESS',
+      headerTitle: 'Granular completion percentage (0–100%). Click or slide to adjust. Click to sort.',
+      sortable: true,
+      width: 'w-28',
+      align: 'right',
+      filter: <span className="text-[10px] text-[var(--color-text-faint)] pl-1">—</span>,
+      cell: (task) => (
+        <div className="flex items-center justify-end gap-2.5">
+          <span className="text-[11px] font-mono tabular-nums font-bold text-[var(--color-text)]">{task.progress}%</span>
+          <div className="w-16 h-1.5 bg-[var(--color-surface-2)] rounded-full overflow-hidden border border-[var(--color-divider)]/40 shadow-inner">
+            <div 
+              className={clsx(
+                "h-full rounded-full transition-all duration-300",
+                task.progress >= 100 ? "bg-gradient-to-r from-emerald-500 to-teal-400" : task.progress >= 50 ? "bg-[var(--color-primary-hex)]" : "bg-amber-500"
+              )} 
+              style={{ width: `${task.progress}%` }} 
+            />
+          </div>
+        </div>
+      )
+    },
+    {
+      id: 'actions',
+      header: '',
+      width: 'w-10',
+      align: 'center',
+      filter: (selectedModule !== 'all' || selectedStatus !== 'all' || selectedAssignee !== 'all' || selectedPriority !== 'all') ? (
+        <button
+          onClick={() => {
+            setSelectedModule('all');
+            setSelectedStatus('all');
+            setSelectedAssignee('all');
+            setSelectedPriority('all');
+          }}
+          title="Reset inline filters"
+          className="text-[10px] text-[var(--color-primary-hex)] hover:underline font-bold px-1.5 py-0.5 rounded"
+        >
+          Reset
+        </button>
+      ) : null,
+      cell: (task) => (
+        <button
+          onClick={(e) => { e.stopPropagation(); onEditTask(task.id); }}
+          className="p-1 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors opacity-70 group-hover:opacity-100 cursor-pointer"
+          title="Edit task"
+        >
+          <MoreHorizontal size={14} />
+        </button>
+      )
+    }
+  ], [state.tasks, selectedModule, modules, selectedStatus, selectedPriority, selectedAssignee, assignees, onEditTask]);
+
   const isAllSelected = filteredTasks.length > 0 && selectedTaskIds.size === filteredTasks.length;
 
   return (
@@ -432,563 +687,150 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
         )}
       </AnimatePresence>
 
-      {/* ── 3. Desktop Table (Linear-grade Precision Data Grid) ── */}
-      <div className="hidden lg:block rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs overflow-hidden">
-        <div className="overflow-auto max-h-[calc(100vh-280px)] custom-scroll relative">
-          <table className="w-full text-left border-collapse min-w-[1100px]">
-          <thead className="sticky top-0 z-20 bg-[var(--color-surface-offset)] shadow-[0_1px_0_0_var(--color-divider)]">
-            {/* Header Row */}
-            <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)] select-none">
-              {/* Checkbox Column */}
-              <th className="px-2.5 py-2 w-10 text-center">
-                <input 
-                  type="checkbox"
-                  checked={isAllSelected}
-                  onChange={toggleSelectAll}
-                  aria-label="Select all tasks"
-                  className="rounded border-[var(--color-divider)] text-[var(--color-primary-hex)] cursor-pointer"
-                />
-              </th>
-
-              {/* Row Num Column (#) */}
-              <th className="px-2 py-2 w-11 text-center td-rn font-mono text-[10px]" title="Sequential row index">
-                #
-              </th>
-
-              {/* Expand Column */}
-              <th className="px-1 py-2 w-8 text-center" title="Expand or collapse subtasks"></th>
-
-              {/* Task ID */}
-              <th 
-                onClick={() => handleSort('id')}
-                className="px-3 py-2 w-24 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
-                title="Unique persistent task identifier (e.g. T-101). Click to sort."
+      {/* ── 3. Desktop Table (Linear-grade Precision Data Grid powered by generic DataTable) ── */}
+      <DataTable<Task>
+        data={filteredTasks}
+        columns={columns}
+        keyField="id"
+        density={density}
+        showInlineFilters={showInlineFilters}
+        sortField={sortField}
+        sortAsc={sortAsc}
+        onSort={handleSort}
+        selectable
+        selectedIds={selectedTaskIds}
+        onToggleSelect={toggleSelectTask}
+        onToggleSelectAll={toggleSelectAll}
+        isAllSelected={isAllSelected}
+        showRowNumbers
+        pagination={pagination}
+        itemLabel="tasks"
+        containerClassName="hidden lg:block"
+        canExpand={(task) => task.subtasks.length > 0}
+        isExpanded={(task) => expandedTasks.has(task.id)}
+        onToggleExpand={(task, e) => toggleExpand(task.id, e)}
+        onRowClick={(task) => onEditTask(task.id)}
+        rowClassName={(task) => {
+          const overdue = daysDiff(task.dueDate)! < 0 && task.status !== TaskStatus.COMPLETED && task.status !== TaskStatus.CANCELLED;
+          const isMilestone = (task.startDate && task.startDate === task.dueDate) || task.subtasks.some(s => s.name.toLowerCase().includes('milestone'));
+          return clsx(
+            overdue && "is-overdue bg-rose-500/[0.02]",
+            isMilestone && "is-milestone bg-amber-500/[0.02]"
+          );
+        }}
+        renderSubRows={(task, idx) => (
+          <>
+            {task.subtasks.map((st, sIdx) => (
+              <tr
+                key={st.id}
+                className="bg-[var(--color-surface-2)]/30 hover:bg-[var(--color-surface-2)]/70 transition-colors text-xs border-b border-[var(--color-divider)]/30"
               >
-                <div className="flex items-center justify-between gap-1">
-                  <span>TASK ID</span>
-                  <span className={clsx("text-[9px]", sortField === 'id' ? "text-[var(--color-primary-hex)] font-bold" : "opacity-35")}>
-                    {sortField === 'id' ? (sortAsc ? '↑' : '↓') : '↕'}
-                  </span>
-                </div>
-              </th>
+                {/* Blank check */}
+                <td className="px-2.5 py-1.5 text-center"></td>
 
-              {/* Module & Screen */}
-              <th 
-                onClick={() => handleSort('module')}
-                className="px-3 py-2 w-44 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
-                title="Functional architectural domain of the codebase this task impacts. Click to sort."
-              >
-                <div className="flex items-center justify-between gap-1">
-                  <span>MODULE & SCOPE</span>
-                  <span className={clsx("text-[9px]", sortField === 'module' ? "text-[var(--color-primary-hex)] font-bold" : "opacity-35")}>
-                    {sortField === 'module' ? (sortAsc ? '↑' : '↓') : '↕'}
-                  </span>
-                </div>
-              </th>
+                {/* Subtask Row Number (e.g. 1.1, 1.2) */}
+                <td className="px-2 py-1.5 text-center font-mono text-[9px] text-[var(--color-text-faint)]">
+                  {pagination.startIndex + idx + 1}.{sIdx + 1}
+                </td>
 
-              {/* Task Name & Checklist */}
-              <th 
-                onClick={() => handleSort('name')}
-                className="px-3 py-2 min-w-[320px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
-                title="Task title and subtask checklist status. Indented rows indicate child subtasks. Click to sort."
-              >
-                <div className="flex items-center justify-between gap-1">
-                  <span>TASK NAME & CHECKLIST</span>
-                  <span className={clsx("text-[9px]", sortField === 'name' ? "text-[var(--color-primary-hex)] font-bold" : "opacity-35")}>
-                    {sortField === 'name' ? (sortAsc ? '↑' : '↓') : '↕'}
-                  </span>
-                </div>
-              </th>
+                {/* Hierarchy Indicator */}
+                <td className="px-1 py-1.5 text-center font-mono text-[var(--color-text-faint)]">
+                  └
+                </td>
 
-              {/* Status */}
-              <th 
-                onClick={() => handleSort('status')}
-                className="px-3 py-2 w-32 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
-                title="Current task lifecycle state (Not Started, In Progress, Review, Completed, On Hold, Cancelled). Click badge in rows to quick-cycle. Click to sort."
-              >
-                <div className="flex items-center justify-between gap-1">
-                  <span>STATUS</span>
-                  <span className={clsx("text-[9px]", sortField === 'status' ? "text-[var(--color-primary-hex)] font-bold" : "opacity-35")}>
-                    {sortField === 'status' ? (sortAsc ? '↑' : '↓') : '↕'}
-                  </span>
-                </div>
-              </th>
+                {/* Subtask ID */}
+                <td className="px-3 py-1.5 font-mono text-[10px] text-[var(--color-text-muted)] whitespace-nowrap">
+                  {st.id}
+                </td>
 
-              {/* Priority */}
-              <th 
-                onClick={() => handleSort('priority')}
-                className="px-2 py-2 w-24 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors text-center whitespace-nowrap"
-                title="Execution urgency (Critical, High, Medium, Low). Prioritizes linear capacity leveling. Click to sort."
-              >
-                <div className="flex items-center justify-center gap-1">
-                  <span>PRIORITY</span>
-                  <span className={clsx("text-[9px]", sortField === 'priority' ? "text-[var(--color-primary-hex)] font-bold" : "opacity-35")}>
-                    {sortField === 'priority' ? (sortAsc ? '↑' : '↓') : '↕'}
-                  </span>
-                </div>
-              </th>
+                {/* Scope */}
+                <td className="px-3 py-1.5 text-[11px] text-[var(--color-text-muted)] italic whitespace-nowrap">
+                  Subtask
+                </td>
 
-              {/* Assignee */}
-              <th 
-                onClick={() => handleSort('assignee')}
-                className="px-3 py-2 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
-                title="Accountable module owner or developer. Subtask contributors roll up automatically. Click to sort."
-              >
-                <div className="flex items-center justify-between gap-1">
-                  <span>ASSIGNEE</span>
-                  <span className={clsx("text-[9px]", sortField === 'assignee' ? "text-[var(--color-primary-hex)] font-bold" : "opacity-35")}>
-                    {sortField === 'assignee' ? (sortAsc ? '↑' : '↓') : '↕'}
-                  </span>
-                </div>
-              </th>
-
-              {/* Due Date */}
-              <th 
-                onClick={() => handleSort('dueDate')}
-                className="px-3 py-2 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
-                title="Planned feasibility target completion date. Evaluated against Baseline Due Date. Click to sort."
-              >
-                <div className="flex items-center justify-between gap-1">
-                  <span>DUE DATE</span>
-                  <span className={clsx("text-[9px]", sortField === 'dueDate' ? "text-[var(--color-primary-hex)] font-bold" : "opacity-35")}>
-                    {sortField === 'dueDate' ? (sortAsc ? '↑' : '↓') : '↕'}
-                  </span>
-                </div>
-              </th>
-
-              {/* Progress */}
-              <th 
-                onClick={() => handleSort('progress')}
-                className="px-3 py-2 w-28 text-right cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap"
-                title="Granular completion percentage (0–100%). Click or slide to adjust. Click to sort."
-              >
-                <div className="flex items-center justify-end gap-1">
-                  <span>PROGRESS</span>
-                  <span className={clsx("text-[9px]", sortField === 'progress' ? "text-[var(--color-primary-hex)] font-bold" : "opacity-35")}>
-                    {sortField === 'progress' ? (sortAsc ? '↑' : '↓') : '↕'}
-                  </span>
-                </div>
-              </th>
-
-              {/* Actions Column */}
-              <th className="px-2 py-2 w-10 text-center"></th>
-            </tr>
-
-            {/* Inline Column Filters Row (Matching projectpulse.html) */}
-            {showInlineFilters && (
-              <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-divider)] text-xs shadow-xs">
-                {/* Empty check / rn / expand */}
-                <th className="p-1"></th>
-                <th className="p-1"></th>
-                <th className="p-1"></th>
-
-                {/* ID filter dummy */}
-                <th className="p-1">
-                  <span className="text-[10px] text-[var(--color-text-faint)] font-mono pl-1">—</span>
-                </th>
-
-                {/* Module filter */}
-                <th className="p-1">
-                  <select
-                    value={selectedModule}
-                    onChange={e => setSelectedModule(e.target.value)}
-                    className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
+                {/* Subtask Name & Checklist toggle */}
+                <td className="px-3 py-1.5 max-w-[420px]">
+                  <div 
+                    onClick={(e) => handleToggleSubtask(task, st.id, e)}
+                    className="flex items-center gap-2 cursor-pointer group/st min-w-0"
                   >
-                    <option value="all">All Modules</option>
-                    {modules.map(m => (
-                      <option key={m} value={m}>{m}</option>
-                    ))}
-                  </select>
-                </th>
-
-                {/* Name filter */}
-                <th className="p-1">
-                  <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by search</span>
-                </th>
-
-                {/* Status filter */}
-                <th className="p-1">
-                  <select
-                    value={selectedStatus}
-                    onChange={e => setSelectedStatus(e.target.value)}
-                    className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
-                  >
-                    <option value="all">All Statuses</option>
-                    {Object.values(TaskStatus).map(s => (
-                      <option key={s} value={s}>{s}</option>
-                    ))}
-                  </select>
-                </th>
-
-                {/* Priority filter */}
-                <th className="p-1">
-                  <select
-                    value={selectedPriority}
-                    onChange={e => setSelectedPriority(e.target.value)}
-                    className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
-                  >
-                    <option value="all">All</option>
-                    {Object.values(TaskPriority).map(p => (
-                      <option key={p} value={p}>{p}</option>
-                    ))}
-                  </select>
-                </th>
-
-                {/* Assignee filter */}
-                <th className="p-1">
-                  <select
-                    value={selectedAssignee}
-                    onChange={e => setSelectedAssignee(e.target.value)}
-                    className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
-                  >
-                    <option value="all">All Team</option>
-                    {assignees.map(a => (
-                      <option key={a} value={a}>{a}</option>
-                    ))}
-                  </select>
-                </th>
-
-                {/* Date */}
-                <th className="p-1">
-                  <span className="text-[10px] text-[var(--color-text-faint)] pl-1">—</span>
-                </th>
-
-                {/* Progress */}
-                <th className="p-1">
-                  <span className="text-[10px] text-[var(--color-text-faint)] pl-1">—</span>
-                </th>
-
-                <th className="p-1 text-center">
-                  {(selectedModule !== 'all' || selectedStatus !== 'all' || selectedAssignee !== 'all' || selectedPriority !== 'all') && (
-                    <button
-                      onClick={() => {
-                        setSelectedModule('all');
-                        setSelectedStatus('all');
-                        setSelectedAssignee('all');
-                        setSelectedPriority('all');
-                      }}
-                      title="Reset inline filters"
-                      className="text-[10px] text-[var(--color-primary-hex)] hover:underline font-bold px-1.5 py-0.5 rounded"
-                    >
-                      Reset
-                    </button>
-                  )}
-                </th>
-              </tr>
-            )}
-          </thead>
-
-          <tbody className="divide-y divide-[var(--color-divider)]/40">
-            {pagination.paginatedItems.map((task, idx) => {
-              const overdue = daysDiff(task.dueDate)! < 0 && task.status !== TaskStatus.COMPLETED && task.status !== TaskStatus.CANCELLED;
-              const blocked = isBlocked(task, state.tasks);
-              const isExpanded = expandedTasks.has(task.id);
-              const isSelected = selectedTaskIds.has(task.id);
-              const isMilestone = (task.startDate && task.startDate === task.dueDate) || task.subtasks.some(s => s.name.toLowerCase().includes('milestone'));
-              const padY = density === 'compact' ? "py-1.5" : "py-2";
-
-              return (
-                <React.Fragment key={task.id}>
-                  <tr 
-                    onClick={() => onEditTask(task.id)}
-                    className={clsx(
-                      "group hover:bg-[var(--color-surface-2)]/70 transition-colors cursor-pointer relative",
-                      isSelected && "bg-[var(--color-primary-highlight-hex)]/35",
-                      overdue && "is-overdue bg-rose-500/[0.02]",
-                      isMilestone && "is-milestone bg-amber-500/[0.02]"
+                    {st.done ? (
+                      <CheckSquare size={13} className="text-emerald-500 shrink-0" />
+                    ) : (
+                      <Square size={13} className="text-[var(--color-text-faint)] group-hover/st:text-[var(--color-primary-hex)] shrink-0" />
                     )}
-                  >
-                    {/* Checkbox */}
-                    <td className={clsx("px-2.5 text-center", padY)} onClick={e => e.stopPropagation()}>
-                      <input 
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={(e) => toggleSelectTask(task.id, e as any)}
-                        className="rounded border-[var(--color-divider)] text-[var(--color-primary-hex)] cursor-pointer"
-                      />
-                    </td>
-
-                    {/* Row Num */}
-                    <td className={clsx("px-2 text-center td-rn font-mono text-[10px] text-[var(--color-text-faint)]", padY)}>
-                      {pagination.startIndex + idx + 1}
-                    </td>
-
-                    {/* Expand Subtasks Button */}
-                    <td className={clsx("px-1 text-center", padY)}>
-                      {task.subtasks.length > 0 ? (
-                        <button
-                          onClick={(e) => toggleExpand(task.id, e)}
-                          title={`${isExpanded ? 'Collapse' : 'Expand'} subtasks`}
-                          className="w-5 h-5 inline-flex items-center justify-center rounded-md hover:bg-[var(--color-surface-2)] text-[var(--color-text-muted)] cursor-pointer transition-transform"
-                        >
-                          <ChevronRight size={13} className={clsx("transition-transform duration-150", isExpanded && "rotate-90 text-[var(--color-primary-hex)]")} />
-                        </button>
-                      ) : null}
-                    </td>
-
-                    {/* Task ID */}
-                    <td className={clsx("px-3 font-mono font-bold text-[11px] text-[var(--color-primary-hex)] whitespace-nowrap", padY)}>
-                      <div className="flex items-center gap-1.5">
-                        {blocked && <Lock size={11} className="text-amber-500 shrink-0" title="Blocked by dependency" />}
-                        <span className="hover:underline">{task.id}</span>
-                      </div>
-                    </td>
-
-                    {/* Module & Scope */}
-                    <td className={clsx("px-3 whitespace-nowrap", padY)}>
-                      <div className="flex items-center gap-1.5 truncate max-w-[170px]">
-                        <span className="text-xs font-medium text-[var(--color-text)] truncate" title={task.module}>
-                          {task.module}
-                        </span>
-                        {task.moduleType && (
-                          <span className="text-[9.5px] text-[var(--color-text-muted)] font-mono shrink-0 opacity-60">
-                            ({task.moduleType})
-                          </span>
-                        )}
-                      </div>
-                    </td>
-
-                    {/* Task Name & Checklist */}
-                    <td className={clsx("px-3 max-w-[420px]", padY)}>
-                      <div className="flex items-center gap-2 min-w-0">
-                        {isMilestone && <span title="Milestone" className="shrink-0">🚩</span>}
-                        <span 
-                          className="text-xs font-semibold text-[var(--color-text)] truncate group-hover:text-[var(--color-primary-hex)] transition-colors cursor-pointer"
-                          title={task.screenName ? `${task.name} (Screen: ${task.screenName})` : task.name}
-                        >
-                          {task.name}
-                        </span>
-                        {task.release && (
-                          <span className="shrink-0 px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)] text-[9px] font-mono font-semibold">
-                            {task.release}
-                          </span>
-                        )}
-                        {task.subtasks.length > 0 && (
-                          <button
-                            onClick={(e) => toggleExpand(task.id, e)}
-                            className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-[10px] font-semibold text-indigo-500 transition-colors cursor-pointer"
-                            title="Toggle Checklist"
-                          >
-                            <CheckSquare size={10} />
-                            <span>{task.subtasks.filter(s => s.done).length}/{task.subtasks.length}</span>
-                          </button>
-                        )}
-                        {task.screenName && (
-                          <span className="shrink-0 text-[10px] text-[var(--color-text-faint)] font-mono hidden 2xl:inline truncate max-w-[120px]">
-                            · {task.screenName}
-                          </span>
-                        )}
-                      </div>
-                    </td>
-
-                    {/* Status Pill (st-badge) */}
-                    <td className={clsx("px-3 whitespace-nowrap", padY)}>
-                      <button
-                        onClick={(e) => handleCycleStatus(task, e)}
-                        title="Click to cycle status"
-                        className={clsx("st-badge cursor-pointer shadow-2xs active:scale-95", `st-${ST_MAP[task.status] || 'not-started'}`)}
-                      >
-                        <span className="dot" />
-                        <span>{task.status}</span>
-                      </button>
-                    </td>
-
-                    {/* Priority Pill (pri-badge) */}
-                    <td className={clsx("px-2 text-center whitespace-nowrap", padY)}>
-                      <span className={clsx("pri-badge shadow-2xs", `pri-${PRI_MAP[task.priority] || 'medium'}`)}>
-                        {task.priority}
-                      </span>
-                    </td>
-
-                    {/* Assignee */}
-                    <td className={clsx("px-3 whitespace-nowrap", padY)}>
-                      {task.assignee ? (
-                        <div className="flex items-center gap-2">
-                          <div className="w-5 h-5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold text-[9px] flex items-center justify-center shrink-0 border border-[var(--color-primary-hex)]/30 shadow-2xs">
-                            {task.assignee.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase()}
-                          </div>
-                          <span className="text-xs font-medium text-[var(--color-text)] truncate max-w-[120px]">
-                            {task.assignee}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-[11px] text-[var(--color-text-faint)] italic">—</span>
-                      )}
-                    </td>
-
-                    {/* Due Date */}
-                    <td className={clsx("px-3 font-mono text-[11px] whitespace-nowrap", padY)}>
-                      <div className="flex items-center gap-1.5">
-                        <span className={clsx(
-                          overdue ? "text-rose-500 font-bold" : "text-[var(--color-text-muted)]"
-                        )}>
-                          {fmtDate(task.dueDate)}
-                        </span>
-                        {overdue && (
-                          <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-rose-500/10 text-rose-500 border border-rose-500/20">
-                            Overdue
-                          </span>
-                        )}
-                      </div>
-                    </td>
-
-                    {/* Progress Bar */}
-                    <td className={clsx("px-3 text-right whitespace-nowrap", padY)}>
-                      <div className="flex items-center justify-end gap-2.5">
-                        <span className="text-[11px] font-mono tabular-nums font-bold text-[var(--color-text)]">{task.progress}%</span>
-                        <div className="w-16 h-1.5 bg-[var(--color-surface-2)] rounded-full overflow-hidden border border-[var(--color-divider)]/40 shadow-inner">
-                          <div 
-                            className={clsx(
-                              "h-full rounded-full transition-all duration-300",
-                              task.progress >= 100 ? "bg-gradient-to-r from-emerald-500 to-teal-400" : task.progress >= 50 ? "bg-[var(--color-primary-hex)]" : "bg-amber-500"
-                            )} 
-                            style={{ width: `${task.progress}%` }} 
-                          />
-                        </div>
-                      </div>
-                    </td>
-
-                    {/* Row Actions */}
-                    <td className={clsx("px-2 text-center whitespace-nowrap", padY)} onClick={e => e.stopPropagation()}>
-                      <button
-                        onClick={() => onEditTask(task.id)}
-                        className="p-1 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors opacity-70 group-hover:opacity-100 cursor-pointer"
-                        title="Edit task"
-                      >
-                        <MoreHorizontal size={14} />
-                      </button>
-                    </td>
-                  </tr>
-
-                  {/* ── Subtasks Expansion Rows (Clean Tree Hierarchy) ── */}
-                  {isExpanded && task.subtasks.map((st, sIdx) => {
-                    return (
-                      <tr
-                        key={st.id}
-                        className="bg-[var(--color-surface-2)]/30 hover:bg-[var(--color-surface-2)]/70 transition-colors text-xs border-b border-[var(--color-divider)]/30"
-                      >
-                        {/* Blank check */}
-                        <td className="px-2.5 py-1.5 text-center"></td>
-
-                        {/* Subtask Row Number (e.g. 1.1, 1.2) */}
-                        <td className="px-2 py-1.5 text-center font-mono text-[9px] text-[var(--color-text-faint)]">
-                          {pagination.startIndex + idx + 1}.{sIdx + 1}
-                        </td>
-
-                        {/* Hierarchy Indicator */}
-                        <td className="px-1 py-1.5 text-center font-mono text-[var(--color-text-faint)]">
-                          └
-                        </td>
-
-                        {/* Subtask ID */}
-                        <td className="px-3 py-1.5 font-mono text-[10px] text-[var(--color-text-muted)] whitespace-nowrap">
-                          {st.id}
-                        </td>
-
-                        {/* Scope */}
-                        <td className="px-3 py-1.5 text-[11px] text-[var(--color-text-muted)] italic whitespace-nowrap">
-                          Subtask
-                        </td>
-
-                        {/* Subtask Name & Checklist toggle */}
-                        <td className="px-3 py-1.5 max-w-[420px]">
-                          <div 
-                            onClick={(e) => handleToggleSubtask(task, st.id, e)}
-                            className="flex items-center gap-2 cursor-pointer group/st min-w-0"
-                          >
-                            {st.done ? (
-                              <CheckSquare size={13} className="text-emerald-500 shrink-0" />
-                            ) : (
-                              <Square size={13} className="text-[var(--color-text-faint)] group-hover/st:text-[var(--color-primary-hex)] shrink-0" />
-                            )}
-                            <span className={clsx("text-xs font-medium transition-colors truncate", st.done ? "line-through text-[var(--color-text-muted)]" : "text-[var(--color-text)]")}>
-                              {st.name}
-                            </span>
-                          </div>
-                        </td>
-
-                        {/* Subtask Status */}
-                        <td className="px-3 py-1.5 whitespace-nowrap">
-                          <span className={clsx("st-badge text-[9px] py-0.5", st.done ? "st-completed" : "st-in-progress")}>
-                            <span className="dot" />
-                            <span>{st.done ? 'Completed' : 'In Progress'}</span>
-                          </span>
-                        </td>
-
-                        {/* Priority */}
-                        <td className="px-2 py-1.5 text-center whitespace-nowrap">
-                          <span className="text-[10px] text-[var(--color-text-faint)]">—</span>
-                        </td>
-
-                        {/* Assignee */}
-                        <td className="px-3 py-1.5 whitespace-nowrap">
-                          <span className="text-[11px] text-[var(--color-text-muted)]">{st.assignee || '—'}</span>
-                        </td>
-
-                        {/* Due Date */}
-                        <td className="px-3 py-1.5 text-[10px] font-mono text-[var(--color-text-faint)] whitespace-nowrap">
-                          {st.dueDate ? fmtDate(st.dueDate) : '—'}
-                        </td>
-
-                        {/* Progress */}
-                        <td className="px-3 py-1.5 text-right whitespace-nowrap">
-                          <span className="text-[10px] font-mono text-[var(--color-text-muted)]">{st.done ? '100%' : '0%'}</span>
-                        </td>
-
-                        <td className="px-2 py-1.5"></td>
-                      </tr>
-                    );
-                  })}
-                </React.Fragment>
-              );
-            })}
-            {filteredTasks.length === 0 && (
-              <tr>
-                <td colSpan={13} className="py-12 text-center">
-                  <div className="max-w-md mx-auto p-6 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface-2)] space-y-3">
-                    <Layers size={28} className="mx-auto text-[var(--color-text-muted)] opacity-60" />
-                    <div className="text-sm font-bold text-[var(--color-text)]">No tasks match active filters</div>
-                    <div className="text-xs text-[var(--color-text-muted)] leading-relaxed">
-                      {searchTerm ? `Zero tasks found matching "${searchTerm}".` : 'No tasks found for the selected module, release, or priority filters.'}
-                    </div>
-                    <div className="flex items-center justify-center gap-2 pt-1">
-                      <button
-                        onClick={() => {
-                          setSelectedModule('all');
-                          setSelectedRelease('all');
-                          setSelectedStatus('all');
-                          setSelectedAssignee('all');
-                          setSelectedPriority('all');
-                          setSearchTerm('');
-                        }}
-                        className="h-8 px-3.5 bg-[var(--color-surface)] hover:bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-lg text-xs font-semibold text-[var(--color-text)] transition-colors cursor-pointer"
-                      >
-                        Clear All Filters
-                      </button>
-                      <button
-                        onClick={onNewTask}
-                        className="h-8 px-3.5 bg-[var(--color-primary-hex)] hover:opacity-90 text-[var(--color-primary-text)] rounded-lg text-xs font-bold transition-opacity cursor-pointer shadow-xs"
-                      >
-                        Create Task
-                      </button>
-                    </div>
+                    <span className={clsx("text-xs font-medium transition-colors truncate", st.done ? "line-through text-[var(--color-text-muted)]" : "text-[var(--color-text)]")}>
+                      {st.name}
+                    </span>
                   </div>
                 </td>
+
+                {/* Subtask Status */}
+                <td className="px-3 py-1.5 whitespace-nowrap">
+                  <span className={clsx("st-badge text-[9px] py-0.5", st.done ? "st-completed" : "st-in-progress")}>
+                    <span className="dot" />
+                    <span>{st.done ? 'Completed' : 'In Progress'}</span>
+                  </span>
+                </td>
+
+                {/* Priority */}
+                <td className="px-2 py-1.5 text-center whitespace-nowrap">
+                  <span className="text-[10px] text-[var(--color-text-faint)]">—</span>
+                </td>
+
+                {/* Assignee */}
+                <td className="px-3 py-1.5 whitespace-nowrap">
+                  <span className="text-[11px] text-[var(--color-text-muted)]">{st.assignee || '—'}</span>
+                </td>
+
+                {/* Due Date */}
+                <td className="px-3 py-1.5 text-[10px] font-mono text-[var(--color-text-faint)] whitespace-nowrap">
+                  {st.dueDate ? fmtDate(st.dueDate) : '—'}
+                </td>
+
+                {/* Progress */}
+                <td className="px-3 py-1.5 text-right whitespace-nowrap">
+                  <span className="text-[10px] font-mono text-[var(--color-text-muted)]">{st.done ? '100%' : '0%'}</span>
+                </td>
+
+                <td className="px-2 py-1.5"></td>
               </tr>
-            )}
-          </tbody>
-        </table>
-        </div>
-        <TablePagination
-          currentPage={pagination.currentPage}
-          totalPages={pagination.totalPages}
-          totalItems={pagination.totalItems}
-          pageSize={pagination.pageSize}
-          onPageChange={pagination.setCurrentPage}
-          onPageSizeChange={pagination.setPageSize}
-          itemLabel="tasks"
-        />
-      </div>
+            ))}
+          </>
+        )}
+        emptyMessage={
+          <div className="max-w-md mx-auto p-6 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface-2)] space-y-3">
+            <Layers size={28} className="mx-auto text-[var(--color-text-muted)] opacity-60" />
+            <div className="text-sm font-bold text-[var(--color-text)]">No tasks match active filters</div>
+            <div className="text-xs text-[var(--color-text-muted)] leading-relaxed">
+              {searchTerm ? `Zero tasks found matching "${searchTerm}".` : 'No tasks found for the selected module, release, or priority filters.'}
+            </div>
+            <div className="flex items-center justify-center gap-2 pt-1">
+              <button
+                onClick={() => {
+                  setSelectedModule('all');
+                  setSelectedRelease('all');
+                  setSelectedStatus('all');
+                  setSelectedAssignee('all');
+                  setSelectedPriority('all');
+                  setSearchTerm('');
+                }}
+                className="h-8 px-3.5 bg-[var(--color-surface)] hover:bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-lg text-xs font-semibold text-[var(--color-text)] transition-colors cursor-pointer"
+              >
+                Clear All Filters
+              </button>
+              {onNewTask && (
+                <button
+                  onClick={onNewTask}
+                  className="h-8 px-3.5 bg-[var(--color-primary-hex)] hover:opacity-90 text-[var(--color-primary-text)] rounded-lg text-xs font-bold transition-opacity cursor-pointer shadow-xs"
+                >
+                  Create Task
+                </button>
+              )}
+            </div>
+          </div>
+        }
+      />
 
       {/* ── 4. Mobile View Cards (Touch-friendly & responsive) ── */}
       <div className="grid grid-cols-1 gap-3 lg:hidden">
