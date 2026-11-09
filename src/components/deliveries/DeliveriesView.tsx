@@ -579,65 +579,65 @@ export const DeliveriesView: React.FC = () => {
                         className="rounded border-[var(--color-divider)] cursor-pointer"
                       />
                     </th>
-                    <th className="p-2.5 w-11 text-center border-r border-[var(--color-divider)] td-rn font-mono text-[10px]">
+                    <th className="p-2.5 w-11 text-center border-r border-[var(--color-divider)] td-rn font-mono text-[10px]" title="Sequential package index">
                       #
                     </th>
-                    <th className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('almId'); setSortAsc(!sortAsc); }}>
+                    <th className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('almId'); setSortAsc(!sortAsc); }} title="Application Lifecycle Management tracking ID and Package Delivery Note code. Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>ALM ID / PDN</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 min-w-[240px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('name'); setSortAsc(!sortAsc); }}>
+                    <th className="p-2.5 min-w-[240px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('name'); setSortAsc(!sortAsc); }} title="Package title and delivery scope narrative. Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>DELIVERY SCOPE & DETAILS</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('almStatus'); setSortAsc(!sortAsc); }}>
+                    <th className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('almStatus'); setSortAsc(!sortAsc); }} title="Current delivery lifecycle status (New, Scheduled, In Progress, Ready for Deployment, Closed). Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>ALM STATUS</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 w-26 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('environment'); setSortAsc(!sortAsc); }}>
+                    <th className="p-2.5 w-26 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('environment'); setSortAsc(!sortAsc); }} title="Target deployment infrastructure tier (DEV, SIT, UAT, STAGING, PROD). Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>ENV</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('status'); setSortAsc(!sortAsc); }}>
+                    <th className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('status'); setSortAsc(!sortAsc); }} title="Deployment pipeline status (Pending, Deployed, Verified, Rolled Back). Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>DEPLOY STATUS</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 w-26 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('releaseVersion'); setSortAsc(!sortAsc); }}>
+                    <th className="p-2.5 w-26 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('releaseVersion'); setSortAsc(!sortAsc); }} title="Mapped release vehicle (e.g. v1.0.0, Q3 Release). Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>RELEASE</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('signOffStatus'); setSortAsc(!sortAsc); }}>
+                    <th className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('signOffStatus'); setSortAsc(!sortAsc); }} title="Quality and stakeholder sign-off status (Pending, Approved, Conditionally Approved, Rejected). Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>SIGN-OFF</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('smokeTestStatus'); setSortAsc(!sortAsc); }}>
+                    <th className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('smokeTestStatus'); setSortAsc(!sortAsc); }} title="Automated smoke test gate status (Passed, Failed, In Progress, Blocked). Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>SMOKE GATE</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 w-32 border-r border-[var(--color-divider)]">LINKED SCOPE</th>
-                    <th className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('targetDeliveryDate'); setSortAsc(!sortAsc); }}>
+                    <th className="p-2.5 w-32 border-r border-[var(--color-divider)]" title="Total count of tasks and GUI screens bundled into this delivery note">LINKED SCOPE</th>
+                    <th className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]" onClick={() => { setSortBy('targetDeliveryDate'); setSortAsc(!sortAsc); }} title="Scheduled calendar delivery date. Click to sort.">
                       <div className="flex items-center justify-between gap-1">
                         <span>TARGET DATE</span>
                         <ArrowUpDown size={10} />
                       </div>
                     </th>
-                    <th className="p-2.5 w-24 text-right border-r border-[var(--color-divider)]">LEAD / VAR</th>
+                    <th className="p-2.5 w-24 text-right border-r border-[var(--color-divider)]" title="Lead time and schedule variance against baseline target">LEAD / VAR</th>
                     <th className="p-2.5 text-center w-12"></th>
                   </tr>
 

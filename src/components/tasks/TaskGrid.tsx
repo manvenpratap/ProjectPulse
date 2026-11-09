@@ -451,17 +451,18 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               </th>
 
               {/* Row Num Column (#) */}
-              <th className="p-2.5 w-11 text-center border-r border-[var(--color-divider)] td-rn font-mono text-[10px]">
+              <th className="p-2.5 w-11 text-center border-r border-[var(--color-divider)] td-rn font-mono text-[10px]" title="Sequential row index">
                 #
               </th>
 
               {/* Expand Column */}
-              <th className="p-2.5 w-8 text-center border-r border-[var(--color-divider)]"></th>
+              <th className="p-2.5 w-8 text-center border-r border-[var(--color-divider)]" title="Expand or collapse subtasks"></th>
 
               {/* Task ID */}
               <th 
                 onClick={() => handleSort('id')}
                 className="p-2.5 w-24 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                title="Unique persistent task identifier (e.g. T-101). Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
                   <span>TASK ID</span>
@@ -475,6 +476,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               <th 
                 onClick={() => handleSort('module')}
                 className="p-2.5 w-40 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                title="Functional architectural domain of the codebase this task impacts. Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
                   <span>MODULE & SCOPE</span>
@@ -488,6 +490,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               <th 
                 onClick={() => handleSort('name')}
                 className="p-2.5 min-w-[260px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                title="Task title and subtask checklist status. Indented rows indicate child subtasks. Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
                   <span>TASK NAME & CHECKLIST</span>
@@ -501,6 +504,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               <th 
                 onClick={() => handleSort('status')}
                 className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                title="Current task lifecycle state (Not Started, In Progress, Review, Completed, On Hold, Cancelled). Click badge in rows to quick-cycle. Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
                   <span>STATUS</span>
@@ -514,6 +518,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               <th 
                 onClick={() => handleSort('priority')}
                 className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)] text-center"
+                title="Execution urgency (Critical, High, Medium, Low). Prioritizes linear capacity leveling. Click to sort."
               >
                 <div className="flex items-center justify-center gap-1">
                   <span>PRIORITY</span>
@@ -527,6 +532,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               <th 
                 onClick={() => handleSort('assignee')}
                 className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                title="Accountable module owner or developer. Subtask contributors roll up automatically. Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
                   <span>ASSIGNEE</span>
@@ -540,6 +546,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               <th 
                 onClick={() => handleSort('dueDate')}
                 className="p-2.5 w-30 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                title="Planned feasibility target completion date. Evaluated against Baseline Due Date. Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
                   <span>DUE DATE</span>
@@ -553,6 +560,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               <th 
                 onClick={() => handleSort('progress')}
                 className="p-2.5 w-28 text-right cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                title="Granular completion percentage (0–100%). Click or slide to adjust. Click to sort."
               >
                 <div className="flex items-center justify-end gap-1">
                   <span>PROGRESS</span>

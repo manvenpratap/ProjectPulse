@@ -10,7 +10,8 @@ import {
   Mail,
   FileSpreadsheet,
   Download,
-  RefreshCw
+  RefreshCw,
+  HelpCircle
 } from 'lucide-react';
 import clsx from 'clsx';
 import { NAV_HUBS } from '../../config/navigation';
@@ -403,6 +404,20 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
 
       {/* Executive CXO Email Brief Modal */}
       <CxoEmailModal isOpen={isCxoEmailOpen} onClose={() => setIsCxoEmailOpen(false)} />
+
+      {/* Contextual View Help Trigger (Matching projectpulse.html) */}
+      {isOpen && (
+        <div className="px-3 pt-2 border-t border-[var(--color-divider)] shrink-0">
+          <button
+            onClick={() => window.dispatchEvent(new CustomEvent('open-view-help', { detail: { view: state.view } }))}
+            className="w-full flex items-center justify-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-primary-highlight-hex)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/30 transition-all cursor-pointer shadow-2xs active:scale-[0.98]"
+            title="How this screen works (F1 or ?)"
+          >
+            <HelpCircle size={14} className="text-[var(--color-primary-hex)] shrink-0" />
+            <span className="truncate">How this view works</span>
+          </button>
+        </div>
+      )}
 
       {/* Collapse / Expand Toggle Button */}
       <div className="p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] border-t border-[var(--color-divider)] shrink-0">

@@ -429,17 +429,18 @@ const DefectView: React.FC = () => {
                   </th>
 
                   {/* Row Number (#) */}
-                  <th className="p-2.5 w-11 text-center border-r border-[var(--color-divider)] td-rn font-mono text-[10px]">
+                  <th className="p-2.5 w-11 text-center border-r border-[var(--color-divider)] td-rn font-mono text-[10px]" title="Sequential defect index">
                     #
                   </th>
 
                   {/* Edit Action */}
-                  <th className="p-2.5 w-10 text-center border-r border-[var(--color-divider)]"></th>
+                  <th className="p-2.5 w-10 text-center border-r border-[var(--color-divider)]" title="Quick edit defect"></th>
 
                   {/* Defect ID */}
                   <th 
                     onClick={() => handleSort('id')}
                     className="p-2.5 w-26 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                    title="Unique defect tracking identifier (e.g. DEF-101). Click to sort."
                   >
                     <div className="flex items-center justify-between gap-1">
                       <span>DEFECT ID</span>
@@ -453,6 +454,7 @@ const DefectView: React.FC = () => {
                   <th 
                     onClick={() => handleSort('title')}
                     className="p-2.5 min-w-[260px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                    title="Summary of the issue, failure symptom, or regression. Click to sort."
                   >
                     <div className="flex items-center justify-between gap-1">
                       <span>SUMMARY & SCOPE</span>
@@ -466,6 +468,7 @@ const DefectView: React.FC = () => {
                   <th 
                     onClick={() => handleSort('severity')}
                     className="p-2.5 w-30 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                    title="Impact severity tier (S1-Blocker, S2-Critical, S3-Major, S4-Minor). Click to sort."
                   >
                     <div className="flex items-center justify-between gap-1">
                       <span>SEVERITY</span>
@@ -479,6 +482,7 @@ const DefectView: React.FC = () => {
                   <th 
                     onClick={() => handleSort('priority')}
                     className="p-2.5 w-26 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)] text-center"
+                    title="Fix urgency for triage and sprint allocation. Click to sort."
                   >
                     <div className="flex items-center justify-center gap-1">
                       <span>PRIORITY</span>
@@ -492,6 +496,7 @@ const DefectView: React.FC = () => {
                   <th 
                     onClick={() => handleSort('status')}
                     className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                    title="Resolution lifecycle state (New, Open, In Progress, Resolved, Retest, Closed). Click to sort."
                   >
                     <div className="flex items-center justify-between gap-1">
                       <span>STATUS</span>
@@ -505,6 +510,7 @@ const DefectView: React.FC = () => {
                   <th 
                     onClick={() => handleSort('assignee')}
                     className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                    title="Assigned engineer or QA lead investigating the defect. Click to sort."
                   >
                     <div className="flex items-center justify-between gap-1">
                       <span>ASSIGNEE</span>
@@ -515,7 +521,7 @@ const DefectView: React.FC = () => {
                   </th>
 
                   {/* Linked Item */}
-                  <th className="p-2.5 w-32 border-r border-[var(--color-divider)]">
+                  <th className="p-2.5 w-32 border-r border-[var(--color-divider)]" title="Associated task ID or GUI screen origin">
                     LINKED ITEM
                   </th>
 
@@ -523,6 +529,7 @@ const DefectView: React.FC = () => {
                   <th 
                     onClick={() => handleSort('updatedAt')}
                     className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors text-right"
+                    title="Timestamp of last modification or comment. Click to sort."
                   >
                     <div className="flex items-center justify-end gap-1">
                       <span>UPDATED</span>

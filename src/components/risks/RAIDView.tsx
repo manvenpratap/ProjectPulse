@@ -670,11 +670,11 @@ const RAIDView: React.FC = () => {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-[var(--color-surface-2)] text-xs font-semibold text-[var(--color-text-muted)] border-b border-[var(--color-divider)]">
-                      <th className="p-4">ID</th>
-                      <th className="p-4">Decision Title</th>
-                      <th className="p-4">Owner / Approver</th>
-                      <th className="p-4">Status</th>
-                      <th className="p-4">Target Date</th>
+                      <th className="p-4" title="Unique decision identifier (e.g. DEC-101)">ID</th>
+                      <th className="p-4" title="Strategic steering decision topic and context">Decision Title</th>
+                      <th className="p-4" title="Accountable executive or steering lead">Owner / Approver</th>
+                      <th className="p-4" title="Current decision sign-off state (Approved, Pending Sign-off, Rejected)">Status</th>
+                      <th className="p-4" title="Target resolution or review date">Target Date</th>
                       <th className="p-4 text-right">Actions</th>
                     </tr>
                   </thead>
@@ -827,13 +827,13 @@ const RAIDView: React.FC = () => {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-[var(--color-surface-2)] text-xs font-semibold text-[var(--color-text-muted)] border-b border-[var(--color-divider)]">
-                      <th className="p-4 cursor-pointer select-none" onClick={() => handleRaidSort('id')}>ID / Type</th>
-                      <th className="p-4 cursor-pointer select-none" onClick={() => handleRaidSort('title')}>Title & Context</th>
-                      <th className="p-4 cursor-pointer select-none" onClick={() => handleRaidSort('owner')}>Owner</th>
-                      <th className="p-4">Impact / Prob</th>
-                      <th className="p-4">Severity</th>
-                      <th className="p-4">Mitigation Plan</th>
-                      <th className="p-4 cursor-pointer select-none" onClick={() => handleRaidSort('status')}>Status</th>
+                      <th className="p-4 cursor-pointer select-none" onClick={() => handleRaidSort('id')} title="Identifier and RAID category: Risk, Assumption, Issue, or Dependency. Click to sort.">ID / Type</th>
+                      <th className="p-4 cursor-pointer select-none" onClick={() => handleRaidSort('title')} title="Summary of the risk event or blocker condition. Click to sort.">Title & Context</th>
+                      <th className="p-4 cursor-pointer select-none" onClick={() => handleRaidSort('owner')} title="Team member responsible for monitoring and mitigation. Click to sort.">Owner</th>
+                      <th className="p-4" title="Consequence level (High/Medium/Low) and Probability score (1-5)">Impact / Prob</th>
+                      <th className="p-4" title="Calculated risk severity score driving early warning indicators">Severity</th>
+                      <th className="p-4" title="Preventive action and contingency plan to eliminate or absorb the threat">Mitigation Plan</th>
+                      <th className="p-4 cursor-pointer select-none" onClick={() => handleRaidSort('status')} title="Tracking status: Active, Mitigated, or Closed. Click to sort.">Status</th>
                       <th className="p-4 text-right">Actions</th>
                     </tr>
                   </thead>

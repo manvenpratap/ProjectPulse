@@ -252,7 +252,10 @@ const OverviewView: React.FC = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 grid-flow-dense gap-6 items-stretch">
           
           {/* Health Index Dial Component */}
-          <div className="card-glass p-6 flex flex-col justify-between items-center text-center">
+          <div 
+            className="card-glass p-6 flex flex-col justify-between items-center text-center cursor-help select-none"
+            title="Composite Health Index: 100 - (OverdueTasks × 50% + BlockedTasks × 30% + OnHoldTasks × 20%) / TotalActiveTasks × 100"
+          >
             <div className="space-y-1 text-center w-full">
               <h3 className="font-bold text-sm tracking-tight text-[var(--color-text)]">Composite Health Index</h3>
               <p className="text-xs text-[var(--color-primary-hex)] font-medium">Multi-factor algorithmic dial</p>

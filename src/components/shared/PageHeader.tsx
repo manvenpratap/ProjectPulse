@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { LucideIcon } from 'lucide-react';
+import { LucideIcon, HelpCircle } from 'lucide-react';
 import { useProject } from '../../store/ProjectContext';
 import { useAuth } from '../../store/AuthContext';
 import { getHubForView } from '../../config/navigation';
@@ -42,9 +42,19 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             <Icon size={17} strokeWidth={2.2} />
           </div>
           <div className="min-w-0 max-w-4xl">
-            <h1 className="text-sm sm:text-base md:text-lg font-display font-black text-[var(--color-text)] tracking-tight leading-snug truncate">
-              {title}
-            </h1>
+            <div className="flex items-center gap-1.5 sm:gap-2">
+              <h1 className="text-sm sm:text-base md:text-lg font-display font-black text-[var(--color-text)] tracking-tight leading-snug truncate">
+                {title}
+              </h1>
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent('open-view-help', { detail: { view: state.view } }))}
+                className="text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] p-1 rounded-lg hover:bg-[var(--color-surface-2)] transition-colors cursor-pointer shrink-0"
+                title={`Guide: How ${title} works (F1 or ?)`}
+                aria-label={`Guide: How ${title} works`}
+              >
+                <HelpCircle size={15} />
+              </button>
+            </div>
             {subtitle && (
               <p className="text-[11px] sm:text-xs text-[var(--color-text-muted)] font-medium mt-0.5 truncate max-w-3xl">
                 {subtitle}

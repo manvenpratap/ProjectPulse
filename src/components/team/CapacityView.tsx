@@ -1217,11 +1217,11 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                 <table className="w-full text-left border-collapse">
                   <thead>
                     <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-divider)]">
-                      <th className="p-3.5 font-bold text-xs text-[var(--color-text-muted)] sticky left-0 bg-[var(--color-surface-2)] z-10 min-w-[130px] sm:w-64 border-r border-[var(--color-divider)]">
+                      <th className="p-3.5 font-bold text-xs text-[var(--color-text-muted)] sticky left-0 bg-[var(--color-surface-2)] z-10 min-w-[130px] sm:w-64 border-r border-[var(--color-divider)]" title="Resource name, role, and weekly capacity">
                         Team Member
                       </th>
                       {weeks.map((week, idx) => (
-                        <th key={idx} className="p-3 font-bold text-xs text-[var(--color-text-muted)] min-w-[90px] border-r border-[var(--color-divider)] text-center">
+                        <th key={idx} className="p-3 font-bold text-xs text-[var(--color-text-muted)] min-w-[90px] border-r border-[var(--color-divider)] text-center" title={`Week ${idx + 1} starting ${week.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}. Green: <80%, Amber: 80-100%, Red: >100% overload.`}>
                           <div className="flex flex-col items-center">
                             <span className="text-[var(--color-text)]">Week {idx + 1}</span>
                             <span className="text-[10px] sm:text-xs text-[var(--color-text-faint)] font-mono">
@@ -1230,7 +1230,7 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                           </div>
                         </th>
                       ))}
-                      <th className="p-3.5 font-bold text-xs text-[var(--color-text-muted)] min-w-[110px] w-36">
+                      <th className="p-3.5 font-bold text-xs text-[var(--color-text-muted)] min-w-[110px] w-36" title="Average forward capacity utilization across the 12-week planning horizon">
                         Average Load
                       </th>
                     </tr>

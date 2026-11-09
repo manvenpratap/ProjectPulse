@@ -1144,13 +1144,13 @@ const TeamView: React.FC = () => {
               <table className="w-full border-collapse text-left text-xs min-w-[850px]">
                 <thead>
                   <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-divider)] text-[var(--color-text-muted)] font-bold text-[11px] uppercase">
-                    <th className="p-3.5">Member</th>
-                    <th className="p-3.5">Emp ID</th>
-                    <th className="p-3.5">Status</th>
-                    <th className="p-3.5">Load Progress</th>
-                    <th className="p-3.5">Efficiency</th>
-                    <th className="p-3.5">Tasks (P / D / B)</th>
-                    <th className="p-3.5">Skills</th>
+                    <th className="p-3.5" title="Team member full name and primary delivery role">Member</th>
+                    <th className="p-3.5" title="Enterprise employee badge or ID code">Emp ID</th>
+                    <th className="p-3.5" title="Employment availability status (Active, On Leave, Inactive)">Status</th>
+                    <th className="p-3.5" title="Current assigned backlog progress vs weekly capacity">Load Progress</th>
+                    <th className="p-3.5" title="Ratio of estimated vs actual effort spent across completed tasks">Efficiency</th>
+                    <th className="p-3.5" title="Tasks breakdown: Pending / Done / Blocked by dependency">Tasks (P / D / B)</th>
+                    <th className="p-3.5" title="Core engineering competencies and skill tags">Skills</th>
                     <th className="p-3.5 text-right">Actions</th>
                   </tr>
                 </thead>
@@ -1326,26 +1326,26 @@ const TeamView: React.FC = () => {
             <table className="w-full border-collapse text-left text-xs min-w-[760px]">
               <thead>
                 <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-divider)] text-[var(--color-text-muted)] font-bold text-[11px] uppercase select-none">
-                  <th className="p-3 w-12 text-center">#</th>
-                  <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('name'); setScorecardSortDir(d => -d); }}>
+                  <th className="p-3 w-12 text-center" title="Performance leaderboard ranking">#</th>
+                  <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('name'); setScorecardSortDir(d => -d); }} title="Team member name. Click to sort.">
                     Member {scorecardSortCol === 'name' && (scorecardSortDir > 0 ? '↑' : '↓')}
                   </th>
-                  <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('completionRate'); setScorecardSortDir(d => -d); }}>
+                  <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('completionRate'); setScorecardSortDir(d => -d); }} title="Percentage of assigned tasks completed. Click to sort.">
                     Completion {scorecardSortCol === 'completionRate' && (scorecardSortDir > 0 ? '↑' : '↓')}
                   </th>
-                  <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('avgCycle'); setScorecardSortDir(d => -d); }}>
+                  <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('avgCycle'); setScorecardSortDir(d => -d); }} title="Average days elapsed from start to completion. Click to sort.">
                     Avg Cycle {scorecardSortCol === 'avgCycle' && (scorecardSortDir > 0 ? '↑' : '↓')}
                   </th>
-                  <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('onTimePct'); setScorecardSortDir(d => -d); }}>
+                  <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('onTimePct'); setScorecardSortDir(d => -d); }} title="Percentage of tasks completed on or before target due date. Click to sort.">
                     On-Time {scorecardSortCol === 'onTimePct' && (scorecardSortDir > 0 ? '↑' : '↓')}
                   </th>
-                  <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('blocked'); setScorecardSortDir(d => -d); }}>
+                  <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('blocked'); setScorecardSortDir(d => -d); }} title="Count of current tasks blocked by unresolved dependencies. Click to sort.">
                     Blocked {scorecardSortCol === 'blocked' && (scorecardSortDir > 0 ? '↑' : '↓')}
                   </th>
-                  <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('velocity7'); setScorecardSortDir(d => -d); }}>
+                  <th className="p-3 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('velocity7'); setScorecardSortDir(d => -d); }} title="Effort completed over the trailing 7 business days. Click to sort.">
                     7D Velocity {scorecardSortCol === 'velocity7' && (scorecardSortDir > 0 ? '↑' : '↓')}
                   </th>
-                  <th className="p-3">Health Status</th>
+                  <th className="p-3" title="Overall delivery and workload health status">Health Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--color-divider)]">

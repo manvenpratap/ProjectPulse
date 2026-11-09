@@ -55,14 +55,26 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Shortcut: G then /
-      if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName)) {
+      const isInput = ['INPUT', 'TEXTAREA'].includes((e.target as HTMLElement).tagName);
+      // Shortcut: / to focus search
+      if (e.key === '/' && !isInput) {
          e.preventDefault();
          searchInputRef.current?.focus();
+      }
+      // F1 or ? -> Open Screen Help Guide
+      if ((e.key === 'F1' || e.key === '?') && !isInput) {
+         e.preventDefault();
+         setIsHelpOpen(true);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    const handleOpenHelp = () => setIsHelpOpen(true);
+    window.addEventListener('open-view-help', handleOpenHelp);
+    return () => window.removeEventListener('open-view-help', handleOpenHelp);
   }, []);
   
   const health = getHealthScore(state.tasks);
@@ -98,7 +110,10 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] shadow-2xs backdrop-blur-sm">
+        <div 
+          className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] shadow-2xs backdrop-blur-sm cursor-help select-none"
+          title={`Project Health: ${health}% (${getHealthLabel(health)})\nCalculated by penalizing active scope for overdue (-50%), blocked (-30%), and on-hold (-20%) tasks.`}
+        >
           <div className={clsx("w-2 h-2 rounded-full motion-safe:animate-pulse bg-current", getHealthColor(health))} />
           <span className={clsx("text-xs font-semibold tracking-tight", getHealthColor(health))}>
             {getHealthLabel(health)} {health}%
@@ -161,8 +176,8 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
           <Button 
             variant="ghost" 
             size="icon" 
-            title="Help & Guide"
-            aria-label="Help and Guide" 
+            title="Help & Screen Guide (F1 or ?)"
+            aria-label="Help and Screen Guide" 
             className="rounded-xl min-h-[40px] min-w-[40px] sm:min-h-[36px] sm:min-w-[36px] hidden sm:flex"
             onClick={() => setIsHelpOpen(true)}
           >
