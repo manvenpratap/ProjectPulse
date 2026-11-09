@@ -42,6 +42,7 @@ import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
 import Modal from '../shared/Modal';
 import TablePagination, { usePagination } from '../shared/TablePagination';
+import DataTable, { ColumnDef } from '../shared/DataTable';
 
 type ViewMode = 'table' | 'kanban' | 'heatmap';
 type HeatmapPerspective = 'feat_screens' | 'env_pipeline' | 'del_impact';
@@ -169,6 +170,297 @@ export const DeliveriesView: React.FC = () => {
   }, [deliveries, filterEnv, filterStatus, filterVersion, filterCategory, filterSmoke, searchQuery, sortBy, sortAsc]);
 
   const pagination = usePagination<Delivery>(filteredDeliveries, 10, 'pp_page_size_deliveries');
+
+  const columns = useMemo<ColumnDef<Delivery>[]>(() => [
+    {
+      id: 'almId',
+      header: 'ALM ID / PDN',
+      headerTitle: 'Application Lifecycle Management tracking ID and Package Delivery Note code. Click to sort.',
+      sortable: true,
+      width: 'w-28',
+      filter: <span className="text-[10px] text-[var(--color-text-faint)] font-mono pl-1">—</span>,
+      cell: (item) => (
+        <div className="flex items-center gap-1.5 whitespace-nowrap">
+          <span className="font-mono font-bold text-xs text-[var(--color-primary-hex)]">
+            {item.almId}
+          </span>
+          {item.pdn && (
+            <span className="font-mono text-[10px] text-[var(--color-text-muted)] opacity-70">
+              ({item.pdn})
+            </span>
+          )}
+        </div>
+      )
+    },
+    {
+      id: 'name',
+      header: 'DELIVERY SCOPE & DETAILS',
+      headerTitle: 'Package title and delivery scope narrative. Click to sort.',
+      sortable: true,
+      width: 'min-w-[260px]',
+      filter: <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by topbar search</span>,
+      cell: (item) => (
+        <div className="flex items-center gap-1.5 min-w-0 max-w-[340px]">
+          <span className="font-bold text-xs leading-tight truncate text-[var(--color-text)]" title={item.name}>
+            {item.name}
+          </span>
+          <span className="shrink-0 text-[10px] text-[var(--color-text-muted)] font-mono">
+            ({item.module})
+          </span>
+          {item.category && (
+            <span className="shrink-0 px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[9px] font-semibold text-[var(--color-text-muted)]">
+              {item.category}
+            </span>
+          )}
+        </div>
+      )
+    },
+    {
+      id: 'almStatus',
+      header: 'ALM STATUS',
+      headerTitle: 'Current delivery lifecycle status (New, Scheduled, In Progress, Ready for Deployment, Closed). Click to sort.',
+      sortable: true,
+      width: 'w-32',
+      filter: (
+        <select
+          value={filterStatus}
+          onChange={e => setFilterStatus(e.target.value)}
+          className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
+        >
+          <option value="all">All</option>
+          {['Scheduled', 'In Progress', 'Ready for Deployment', 'Deployed', 'Cancelled', 'Rolled Back'].map(s => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+      ),
+      cell: (item) => (
+        <span className={clsx("st-badge", `st-${ALM_ST_MAP[item.almStatus] || 'not-started'}`)}>
+          <span className="dot" />
+          <span>{item.almStatus}</span>
+        </span>
+      )
+    },
+    {
+      id: 'environment',
+      header: 'ENV',
+      headerTitle: 'Target deployment infrastructure tier (DEV, SIT, UAT, STAGING, PROD). Click to sort.',
+      sortable: true,
+      width: 'w-24',
+      filter: (
+        <select
+          value={filterEnv}
+          onChange={e => setFilterEnv(e.target.value)}
+          className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
+        >
+          <option value="all">All</option>
+          {['Production', 'Staging', 'UAT', 'QA', 'Dev'].map(e => (
+            <option key={e} value={e}>{e}</option>
+          ))}
+        </select>
+      ),
+      cell: (item) => (
+        <span className={clsx(
+          "px-2 py-0.5 rounded text-[11px] font-semibold inline-block whitespace-nowrap",
+          item.environment === 'Production' && "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30",
+          item.environment === 'Staging' && "bg-sky-500/10 text-sky-400 border border-sky-500/30",
+          item.environment === 'UAT' && "bg-indigo-500/10 text-indigo-400 border border-indigo-500/30",
+          item.environment === 'QA' && "bg-amber-500/10 text-amber-400 border border-amber-500/30",
+          item.environment === 'Dev' && "bg-zinc-500/10 text-zinc-400 border border-zinc-500/30",
+        )}>
+          {item.environment}
+        </span>
+      )
+    },
+    {
+      id: 'status',
+      header: 'DEPLOY STATUS',
+      headerTitle: 'Deployment pipeline status (Pending, Deployed, Verified, Rolled Back). Click to sort.',
+      sortable: true,
+      width: 'w-32',
+      filter: null,
+      cell: (item) => (
+        <span className={clsx("st-badge", `st-${DEL_ST_MAP[item.status] || 'not-started'}`)}>
+          <span className="dot" />
+          <span>{item.status}</span>
+        </span>
+      )
+    },
+    {
+      id: 'releaseVersion',
+      header: 'RELEASE',
+      headerTitle: 'Mapped release vehicle (e.g. v1.0.0, Q3 Release). Click to sort.',
+      sortable: true,
+      width: 'w-24',
+      filter: (
+        <select
+          value={filterVersion}
+          onChange={e => setFilterVersion(e.target.value)}
+          className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
+        >
+          <option value="all">All</option>
+          {['v1.0.0', 'v1.1.0', 'v2.0.0-Beta', 'v2.1.0'].map(v => (
+            <option key={v} value={v}>{v}</option>
+          ))}
+        </select>
+      ),
+      cell: (item) => (
+        <span className="font-mono text-[11px] font-semibold px-2 py-0.5 bg-[var(--color-surface-2)] rounded border border-[var(--color-divider)] whitespace-nowrap">
+          {item.releaseVersion}
+        </span>
+      )
+    },
+    {
+      id: 'signOffStatus',
+      header: 'SIGN-OFF',
+      headerTitle: 'Quality and stakeholder sign-off status (Pending, Approved, Conditionally Approved, Rejected). Click to sort.',
+      sortable: true,
+      width: 'w-32',
+      filter: null,
+      cell: (item) => (
+        <div className="flex items-center gap-1.5 whitespace-nowrap">
+          <span className={clsx(
+            "text-xs font-semibold",
+            item.signOffStatus === 'Approved' && "text-emerald-400",
+            item.signOffStatus === 'Pending' && "text-amber-400",
+            item.signOffStatus === 'Rejected' && "text-rose-400",
+            item.signOffStatus === 'Not Required' && "text-[var(--color-text-muted)]"
+          )}>
+            {item.signOffStatus}
+          </span>
+          {item.approver && (
+            <span className="text-[10px] text-[var(--color-text-faint)]">
+              ({item.approver.split(' ')[0]})
+            </span>
+          )}
+        </div>
+      )
+    },
+    {
+      id: 'smokeTestStatus',
+      header: 'SMOKE GATE',
+      headerTitle: 'Automated smoke test gate status (Passed, Failed, In Progress, Blocked). Click to sort.',
+      sortable: true,
+      width: 'w-28',
+      filter: (
+        <select
+          value={filterSmoke}
+          onChange={e => setFilterSmoke(e.target.value)}
+          className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
+        >
+          <option value="all">All</option>
+          {['Passed', 'Running', 'Failed', 'Not Run'].map(s => (
+            <option key={s} value={s}>{s}</option>
+          ))}
+        </select>
+      ),
+      cell: (item) => (
+        <span className={clsx(
+          "px-2 py-0.5 rounded text-xs font-medium inline-block whitespace-nowrap",
+          item.smokeTestStatus === 'Passed' && "bg-emerald-500/15 text-emerald-400",
+          item.smokeTestStatus === 'Running' && "bg-cyan-500/15 text-cyan-400 motion-safe:animate-pulse",
+          item.smokeTestStatus === 'Failed' && "bg-rose-500/15 text-rose-400",
+          item.smokeTestStatus === 'Not Run' && "text-[var(--color-text-faint)]"
+        )}>
+          {item.smokeTestStatus}
+        </span>
+      )
+    },
+    {
+      id: 'linkedScope',
+      header: 'LINKED SCOPE',
+      headerTitle: 'Total count of tasks and GUI screens bundled into this delivery note',
+      width: 'w-32',
+      filter: null,
+      cell: (item) => item.linkedId ? (
+        <span className="px-1.5 py-0.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded text-[10px] font-mono truncate max-w-[180px] inline-block whitespace-nowrap" title={item.linkedId}>
+          {item.linkedId}
+        </span>
+      ) : (
+        <span className="text-[var(--color-text-faint)] text-xs">—</span>
+      )
+    },
+    {
+      id: 'targetDeliveryDate',
+      header: 'TARGET DATE',
+      headerTitle: 'Scheduled calendar delivery date. Click to sort.',
+      sortable: true,
+      width: 'w-28',
+      filter: null,
+      cell: (item) => (
+        <div className="flex items-center gap-1 font-mono text-xs whitespace-nowrap">
+          <span>{fmtDate(item.targetDeliveryDate)}</span>
+          {item.actualDeliveryDate && (
+            <span className="text-[10px] text-emerald-400" title={`Actual: ${fmtDate(item.actualDeliveryDate)}`}>
+              ✓
+            </span>
+          )}
+        </div>
+      )
+    },
+    {
+      id: 'leadVar',
+      header: 'LEAD / VAR',
+      headerTitle: 'Lead time and schedule variance against baseline target',
+      width: 'w-24',
+      align: 'right',
+      filter: null,
+      cell: (item) => (
+        <div className="font-mono text-xs whitespace-nowrap text-right">
+          <span className="mr-1">{item.leadTimeDays}d</span>
+          <span className={clsx(
+            "text-[10px]",
+            (item.variance || 0) > 0 ? "text-rose-400 font-bold" : ((item.variance || 0) < 0 ? "text-emerald-400 font-bold" : "text-[var(--color-text-muted)]")
+          )}>
+            {(item.variance || 0) > 0 ? `+${item.variance}d` : `${item.variance || 0}d`}
+          </span>
+        </div>
+      )
+    },
+    {
+      id: 'actions',
+      header: '',
+      width: 'w-10',
+      align: 'center',
+      filter: (filterStatus !== 'all' || filterEnv !== 'all' || filterVersion !== 'all' || filterSmoke !== 'all') ? (
+        <button
+          onClick={() => {
+            setFilterStatus('all');
+            setFilterEnv('all');
+            setFilterVersion('all');
+            setFilterSmoke('all');
+          }}
+          className="text-[10px] text-[var(--color-primary-hex)] hover:underline font-bold"
+        >
+          Reset
+        </button>
+      ) : null,
+      cell: (item) => (
+        <div className="flex items-center justify-center gap-1 whitespace-nowrap">
+          <button
+            onClick={(e) => { e.stopPropagation(); handleOpenEdit(item); }}
+            className="w-7 h-7 flex items-center justify-center text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-lg transition-colors cursor-pointer"
+            title="Edit delivery"
+            aria-label="Edit delivery"
+          >
+            <Edit3 size={13} />
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              if (confirm(`Delete delivery ${item.almId}?`)) {
+                deleteDelivery(item.id);
+              }
+            }}
+            className="w-7 h-7 flex items-center justify-center text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
+            title="Delete delivery"
+            aria-label="Delete delivery"
+          >
+            <Trash2 size={13} />
+          </button>
+        </div>
+      )
+    }
+  ], [filterStatus, filterEnv, filterVersion, filterSmoke]);
 
   // Handlers
   const toggleSelect = (id: string) => {
@@ -560,423 +852,34 @@ export const DeliveriesView: React.FC = () => {
 
       {/* 3. Main Workspace Body */}
       <div className="flex-1 overflow-auto custom-scroll p-4 sm:p-6 lg:p-8">
-        {/* VIEW MODE 1: MATRIX TABLE */}
+        {/* VIEW MODE 1: MATRIX TABLE (Powered by generic DataTable) */}
         {viewMode === 'table' && (
-          <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl overflow-hidden shadow-sm">
-            <div className="overflow-auto max-h-[calc(100vh-280px)] custom-scroll relative">
-              <table className="w-full text-left border-collapse min-w-[1250px]">
-                <thead className="sticky top-0 z-20 bg-[var(--color-surface-offset)] shadow-[0_1px_0_0_var(--color-divider)]">
-                  <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] select-none">
-                    <th className="px-2.5 py-2 w-10 text-center">
-                      <input 
-                        type="checkbox"
-                        checked={selectedIds.size > 0 && selectedIds.size === filteredDeliveries.length}
-                        onChange={toggleSelectAll}
-                        aria-label="Select all deliverables"
-                        className="rounded border-[var(--color-divider)] cursor-pointer"
-                      />
-                    </th>
-                    <th className="px-2 py-2 w-11 text-center td-rn font-mono text-[10px]" title="Sequential package index">
-                      #
-                    </th>
-                    <th className="px-3 py-2 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('almId'); setSortAsc(!sortAsc); }} title="Application Lifecycle Management tracking ID and Package Delivery Note code. Click to sort.">
-                      <div className="flex items-center justify-between gap-1">
-                        <span>ALM ID / PDN</span>
-                        <ArrowUpDown size={10} />
-                      </div>
-                    </th>
-                    <th className="px-3 py-2 min-w-[260px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('name'); setSortAsc(!sortAsc); }} title="Package title and delivery scope narrative. Click to sort.">
-                      <div className="flex items-center justify-between gap-1">
-                        <span>DELIVERY SCOPE & DETAILS</span>
-                        <ArrowUpDown size={10} />
-                      </div>
-                    </th>
-                    <th className="px-3 py-2 w-32 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('almStatus'); setSortAsc(!sortAsc); }} title="Current delivery lifecycle status (New, Scheduled, In Progress, Ready for Deployment, Closed). Click to sort.">
-                      <div className="flex items-center justify-between gap-1">
-                        <span>ALM STATUS</span>
-                        <ArrowUpDown size={10} />
-                      </div>
-                    </th>
-                    <th className="px-3 py-2 w-24 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('environment'); setSortAsc(!sortAsc); }} title="Target deployment infrastructure tier (DEV, SIT, UAT, STAGING, PROD). Click to sort.">
-                      <div className="flex items-center justify-between gap-1">
-                        <span>ENV</span>
-                        <ArrowUpDown size={10} />
-                      </div>
-                    </th>
-                    <th className="px-3 py-2 w-32 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('status'); setSortAsc(!sortAsc); }} title="Deployment pipeline status (Pending, Deployed, Verified, Rolled Back). Click to sort.">
-                      <div className="flex items-center justify-between gap-1">
-                        <span>DEPLOY STATUS</span>
-                        <ArrowUpDown size={10} />
-                      </div>
-                    </th>
-                    <th className="px-3 py-2 w-24 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('releaseVersion'); setSortAsc(!sortAsc); }} title="Mapped release vehicle (e.g. v1.0.0, Q3 Release). Click to sort.">
-                      <div className="flex items-center justify-between gap-1">
-                        <span>RELEASE</span>
-                        <ArrowUpDown size={10} />
-                      </div>
-                    </th>
-                    <th className="px-3 py-2 w-32 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('signOffStatus'); setSortAsc(!sortAsc); }} title="Quality and stakeholder sign-off status (Pending, Approved, Conditionally Approved, Rejected). Click to sort.">
-                      <div className="flex items-center justify-between gap-1">
-                        <span>SIGN-OFF</span>
-                        <ArrowUpDown size={10} />
-                      </div>
-                    </th>
-                    <th className="px-3 py-2 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('smokeTestStatus'); setSortAsc(!sortAsc); }} title="Automated smoke test gate status (Passed, Failed, In Progress, Blocked). Click to sort.">
-                      <div className="flex items-center justify-between gap-1">
-                        <span>SMOKE GATE</span>
-                        <ArrowUpDown size={10} />
-                      </div>
-                    </th>
-                    <th className="px-3 py-2 w-32 whitespace-nowrap" title="Total count of tasks and GUI screens bundled into this delivery note">LINKED SCOPE</th>
-                    <th className="px-3 py-2 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors whitespace-nowrap" onClick={() => { setSortBy('targetDeliveryDate'); setSortAsc(!sortAsc); }} title="Scheduled calendar delivery date. Click to sort.">
-                      <div className="flex items-center justify-between gap-1">
-                        <span>TARGET DATE</span>
-                        <ArrowUpDown size={10} />
-                      </div>
-                    </th>
-                    <th className="px-3 py-2 w-24 text-right whitespace-nowrap" title="Lead time and schedule variance against baseline target">LEAD / VAR</th>
-                    <th className="px-2 py-2 text-center w-10"></th>
-                  </tr>
-
-                  {/* Inline Column Filters Row */}
-                  {showInlineFilters && (
-                    <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-border)] text-xs shadow-xs">
-                      <th className="p-1"></th>
-                      <th className="p-1"></th>
-                      <th className="p-1">
-                        <span className="text-[10px] text-[var(--color-text-faint)] font-mono pl-1">—</span>
-                      </th>
-                      <th className="p-1">
-                        <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by topbar search</span>
-                      </th>
-                      {/* ALM Status Filter */}
-                      <th className="p-1">
-                        <select
-                          value={filterStatus}
-                          onChange={e => setFilterStatus(e.target.value)}
-                          className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
-                        >
-                          <option value="all">All</option>
-                          {['Scheduled', 'In Progress', 'Ready for Deployment', 'Deployed', 'Cancelled', 'Rolled Back'].map(s => (
-                            <option key={s} value={s}>{s}</option>
-                          ))}
-                        </select>
-                      </th>
-                      {/* Env Filter */}
-                      <th className="p-1">
-                        <select
-                          value={filterEnv}
-                          onChange={e => setFilterEnv(e.target.value)}
-                          className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
-                        >
-                          <option value="all">All</option>
-                          {['Production', 'Staging', 'UAT', 'QA', 'Dev'].map(e => (
-                            <option key={e} value={e}>{e}</option>
-                          ))}
-                        </select>
-                      </th>
-                      <th className="p-1"></th>
-                      {/* Version Filter */}
-                      <th className="p-1">
-                        <select
-                          value={filterVersion}
-                          onChange={e => setFilterVersion(e.target.value)}
-                          className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
-                        >
-                          <option value="all">All</option>
-                          {['v1.0.0', 'v1.1.0', 'v2.0.0-Beta', 'v2.1.0'].map(v => (
-                            <option key={v} value={v}>{v}</option>
-                          ))}
-                        </select>
-                      </th>
-                      <th className="p-1"></th>
-                      {/* Smoke filter */}
-                      <th className="p-1">
-                        <select
-                          value={filterSmoke}
-                          onChange={e => setFilterSmoke(e.target.value)}
-                          className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
-                        >
-                          <option value="all">All</option>
-                          {['Passed', 'Running', 'Failed', 'Not Run'].map(s => (
-                            <option key={s} value={s}>{s}</option>
-                          ))}
-                        </select>
-                      </th>
-                      <th className="p-1"></th>
-                      <th className="p-1"></th>
-                      <th className="p-1"></th>
-                      <th className="p-1 text-center">
-                        {(filterStatus !== 'all' || filterEnv !== 'all' || filterVersion !== 'all' || filterSmoke !== 'all') && (
-                          <button
-                            onClick={() => {
-                              setFilterStatus('all');
-                              setFilterEnv('all');
-                              setFilterVersion('all');
-                              setFilterSmoke('all');
-                            }}
-                            className="text-[10px] text-[var(--color-primary-hex)] hover:underline font-bold"
-                          >
-                            Reset
-                          </button>
-                        )}
-                      </th>
-                    </tr>
-                  )}
-                </thead>
-                <tbody className="divide-y divide-[var(--color-divider)]/40">
-                  {pagination.paginatedItems.map((item, idx) => {
-                    const isSelected = selectedIds.has(item.id);
-                    const isOverdue = daysDiff(item.targetDeliveryDate)! < 0 && item.status !== 'Deployed' && item.status !== 'Cancelled';
-                    const padY = autofitStrategy === 'compact' ? "py-1.5" : "py-2";
-                    
-                    return (
-                      <tr 
-                        key={item.id}
-                        className={clsx(
-                          "group hover:bg-[var(--color-surface-2)]/70 transition-colors cursor-pointer relative",
-                          isSelected && "bg-[var(--color-primary-highlight-hex)]/40",
-                          isOverdue && "is-overdue bg-rose-500/[0.02]"
-                        )}
-                        onClick={(e) => {
-                          if ((e.target as HTMLElement).closest('input[type="checkbox"]') || (e.target as HTMLElement).closest('button')) return;
-                          handleOpenEdit(item);
-                        }}
-                      >
-                        {/* Checkbox */}
-                        <td className={clsx("px-2.5 text-center", padY)} onClick={e => e.stopPropagation()}>
-                          <input 
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => toggleSelect(item.id)}
-                            className="rounded border-[var(--color-divider)] cursor-pointer"
-                          />
-                        </td>
-
-                        {/* Row Num (#) */}
-                        <td className={clsx("px-2 text-center td-rn font-mono text-[10px] text-[var(--color-text-faint)]", padY)}>
-                          {pagination.startIndex + idx + 1}
-                        </td>
-
-                        {/* ALM ID & PDN */}
-                        <td className={clsx("px-3 whitespace-nowrap", padY)}>
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-mono font-bold text-xs text-[var(--color-primary-hex)]">
-                              {item.almId}
-                            </span>
-                            {item.pdn && (
-                              <span className="font-mono text-[10px] text-[var(--color-text-muted)] opacity-70">
-                                ({item.pdn})
-                              </span>
-                            )}
-                          </div>
-                        </td>
-
-                        {/* Name & Delivered Components */}
-                        <td className={clsx("px-3 max-w-[340px]", padY)}>
-                          <div className="flex items-center gap-1.5 min-w-0">
-                            <span className="font-bold text-xs leading-tight truncate text-[var(--color-text)]" title={item.name}>
-                              {item.name}
-                            </span>
-                            <span className="shrink-0 text-[10px] text-[var(--color-text-muted)] font-mono">
-                              ({item.module})
-                            </span>
-                            {item.category && (
-                              <span className="shrink-0 px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[9px] font-semibold text-[var(--color-text-muted)]">
-                                {item.category}
-                              </span>
-                            )}
-                          </div>
-                        </td>
-
-                        {/* ALM Status Badge */}
-                        <td className={clsx("px-3 whitespace-nowrap", padY)}>
-                          <span className={clsx("st-badge", `st-${ALM_ST_MAP[item.almStatus] || 'not-started'}`)}>
-                            <span className="dot" />
-                            <span>{item.almStatus}</span>
-                          </span>
-                        </td>
-
-                        {/* Environment */}
-                        <td className={clsx("px-3 whitespace-nowrap", padY)}>
-                          <span className={clsx(
-                            "px-2 py-0.5 rounded text-[11px] font-semibold inline-block",
-                            item.environment === 'Production' && "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30",
-                            item.environment === 'Staging' && "bg-sky-500/10 text-sky-400 border border-sky-500/30",
-                            item.environment === 'UAT' && "bg-indigo-500/10 text-indigo-400 border border-indigo-500/30",
-                            item.environment === 'QA' && "bg-amber-500/10 text-amber-400 border border-amber-500/30",
-                            item.environment === 'Dev' && "bg-zinc-500/10 text-zinc-400 border border-zinc-500/30",
-                          )}>
-                            {item.environment}
-                          </span>
-                        </td>
-
-                        {/* Deployment Status */}
-                        <td className={clsx("px-3 whitespace-nowrap", padY)}>
-                          <span className={clsx("st-badge", `st-${DEL_ST_MAP[item.status] || 'not-started'}`)}>
-                            <span className="dot" />
-                            <span>{item.status}</span>
-                          </span>
-                        </td>
-
-                        {/* Release */}
-                        <td className={clsx("px-3 whitespace-nowrap", padY)}>
-                          <span className="font-mono text-[11px] font-semibold px-2 py-0.5 bg-[var(--color-surface-2)] rounded border border-[var(--color-divider)]">
-                            {item.releaseVersion}
-                          </span>
-                        </td>
-
-                        {/* Sign-off & Approver */}
-                        <td className={clsx("px-3 whitespace-nowrap", padY)}>
-                          <div className="flex items-center gap-1.5">
-                            <span className={clsx(
-                              "text-xs font-semibold",
-                              item.signOffStatus === 'Approved' && "text-emerald-400",
-                              item.signOffStatus === 'Pending' && "text-amber-400",
-                              item.signOffStatus === 'Rejected' && "text-rose-400",
-                              item.signOffStatus === 'Not Required' && "text-[var(--color-text-muted)]"
-                            )}>
-                              {item.signOffStatus}
-                            </span>
-                            {item.approver && (
-                              <span className="text-[10px] text-[var(--color-text-faint)]">
-                                ({item.approver.split(' ')[0]})
-                              </span>
-                            )}
-                          </div>
-                        </td>
-
-                        {/* Smoke Test */}
-                        <td className={clsx("px-3 whitespace-nowrap", padY)}>
-                          <span className={clsx(
-                            "px-2 py-0.5 rounded text-xs font-medium inline-block",
-                            item.smokeTestStatus === 'Passed' && "bg-emerald-500/15 text-emerald-400",
-                            item.smokeTestStatus === 'Running' && "bg-cyan-500/15 text-cyan-400 motion-safe:animate-pulse",
-                            item.smokeTestStatus === 'Failed' && "bg-rose-500/15 text-rose-400",
-                            item.smokeTestStatus === 'Not Run' && "text-[var(--color-text-faint)]"
-                          )}>
-                            {item.smokeTestStatus}
-                          </span>
-                        </td>
-
-                        {/* Linked Tasks / Screens */}
-                        <td className={clsx("px-3 max-w-[180px] whitespace-nowrap truncate", padY)}>
-                          {item.linkedId ? (
-                            <span className="px-1.5 py-0.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded text-[10px] font-mono truncate" title={item.linkedId}>
-                              {item.linkedId}
-                            </span>
-                          ) : (
-                            <span className="text-[var(--color-text-faint)] text-xs">—</span>
-                          )}
-                        </td>
-
-                        {/* Target Date */}
-                        <td className={clsx("px-3 font-mono text-xs whitespace-nowrap", padY)}>
-                          <div className="flex items-center gap-1">
-                            <span>{fmtDate(item.targetDeliveryDate)}</span>
-                            {item.actualDeliveryDate && (
-                              <span className="text-[10px] text-emerald-400" title={`Actual: ${fmtDate(item.actualDeliveryDate)}`}>
-                                ✓
-                              </span>
-                            )}
-                          </div>
-                        </td>
-
-                        {/* Lead / Variance */}
-                        <td className={clsx("px-3 text-right font-mono text-xs whitespace-nowrap", padY)}>
-                          <span className="mr-1">{item.leadTimeDays}d</span>
-                          <span className={clsx(
-                            "text-[10px]",
-                            (item.variance || 0) > 0 ? "text-rose-400 font-bold" : ((item.variance || 0) < 0 ? "text-emerald-400 font-bold" : "text-[var(--color-text-muted)]")
-                          )}>
-                            {(item.variance || 0) > 0 ? `+${item.variance}d` : `${item.variance || 0}d`}
-                          </span>
-                        </td>
-
-                        {/* Actions */}
-                        <td className={clsx("px-2 text-center whitespace-nowrap", padY)} onClick={e => e.stopPropagation()}>
-                          <div className="flex items-center justify-center gap-1">
-                            <button
-                              onClick={() => handleOpenEdit(item)}
-                              className="w-7 h-7 flex items-center justify-center text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-lg transition-colors cursor-pointer"
-                              title="Edit delivery"
-                              aria-label="Edit delivery"
-                            >
-                              <Edit3 size={13} />
-                            </button>
-                            <button
-                              onClick={() => {
-                                if (confirm(`Delete delivery ${item.almId}?`)) {
-                                  deleteDelivery(item.id);
-                                }
-                              }}
-                              className="w-7 h-7 flex items-center justify-center text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
-                              title="Delete delivery"
-                              aria-label="Delete delivery"
-                            >
-                              <Trash2 size={13} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-
-                  {filteredDeliveries.length === 0 && (
-                    <tr>
-                      <td colSpan={12} className="py-12 text-center">
-                        <div className="max-w-md mx-auto p-6 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface-2)] space-y-3">
-                          <Package size={32} className="mx-auto text-[var(--color-text-muted)] opacity-60" />
-                          <div className="text-sm font-bold text-[var(--color-text)]">
-                            {deliveries.length === 0 ? "No delivery packages logged yet" : "No packages match active filters"}
-                          </div>
-                          <div className="text-xs text-[var(--color-text-muted)] leading-relaxed">
-                            {deliveries.length === 0 
-                              ? "The ALM Release Workstation tracks deployment packages, ALM defect tickets, and environment pipelines."
-                              : "Adjust search query or reset environment, release, and status filters."}
-                          </div>
-                          <div className="flex items-center justify-center gap-2 pt-1">
-                            {deliveries.length > 0 && (
-                              <button
-                                onClick={() => {
-                                  setFilterStatus('all');
-                                  setFilterEnv('all');
-                                  setFilterVersion('all');
-                                  setFilterSmoke('all');
-                                  setSearchQuery('');
-                                }}
-                                className="h-8 px-3.5 bg-[var(--color-surface)] hover:bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-lg text-xs font-semibold text-[var(--color-text)] transition-colors cursor-pointer"
-                              >
-                                Clear All Filters
-                              </button>
-                            )}
-                            <button
-                              onClick={() => {
-                                setEditingDelivery(null);
-                                setIsEditModalOpen(true);
-                              }}
-                              className="h-8 px-3.5 bg-[var(--color-primary-hex)] hover:opacity-90 text-[var(--color-primary-text)] rounded-lg text-xs font-bold transition-opacity cursor-pointer shadow-xs"
-                            >
-                              Create Package
-                            </button>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-            <TablePagination
-              currentPage={pagination.currentPage}
-              totalPages={pagination.totalPages}
-              totalItems={pagination.totalItems}
-              pageSize={pagination.pageSize}
-              onPageChange={pagination.setCurrentPage}
-              onPageSizeChange={pagination.setPageSize}
-              itemLabel="packages"
-            />
-          </div>
+          <DataTable<Delivery>
+            data={filteredDeliveries}
+            columns={columns}
+            keyField="id"
+            density={autofitStrategy}
+            showInlineFilters={showInlineFilters}
+            sortField={sortBy}
+            sortAsc={sortAsc}
+            onSort={(f) => {
+              if (sortBy === f) setSortAsc(!sortAsc);
+              else { setSortBy(f as any); setSortAsc(true); }
+            }}
+            selectable
+            selectedIds={selectedIds}
+            onToggleSelect={toggleSelect}
+            onToggleSelectAll={toggleSelectAll}
+            isAllSelected={selectedIds.size > 0 && selectedIds.size === filteredDeliveries.length}
+            showRowNumbers
+            pagination={pagination}
+            itemLabel="packages"
+            onRowClick={(item) => handleOpenEdit(item)}
+            rowClassName={(item) => {
+              const isOverdue = daysDiff(item.targetDeliveryDate)! < 0 && item.status !== 'Deployed' && item.status !== 'Cancelled';
+              return isOverdue ? "is-overdue bg-rose-500/[0.02]" : "";
+            }}
+          />
         )}
 
         {/* VIEW MODE 2: KANBAN PIPELINE BOARD */}

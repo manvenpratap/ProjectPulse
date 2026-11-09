@@ -44,6 +44,7 @@ import ViewExportButton from '../shared/ViewExportButton';
 import { motion, AnimatePresence } from 'motion/react';
 import { getWeekNumber } from '../../utils/projectUtils';
 import TablePagination, { usePagination } from '../shared/TablePagination';
+import DataTable, { ColumnDef } from '../shared/DataTable';
 
 const AVATAR_COLORS = [
   'bg-indigo-500 text-white',
@@ -531,6 +532,323 @@ const TeamView: React.FC = () => {
       setEditingMember(null);
     }
   };
+
+  const memberColumns = useMemo<ColumnDef<Member>[]>(() => [
+    {
+      id: 'name',
+      header: 'MEMBER',
+      headerTitle: 'Team member full name and primary delivery role',
+      width: 'w-52',
+      cell: (m, i) => {
+        const initials = m.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        return (
+          <div className="flex items-center gap-2 min-w-0">
+            <div className={clsx(
+              "w-5 h-5 rounded flex items-center justify-center font-bold text-[9px] shrink-0",
+              AVATAR_COLORS[i % AVATAR_COLORS.length]
+            )}>
+              {initials}
+            </div>
+            <span className="font-semibold text-xs text-[var(--color-text)] truncate">{m.name}</span>
+            <span className="text-[10.5px] text-[var(--color-text-muted)] truncate hidden sm:inline">· {m.role || 'Member'}</span>
+          </div>
+        );
+      }
+    },
+    {
+      id: 'empId',
+      header: 'EMP ID',
+      headerTitle: 'Enterprise employee badge or ID code',
+      width: 'w-24',
+      cell: (m) => (
+        <span className="font-mono text-[var(--color-primary-hex)] font-bold text-xs whitespace-nowrap">
+          {m.empId || '—'}
+        </span>
+      )
+    },
+    {
+      id: 'status',
+      header: 'STATUS',
+      headerTitle: 'Employment availability status (Active, On Leave, Inactive)',
+      width: 'w-28',
+      cell: (m) => (
+        <span className={clsx(
+          "text-[10px] font-bold px-2 py-0.5 rounded-full border whitespace-nowrap",
+          m.status === 'Active' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
+          m.status === 'On Leave' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
+          "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)]"
+        )}>
+          {m.status}
+        </span>
+      )
+    },
+    {
+      id: 'load',
+      header: 'LOAD PROGRESS',
+      headerTitle: 'Current assigned backlog progress vs weekly capacity',
+      width: 'w-36',
+      cell: (m) => {
+        const mTasks = tasks.filter(t => t.assignee === m.name);
+        const totalCount = mTasks.filter(t => t.status !== TaskStatus.CANCELLED).length;
+        const doneCount = mTasks.filter(t => t.status === TaskStatus.COMPLETED).length;
+        const progress = totalCount ? Math.round((doneCount / totalCount) * 100) : 0;
+        return (
+          <div className="flex items-center gap-2 whitespace-nowrap">
+            <div className="w-16 h-1.5 bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
+              <div className="h-full bg-[var(--color-primary-hex)] rounded-full" style={{ width: `${progress}%` }} />
+            </div>
+            <span className="font-mono text-xs font-semibold">{progress}%</span>
+          </div>
+        );
+      }
+    },
+    {
+      id: 'efficiency',
+      header: 'EFFICIENCY',
+      headerTitle: 'Ratio of estimated vs actual effort spent across completed tasks',
+      width: 'w-28',
+      cell: (m) => {
+        const mTasks = tasks.filter(t => t.assignee === m.name);
+        const totalCount = mTasks.filter(t => t.status !== TaskStatus.CANCELLED).length;
+        const doneCount = mTasks.filter(t => t.status === TaskStatus.COMPLETED).length;
+        const pendingCount = mTasks.filter(t => t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED).length;
+        const overdueCount = mTasks.filter(t => t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED && t.dueDate && new Date(t.dueDate).getTime() < Date.now()).length;
+        let efficiency = 0;
+        if (totalCount > 0) {
+          const doneRatio = doneCount / totalCount;
+          const overduePenalty = pendingCount > 0 ? (overdueCount / pendingCount) : 0;
+          efficiency = Math.max(0, Math.round(doneRatio * (1 - overduePenalty) * 100));
+        }
+        return (
+          <span className="font-mono font-bold text-[var(--color-primary-hex)] whitespace-nowrap">
+            {efficiency}%
+          </span>
+        );
+      }
+    },
+    {
+      id: 'tasks',
+      header: 'TASKS (P / D / B)',
+      headerTitle: 'Tasks breakdown: Pending / Done / Blocked by dependency',
+      width: 'w-40',
+      cell: (m) => {
+        const mTasks = tasks.filter(t => t.assignee === m.name);
+        const doneCount = mTasks.filter(t => t.status === TaskStatus.COMPLETED).length;
+        const pendingCount = mTasks.filter(t => t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED).length;
+        const blockedCount = mTasks.filter(t => t.status === TaskStatus.BLOCKED).length;
+        return (
+          <div className="whitespace-nowrap text-xs">
+            <span className="text-[var(--color-text-muted)]">{pendingCount}p</span> · <span className="text-emerald-500 font-bold">{doneCount}d</span> {blockedCount > 0 && <span className="text-rose-500 font-bold">· {blockedCount}b</span>}
+          </div>
+        );
+      }
+    },
+    {
+      id: 'skills',
+      header: 'SKILLS',
+      headerTitle: 'Core engineering competencies and skill tags',
+      width: 'min-w-[180px]',
+      cell: (m) => {
+        let skills = m.skills || [];
+        if (typeof skills === 'string') {
+          try { skills = JSON.parse(skills); } catch { skills = (skills as string).split(',').map(s => s.trim()).filter(Boolean); }
+        }
+        if (!Array.isArray(skills)) skills = [];
+        return (
+          <div className="flex items-center gap-1 max-w-[200px] overflow-hidden whitespace-nowrap">
+            {skills.slice(0, 2).map((sk, idx) => (
+              <span key={idx} className="text-[9px] px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)] truncate">
+                {sk}
+              </span>
+            ))}
+            {skills.length > 2 && <span className="text-[9px] text-[var(--color-text-faint)]">+{skills.length - 2}</span>}
+          </div>
+        );
+      }
+    },
+    {
+      id: 'actions',
+      header: 'ACTIONS',
+      headerTitle: 'Member quick actions',
+      width: 'w-28',
+      align: 'right',
+      cell: (m) => (
+        <div className="flex items-center justify-end gap-1 whitespace-nowrap">
+          <button
+            type="button"
+            onClick={() => handleOpenEditModal(m)}
+            className="px-2 py-0.5 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-[var(--color-text)] border border-[var(--color-divider)] rounded-md text-[11px] font-semibold cursor-pointer active:scale-95 transition-all"
+          >
+            Profile
+          </button>
+          <button
+            type="button"
+            onClick={() => setView('tasks')}
+            className="px-2 py-0.5 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-[var(--color-primary-hex)] border border-[var(--color-divider)] rounded-md text-[11px] font-semibold cursor-pointer active:scale-95 transition-all"
+          >
+            Tasks
+          </button>
+        </div>
+      )
+    }
+  ], [tasks, setView]);
+
+  type ScorecardRow = (typeof scorecardData)[0];
+  const scorecardColumns = useMemo<ColumnDef<ScorecardRow>[]>(() => [
+    {
+      id: 'rank',
+      header: '#',
+      headerTitle: 'Performance leaderboard ranking',
+      width: 'w-12',
+      align: 'center',
+      cell: (_, rank) => {
+        const rankEmoji = rank === 0 ? '🥇' : rank === 1 ? '🥈' : rank === 2 ? '🥉' : `${rank + 1}.`;
+        return <span className="font-bold text-xs">{rankEmoji}</span>;
+      }
+    },
+    {
+      id: 'name',
+      header: 'MEMBER',
+      headerTitle: 'Team member name. Click to sort.',
+      sortable: true,
+      cell: (d) => (
+        <div className="flex items-center gap-1.5 min-w-0">
+          <span className="font-semibold text-xs text-[var(--color-text)] truncate">{d.name}</span>
+          <span className="text-[10px] text-[var(--color-text-faint)] truncate hidden sm:inline">· {d.role}</span>
+        </div>
+      )
+    },
+    {
+      id: 'completionRate',
+      header: 'COMPLETION',
+      headerTitle: 'Percentage of assigned tasks completed. Click to sort.',
+      sortable: true,
+      cell: (d) => (
+        <div className="flex items-center gap-2 whitespace-nowrap">
+          <div className="w-14 h-1.5 bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
+            <div className="h-full bg-[var(--color-primary-hex)] rounded-full" style={{ width: `${d.completionRate}%` }} />
+          </div>
+          <span className="font-mono text-xs font-semibold">{d.completionRate}%</span>
+        </div>
+      )
+    },
+    {
+      id: 'avgCycle',
+      header: 'AVG CYCLE',
+      headerTitle: 'Average days elapsed from start to completion. Click to sort.',
+      sortable: true,
+      cell: (d) => (
+        <span className="font-mono font-semibold text-xs whitespace-nowrap">
+          {d.avgCycle !== null ? `${d.avgCycle}d` : '—'}
+        </span>
+      )
+    },
+    {
+      id: 'onTimePct',
+      header: 'ON-TIME',
+      headerTitle: 'Percentage of tasks completed on or before target due date. Click to sort.',
+      sortable: true,
+      cell: (d) => (
+        <span className="font-mono font-semibold text-xs whitespace-nowrap">
+          {d.onTimePct !== null ? `${d.onTimePct}%` : '—'}
+        </span>
+      )
+    },
+    {
+      id: 'blocked',
+      header: 'BLOCKED',
+      headerTitle: 'Count of current tasks blocked by unresolved dependencies. Click to sort.',
+      sortable: true,
+      cell: (d) => d.blocked > 0 ? (
+        <span className="text-rose-500 font-bold bg-rose-500/10 px-1.5 py-0.5 rounded text-[10px] border border-rose-500/20 whitespace-nowrap">
+          {d.blocked} blocked
+        </span>
+      ) : (
+        <span className="text-[var(--color-text-faint)] text-xs">None</span>
+      )
+    },
+    {
+      id: 'velocity7',
+      header: '7D VELOCITY',
+      headerTitle: 'Effort completed over the trailing 7 business days. Click to sort.',
+      sortable: true,
+      cell: (d) => (
+        <span className="font-mono font-bold text-xs text-[var(--color-primary-hex)] whitespace-nowrap">
+          {d.velocity7} <span className="text-[10px] font-normal text-[var(--color-text-muted)]">closed</span>
+        </span>
+      )
+    },
+    {
+      id: 'health',
+      header: 'HEALTH STATUS',
+      headerTitle: 'Overall delivery and workload health status',
+      cell: (d) => (
+        <span className={clsx("text-[10px] font-bold px-2 py-0.5 rounded-full border whitespace-nowrap", d.healthColor)}>
+          {d.health}
+        </span>
+      )
+    }
+  ], []);
+
+  const skillsColumns = useMemo<ColumnDef<Member>[]>(() => [
+    {
+      id: 'name',
+      header: 'RESOURCE',
+      headerTitle: 'Resource name',
+      cell: (m) => <span className="font-semibold text-xs text-[var(--color-text)] whitespace-nowrap">{m.name}</span>
+    },
+    {
+      id: 'role',
+      header: 'ROLE',
+      headerTitle: 'Primary delivery role',
+      cell: (m) => <span className="text-xs text-[var(--color-text-muted)] whitespace-nowrap">{m.role || 'Member'}</span>
+    },
+    {
+      id: 'ts',
+      header: 'TYPESCRIPT',
+      headerTitle: 'TypeScript competency level',
+      cell: (_, idx) => {
+        const s1 = (idx * 2 + 3) % 6;
+        return <span className="font-mono text-indigo-500 font-bold whitespace-nowrap">{"★".repeat(s1)}{"☆".repeat(5 - s1)}</span>;
+      }
+    },
+    {
+      id: 'react',
+      header: 'REACT / NEXT.JS',
+      headerTitle: 'React & Next.js competency level',
+      cell: (_, idx) => {
+        const s2 = (idx * 3 + 1) % 6;
+        return <span className="font-mono text-emerald-500 font-bold whitespace-nowrap">{"★".repeat(s2)}{"☆".repeat(5 - s2)}</span>;
+      }
+    },
+    {
+      id: 'backend',
+      header: 'BACKEND / GO / APIS',
+      headerTitle: 'Backend services and APIs competency level',
+      cell: (_, idx) => {
+        const s3 = (idx + 4) % 6;
+        return <span className="font-mono text-blue-500 font-bold whitespace-nowrap">{"★".repeat(s3)}{"☆".repeat(5 - s3)}</span>;
+      }
+    },
+    {
+      id: 'db',
+      header: 'DATABASE / SQL',
+      headerTitle: 'Database and SQL competency level',
+      cell: (_, idx) => {
+        const s4 = (idx * 2 + 1) % 6;
+        return <span className="font-mono text-amber-500 font-bold whitespace-nowrap">{"★".repeat(s4)}{"☆".repeat(5 - s4)}</span>;
+      }
+    },
+    {
+      id: 'cloud',
+      header: 'CLOUD / DEVOPS',
+      headerTitle: 'Cloud and DevOps competency level',
+      cell: (_, idx) => {
+        const s5 = (idx * 4 + 2) % 6;
+        return <span className="font-mono text-cyan-500 font-bold whitespace-nowrap">{"★".repeat(s5)}{"☆".repeat(5 - s5)}</span>;
+      }
+    }
+  ], []);
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)]">
@@ -1142,122 +1460,13 @@ const TeamView: React.FC = () => {
 
           {/* VIEW MODE 2: LIST VIEW (Tabular) */}
           {viewMode === 'list' && (
-            <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs overflow-auto max-h-[calc(100vh-280px)] custom-scroll relative">
-              <table className="w-full border-collapse text-left text-xs min-w-[850px]">
-                <thead className="sticky top-0 z-20 bg-[var(--color-surface-offset)] shadow-[0_1px_0_0_var(--color-divider)]">
-                  <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[var(--color-text-muted)] font-bold text-[10px] uppercase tracking-widest select-none">
-                    <th className="px-3.5 py-2 w-52" title="Team member full name and primary delivery role">Member</th>
-                    <th className="px-3.5 py-2 w-24" title="Enterprise employee badge or ID code">Emp ID</th>
-                    <th className="px-3.5 py-2 w-28 whitespace-nowrap" title="Employment availability status (Active, On Leave, Inactive)">Status</th>
-                    <th className="px-3.5 py-2 w-36 whitespace-nowrap" title="Current assigned backlog progress vs weekly capacity">Load Progress</th>
-                    <th className="px-3.5 py-2 w-28 whitespace-nowrap" title="Ratio of estimated vs actual effort spent across completed tasks">Efficiency</th>
-                    <th className="px-3.5 py-2 w-40 whitespace-nowrap" title="Tasks breakdown: Pending / Done / Blocked by dependency">Tasks (P / D / B)</th>
-                    <th className="px-3.5 py-2 min-w-[180px]" title="Core engineering competencies and skill tags">Skills</th>
-                    <th className="px-3 py-2 w-28 text-right">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[var(--color-divider)]/40">
-                  {pagination.paginatedItems.map((m, i) => {
-                    const initials = m.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-                    const mTasks = tasks.filter(t => t.assignee === m.name);
-                    const totalCount = mTasks.filter(t => t.status !== TaskStatus.CANCELLED).length;
-                    const doneCount = mTasks.filter(t => t.status === TaskStatus.COMPLETED).length;
-                    const pendingCount = mTasks.filter(t => t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED).length;
-                    const blockedCount = mTasks.filter(t => t.status === TaskStatus.BLOCKED).length;
-                    const progress = totalCount ? Math.round((doneCount / totalCount) * 100) : 0;
-                    
-                    const overdueCount = mTasks.filter(t => t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED && t.dueDate && new Date(t.dueDate).getTime() < Date.now()).length;
-                    let efficiency = 0;
-                    if (totalCount > 0) {
-                      const doneRatio = doneCount / totalCount;
-                      const overduePenalty = pendingCount > 0 ? (overdueCount / pendingCount) : 0;
-                      efficiency = Math.max(0, Math.round(doneRatio * (1 - overduePenalty) * 100));
-                    }
-
-                    let skills = m.skills || [];
-                    if (typeof skills === 'string') {
-                      try { skills = JSON.parse(skills); } catch { skills = skills.split(',').map(s => s.trim()).filter(Boolean); }
-                    }
-                    if (!Array.isArray(skills)) skills = [];
-
-                    return (
-                      <tr key={m.id} className="group hover:bg-[var(--color-surface-2)]/70 transition-colors">
-                        <td className="px-3 py-1.5">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <div className={clsx(
-                              "w-5 h-5 rounded flex items-center justify-center font-bold text-[9px] shrink-0",
-                              AVATAR_COLORS[i % AVATAR_COLORS.length]
-                            )}>
-                              {initials}
-                            </div>
-                            <span className="font-semibold text-xs text-[var(--color-text)] truncate">{m.name}</span>
-                            <span className="text-[10.5px] text-[var(--color-text-muted)] truncate hidden sm:inline">· {m.role || 'Member'}</span>
-                          </div>
-                        </td>
-                        <td className="px-3 py-1.5 font-mono text-[var(--color-primary-hex)] font-bold text-xs whitespace-nowrap">{m.empId || '—'}</td>
-                        <td className="px-3 py-1.5 whitespace-nowrap">
-                          <span className={clsx(
-                            "text-[10px] font-bold px-2 py-0.5 rounded-full border",
-                            m.status === 'Active' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
-                            m.status === 'On Leave' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
-                            "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)]"
-                          )}>
-                            {m.status}
-                          </span>
-                        </td>
-                        <td className="px-3 py-1.5 whitespace-nowrap">
-                          <div className="flex items-center gap-2">
-                            <div className="w-16 h-1.5 bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
-                              <div className="h-full bg-[var(--color-primary-hex)] rounded-full" style={{ width: `${progress}%` }} />
-                            </div>
-                            <span className="font-mono text-xs font-semibold">{progress}%</span>
-                          </div>
-                        </td>
-                        <td className="px-3 py-1.5 font-mono font-bold text-[var(--color-primary-hex)] whitespace-nowrap">{efficiency}%</td>
-                        <td className="px-3 py-1.5 whitespace-nowrap text-xs">
-                          <span className="text-[var(--color-text-muted)]">{pendingCount}p</span> · <span className="text-emerald-500 font-bold">{doneCount}d</span> {blockedCount > 0 && <span className="text-rose-500 font-bold">· {blockedCount}b</span>}
-                        </td>
-                        <td className="px-3 py-1.5">
-                          <div className="flex items-center gap-1 max-w-[200px] overflow-hidden whitespace-nowrap">
-                            {skills.slice(0, 2).map((sk, idx) => (
-                              <span key={idx} className="text-[9px] px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)] truncate">{sk}</span>
-                            ))}
-                            {skills.length > 2 && <span className="text-[9px] text-[var(--color-text-faint)]">+{skills.length - 2}</span>}
-                          </div>
-                        </td>
-                        <td className="px-3 py-1.5 text-right whitespace-nowrap">
-                          <div className="flex items-center justify-end gap-1">
-                            <button
-                              type="button"
-                              onClick={() => handleOpenEditModal(m)}
-                              className="px-2 py-0.5 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-[var(--color-text)] border border-[var(--color-divider)] rounded-md text-[11px] font-semibold cursor-pointer"
-                            >
-                              Profile
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => setView('tasks')}
-                              className="px-2 py-0.5 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-[var(--color-primary-hex)] border border-[var(--color-divider)] rounded-md text-[11px] font-semibold cursor-pointer"
-                            >
-                              Tasks
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-              <TablePagination
-                currentPage={pagination.currentPage}
-                totalPages={pagination.totalPages}
-                totalItems={pagination.totalItems}
-                pageSize={pagination.pageSize}
-                onPageChange={pagination.setCurrentPage}
-                onPageSizeChange={pagination.setPageSize}
-                itemLabel="members"
-              />
-            </div>
+            <DataTable<Member>
+              data={filteredMembers}
+              columns={memberColumns}
+              pagination={pagination}
+              itemLabel="members"
+              minWidth="min-w-[850px]"
+            />
           )}
 
           {/* VIEW MODE 3: COMPACT VIEW (Avatar Roster) */}
@@ -1322,73 +1531,23 @@ const TeamView: React.FC = () => {
             <span className="text-xs font-mono text-[var(--color-text-faint)]">Click headers to sort</span>
           </div>
 
-          <div className="overflow-x-auto custom-scroll">
-            <table className="w-full border-collapse text-left text-xs min-w-[760px]">
-              <thead>
-                <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)]/60 text-[var(--color-text-muted)] font-bold text-[10px] uppercase tracking-widest select-none">
-                  <th className="px-3 py-2 w-12 text-center" title="Performance leaderboard ranking">#</th>
-                  <th className="px-3 py-2 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('name'); setScorecardSortDir(d => -d); }} title="Team member name. Click to sort.">
-                    Member {scorecardSortCol === 'name' && (scorecardSortDir > 0 ? '↑' : '↓')}
-                  </th>
-                  <th className="px-3 py-2 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('completionRate'); setScorecardSortDir(d => -d); }} title="Percentage of assigned tasks completed. Click to sort.">
-                    Completion {scorecardSortCol === 'completionRate' && (scorecardSortDir > 0 ? '↑' : '↓')}
-                  </th>
-                  <th className="px-3 py-2 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('avgCycle'); setScorecardSortDir(d => -d); }} title="Average days elapsed from start to completion. Click to sort.">
-                    Avg Cycle {scorecardSortCol === 'avgCycle' && (scorecardSortDir > 0 ? '↑' : '↓')}
-                  </th>
-                  <th className="px-3 py-2 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('onTimePct'); setScorecardSortDir(d => -d); }} title="Percentage of tasks completed on or before target due date. Click to sort.">
-                    On-Time {scorecardSortCol === 'onTimePct' && (scorecardSortDir > 0 ? '↑' : '↓')}
-                  </th>
-                  <th className="px-3 py-2 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('blocked'); setScorecardSortDir(d => -d); }} title="Count of current tasks blocked by unresolved dependencies. Click to sort.">
-                    Blocked {scorecardSortCol === 'blocked' && (scorecardSortDir > 0 ? '↑' : '↓')}
-                  </th>
-                  <th className="px-3 py-2 cursor-pointer hover:text-[var(--color-text)]" onClick={() => { setScorecardSortCol('velocity7'); setScorecardSortDir(d => -d); }} title="Effort completed over the trailing 7 business days. Click to sort.">
-                    7D Velocity {scorecardSortCol === 'velocity7' && (scorecardSortDir > 0 ? '↑' : '↓')}
-                  </th>
-                  <th className="px-3 py-2" title="Overall delivery and workload health status">Health Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--color-divider)]">
-                {scorecardData.map((d, rank) => {
-                  const rankEmoji = rank === 0 ? '🥇' : rank === 1 ? '🥈' : rank === 2 ? '🥉' : `${rank + 1}.`;
-                  return (
-                    <tr key={d.member.id} className="hover:bg-[var(--color-surface-2)]/70 transition-colors">
-                      <td className="px-3 py-1.5 text-center font-bold text-xs">{rankEmoji}</td>
-                      <td className="px-3 py-1.5">
-                        <div className="flex items-center gap-1.5 min-w-0">
-                          <span className="font-semibold text-xs text-[var(--color-text)] truncate">{d.name}</span>
-                          <span className="text-[10px] text-[var(--color-text-faint)] truncate hidden sm:inline">· {d.role}</span>
-                        </div>
-                      </td>
-                      <td className="px-3 py-1.5 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          <div className="w-14 h-1.5 bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
-                            <div className="h-full bg-[var(--color-primary-hex)] rounded-full" style={{ width: `${d.completionRate}%` }} />
-                          </div>
-                          <span className="font-mono text-xs font-semibold">{d.completionRate}%</span>
-                        </div>
-                      </td>
-                      <td className="px-3 py-1.5 font-mono font-semibold text-xs whitespace-nowrap">{d.avgCycle !== null ? `${d.avgCycle}d` : '—'}</td>
-                      <td className="px-3 py-1.5 font-mono font-semibold text-xs whitespace-nowrap">{d.onTimePct !== null ? `${d.onTimePct}%` : '—'}</td>
-                      <td className="px-3 py-1.5 whitespace-nowrap">
-                        {d.blocked > 0 ? (
-                          <span className="text-rose-500 font-bold bg-rose-500/10 px-1.5 py-0.5 rounded text-[10px] border border-rose-500/20">{d.blocked} blocked</span>
-                        ) : (
-                          <span className="text-[var(--color-text-faint)] text-xs">None</span>
-                        )}
-                      </td>
-                      <td className="px-3 py-1.5 font-mono font-bold text-xs text-[var(--color-primary-hex)] whitespace-nowrap">{d.velocity7} <span className="text-[10px] font-normal text-[var(--color-text-muted)]">closed</span></td>
-                      <td className="px-3 py-1.5 whitespace-nowrap">
-                        <span className={clsx("text-[10px] font-bold px-2 py-0.5 rounded-full border", d.healthColor)}>
-                          {d.health}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <DataTable<ScorecardRow>
+            data={scorecardData}
+            columns={scorecardColumns}
+            sortField={scorecardSortCol}
+            sortAsc={scorecardSortDir > 0}
+            onSort={(col) => {
+              if (scorecardSortCol === col) {
+                setScorecardSortDir(d => -d);
+              } else {
+                setScorecardSortCol(col);
+                setScorecardSortDir(1);
+              }
+            }}
+            showRowNumbers={false}
+            minWidth="min-w-[760px]"
+            density="compact"
+          />
         </div>
 
         {/* ══════════════════════════════════════════════════════════
@@ -1572,42 +1731,13 @@ const TeamView: React.FC = () => {
             <p className="text-xs text-[var(--color-text-muted)]">Core architectural and framework competencies across team members</p>
           </div>
 
-          <div className="overflow-x-auto custom-scroll">
-            <table className="w-full text-left border-collapse text-xs min-w-[700px]">
-              <thead>
-                <tr className="border-b border-[var(--color-divider)]/60 text-[var(--color-text-muted)] font-bold text-[10px] uppercase tracking-widest bg-[var(--color-surface-offset)] select-none">
-                  <th className="px-3 py-2">Resource</th>
-                  <th className="px-3 py-2">Role</th>
-                  <th className="px-3 py-2">TypeScript</th>
-                  <th className="px-3 py-2">React / Next.js</th>
-                  <th className="px-3 py-2">Backend / Go / APIs</th>
-                  <th className="px-3 py-2">Database / SQL</th>
-                  <th className="px-3 py-2">Cloud / DevOps</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--color-divider)]">
-                {members.map((m, idx) => {
-                  const s1 = (idx * 2 + 3) % 6;
-                  const s2 = (idx * 3 + 1) % 6;
-                  const s3 = (idx + 4) % 6;
-                  const s4 = (idx * 2 + 1) % 6;
-                  const s5 = (idx * 4 + 2) % 6;
-
-                  return (
-                    <tr key={m.id} className="hover:bg-[var(--color-surface-2)]/70 transition-colors">
-                      <td className="px-3 py-1.5 font-semibold text-xs text-[var(--color-text)] whitespace-nowrap">{m.name}</td>
-                      <td className="px-3 py-1.5 text-xs text-[var(--color-text-muted)] whitespace-nowrap">{m.role || 'Member'}</td>
-                      <td className="px-3 py-1.5 font-mono text-indigo-500 font-bold whitespace-nowrap">{"★".repeat(s1)}{"☆".repeat(5 - s1)}</td>
-                      <td className="px-3 py-1.5 font-mono text-emerald-500 font-bold whitespace-nowrap">{"★".repeat(s2)}{"☆".repeat(5 - s2)}</td>
-                      <td className="px-3 py-1.5 font-mono text-blue-500 font-bold whitespace-nowrap">{"★".repeat(s3)}{"☆".repeat(5 - s3)}</td>
-                      <td className="px-3 py-1.5 font-mono text-amber-500 font-bold whitespace-nowrap">{"★".repeat(s4)}{"☆".repeat(5 - s4)}</td>
-                      <td className="px-3 py-1.5 font-mono text-cyan-500 font-bold whitespace-nowrap">{"★".repeat(s5)}{"☆".repeat(5 - s5)}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <DataTable<Member>
+            data={members}
+            columns={skillsColumns}
+            showRowNumbers={false}
+            minWidth="min-w-[700px]"
+            density="compact"
+          />
         </div>
 
         {/* ══════════════════════════════════════════════════════════

@@ -40,6 +40,7 @@ import ModuleDeliveryMatrix from './ModuleDeliveryMatrix';
 import BurndownChart from './BurndownChart';
 import AIPulseAnalysis from './AIPulseAnalysis';
 import PageHeader from '../shared/PageHeader';
+import DataTable, { ColumnDef } from '../shared/DataTable';
 import { 
   ResponsiveContainer, 
   PieChart, 
@@ -241,6 +242,52 @@ export const DashboardView: React.FC = () => {
       return isParent && (isPastDue || isHighPri || t.status === TaskStatus.ON_HOLD);
     }).slice(0, 5);
   }, [tasks]);
+
+  const criticalPathColumns = useMemo<ColumnDef<Task>[]>(() => [
+    {
+      id: 'name',
+      header: 'MILESTONE TASK',
+      headerTitle: 'Milestone task identifier and name',
+      cell: (t) => (
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-[10px] text-rose-600 font-bold">{t.id}</span>
+          <span className="truncate max-w-[280px] font-bold text-[var(--color-text)]">{t.name}</span>
+        </div>
+      )
+    },
+    {
+      id: 'module',
+      header: 'DOMAIN MODULE',
+      headerTitle: 'Domain module',
+      cell: (t) => <span className="text-[var(--color-text-muted)] font-medium text-xs">{t.module || 'General'}</span>
+    },
+    {
+      id: 'assignee',
+      header: 'ASSIGNEE',
+      headerTitle: 'Assigned owner',
+      cell: (t) => <span className="text-[var(--color-text)] font-semibold text-xs">{t.assignee || 'Unassigned'}</span>
+    },
+    {
+      id: 'dueDate',
+      header: 'DEADLINE',
+      headerTitle: 'Milestone deadline',
+      cell: (t) => <span className="font-mono text-[var(--color-text-muted)] text-xs">{t.dueDate}</span>
+    },
+    {
+      id: 'impact',
+      header: 'VARIANCE IMPACT',
+      headerTitle: 'Variance impact and delay',
+      align: 'right',
+      cell: (t) => {
+        const dd = daysDiff(t.dueDate);
+        return (
+          <span className="font-bold text-rose-600 font-mono text-xs">
+            {dd !== null && dd < 0 ? `${Math.abs(dd)}d LATE` : 'HIGH RISK'}
+          </span>
+        );
+      }
+    }
+  ], []);
 
   // ═════════════════════════════════════════════════════════════════════════
   // 6. EARNED VALUE MANAGEMENT (EVM) ANALYTICS (HTML parity)
@@ -754,38 +801,12 @@ export const DashboardView: React.FC = () => {
               </div>
 
               {criticalPathTasks.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-xs text-left border-collapse">
-                    <thead>
-                      <tr className="border-b border-[var(--color-divider)] text-[var(--color-text-faint)] uppercase font-bold text-[10px]">
-                        <th className="py-2.5 px-3">Milestone Task</th>
-                        <th className="py-2.5 px-3">Domain Module</th>
-                        <th className="py-2.5 px-3">Assignee</th>
-                        <th className="py-2.5 px-3">Deadline</th>
-                        <th className="py-2.5 px-3 text-right">Variance Impact</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {criticalPathTasks.map(t => {
-                        const dd = daysDiff(t.dueDate);
-                        return (
-                          <tr key={t.id} className="border-b border-[var(--color-divider)] last:border-0 hover:bg-[var(--color-surface-2)]/50 transition-colors">
-                            <td className="py-3 px-3 font-bold text-[var(--color-text)] flex items-center gap-2">
-                              <span className="font-mono text-[10px] text-rose-600">{t.id}</span>
-                              <span className="truncate max-w-[280px]">{t.name}</span>
-                            </td>
-                            <td className="py-3 px-3 text-[var(--color-text-muted)] font-medium">{t.module || 'General'}</td>
-                            <td className="py-3 px-3 text-[var(--color-text)] font-semibold">{t.assignee || 'Unassigned'}</td>
-                            <td className="py-3 px-3 font-mono text-[var(--color-text-muted)]">{t.dueDate}</td>
-                            <td className="py-3 px-3 text-right font-bold text-rose-600 font-mono">
-                              {dd !== null && dd < 0 ? `${Math.abs(dd)}d LATE` : 'HIGH RISK'}
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                <DataTable<Task>
+                  data={criticalPathTasks}
+                  columns={criticalPathColumns}
+                  showRowNumbers={false}
+                  density="compact"
+                />
               ) : (
                 <div className="py-8 text-center text-emerald-600 space-y-1">
                   <CheckCircle2 size={28} className="mx-auto" />

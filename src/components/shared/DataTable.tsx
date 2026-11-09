@@ -116,11 +116,19 @@ export function DataTable<T>({
 
   const padY = density === 'compact' ? 'py-1.5' : 'py-2';
 
-  const getKey = (item: T): string => {
+  const getKey = (item: T, index: number): string => {
     if (typeof keyField === 'function') {
       return keyField(item);
     }
-    return String(item[keyField]);
+    if (keyField && item && (item as any)[keyField] !== undefined) {
+      return String((item as any)[keyField]);
+    }
+    if (item && typeof item === 'object') {
+      if ('id' in item && (item as any).id !== undefined) return String((item as any).id);
+      if ('key' in item && (item as any).key !== undefined) return String((item as any).key);
+      if ('code' in item && (item as any).code !== undefined) return String((item as any).code);
+    }
+    return String(index);
   };
 
   return (
@@ -219,7 +227,7 @@ export function DataTable<T>({
           {/* Table Body */}
           <tbody className="divide-y divide-[var(--color-divider)]/40">
             {itemsToRender.map((item, idx) => {
-              const id = getKey(item);
+              const id = getKey(item, idx);
               const isSelected = selectedIds ? selectedIds.has(id) : false;
               const canItemExpand = canExpand ? canExpand(item) : false;
               const isItemExpanded = isExpanded ? isExpanded(item) : false;
@@ -333,3 +341,4 @@ export function DataTable<T>({
 }
 
 export default DataTable;
+

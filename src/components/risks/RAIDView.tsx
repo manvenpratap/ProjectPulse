@@ -31,6 +31,7 @@ import PageHeader from '../shared/PageHeader';
 import ViewExportButton from '../shared/ViewExportButton';
 import Modal from '../shared/Modal';
 import TablePagination, { usePagination } from '../shared/TablePagination';
+import DataTable, { ColumnDef } from '../shared/DataTable';
 
 const RAIDView: React.FC = () => {
   const { state, updateProject, addLog } = useProject();
@@ -316,6 +317,212 @@ const RAIDView: React.FC = () => {
     }
     return 'bg-amber-500/15 text-amber-500 border border-amber-500/30';
   };
+  const decisionColumns: ColumnDef<Decision>[] = [
+    {
+      id: 'id',
+      header: 'ID',
+      headerTitle: 'Unique decision identifier (e.g. DEC-101)',
+      width: 'w-20',
+      cell: (d) => (
+        <span className="font-mono font-bold text-xs text-[var(--color-primary-hex)] whitespace-nowrap">
+          {d.id}
+        </span>
+      )
+    },
+    {
+      id: 'title',
+      header: 'Decision Title',
+      headerTitle: 'Strategic steering decision topic and context',
+      width: 'min-w-[280px]',
+      cell: (d) => (
+        <div className="flex items-center gap-1.5 min-w-0 max-w-[340px]">
+          <span className="font-bold text-xs text-[var(--color-text)] truncate" title={d.title}>
+            {d.title}
+          </span>
+          {d.desc && (
+            <span className="text-[10px] text-[var(--color-text-muted)] truncate hidden xl:inline max-w-[180px] shrink-0" title={d.desc}>
+              · {d.desc}
+            </span>
+          )}
+        </div>
+      )
+    },
+    {
+      id: 'owner',
+      header: 'Owner / Approver',
+      headerTitle: 'Accountable executive or steering lead',
+      width: 'w-44',
+      cell: (d) => (
+        <div className="flex items-center gap-1.5 text-xs text-[var(--color-text-muted)] whitespace-nowrap">
+          <span className="font-semibold text-[var(--color-text)]">{d.proposedBy}</span>
+          <span className="text-[10px] text-[var(--color-text-faint)]">→ {d.approver}</span>
+        </div>
+      )
+    },
+    {
+      id: 'status',
+      header: 'Status',
+      headerTitle: 'Current decision sign-off state (Approved, Pending Sign-off, Rejected)',
+      width: 'w-32',
+      cell: (d) => (
+        <span className={clsx("px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap inline-block", getStatusStyle(d.status))}>
+          {d.status}
+        </span>
+      )
+    },
+    {
+      id: 'dueDate',
+      header: 'Target Date',
+      headerTitle: 'Target resolution or review date',
+      width: 'w-28',
+      cell: (d) => (
+        <span className="font-mono text-xs text-[var(--color-text-faint)] whitespace-nowrap">
+          {d.dueDate}
+        </span>
+      )
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      width: 'w-20',
+      align: 'right',
+      cell: (d) => (
+        <div className="flex gap-1 justify-end whitespace-nowrap" onClick={e => e.stopPropagation()}>
+          <button 
+            onClick={() => handleOpenDecisionModal(d)} 
+            className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors inline-flex items-center justify-center cursor-pointer"
+            aria-label={`Edit ${d.id}`}
+          >
+            <Edit2 size={13} />
+          </button>
+          <button 
+            onClick={() => handleDeleteDecision(d.id)} 
+            className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-red-500 hover:bg-rose-500/10 transition-colors inline-flex items-center justify-center cursor-pointer"
+            aria-label={`Delete ${d.id}`}
+          >
+            <Trash2 size={13} />
+          </button>
+        </div>
+      )
+    }
+  ];
+
+  const raidColumns: ColumnDef<RaidItem>[] = [
+    {
+      id: 'id',
+      header: 'ID / Type',
+      headerTitle: 'Identifier and RAID category: Risk, Assumption, Issue, or Dependency. Click to sort.',
+      sortable: true,
+      width: 'w-28',
+      cell: (r) => (
+        <div className="flex items-center gap-1.5 whitespace-nowrap">
+          <span className="font-mono font-bold text-xs text-[var(--color-primary-hex)]">{r.id}</span>
+          <span className={clsx("px-1.5 py-0.2 rounded text-[10px] font-semibold border", getTypeStyle(r.type))}>{r.type}</span>
+        </div>
+      )
+    },
+    {
+      id: 'title',
+      header: 'Title & Context',
+      headerTitle: 'Summary of the risk event or blocker condition. Click to sort.',
+      sortable: true,
+      width: 'min-w-[260px]',
+      cell: (r) => (
+        <div className="flex items-center gap-1.5 min-w-0 max-w-[320px]">
+          <span className="font-bold text-xs text-[var(--color-text)] truncate" title={r.title}>
+            {r.title}
+          </span>
+          {r.desc && (
+            <span className="text-[10px] text-[var(--color-text-muted)] truncate hidden xl:inline max-w-[150px] shrink-0" title={r.desc}>
+              · {r.desc}
+            </span>
+          )}
+        </div>
+      )
+    },
+    {
+      id: 'owner',
+      header: 'Owner',
+      headerTitle: 'Team member responsible for monitoring and mitigation. Click to sort.',
+      sortable: true,
+      width: 'w-32',
+      cell: (r) => (
+        <span className="text-xs font-semibold text-[var(--color-text-muted)] whitespace-nowrap truncate block max-w-[120px]">
+          {r.owner}
+        </span>
+      )
+    },
+    {
+      id: 'impact',
+      header: 'Impact / Prob',
+      headerTitle: 'Consequence level (High/Medium/Low) and Probability score (1-5)',
+      width: 'w-28',
+      cell: (r) => (
+        <span className="text-xs font-mono whitespace-nowrap">
+          {r.impact} / {r.probability || 'N/A'}
+        </span>
+      )
+    },
+    {
+      id: 'severity',
+      header: 'Severity',
+      headerTitle: 'Calculated risk severity score driving early warning indicators',
+      width: 'w-24',
+      cell: (r) => (
+        <span className={clsx("px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap inline-block", getSeverityStyle(r.severity))}>
+          {r.severity.split(' ')[0]}
+        </span>
+      )
+    },
+    {
+      id: 'mitigation',
+      header: 'Mitigation Plan',
+      headerTitle: 'Preventive action and contingency plan to eliminate or absorb the threat',
+      width: 'min-w-[200px]',
+      cell: (r) => (
+        <span className="text-xs text-[var(--color-text-muted)] max-w-xs truncate block" title={r.mitigation}>
+          {r.mitigation}
+        </span>
+      )
+    },
+    {
+      id: 'status',
+      header: 'Status',
+      headerTitle: 'Tracking status: Active, Mitigated, or Closed. Click to sort.',
+      sortable: true,
+      width: 'w-24',
+      cell: (r) => (
+        <span className={clsx("px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap inline-block", getStatusStyle(r.status))}>
+          {r.status}
+        </span>
+      )
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      width: 'w-20',
+      align: 'right',
+      cell: (r) => (
+        <div className="flex gap-1 justify-end whitespace-nowrap" onClick={e => e.stopPropagation()}>
+          <button 
+            onClick={() => handleOpenRaidModal(r)} 
+            className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors inline-flex items-center justify-center cursor-pointer"
+            aria-label={`Edit ${r.id}`}
+          >
+            <Edit2 size={13} />
+          </button>
+          <button 
+            onClick={() => handleDeleteRaid(r.id)} 
+            className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-red-500 hover:bg-rose-500/10 transition-colors inline-flex items-center justify-center cursor-pointer"
+            aria-label={`Delete ${r.id}`}
+          >
+            <Trash2 size={13} />
+          </button>
+        </div>
+      )
+    }
+  ];
+
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)]">
@@ -666,83 +873,17 @@ const RAIDView: React.FC = () => {
               )}
             </div>
 
-            {/* Desktop Table View (>= md) */}
-            <div className="hidden md:block card p-0 overflow-hidden">
-              <div className="overflow-auto max-h-[calc(100vh-320px)] custom-scroll relative">
-                <table className="w-full text-left border-collapse">
-                  <thead className="sticky top-0 z-20 bg-[var(--color-surface-offset)] shadow-[0_1px_0_0_var(--color-divider)]">
-                    <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] select-none">
-                      <th className="px-3 py-2 w-20 font-mono text-[10px]" title="Unique decision identifier (e.g. DEC-101)">ID</th>
-                      <th className="px-3 py-2 min-w-[280px]" title="Strategic steering decision topic and context">Decision Title</th>
-                      <th className="px-3 py-2 w-44 whitespace-nowrap" title="Accountable executive or steering lead">Owner / Approver</th>
-                      <th className="px-3 py-2 w-32 whitespace-nowrap" title="Current decision sign-off state (Approved, Pending Sign-off, Rejected)">Status</th>
-                      <th className="px-3 py-2 w-28 whitespace-nowrap" title="Target resolution or review date">Target Date</th>
-                      <th className="px-2 py-2 w-20 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[var(--color-divider)]/40 text-xs">
-                    {decisionPagination.paginatedItems.length > 0 ? decisionPagination.paginatedItems.map(d => (
-                      <tr key={d.id} className="group hover:bg-[var(--color-surface-2)]/70 transition-colors">
-                        <td className="px-3 py-2 font-mono font-bold text-xs text-[var(--color-primary-hex)] whitespace-nowrap">{d.id}</td>
-                        <td className="px-3 py-2 max-w-[340px]">
-                          <div className="flex items-center gap-1.5 min-w-0">
-                            <span className="font-bold text-xs text-[var(--color-text)] truncate" title={d.title}>
-                              {d.title}
-                            </span>
-                            {d.desc && (
-                              <span className="text-[10px] text-[var(--color-text-muted)] truncate hidden xl:inline max-w-[180px] shrink-0" title={d.desc}>
-                                · {d.desc}
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-3 py-2 text-xs text-[var(--color-text-muted)] whitespace-nowrap">
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-semibold text-[var(--color-text)]">{d.proposedBy}</span>
-                            <span className="text-[10px] text-[var(--color-text-faint)]">→ {d.approver}</span>
-                          </div>
-                        </td>
-                        <td className="px-3 py-2 whitespace-nowrap">
-                          <span className={clsx("px-2 py-0.5 rounded text-xs font-medium", getStatusStyle(d.status))}>
-                            {d.status}
-                          </span>
-                        </td>
-                        <td className="px-3 py-2 font-mono text-xs text-[var(--color-text-faint)] whitespace-nowrap">{d.dueDate}</td>
-                        <td className="px-2 py-2 text-right whitespace-nowrap">
-                          <div className="flex gap-1 justify-end">
-                            <button 
-                              onClick={() => handleOpenDecisionModal(d)} 
-                              className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors inline-flex items-center justify-center cursor-pointer"
-                              aria-label={`Edit ${d.id}`}
-                            >
-                              <Edit2 size={13} />
-                            </button>
-                            <button 
-                              onClick={() => handleDeleteDecision(d.id)} 
-                              className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-red-500 hover:bg-rose-500/10 transition-colors inline-flex items-center justify-center cursor-pointer"
-                              aria-label={`Delete ${d.id}`}
-                            >
-                              <Trash2 size={13} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    )) : (
-                      <tr>
-                        <td colSpan={6} className="py-8 text-center text-[var(--color-text-faint)]">No decisions registered.</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-              <TablePagination
-                currentPage={decisionPagination.currentPage}
-                totalPages={decisionPagination.totalPages}
-                totalItems={decisionPagination.totalItems}
-                pageSize={decisionPagination.pageSize}
-                onPageChange={decisionPagination.setCurrentPage}
-                onPageSizeChange={decisionPagination.setPageSize}
+            {/* Desktop Table View (>= md) powered by generic DataTable */}
+            <div className="hidden md:block">
+              <DataTable<Decision>
+                data={activeDecisions}
+                columns={decisionColumns}
+                keyField="id"
+                showRowNumbers={false}
+                pagination={decisionPagination}
                 itemLabel="decisions"
+                maxHeight="max-h-[calc(100vh-320px)]"
+                emptyMessage={<div className="py-8 text-center text-xs text-[var(--color-text-faint)]">No decisions registered.</div>}
               />
             </div>
           </div>
@@ -833,95 +974,20 @@ const RAIDView: React.FC = () => {
               )}
             </div>
 
-            {/* Desktop Table View (>= md) */}
-            <div className="hidden md:block card p-0 overflow-hidden">
-              <div className="overflow-auto max-h-[calc(100vh-320px)] custom-scroll relative">
-                <table className="w-full text-left border-collapse">
-                  <thead className="sticky top-0 z-20 bg-[var(--color-surface-offset)] shadow-[0_1px_0_0_var(--color-divider)]">
-                    <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] select-none">
-                      <th className="px-3 py-2 w-28 cursor-pointer select-none whitespace-nowrap" onClick={() => handleRaidSort('id')} title="Identifier and RAID category: Risk, Assumption, Issue, or Dependency. Click to sort.">ID / Type</th>
-                      <th className="px-3 py-2 min-w-[260px] cursor-pointer select-none whitespace-nowrap" onClick={() => handleRaidSort('title')} title="Summary of the risk event or blocker condition. Click to sort.">Title & Context</th>
-                      <th className="px-3 py-2 w-32 cursor-pointer select-none whitespace-nowrap" onClick={() => handleRaidSort('owner')} title="Team member responsible for monitoring and mitigation. Click to sort.">Owner</th>
-                      <th className="px-3 py-2 w-28 whitespace-nowrap" title="Consequence level (High/Medium/Low) and Probability score (1-5)">Impact / Prob</th>
-                      <th className="px-3 py-2 w-24 whitespace-nowrap" title="Calculated risk severity score driving early warning indicators">Severity</th>
-                      <th className="px-3 py-2 min-w-[200px]" title="Preventive action and contingency plan to eliminate or absorb the threat">Mitigation Plan</th>
-                      <th className="px-3 py-2 w-24 cursor-pointer select-none whitespace-nowrap" onClick={() => handleRaidSort('status')} title="Tracking status: Active, Mitigated, or Closed. Click to sort.">Status</th>
-                      <th className="px-2 py-2 w-20 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-[var(--color-divider)]/40 text-xs">
-                    {raidPagination.paginatedItems.length > 0 ? raidPagination.paginatedItems.map(r => (
-                      <tr key={r.id} className="group hover:bg-[var(--color-surface-2)]/70 transition-colors">
-                        <td className="px-3 py-2 whitespace-nowrap">
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-mono font-bold text-xs text-[var(--color-primary-hex)]">{r.id}</span>
-                            <span className={clsx("px-1.5 py-0.2 rounded text-[10px] font-semibold border", getTypeStyle(r.type))}>{r.type}</span>
-                          </div>
-                        </td>
-                        <td className="px-3 py-2 max-w-[320px]">
-                          <div className="flex items-center gap-1.5 min-w-0">
-                            <span className="font-bold text-xs text-[var(--color-text)] truncate" title={r.title}>
-                              {r.title}
-                            </span>
-                            {r.desc && (
-                              <span className="text-[10px] text-[var(--color-text-muted)] truncate hidden xl:inline max-w-[150px] shrink-0" title={r.desc}>
-                                · {r.desc}
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-3 py-2 text-xs font-semibold text-[var(--color-text-muted)] whitespace-nowrap">{r.owner}</td>
-                        <td className="px-3 py-2 text-xs font-mono whitespace-nowrap">
-                          {r.impact} / {r.probability || 'N/A'}
-                        </td>
-                        <td className="px-3 py-2 whitespace-nowrap">
-                          <span className={clsx("px-2 py-0.5 rounded text-xs font-medium", getSeverityStyle(r.severity))}>
-                            {r.severity.split(' ')[0]}
-                          </span>
-                        </td>
-                        <td className="px-3 py-2 text-xs text-[var(--color-text-muted)] max-w-xs truncate" title={r.mitigation}>
-                          {r.mitigation}
-                        </td>
-                        <td className="px-3 py-2 whitespace-nowrap">
-                          <span className={clsx("px-2 py-0.5 rounded text-xs font-medium", getStatusStyle(r.status))}>
-                            {r.status}
-                          </span>
-                        </td>
-                        <td className="px-2 py-2 text-right whitespace-nowrap">
-                          <div className="flex gap-1 justify-end">
-                            <button 
-                              onClick={() => handleOpenRaidModal(r)} 
-                              className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors inline-flex items-center justify-center cursor-pointer"
-                              aria-label={`Edit ${r.id}`}
-                            >
-                              <Edit2 size={13} />
-                            </button>
-                            <button 
-                              onClick={() => handleDeleteRaid(r.id)} 
-                              className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-red-500 hover:bg-rose-500/10 transition-colors inline-flex items-center justify-center cursor-pointer"
-                              aria-label={`Delete ${r.id}`}
-                            >
-                              <Trash2 size={13} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    )) : (
-                      <tr>
-                        <td colSpan={8} className="p-12 text-center text-[var(--color-text-faint)]">No RAID items mapped.</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-              <TablePagination
-                currentPage={raidPagination.currentPage}
-                totalPages={raidPagination.totalPages}
-                totalItems={raidPagination.totalItems}
-                pageSize={raidPagination.pageSize}
-                onPageChange={raidPagination.setCurrentPage}
-                onPageSizeChange={raidPagination.setPageSize}
+            {/* Desktop Table View (>= md) powered by generic DataTable */}
+            <div className="hidden md:block">
+              <DataTable<RaidItem>
+                data={activeFiltered}
+                columns={raidColumns}
+                keyField="id"
+                showRowNumbers={false}
+                sortField={sortCol}
+                sortAsc={sortOrder === 'asc'}
+                onSort={(f) => handleRaidSort(f as any)}
+                pagination={raidPagination}
                 itemLabel="RAID items"
+                maxHeight="max-h-[calc(100vh-320px)]"
+                emptyMessage={<div className="p-12 text-center text-xs text-[var(--color-text-faint)]">No RAID items mapped.</div>}
               />
             </div>
           </div>
