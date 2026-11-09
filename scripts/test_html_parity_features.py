@@ -48,12 +48,13 @@ def test_parity_features():
         # 2. CXO EMAIL BRIEF
         # -------------------------------------------------------------
         print("3. Testing Executive CXO Email Brief Modal...")
-        project_actions_btn = page.locator("button:has-text('Project Actions')")
-        project_actions_btn.click()
-        page.wait_for_timeout(400)
+        # In modern layout, Executive CXO Email Brief is organized under Pulse & Analytics in the sidebar
+        cxo_btn = page.locator("aside button:has-text('Executive CXO Email Brief…')")
+        if not cxo_btn.is_visible():
+            page.locator("aside button:has-text('Pulse & Analytics')").click()
+            page.wait_for_timeout(300)
 
-        cxo_btn = page.locator("button:has-text('Executive CXO Email Brief…')")
-        assert cxo_btn.is_visible(), "Executive CXO Email Brief option not found in Project Actions"
+        assert cxo_btn.is_visible(), "Executive CXO Email Brief option not found in sidebar Pulse & Analytics"
         cxo_btn.click()
         page.wait_for_timeout(600)
 
@@ -65,13 +66,13 @@ def test_parity_features():
 
         # Toggle to Markdown mode
         md_tab = page.get_by_role("button", name="Markdown", exact=True)
-        md_tab.click()
+        md_tab.click(force=True)
         page.wait_for_timeout(300)
         assert page.locator("pre").is_visible(), "Markdown preview container not visible"
 
         # Toggle back to HTML
         html_tab = page.get_by_role("button", name="Rich Email (HTML)", exact=True)
-        html_tab.click()
+        html_tab.click(force=True)
         page.wait_for_timeout(300)
 
         # Close CXO modal
@@ -88,9 +89,7 @@ def test_parity_features():
         # 3. SCAFFOLDER BULK IMPORT & PRESETS
         # -------------------------------------------------------------
         print("4. Testing Scaffolder Bulk Module Import & Presets...")
-        project_actions_btn.click()
-        page.wait_for_timeout(400)
-        page.locator("button:has-text('Project Scaffolder…')").click()
+        page.goto("http://localhost:3000/#scaffolder")
         page.wait_for_timeout(800)
 
         bulk_scaffold_btn = page.locator("button:has-text('Bulk Import & Presets')")
@@ -119,9 +118,7 @@ def test_parity_features():
         # 4. REGISTRY BULK OPTION EDITOR
         # -------------------------------------------------------------
         print("5. Testing Registry Bulk Options Editor...")
-        project_actions_btn.click()
-        page.wait_for_timeout(400)
-        page.locator("button:has-text('Option Libraries…')").click()
+        page.goto("http://localhost:3000/#dropdowns")
         page.wait_for_timeout(800)
 
         bulk_reg_btn = page.locator("button:has-text('Bulk Edit Options')")

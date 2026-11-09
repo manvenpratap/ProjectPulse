@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { useAuth } from '../../store/AuthContext';
 import { 
@@ -6,11 +6,17 @@ import {
   ChevronDown,
   ChevronRight,
   Activity,
-  Menu
+  Menu,
+  Mail,
+  FileSpreadsheet,
+  Download,
+  RefreshCw
 } from 'lucide-react';
 import clsx from 'clsx';
 import { NAV_HUBS } from '../../config/navigation';
 import { motion, AnimatePresence } from 'motion/react';
+import { exportProjectExcel, importProjectExcel } from '../../services/excelService';
+import CxoEmailModal from '../reports/CxoEmailModal';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -19,8 +25,42 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
-  const { state } = useProject();
-  const { hasViewAccess } = useAuth();
+  const { state, updateProject, resetProject } = useProject();
+  const { hasViewAccess, canPerform, isAdmin } = useAuth();
+  const [isCxoEmailOpen, setIsCxoEmailOpen] = useState(false);
+  const [processingLatency, setProcessingLatency] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setProcessingLatency(`Importing ${file.name}...`);
+    try {
+      const importedData = await importProjectExcel(file);
+      updateProject(importedData);
+      setProcessingLatency(null);
+      alert('Project data imported successfully from Excel.');
+    } catch (err: any) {
+      setProcessingLatency(null);
+      alert('Failed to import Excel: ' + err.message);
+    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleExport = async () => {
+    await exportProjectExcel(state);
+  };
+
+  const handleResetProject = () => {
+    if (window.confirm('Are you sure you want to wipe all project data and start a new project? This action cannot be undone.')) {
+      resetProject(state.name, 'A fresh restart of the current workspace.', []);
+    }
+  };
 
   // Filter navigation hubs and items strictly based on role access
   const visibleHubs = useMemo(() => {
@@ -120,6 +160,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
             const isExpanded = !!expandedHubs[hub.id];
             const HubIcon = hub.icon;
             const hubBadge = getHubBadge(hub);
+            const hasSubContent = hub.items.length > 1 || hub.id === 'settings';
 
             return (
               <div key={hub.id} className="rounded-xl overflow-hidden border border-transparent transition-colors">
@@ -157,7 +198,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
                     )}
                   </button>
 
-                  {hub.items.length > 1 && (
+                  {hasSubContent && (
                     <button
                       onClick={(e) => toggleHub(hub.id, e)}
                       className="p-1.5 min-h-[36px] min-w-[32px] flex items-center justify-center rounded-lg hover:bg-[var(--color-surface-offset)] text-[var(--color-text-faint)] hover:text-[var(--color-text)] transition-transform shrink-0 cursor-pointer"
@@ -173,7 +214,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
 
                 {/* Sub-Items List */}
                 <AnimatePresence initial={false}>
-                  {isExpanded && hub.items.length > 1 && (
+                  {isExpanded && hasSubContent && (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
@@ -210,6 +251,78 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
                           </button>
                         );
                       })}
+
+                      {/* Pulse & Analytics: Executive CXO Brief Action */}
+                      {hub.id === 'analytics' && (hasViewAccess('reports') || isAdmin) && (
+                        <button
+                          onClick={() => setIsCxoEmailOpen(true)}
+                          className="w-full flex items-center justify-between px-2.5 py-1.5 min-h-[34px] rounded-lg text-xs font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)] transition-colors duration-150 active:scale-[0.98] cursor-pointer group text-left"
+                          title="Generate executive steering email brief"
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <Mail size={14} className="shrink-0 text-indigo-500" />
+                            <span className="truncate">Executive CXO Email Brief…</span>
+                          </div>
+                        </button>
+                      )}
+
+                      {/* Configuration & Data: Workspace Actions */}
+                      {hub.id === 'settings' && (
+                        <>
+                          <div className="pt-2 pb-1 px-2.5 text-[10px] font-semibold text-[var(--color-text-faint)] uppercase tracking-wider">
+                            Workspace Data
+                          </div>
+                          {canPerform('canExportExcel') && (
+                            <button
+                              onClick={handleExport}
+                              className="w-full flex items-center justify-between px-2.5 py-1.5 min-h-[34px] rounded-lg text-xs font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)] transition-colors duration-150 active:scale-[0.98] cursor-pointer group text-left"
+                              title="Export complete project data to Excel"
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                <FileSpreadsheet size={14} className="shrink-0 text-emerald-500" />
+                                <span className="truncate">Export Project Excel…</span>
+                              </div>
+                            </button>
+                          )}
+                          {(isAdmin || canPerform('canManageSettings')) && (
+                            <button
+                              onClick={handleImportClick}
+                              className="w-full flex items-center justify-between px-2.5 py-1.5 min-h-[34px] rounded-lg text-xs font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)] transition-colors duration-150 active:scale-[0.98] cursor-pointer group text-left"
+                              title="Import project data from Excel workbook"
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                <FileSpreadsheet size={14} className="shrink-0 text-indigo-500" />
+                                <span className="truncate">Import from Excel…</span>
+                              </div>
+                            </button>
+                          )}
+                          {canPerform('canExportExcel') && (
+                            <a
+                              href="/demo-data.xlsx"
+                              download
+                              className="w-full flex items-center justify-between px-2.5 py-1.5 min-h-[34px] rounded-lg text-xs font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)] transition-colors duration-150 active:scale-[0.98] cursor-pointer group text-left no-underline"
+                              title="Download ready-to-import demo Excel template"
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                <Download size={14} className="shrink-0 text-slate-500" />
+                                <span className="truncate">Download Demo Excel</span>
+                              </div>
+                            </a>
+                          )}
+                          {isAdmin && (
+                            <button
+                              onClick={handleResetProject}
+                              className="w-full flex items-center justify-between px-2.5 py-1.5 min-h-[34px] rounded-lg text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-500/10 transition-colors duration-150 active:scale-[0.98] cursor-pointer group text-left"
+                              title="Reset and clear all project entities"
+                            >
+                              <div className="flex items-center gap-2 min-w-0">
+                                <RefreshCw size={14} className="shrink-0 text-red-500" />
+                                <span className="truncate">New Project (Wipe All)</span>
+                              </div>
+                            </button>
+                          )}
+                        </>
+                      )}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -270,7 +383,26 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
             </div>
           </div>
         )}
+        {/* Processing Indicator */}
+        {processingLatency && isOpen && (
+          <div className="mx-2 mb-2 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-xs flex items-center gap-2 motion-safe:animate-pulse">
+            <RefreshCw size={12} className="animate-spin shrink-0" />
+            <span className="truncate">{processingLatency}</span>
+          </div>
+        )}
       </div>
+
+      {/* Hidden File Input for Excel Import */}
+      <input 
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
+        accept=".xlsx"
+        onChange={handleFileChange}
+      />
+
+      {/* Executive CXO Email Brief Modal */}
+      <CxoEmailModal isOpen={isCxoEmailOpen} onClose={() => setIsCxoEmailOpen(false)} />
 
       {/* Collapse / Expand Toggle Button */}
       <div className="p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] border-t border-[var(--color-divider)] shrink-0">

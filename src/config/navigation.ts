@@ -105,12 +105,12 @@ export const NAV_HUBS: NavHub[] = [
   },
   {
     id: 'settings',
-    label: 'Configuration',
+    label: 'Configuration & Data',
     icon: SettingsIcon,
-    description: 'Project baseline management and system preferences',
+    description: 'Project baseline management, Excel persistence and system preferences',
     defaultView: 'settings',
     items: [
-      { id: 'settings', label: 'Configuration', shortLabel: 'Settings', icon: SettingsIcon, description: 'Project configuration and preferences' },
+      { id: 'settings', label: 'System Configuration', shortLabel: 'Settings', icon: SettingsIcon, description: 'Project configuration and preferences' },
     ]
   }
 ];

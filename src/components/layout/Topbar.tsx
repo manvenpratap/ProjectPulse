@@ -8,54 +8,30 @@ import {
   Palette, 
   Search, 
   Plus, 
-  Command,
   HelpCircle,
-  FolderOpen,
-  ChevronDown,
-  RefreshCw,
-  Database,
-  FileSpreadsheet,
-  Download,
-  Settings,
-  Layout,
-  ListChecks,
-  BookOpen,
-  Blocks,
-  Component as ComponentIcon,
-  Menu,
-  Flag,
-  Smile,
-  Mail,
-  Share2
+  Menu
 } from 'lucide-react';
 import clsx from 'clsx';
 import ThemeFlyout from './ThemeFlyout';
 import SmartAlertsCenter, { computeAlerts } from './SmartAlertsCenter';
-import CxoEmailModal from '../reports/CxoEmailModal';
 import UserProfileFlyout from './UserProfileFlyout';
 import AccessManagerModal from '../auth/AccessManagerModal';
 import { useAuth } from '../../store/AuthContext';
-
-import { exportProjectExcel, importProjectExcel } from '../../services/excelService';
 
 interface TopbarProps {
   toggleSidebar: () => void;
 }
 
 const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
-  const { state, setView, setTheme, resetProject, searchTerm, setSearchTerm, updateProject } = useProject();
-  const { currentUser, canPerform, hasViewAccess, isAdmin } = useAuth();
+  const { state, setView, searchTerm, setSearchTerm } = useProject();
+  const { currentUser, canPerform, hasViewAccess } = useAuth();
   const [isThemeOpen, setIsThemeOpen] = useState(false);
-  const [isActionsOpen, setIsActionsOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isAccessManagerOpen, setIsAccessManagerOpen] = useState(false);
-  const [isCxoEmailOpen, setIsCxoEmailOpen] = useState(false);
   const [isSlowNetwork, setIsSlowNetwork] = useState(false);
-  const [processingLatency, setProcessingLatency] = useState<string | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const conn = (navigator as any).connection || (navigator as any).mozConnection || (navigator as any).webkitConnection;
@@ -77,28 +53,6 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
     return computeAlerts(state).filter(a => !a.targetView || hasViewAccess(a.targetView));
   }, [state.tasks, state.members, state.defects, state.raids, hasViewAccess]);
 
-  const handleImportClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setProcessingLatency(`Parsing & validating ${file.name} (${Math.round(file.size / 1024)} KB)...`);
-    try {
-      const importedData = await importProjectExcel(file);
-      updateProject(importedData);
-      setProcessingLatency(null);
-      alert('Project data imported successfully from Excel.');
-    } catch (err: any) {
-      setProcessingLatency(null);
-      alert('Failed to import Excel: ' + err.message);
-    }
-    // Reset file input so same file can be imported again if needed
-    if (fileInputRef.current) fileInputRef.current.value = '';
-  };
-
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Shortcut: G then /
@@ -112,15 +66,6 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
   }, []);
   
   const health = getHealthScore(state.tasks);
-  const overdueCount = state.tasks.filter(t => {
-     const dd = new Date(t.dueDate);
-     return dd < new Date() && t.status !== 'Completed';
-  }).length;
-
-  const handleExport = async () => {
-    await exportProjectExcel(state);
-    setIsActionsOpen(false);
-  };
 
   const getHealthColor = (score: number) => {
     if (score > 80) return "text-emerald-500";
@@ -151,184 +96,6 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
               {state.name}
             </span>
           </div>
-          
-          <div className="w-[1px] h-4 bg-[var(--color-divider)]" />
-          
-          <div className="relative hidden sm:block">
-            <button 
-              onClick={() => setIsActionsOpen(!isActionsOpen)}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl hover:bg-[var(--color-surface-2)] transition-colors text-xs font-semibold text-[var(--color-text-muted)] cursor-pointer active:scale-97"
-            >
-              <FolderOpen size={14} />
-              <span>Project Actions</span>
-              <ChevronDown size={12} className={clsx("transition-transform duration-200", isActionsOpen && "rotate-180")} />
-            </button>
-
-            {isActionsOpen && (
-              <>
-                <div 
-                  className="fixed inset-0 z-10" 
-                  onClick={() => setIsActionsOpen(false)} 
-                />
-                <div className="absolute top-full left-0 mt-2 w-64 bg-[var(--color-surface)]/95 backdrop-blur-2xl border border-[var(--color-divider)] rounded-2xl shadow-xl z-50 py-2 overflow-hidden ring-1 ring-black/5 motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 duration-150 origin-top-left">
-                  {(hasViewAccess('reports') || isAdmin) && (
-                    <>
-                      <div className="px-3 py-2 text-xs font-semibold text-[var(--color-text-faint)]">
-                        Share & Reports
-                      </div>
-                      <button 
-                        onClick={() => { setIsActionsOpen(false); setIsCxoEmailOpen(true); }}
-                        className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
-                      >
-                        <Mail size={16} className="text-indigo-500" />
-                        <span>Executive CXO Email Brief…</span>
-                      </button>
-                      <div className="h-[1px] bg-[var(--color-divider)] my-1" />
-                    </>
-                  )}
-
-                  <div className="px-3 py-2 text-xs font-semibold text-[var(--color-text-faint)]">
-                    Data & Persistence
-                  </div>
-                  {canPerform('canExportExcel') && (
-                    <button 
-                      onClick={handleExport}
-                      className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
-                    >
-                      <FileSpreadsheet size={16} className="text-emerald-500" />
-                      <span>Export Project Excel…</span>
-                    </button>
-                  )}
-                  {(isAdmin || canPerform('canManageSettings')) && (
-                    <button 
-                      onClick={handleImportClick}
-                      className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
-                    >
-                      <FileSpreadsheet size={16} className="text-indigo-500" />
-                      <span>Import from Excel…</span>
-                    </button>
-                  )}
-                  {canPerform('canExportExcel') && (
-                    <a 
-                      href="/demo-data.xlsx"
-                      download
-                      className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98] no-underline text-[var(--color-text)]"
-                      onClick={() => setIsActionsOpen(false)}
-                    >
-                      <Download size={16} className="text-slate-500" />
-                      <span>Download Demo Excel</span>
-                    </a>
-                  )}
-                  <input 
-                    type="file"
-                    ref={fileInputRef}
-                    className="hidden"
-                    accept=".xlsx"
-                    onChange={handleFileChange}
-                  />
-                  {hasViewAccess('log') && (
-                    <button 
-                      onClick={() => { setIsActionsOpen(false); setView('log'); }}
-                      className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
-                    >
-                      <Database size={16} className="text-blue-500" />
-                      <span>View Activity Logs</span>
-                    </button>
-                  )}
-                  {isAdmin && (
-                    <button 
-                      onClick={() => { setIsActionsOpen(false); resetProject(state.name, 'A fresh restart of the current workspace.', []); }}
-                      className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-600 flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
-                    >
-                      <RefreshCw size={16} />
-                      <span>New Project (Wipe All)</span>
-                    </button>
-                  )}
-
-                  {(hasViewAccess('fields') || hasViewAccess('dropdowns') || hasViewAccess('steps')) && (
-                    <>
-                      <div className="h-[1px] bg-[var(--color-divider)] my-2" />
-                      <div className="px-3 py-2 text-xs font-semibold text-[var(--color-text-faint)]">
-                        Workspace Config
-                      </div>
-                      {hasViewAccess('fields') && (
-                        <button 
-                          onClick={() => { setIsActionsOpen(false); setView('fields'); }}
-                          className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
-                        >
-                          <Layout size={16} className="text-indigo-500" />
-                          <span>Field Architect…</span>
-                        </button>
-                      )}
-                      {hasViewAccess('dropdowns') && (
-                        <button 
-                          onClick={() => { setIsActionsOpen(false); setView('dropdowns'); }}
-                          className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
-                        >
-                          <ListChecks size={16} className="text-amber-500" />
-                          <span>Option Libraries…</span>
-                        </button>
-                      )}
-                      {hasViewAccess('steps') && (
-                        <button 
-                          onClick={() => { setIsActionsOpen(false); setView('steps'); }}
-                          className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
-                        >
-                          <BookOpen size={16} className="text-purple-500" />
-                          <span>Step Templates…</span>
-                        </button>
-                      )}
-                    </>
-                  )}
-
-                  {(hasViewAccess('releases') || hasViewAccess('retro') || hasViewAccess('scaffolder') || hasViewAccess('features')) && (
-                    <>
-                      <div className="h-[1px] bg-[var(--color-divider)] my-2" />
-                      <div className="px-3 py-2 text-xs font-semibold text-[var(--color-text-faint)]">
-                        Project Architecture
-                      </div>
-                      {hasViewAccess('releases') && (
-                        <button 
-                          onClick={() => { setIsActionsOpen(false); setView('releases'); }}
-                          className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
-                        >
-                          <Flag size={16} className="text-indigo-500" />
-                          <span>Release Roadmap…</span>
-                        </button>
-                      )}
-                      {hasViewAccess('retro') && (
-                        <button 
-                          onClick={() => { setIsActionsOpen(false); setView('retro'); }}
-                          className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
-                        >
-                          <Smile size={16} className="text-emerald-500" />
-                          <span>Sprint Retrospective…</span>
-                        </button>
-                      )}
-                      {hasViewAccess('scaffolder') && (
-                        <button 
-                          onClick={() => { setIsActionsOpen(false); setView('scaffolder'); }}
-                          className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
-                        >
-                          <Blocks size={16} className="text-rose-500" />
-                          <span>Project Scaffolder…</span>
-                        </button>
-                      )}
-                      {hasViewAccess('features') && (
-                        <button 
-                          onClick={() => { setIsActionsOpen(false); setView('features'); }}
-                          className="w-full text-left px-4 py-2 hover:bg-[var(--color-primary-highlight-hex)] flex items-center gap-3 text-sm transition-colors duration-150 active:scale-[0.98]"
-                        >
-                          <ComponentIcon size={16} className="text-cyan-500" />
-                          <span>Strategic Features…</span>
-                        </button>
-                      )}
-                    </>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
         </div>
 
         <div className="flex items-center gap-2 px-2.5 py-1 rounded-full bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] shadow-2xs backdrop-blur-sm">
@@ -338,14 +105,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
           </span>
         </div>
 
-        {processingLatency && (
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-medium motion-safe:animate-pulse">
-            <RefreshCw size={12} className="animate-spin" />
-            <span>{processingLatency}</span>
-          </div>
-        )}
-
-        {isSlowNetwork && !processingLatency && (
+        {isSlowNetwork && (
           <div className="hidden md:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-600 dark:text-orange-400 text-[11px] font-medium" title="Connection latency detected. Local offline-first caching active.">
             <span className="w-1.5 h-1.5 rounded-full bg-orange-500" />
             <span>Slow Link Active</span>
@@ -451,7 +211,6 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
       </header>
 
       <SmartAlertsCenter isOpen={isNotifOpen} onClose={() => setIsNotifOpen(false)} />
-      <CxoEmailModal isOpen={isCxoEmailOpen} onClose={() => setIsCxoEmailOpen(false)} />
       <ThemeFlyout isOpen={isThemeOpen} onClose={() => setIsThemeOpen(false)} />
       <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
       <AccessManagerModal isOpen={isAccessManagerOpen} onClose={() => setIsAccessManagerOpen(false)} />

@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useProject } from '../../store/ProjectContext';
 import { 
   Mail, 
@@ -415,7 +416,7 @@ export const CxoEmailModal: React.FC<CxoEmailModalProps> = ({ isOpen, onClose })
 
   if (!isOpen) return null;
 
-  return (
+  const modalContent = (
     <div 
       className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-md motion-safe:animate-in motion-safe:fade-in duration-200"
       onClick={onClose}
@@ -611,6 +612,8 @@ export const CxoEmailModal: React.FC<CxoEmailModalProps> = ({ isOpen, onClose })
       </motion.div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : modalContent;
 };
 
 export default CxoEmailModal;

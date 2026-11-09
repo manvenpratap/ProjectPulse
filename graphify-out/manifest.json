@@ -20,8 +20,8 @@
     "hash": "da52aa87485a8697d539a37268d2b8ad"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/config/navigation.ts": {
-    "mtime": 1794116646.4738185,
-    "hash": "b978c201eab41bc702f819af9377039a"
+    "mtime": 1794192976.1358173,
+    "hash": "7559e324d0381b2e864d7533cfa69940"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/utils/projectUtils.ts": {
     "mtime": 1794069784.6511564,
@@ -72,8 +72,8 @@
     "hash": "ac3aff96875f12f62b46cf70f252273a"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/Topbar.tsx": {
-    "mtime": 1794127679.2968664,
-    "hash": "13fb46a36b52969ab921cc495d1fcf69"
+    "mtime": 1794193277.035245,
+    "hash": "e83604f60253edfbb4fb1f5f068d8ebc"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/OfflineBanner.tsx": {
     "mtime": 1794127489.5729465,
@@ -88,8 +88,8 @@
     "hash": "60f431ddb2b39cbfbb6ef0ef0c9d0a65"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/Sidebar.tsx": {
-    "mtime": 1794112936.2698188,
-    "hash": "e8bbc5a697c61b12b455d56f4adf0545"
+    "mtime": 1794193244.3384712,
+    "hash": "757ec93610a2cf0cc47cec90cb857bdf"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/NotificationFlyout.tsx": {
     "mtime": 1794113289.7955914,
@@ -120,8 +120,8 @@
     "hash": "f6c82197f0b2fe23f2de253f9c11b03d"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/shared/HelpModal.tsx": {
-    "mtime": 1794069784.6476402,
-    "hash": "461bd1401f5173480b982387329fd6b6"
+    "mtime": 1794193251.6556609,
+    "hash": "16a1a5d8e0cbd104b52f077ccee8140d"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/defects/DefectView.tsx": {
     "mtime": 1794128903.8293202,
@@ -208,8 +208,8 @@
     "hash": "d0d33563c689b6184a5882542cf11160"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/reports/CxoEmailModal.tsx": {
-    "mtime": 1794127294.6424165,
-    "hash": "fecadc2ecb5d00466a97e17c70e4ddb2"
+    "mtime": 1794193492.168652,
+    "hash": "f1f56f7f771113d4438ccbd34bba5b83"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/reports/ReportView.tsx": {
     "mtime": 1794127381.7550545,

@@ -65,7 +65,7 @@ const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose }) => {
                 <h3 className="font-bold">Excel Synchronization</h3>
              </div>
              <p className="text-xs text-slate-500 leading-relaxed">
-                Export full project state to Excel or import existing plans. Download the <strong>Demo Excel</strong> from the Project Actions menu for a full-featured starting point.
+                Export full project state to Excel or import existing plans. Download the <strong>Demo Excel</strong> from the Configuration & Data section in the sidebar for a full-featured starting point.
              </p>
           </div>
         </div>
