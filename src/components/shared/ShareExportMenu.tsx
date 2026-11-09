@@ -151,7 +151,7 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
   const viewTitle = activeView.charAt(0).toUpperCase() + activeView.slice(1);
 
   return (
-    <div className={`relative inline-block text-left ${className}`} ref={menuRef}>
+    <div className={`relative inline-block text-left ${isOpen ? 'z-50' : ''} ${className}`} ref={menuRef}>
       {/* Trigger Button */}
       <button
         type="button"

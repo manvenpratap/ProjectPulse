@@ -89,7 +89,7 @@ export const ViewExportButton: React.FC<ViewExportButtonProps> = ({
   };
 
   return (
-    <div className={`relative inline-flex items-center rounded-xl shadow-2xs ${className}`} ref={dropdownRef}>
+    <div className={`relative inline-flex items-center rounded-xl shadow-2xs ${isOpen ? 'z-50' : ''} ${className}`} ref={dropdownRef}>
       {/* Primary Action Button (Direct View Excel Export) */}
       <button
         type="button"

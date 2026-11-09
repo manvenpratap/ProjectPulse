@@ -135,7 +135,7 @@ export function DataTable<T>({
     <div className={clsx("rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs overflow-hidden", containerClassName)}>
       <div className={clsx("overflow-auto custom-scroll relative", maxHeight)}>
         <table className={clsx("w-full text-left border-collapse", minWidth, tableClassName)}>
-          <thead className="sticky top-0 z-20 bg-[var(--color-surface-offset)] shadow-[0_1px_0_0_var(--color-divider)]">
+          <thead className="sticky top-0 z-10 bg-[var(--color-surface-offset)] shadow-[0_1px_0_0_var(--color-divider)]">
             {/* Primary Column Header Row */}
             <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)] select-none">
               {/* Checkbox Header */}

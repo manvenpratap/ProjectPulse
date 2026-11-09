@@ -37,7 +37,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   const showTabs = showHubTabs && accessibleHubItems.length > 1;
 
   return (
-    <header className={`border-b border-[var(--color-divider)] bg-[var(--color-surface)]/85 backdrop-blur-xl saturate-180 sticky top-0 z-20 shrink-0 shadow-2xs ${className}`}>
+    <header className={`border-b border-[var(--color-divider)] bg-[var(--color-surface)]/85 backdrop-blur-xl saturate-180 sticky top-0 z-30 shrink-0 shadow-2xs ${className}`}>
       {/* Primary Header Row */}
       <div className="min-h-[56px] sm:min-h-[60px] py-2 px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
