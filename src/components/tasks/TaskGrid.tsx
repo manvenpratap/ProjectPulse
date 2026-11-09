@@ -694,7 +694,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                     className={clsx(
                       "group hover:bg-[var(--color-surface-2)]/70 transition-colors cursor-pointer relative",
                       isSelected && "bg-[var(--color-primary-highlight-hex)]/35",
-                      overdue && "is-overdue border-l-4 border-l-rose-500 bg-rose-500/[0.02]",
+                      overdue && "is-overdue bg-rose-500/[0.02]",
                       isMilestone && "is-milestone bg-amber-500/[0.02]"
                     )}
                   >

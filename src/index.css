@@ -1350,9 +1350,9 @@ html[data-color-mode="dark"] .pri-low {
   font-weight: 600;
   user-select: none;
 }
-tr.is-overdue td:first-child {
-  box-shadow: inset 3.5px 0 0 #ef4444 !important;
-}
 tr.is-milestone td:first-child {
   box-shadow: inset 3.5px 0 0 var(--color-primary-hex) !important;
+}
+tr.is-overdue td:first-child {
+  box-shadow: inset 3.5px 0 0 #ef4444 !important;
 }

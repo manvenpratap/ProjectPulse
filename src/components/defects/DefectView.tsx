@@ -640,7 +640,7 @@ const DefectView: React.FC = () => {
                       className={clsx(
                         "group hover:bg-[var(--color-surface-2)]/70 transition-colors cursor-pointer relative",
                         isSelected && "bg-[var(--color-primary-highlight-hex)]/40",
-                        isS1 && "is-overdue border-l-4 border-l-rose-500 bg-rose-500/[0.02]"
+                        isS1 && "is-overdue bg-rose-500/[0.02]"
                       )}
                     >
                       {/* Checkbox */}

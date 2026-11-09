@@ -888,7 +888,7 @@ export const FunctionalMatrix: React.FC = () => {
                       onClick={() => setSelectedFeature(f)}
                       className={clsx(
                         "group hover:bg-[var(--color-surface-2)]/70 transition-colors cursor-pointer",
-                        mObj.overdueTasks > 0 && "is-overdue border-l-4 border-l-rose-500 bg-rose-500/[0.02]"
+                        mObj.overdueTasks > 0 && "is-overdue bg-rose-500/[0.02]"
                       )}
                     >
                       <td className="px-2.5 py-2 text-center font-mono font-bold text-xs text-[var(--color-text-faint)] td-rn">

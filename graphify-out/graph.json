@@ -8998,9 +8998,9 @@
       "source_file": "src/components/architect/FunctionalMatrix.tsx",
       "source_location": "L38",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_architect_functionalmatrix_tsx",
-      "target": "src_components_shared_tablepagination_tsx",
-      "confidence_score": 1.0
+      "target": "src_components_shared_tablepagination_tsx"
     },
     {
       "relation": "imports_from",
@@ -9053,9 +9053,9 @@
       "source_file": "src/components/architect/FunctionalMatrix.tsx",
       "source_location": "L38",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_architect_functionalmatrix_tsx",
-      "target": "shared_tablepagination_usepagination",
-      "confidence_score": 1.0
+      "target": "shared_tablepagination_usepagination"
     },
     {
       "relation": "imports",
@@ -12888,5 +12888,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "ff712f757002732aeb7c2ba9b459a48823761689"
+  "built_at_commit": "b34cb4066e1b1ce51e551927a62f5497d5b8cd9f"
 }

@@ -736,7 +736,7 @@ export const DeliveriesView: React.FC = () => {
                         className={clsx(
                           "group hover:bg-[var(--color-surface-2)]/70 transition-colors cursor-pointer relative",
                           isSelected && "bg-[var(--color-primary-highlight-hex)]/40",
-                          isOverdue && "is-overdue border-l-4 border-l-rose-500 bg-rose-500/[0.02]"
+                          isOverdue && "is-overdue bg-rose-500/[0.02]"
                         )}
                         onClick={(e) => {
                           if ((e.target as HTMLElement).closest('input[type="checkbox"]') || (e.target as HTMLElement).closest('button')) return;
