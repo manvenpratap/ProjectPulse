@@ -127,3 +127,4 @@ def test_blueprints_enhanced_ui():
 
 if __name__ == "__main__":
     test_blueprints_enhanced_ui()
+

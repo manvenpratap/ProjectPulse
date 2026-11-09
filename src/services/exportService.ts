@@ -11,7 +11,11 @@ import {
   styleHeaderCell,
   buildUnifiedTasksSheet,
   buildFeatureRolloutsSheet,
-  buildFeatureMatrixWorkbook
+  buildFeatureMatrixWorkbook,
+  buildDeliveriesSheet,
+  buildFeatureScreenTraceabilitySheet,
+  buildDeliveriesWorkbook,
+  exportDeliveriesExcel
 } from './excelService';
 import { getHealthScore } from '../utils/projectUtils';
 
@@ -232,82 +236,13 @@ export const exportViewToExcel = async (state: ProjectState, viewId: string): Pr
     }
 
     case 'deliveries': {
-      const ws = wb.addWorksheet('ALM Deliveries', {
-        views: [{ state: 'frozen', ySplit: 7, xSplit: 3 }]
-      });
-      ws.properties.tabColor = { argb: palette.indigo };
-      const delCols = [
-        { header: 'Delivery ID', key: 'id', width: 14, bg: palette.navy },
-        { header: 'ALM Defect ID', key: 'almId', width: 18, bg: palette.navy },
-        { header: 'Scope / PDN Title', key: 'name', width: 44, bg: palette.navy },
-        { header: 'PDN Code', key: 'pdn', width: 18, bg: palette.indigo },
-        { header: 'Environment', key: 'environment', width: 14, bg: palette.indigo },
-        { header: 'ALM Status', key: 'almStatus', width: 18, bg: palette.amber },
-        { header: 'Deploy State', key: 'status', width: 18, bg: palette.amber },
-        { header: 'Sign-off', key: 'signOffStatus', width: 16, bg: palette.amber },
-        { header: 'Approver', key: 'approver', width: 20, bg: palette.amber },
-        { header: 'Smoke Gate', key: 'smokeTestStatus', width: 16, bg: palette.amber },
-        { header: 'Module', key: 'module', width: 20, bg: palette.emerald },
-        { header: 'Release Version', key: 'releaseVersion', width: 16, bg: palette.emerald },
-        { header: 'Target Date', key: 'targetDeliveryDate', width: 16, bg: palette.rose },
-        { header: 'Actual Date', key: 'actualDeliveryDate', width: 16, bg: palette.rose },
-        { header: 'Lead Time (d)', key: 'leadTimeDays', width: 14, bg: palette.slate },
-        { header: 'Variance (d)', key: 'variance', width: 14, bg: palette.slate },
-        { header: 'Linked Tasks', key: 'linkedTasks', width: 24, bg: palette.slate }
-      ];
-      ws.columns = delCols.map(c => ({ key: c.key, width: c.width }));
-
-      const totalDels = (state.deliveries || []).length;
-      const deployedDels = (state.deliveries || []).filter(d => d.status === 'Deployed').length;
-      const delPct = totalDels ? Math.round((deployedDels / totalDels) * 100) : 0;
-
-      ws.getRow(1).height = 10;
-      ws.mergeCells('A2:H2');
-      ws.getRow(2).height = 20;
-      const delsTitle = ws.getCell('A2');
-      delsTitle.value = ' >> COCKPIT.TELEMETRY: ALM & PDN DELIVERY SCHEDULE';
-      delsTitle.font = { name: 'Courier New', size: 10, bold: true, color: { argb: palette.indigo } };
-      delsTitle.alignment = { vertical: 'middle', indent: 1 };
-
-      drawTopKpiCard(ws, 1, 3, 3, 3, 'Deployment Health', `${deployedDels} / ${totalDels}`, `${delPct}% deployed`, palette.indigo, { isDark: palette.isDark });
-      drawTopKpiCard(ws, 5, 3, 3, 3, 'Approval Gate', `${(state.deliveries || []).filter(d => d.signOffStatus === 'Approved').length} Approved`, 'Executive sign-offs', palette.emerald, { isDark: palette.isDark });
-      drawTopKpiCard(ws, 9, 3, 3, 3, 'Smoke Testing', `${(state.deliveries || []).filter(d => d.smokeTestStatus === 'Passed').length} Passed`, 'Verification gate', palette.blue, { isDark: palette.isDark });
-
-      ws.getRow(6).height = 10;
-      const hdr = ws.getRow(7);
-      hdr.height = 30;
-      delCols.forEach((col, idx) => {
-        const cell = hdr.getCell(idx + 1);
-        cell.value = col.header;
-        styleHeaderCell(cell, col.bg);
-      });
-      ws.autoFilter = { from: 'A7', to: `Q${Math.max(8, (state.deliveries || []).length + 7)}` };
-
-      (state.deliveries || []).forEach((d, i) => {
-        const row = ws.addRow({
-          id: d.id,
-          almId: d.almId,
-          name: d.name,
-          pdn: d.pdn,
-          environment: d.environment,
-          almStatus: d.almStatus,
-          status: d.status,
-          signOffStatus: d.signOffStatus,
-          approver: d.approver || 'Pending',
-          smokeTestStatus: d.smokeTestStatus,
-          module: d.module,
-          releaseVersion: d.releaseVersion,
-          targetDeliveryDate: parseExcelDate(d.targetDeliveryDate),
-          actualDeliveryDate: parseExcelDate(d.actualDeliveryDate),
-          leadTimeDays: d.leadTimeDays || 0,
-          variance: d.variance || 0,
-          linkedTasks: d.linkedTasks?.join(', ') || ''
-        });
-        row.height = 20;
-        styleZebraRow(row, i, palette, delCols.length);
-        formatStatusCell(row.getCell('status'), d.status, palette);
-        formatStatusCell(row.getCell('signOffStatus'), d.signOffStatus, palette);
-        formatStatusCell(row.getCell('smokeTestStatus'), d.smokeTestStatus, palette);
+      // Build Deliveries Sheet 1 (Hierarchical Delivery & Delivered Components)
+      const delBuild = buildDeliveriesSheet(wb, state, palette);
+      // Build Sheet 2: Feature & Screen Traceability (3-Tier Deduplicated Outline)
+      buildFeatureScreenTraceabilitySheet(wb, state, palette, delBuild.deliveryRowMap, {
+        pendingFeatureLinks: delBuild.pendingFeatureLinks,
+        pendingScreenLinks: delBuild.pendingScreenLinks,
+        taskRowMap: (wb as any)._taskRowMap
       });
       break;
     }

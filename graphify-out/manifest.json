@@ -20,7 +20,7 @@
     "hash": "1dbc48e960ab9ef3d3c78757664e1cbf"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/config/navigation.ts": {
-    "mtime": 1794250756.141554,
+    "mtime": 1794251528.1022718,
     "hash": "accb51a93698ff169dd1e80d9215f10f"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/config/viewHelpData.ts": {
@@ -196,11 +196,11 @@
     "hash": "75dc18afa68d6d55575461e124d86ba6"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/RegistryView.tsx": {
-    "mtime": 1794250867.1163259,
+    "mtime": 1794251527.9971712,
     "hash": "f72920819c8015302ab7bd9f1442ff0f"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/StepTemplates.tsx": {
-    "mtime": 1794251301.6493988,
+    "mtime": 1794251528.3932767,
     "hash": "317e9939c0dc1256a4f67d253e22f517"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/FieldArchitect.tsx": {
@@ -236,16 +236,16 @@
     "hash": "51ecedd5501a4ab2b309afda355d373c"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/services/exportService.ts": {
-    "mtime": 1794250678.725473,
-    "hash": "16a94ec124a0e59eb79962f5bb438c33"
+    "mtime": 1794252330.0461211,
+    "hash": "d65bb20e844970f1aec25978c5fcb08a"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/services/aiService.ts": {
     "mtime": 1794069784.6500282,
     "hash": "3831d10f9898767fec9bb04dcdd905fb"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/services/excelService.ts": {
-    "mtime": 1794250678.6668391,
-    "hash": "d65f5557c4b03959bfce365309aa03f4"
+    "mtime": 1794252301.8412833,
+    "hash": "eb7a6e990427d34438b347cc4e29eb7b"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/store/ProjectContext.tsx": {
     "mtime": 1794250336.6840944,
