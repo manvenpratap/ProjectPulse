@@ -681,7 +681,7 @@ export const DeliveriesView: React.FC = () => {
               </button>
 
               <button
-                onClick={() => downloadDeliveryTemplate()}
+                onClick={() => downloadDeliveryTemplate(state)}
                 title="Download 12-Column Delivery Template (.xlsx)"
                 className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors active:scale-95 shadow-2xs h-9 cursor-pointer"
                 data-testid="download-delivery-template-button"

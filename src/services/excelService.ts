@@ -40,64 +40,204 @@ export interface ExcelThemePalette {
   muted: string;
   textDark: string;
   isDark: boolean;
+  themeName: string;
+  colorMode: string;
+  blendColors: (argbA: string, argbB: string, weightA?: number) => string;
+  getThemeTint: (argb: string, factor: number) => string;
+  getReadableText: (bgArgb: string, lightArgb?: string, darkArgb?: string) => string;
 }
 
-export function getThemePalette(): ExcelThemePalette {
-  let isDark = true;
-  let primaryHex = '4338CA';
-  let bgHex = '0F172A';
-  let surfaceHex = '1E293B';
-  let textHex = 'F8FAFC';
+export const THEME_PALETTES: Record<string, { primary: string; bg: string; surface: string; surfaceAlt?: string; isDark: boolean }> = {
+  pulse: { primary: '38BDF8', bg: '0D0D0F', surface: '151518', surfaceAlt: '1C1C22', isDark: true },
+  origin: { primary: '0F4C5C', bg: 'FAF9F6', surface: 'FFFFFF', surfaceAlt: 'F2F0E8', isDark: false },
+  nova: { primary: '6366F1', bg: 'F5F6FF', surface: 'FFFFFF', surfaceAlt: 'ECEEFF', isDark: false },
+  terminal: { primary: '0969DA', bg: 'F6F8FA', surface: 'FFFFFF', surfaceAlt: 'EAEFF5', isDark: false },
+  'aurora-studio': { primary: '8656F6', bg: 'FAFAFE', surface: 'FFFFFF', surfaceAlt: 'F0EFFF', isDark: false },
+  'obsidian-dark': { primary: '008948', bg: '040404', surface: '0A0A0A', surfaceAlt: '121212', isDark: true },
+  'paper-editorial': { primary: 'B5451B', bg: 'FDF8F0', surface: 'FFFDF8', surfaceAlt: 'F7EFE2', isDark: false },
+  nexus: { primary: '0F4C5C', bg: 'F8F7F3', surface: 'FFFFFF', surfaceAlt: 'EFECE4', isDark: false },
+  'nexus-dark': { primary: '4F98A3', bg: '0A1F24', surface: '0F2D35', surfaceAlt: '143B45', isDark: true },
+  obsidian: { primary: '008944', bg: '050505', surface: '0F0F0F', surfaceAlt: '1A1A1A', isDark: true },
+  paper: { primary: '44403C', bg: 'FCFAF7', surface: 'FFFFFF', surfaceAlt: 'F3EFEA', isDark: false },
+  'paper-dark': { primary: '6B9BD1', bg: '1C1917', surface: '292524', surfaceAlt: '36312E', isDark: true },
+  aurora: { primary: '6265F1', bg: 'F8FAFC', surface: 'FFFFFF', surfaceAlt: 'EEF2F6', isDark: false },
+  'aurora-dark': { primary: 'A78BFA', bg: '0F172A', surface: '1E293B', surfaceAlt: '27354D', isDark: true },
+  chrome: { primary: '0B8395', bg: '030712', surface: '111827', surfaceAlt: '1A2234', isDark: true },
+  titan: { primary: '1E293B', bg: 'FFFFFF', surface: 'FFFFFF', surfaceAlt: 'F1F5F9', isDark: false },
+  'titan-dark': { primary: '38BDF8', bg: '020617', surface: '0F172A', surfaceAlt: '17233B', isDark: true },
+  lumina: { primary: '1E70F5', bg: 'F8FAFC', surface: 'FFFFFF', surfaceAlt: 'EEF2F6', isDark: false },
+  'lumina-dark': { primary: '38BDF8', bg: '0B1120', surface: '131C31', surfaceAlt: '1C2742', isDark: true },
+  emerald: { primary: '10B981', bg: 'F0FDF4', surface: 'FFFFFF', surfaceAlt: 'DCFCE7', isDark: false },
+  'emerald-dark': { primary: '34D399', bg: '022C22', surface: '064E3B', surfaceAlt: '0B654E', isDark: true },
+  carbon: { primary: 'E2E8F0', bg: '18181B', surface: '27272A', surfaceAlt: '333338', isDark: true },
+  midnight: { primary: '818CF8', bg: '090D16', surface: '131A29', surfaceAlt: '1D263B', isDark: true },
+  champagne: { primary: 'D97706', bg: 'FFFBEB', surface: 'FFFFFF', surfaceAlt: 'FEF3C7', isDark: false },
+  'champagne-dark': { primary: 'FBBF24', bg: '1F1600', surface: '2E2200', surfaceAlt: '3D2D00', isDark: true },
+  cyberpunk: { primary: 'F43F5E', bg: '05050A', surface: '120F1D', surfaceAlt: '1E1830', isDark: true },
+  play: { primary: 'EC4899', bg: 'FDF2F8', surface: 'FFFFFF', surfaceAlt: 'FCE7F3', isDark: false },
+  'play-dark': { primary: 'F472B6', bg: '1A0914', surface: '2B1023', surfaceAlt: '3B1731', isDark: true },
+  prism: { primary: '8B5CF6', bg: 'F5F3FF', surface: 'FFFFFF', surfaceAlt: 'EDE9FE', isDark: false },
+  'prism-dark': { primary: 'A78BFA', bg: '140C24', surface: '1F1438', surfaceAlt: '2E1E52', isDark: true },
+  glass: { primary: '0284C7', bg: 'F0F9FF', surface: 'FFFFFF', surfaceAlt: 'E0F2FE', isDark: false },
+  'glass-dark': { primary: '38BDF8', bg: '082F49', surface: '0C4A6E', surfaceAlt: '115E8C', isDark: true },
+  terracotta: { primary: 'E05A47', bg: 'FFF7ED', surface: 'FFFFFF', surfaceAlt: 'FFEDD5', isDark: false },
+  fintech: { primary: '059669', bg: 'ECFDF5', surface: 'FFFFFF', surfaceAlt: 'D1FAE5', isDark: false },
+  bento: { primary: '4F46E5', bg: 'EEF2FF', surface: 'FFFFFF', surfaceAlt: 'E0E7FF', isDark: false },
+  codename: { primary: '10B981', bg: '020617', surface: '0F172A', surfaceAlt: '17233B', isDark: true },
+  workflow: { primary: '2563EB', bg: 'F8FAFC', surface: 'FFFFFF', surfaceAlt: 'EFF6FF', isDark: false },
+  brutalist: { primary: 'DC2626', bg: 'FFFFFF', surface: 'FFFFFF', surfaceAlt: 'F5F5F5', isDark: false }
+};
+
+export function isColorDark(argb: string): boolean {
+  if (!argb || argb.length < 6) return false;
+  const hex = argb.length === 8 ? argb.substring(2) : argb.replace('#', '');
+  const r = parseInt(hex.substring(0, 2), 16) || 0;
+  const g = parseInt(hex.substring(2, 4), 16) || 0;
+  const b = parseInt(hex.substring(4, 6), 16) || 0;
+  const luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  return luminance < 140;
+}
+
+export function getReadableText(bgArgb: string, lightArgb = 'FFFFFFFF', darkArgb = 'FF0F172A'): string {
+  return isColorDark(bgArgb) ? lightArgb : darkArgb;
+}
+
+export function blendColors(argbA: string, argbB: string, weightA = 0.5): string {
+  const hexA = argbA.length === 8 ? argbA.substring(2) : argbA.replace('#', '');
+  const hexB = argbB.length === 8 ? argbB.substring(2) : argbB.replace('#', '');
+  const rA = parseInt(hexA.substring(0, 2), 16) || 0;
+  const gA = parseInt(hexA.substring(2, 4), 16) || 0;
+  const bA = parseInt(hexA.substring(4, 6), 16) || 0;
+  const rB = parseInt(hexB.substring(0, 2), 16) || 0;
+  const gB = parseInt(hexB.substring(2, 4), 16) || 0;
+  const bB = parseInt(hexB.substring(4, 6), 16) || 0;
+  const r = Math.max(0, Math.min(255, Math.round(rA * weightA + rB * (1 - weightA))));
+  const g = Math.max(0, Math.min(255, Math.round(gA * weightA + gB * (1 - weightA))));
+  const b = Math.max(0, Math.min(255, Math.round(bA * weightA + bB * (1 - weightA))));
+  return 'FF' + r.toString(16).padStart(2, '0').toUpperCase() + g.toString(16).padStart(2, '0').toUpperCase() + b.toString(16).padStart(2, '0').toUpperCase();
+}
+
+export function parseCssColorToArgb(cssVal: string | undefined, defaultArgb: string): string {
+  if (!cssVal) return defaultArgb;
+  const clean = String(cssVal).trim();
+  if (clean.startsWith('#')) {
+    let hex = clean.substring(1);
+    if (hex.length === 3) {
+      hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    } else if (hex.length === 8) {
+      hex = hex.substring(0, 6);
+    }
+    return 'FF' + hex.toUpperCase();
+  }
+  if (clean.startsWith('rgb')) {
+    const match = clean.match(/\d+/g);
+    if (match && match.length >= 3) {
+      const r = parseInt(match[0], 10).toString(16).padStart(2, '0');
+      const g = parseInt(match[1], 10).toString(16).padStart(2, '0');
+      const b = parseInt(match[2], 10).toString(16).padStart(2, '0');
+      return 'FF' + (r + g + b).toUpperCase();
+    }
+  }
+  return defaultArgb;
+}
+
+export function getThemePalette(
+  stateOrTheme?: ProjectState | string,
+  colorModeOverride?: string
+): ExcelThemePalette {
+  let themeName = 'pulse';
+  if (typeof stateOrTheme === 'string' && stateOrTheme) {
+    themeName = stateOrTheme;
+  } else if (typeof document !== 'undefined' && document.documentElement && document.documentElement.getAttribute('data-theme')) {
+    themeName = document.documentElement.getAttribute('data-theme') || 'pulse';
+  } else if (typeof stateOrTheme === 'object' && stateOrTheme && (stateOrTheme as any).theme) {
+    themeName = (stateOrTheme as any).theme;
+  }
+
+  let colorMode = colorModeOverride || 'default';
+  if (colorMode === 'default' && typeof document !== 'undefined' && document.documentElement) {
+    colorMode = document.documentElement.getAttribute('data-color-mode') || 'default';
+  }
+
+  const themeDef = THEME_PALETTES[themeName] || THEME_PALETTES['pulse'];
+  let isDark = colorMode === 'dark' || (colorMode !== 'light' && Boolean(themeDef.isDark));
+
+  let primaryHex = themeDef.primary;
+  let bgHex = themeDef.bg;
+  let surfaceHex = themeDef.surface;
+  let surfaceAltHex = themeDef.surfaceAlt || (isDark ? '1C1C22' : 'F1F5F9');
 
   if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     try {
-      const computed = window.getComputedStyle(document.documentElement);
-      const cssBg = computed.getPropertyValue('--color-bg').trim();
-      const cssPrimary = computed.getPropertyValue('--color-primary-hex').trim();
-      const cssSurface = computed.getPropertyValue('--color-surface').trim();
-      const cssText = computed.getPropertyValue('--color-text').trim();
+      const activeAttr = document.documentElement.getAttribute('data-theme');
+      if (activeAttr === themeName) {
+        const computed = window.getComputedStyle(document.documentElement);
+        const cssBg = computed.getPropertyValue('--color-bg').trim();
+        const cssPrimary = computed.getPropertyValue('--color-primary-hex').trim();
+        const cssSurface = computed.getPropertyValue('--color-surface').trim();
+        const cssSurface2 = computed.getPropertyValue('--color-surface-2').trim();
 
-      if (cssBg) bgHex = cssBg.replace('#', '');
-      if (cssPrimary) primaryHex = cssPrimary.replace('#', '');
-      if (cssSurface) surfaceHex = cssSurface.replace('#', '');
-      if (cssText) textHex = cssText.replace('#', '');
-
-      const colorMode = document.documentElement.getAttribute('data-color-mode');
-      if (colorMode === 'light') isDark = false;
-      else if (colorMode === 'dark') isDark = true;
-      else {
-        const r = parseInt(bgHex.slice(0, 2), 16) || 15;
-        const g = parseInt(bgHex.slice(2, 4), 16) || 23;
-        const b = parseInt(bgHex.slice(4, 6), 16) || 42;
-        isDark = (0.2126 * r + 0.7152 * g + 0.0722 * b) < 140;
+        if (cssBg) bgHex = cssBg.replace('#', '');
+        if (cssPrimary) primaryHex = cssPrimary.replace('#', '');
+        if (cssSurface) surfaceHex = cssSurface.replace('#', '');
+        if (cssSurface2) surfaceAltHex = cssSurface2.replace('#', '');
       }
     } catch {
-      // Keep defaults
+      // Keep static defaults
     }
   }
 
-  return {
-    navy: 'FF0F172A',
-    indigo: `FF${primaryHex.padStart(6, '4338CA')}`,
-    primaryHover: `FF${primaryHex.padStart(6, '4338CA')}`,
-    slate: 'FF64748B',
+  const resolvedBg = `FF${bgHex.padStart(6, '0D0D0F').toUpperCase()}`;
+  const resolvedSurface = `FF${surfaceHex.padStart(6, '151518').toUpperCase()}`;
+  const resolvedSurfaceAlt = `FF${surfaceAltHex.padStart(6, isDark ? '1C1C22' : 'F1F5F9').toUpperCase()}`;
+  const resolvedPrimary = `FF${primaryHex.padStart(6, '38BDF8').toUpperCase()}`;
+
+  // Ensure isDark aligns with resolved background luminance
+  if (colorMode === 'default') {
+    isDark = isColorDark(resolvedBg);
+  }
+
+  const resolvedNavy = isDark ? 'FF0F172A' : (isColorDark(resolvedPrimary) ? resolvedPrimary : 'FF0F172A');
+  const resolvedHeader = isDark ? 'FF1E293B' : 'FFF1F5F9';
+  const resolvedDivider = isDark ? 'FF334155' : 'FFE2E8F0';
+  const resolvedBorder = isDark ? 'FF334155' : 'FFCBD5E1';
+  const resolvedMuted = isDark ? 'FF94A3B8' : 'FF64748B';
+  const resolvedTextDark = isDark ? 'FFFFFFFF' : 'FF0F172A';
+
+  const paletteObj: ExcelThemePalette = {
+    navy: resolvedNavy,
+    indigo: resolvedPrimary,
+    primaryHover: resolvedPrimary,
+    slate: resolvedMuted,
     emerald: 'FF10B981',
     rose: 'FFF43F5E',
-    header: isDark ? 'FF1E293B' : 'FFF8FAFC',
-    input: `FF${primaryHex.padStart(6, '4338CA')}`,
+    header: resolvedHeader,
+    input: resolvedPrimary,
     amber: 'FFF59E0B',
-    blue: 'FF3B82F6',
+    blue: isDark ? 'FF38BDF8' : 'FF3B82F6',
     purple: 'FF8B5CF6',
     teal: 'FF0D9488',
-    bg: `FF${bgHex.padStart(6, '0F172A')}`,
-    surface: `FF${surfaceHex.padStart(6, '1E293B')}`,
-    surfaceAlt: isDark ? 'FF273245' : 'FFF1F5F9',
-    divider: isDark ? 'FF334155' : 'FFE2E8F0',
-    border: isDark ? 'FF334155' : 'FFE2E8F0',
-    muted: isDark ? 'FF94A3B8' : 'FF64748B',
-    textDark: isDark ? 'FFFFFFFF' : 'FF0F172A',
-    isDark
+    bg: resolvedBg,
+    surface: resolvedSurface,
+    surfaceAlt: resolvedSurfaceAlt,
+    divider: resolvedDivider,
+    border: resolvedBorder,
+    muted: resolvedMuted,
+    textDark: resolvedTextDark,
+    isDark,
+    themeName,
+    colorMode,
+    blendColors,
+    getThemeTint: (argb: string, factor: number) => {
+      if (!argb || argb.length < 6) return resolvedBg;
+      return blendColors(argb, resolvedBg, factor);
+    },
+    getReadableText: (bgArgb: string, lightArgb = 'FFFFFFFF', darkArgb = 'FF0F172A') => {
+      return isColorDark(bgArgb) ? lightArgb : darkArgb;
+    }
   };
+
+  return paletteObj;
 }
 
 export function drawTopKpiCard(
@@ -125,9 +265,9 @@ export function drawTopKpiCard(
   const borderOuter = opts.borderOuter || (isDark ? 'FF2A364F' : 'FFCBD5E1');
   const fontName = opts.font || 'Segoe UI';
   const labelText = `[${label.toUpperCase()}]\n`;
-  const labelColor = opts.labelColor || 'FF64748B';
+  const labelColor = opts.labelColor || (isDark ? 'FF94A3B8' : 'FF64748B');
   const valueColor = opts.valueColor || accentColor;
-  const subColor = opts.subColor || 'FF64748B';
+  const subColor = opts.subColor || (isDark ? 'FF94A3B8' : 'FF64748B');
 
   for (let r = row; r < row + h; r++) {
     for (let c = col; c < col + w; c++) {
@@ -155,17 +295,19 @@ export function drawTopKpiCard(
 export function styleHeaderCell(
   cell: ExcelJS.Cell, 
   bgArgb: string, 
-  textArgb = 'FFFFFFFF', 
-  bdrBottom = 'FF0F172A'
+  textArgb?: string, 
+  bdrBottom?: string
 ) {
+  const isDarkBg = isColorDark(bgArgb);
+  const resolvedText = textArgb || (isDarkBg ? 'FFFFFFFF' : 'FF0F172A');
   cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bgArgb } };
-  cell.font = { name: 'Segoe UI', size: 9.5, bold: true, color: { argb: textArgb } };
+  cell.font = { name: 'Segoe UI', size: 9.5, bold: true, color: { argb: resolvedText } };
   cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
   cell.border = {
-    bottom: { style: 'medium', color: { argb: bdrBottom } },
-    top: { style: 'thin', color: { argb: 'FF334155' } },
-    left: { style: 'hair', color: { argb: 'FF334155' } },
-    right: { style: 'hair', color: { argb: 'FF334155' } }
+    bottom: { style: 'medium', color: { argb: bdrBottom || (isDarkBg ? 'FF0F172A' : 'FFCBD5E1') } },
+    top: { style: 'thin', color: { argb: isDarkBg ? 'FF334155' : 'FFE2E8F0' } },
+    left: { style: 'hair', color: { argb: isDarkBg ? 'FF334155' : 'FFE2E8F0' } },
+    right: { style: 'hair', color: { argb: isDarkBg ? 'FF334155' : 'FFE2E8F0' } }
   };
 }
 
@@ -2249,7 +2391,7 @@ export function buildFeatureMatrixWorkbook(
   wb.created = new Date();
   wb.modified = new Date();
 
-  const pal = palette || getThemePalette();
+  const pal = palette || getThemePalette(state);
 
   // 1. Unified Feature Rollouts
   buildFeatureRolloutsSheet(wb, state, pal);
@@ -2413,7 +2555,7 @@ export const exportProjectExcel = async (state: ProjectState): Promise<string> =
   wb.created = new Date();
   wb.modified = new Date();
 
-  const palette = getThemePalette();
+  const palette = getThemePalette(state);
 
   const totalTasks = state.tasks.length;
   const doneTasks = state.tasks.filter(t => t.status === TaskStatus.COMPLETED).length;
@@ -3600,9 +3742,11 @@ export const importDeliveriesFromExcel = async (
 // 5. DELIVERIES 12-COLUMN EXCEL TEMPLATE GENERATOR
 // ============================================================================
 
-export const downloadDeliveryTemplate = async (): Promise<void> => {
+export const downloadDeliveryTemplate = async (stateOrTheme?: ProjectState | string): Promise<void> => {
   const wb = new ExcelJS.Workbook();
+  const palette = getThemePalette(stateOrTheme);
   const ws = wb.addWorksheet('Deliveries_Template');
+  ws.properties.tabColor = { argb: palette.indigo };
   
   ws.columns = [
     { header: 'Defect ID - ALM ID', key: 'almId', width: 22 },
@@ -3620,15 +3764,16 @@ export const downloadDeliveryTemplate = async (): Promise<void> => {
   ];
 
   ws.getRow(1).height = 30;
+  const isDarkHdr = isColorDark(palette.indigo);
   ws.getRow(1).eachCell(c => {
-    c.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 10, name: 'Segoe UI' };
-    c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4338CA' } };
+    c.font = { bold: true, color: { argb: isDarkHdr ? 'FFFFFFFF' : 'FF0F172A' }, size: 10, name: 'Segoe UI' };
+    c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: palette.indigo } };
     c.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
-    c.border = { top: { style: 'thin', color: { argb: 'FFE2E8F0' } }, bottom: { style: 'medium', color: { argb: 'FF3730A3' } } };
+    c.border = { top: { style: 'thin', color: { argb: palette.border } }, bottom: { style: 'medium', color: { argb: palette.divider } } };
   });
 
   // Add sample demonstration row
-  ws.addRow({
+  const sampleRow = ws.addRow({
     almId: 'ALM-1001',
     name: 'Fix high latency in core checkout payment gateway',
     pdn: 'PDN-2026-08',
@@ -3642,6 +3787,9 @@ export const downloadDeliveryTemplate = async (): Promise<void> => {
     linkedType: 'Task',
     linkedId: 'TASK-001'
   });
+  sampleRow.height = 20;
+  styleZebraRow(sampleRow, 0, palette, 12);
+  formatStatusCell(sampleRow.getCell('almStatus'), 'Fixed', palette);
 
   const buf = await wb.xlsx.writeBuffer();
   const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });

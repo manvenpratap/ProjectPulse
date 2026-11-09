@@ -469,6 +469,12 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     document.documentElement.setAttribute('data-theme', theme);
   }, []);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      (window as any).setTheme = setTheme;
+    }
+  }, [setTheme]);
+
   const updateSettings = useCallback((settings: Partial<ProjectState['settings']>) => {
     setState(prev => ({ ...prev, settings: { ...prev.settings, ...settings } }));
   }, []);

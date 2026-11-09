@@ -9,7 +9,7 @@
       "source_file": "vite.config.ts",
       "source_location": "L1",
       "id": "vite_config_ts",
-      "community": 13,
+      "community": 14,
       "norm_label": "vite.config.ts"
     },
     {
@@ -18,7 +18,7 @@
       "source_file": "vite.config.ts",
       "source_location": "L7",
       "id": "projectpulse_2_0_vite_config_env",
-      "community": 13,
+      "community": 14,
       "norm_label": "env"
     },
     {
@@ -27,7 +27,7 @@
       "source_file": "server.ts",
       "source_location": "L1",
       "id": "server_ts",
-      "community": 14,
+      "community": 15,
       "norm_label": "server.ts"
     },
     {
@@ -36,7 +36,7 @@
       "source_file": "server.ts",
       "source_location": "L9",
       "id": "projectpulse_2_0_server_startserver",
-      "community": 14,
+      "community": 15,
       "norm_label": "startserver()"
     },
     {
@@ -81,7 +81,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L1",
       "id": "src_types_index_ts",
-      "community": 4,
+      "community": 0,
       "norm_label": "index.ts"
     },
     {
@@ -99,7 +99,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L14",
       "id": "types_index_taskpriority",
-      "community": 2,
+      "community": 0,
       "norm_label": "taskpriority"
     },
     {
@@ -108,7 +108,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L21",
       "id": "types_index_defectstatus",
-      "community": 4,
+      "community": 0,
       "norm_label": "defectstatus"
     },
     {
@@ -144,7 +144,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L77",
       "id": "types_index_member",
-      "community": 3,
+      "community": 0,
       "norm_label": "member"
     },
     {
@@ -171,7 +171,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L126",
       "id": "types_index_customfield",
-      "community": 4,
+      "community": 0,
       "norm_label": "customfield"
     },
     {
@@ -180,7 +180,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L135",
       "id": "types_index_fieldconfig",
-      "community": 4,
+      "community": 0,
       "norm_label": "fieldconfig"
     },
     {
@@ -198,7 +198,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L155",
       "id": "types_index_widgetlayout",
-      "community": 4,
+      "community": 0,
       "norm_label": "widgetlayout"
     },
     {
@@ -207,7 +207,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L169",
       "id": "types_index_delivery",
-      "community": 0,
+      "community": 5,
       "norm_label": "delivery"
     },
     {
@@ -216,7 +216,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L203",
       "id": "types_index_projectstate",
-      "community": 4,
+      "community": 0,
       "norm_label": "projectstate"
     },
     {
@@ -225,7 +225,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L242",
       "id": "types_index_logentry",
-      "community": 5,
+      "community": 2,
       "norm_label": "logentry"
     },
     {
@@ -243,7 +243,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L264",
       "id": "types_index_raiditem",
-      "community": 2,
+      "community": 0,
       "norm_label": "raiditem"
     },
     {
@@ -252,7 +252,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L282",
       "id": "types_index_decision",
-      "community": 2,
+      "community": 0,
       "norm_label": "decision"
     },
     {
@@ -270,7 +270,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L316",
       "id": "types_index_release",
-      "community": 0,
+      "community": 5,
       "norm_label": "release"
     },
     {
@@ -279,7 +279,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L324",
       "id": "types_index_retroitem",
-      "community": 5,
+      "community": 0,
       "norm_label": "retroitem"
     },
     {
@@ -288,7 +288,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L337",
       "id": "types_index_projectsettings",
-      "community": 4,
+      "community": 0,
       "norm_label": "projectsettings"
     },
     {
@@ -378,7 +378,7 @@
       "source_file": "src/config/viewHelpData.ts",
       "source_location": "L1",
       "id": "src_config_viewhelpdata_ts",
-      "community": 10,
+      "community": 4,
       "norm_label": "viewhelpdata.ts"
     },
     {
@@ -387,7 +387,7 @@
       "source_file": "src/config/viewHelpData.ts",
       "source_location": "L1",
       "id": "config_viewhelpdata_viewhelpitem",
-      "community": 10,
+      "community": 4,
       "norm_label": "viewhelpitem"
     },
     {
@@ -396,7 +396,7 @@
       "source_file": "src/config/viewHelpData.ts",
       "source_location": "L19",
       "id": "config_viewhelpdata_standardfielditem",
-      "community": 10,
+      "community": 4,
       "norm_label": "standardfielditem"
     },
     {
@@ -405,7 +405,7 @@
       "source_file": "src/config/viewHelpData.ts",
       "source_location": "L26",
       "id": "config_viewhelpdata_shortcutitem",
-      "community": 10,
+      "community": 4,
       "norm_label": "shortcutitem"
     },
     {
@@ -414,7 +414,7 @@
       "source_file": "src/config/viewHelpData.ts",
       "source_location": "L32",
       "id": "config_viewhelpdata_view_help_data",
-      "community": 10,
+      "community": 4,
       "norm_label": "view_help_data"
     },
     {
@@ -423,7 +423,7 @@
       "source_file": "src/config/viewHelpData.ts",
       "source_location": "L831",
       "id": "config_viewhelpdata_standard_field_guide",
-      "community": 10,
+      "community": 4,
       "norm_label": "standard_field_guide"
     },
     {
@@ -432,7 +432,7 @@
       "source_file": "src/config/viewHelpData.ts",
       "source_location": "L912",
       "id": "config_viewhelpdata_global_shortcuts",
-      "community": 10,
+      "community": 4,
       "norm_label": "global_shortcuts"
     },
     {
@@ -459,7 +459,7 @@
       "source_file": "src/utils/projectUtils.ts",
       "source_location": "L5",
       "id": "utils_projectutils_todaystr",
-      "community": 0,
+      "community": 5,
       "norm_label": "todaystr()"
     },
     {
@@ -468,7 +468,7 @@
       "source_file": "src/utils/projectUtils.ts",
       "source_location": "L7",
       "id": "utils_projectutils_fmtdate",
-      "community": 0,
+      "community": 5,
       "norm_label": "fmtdate()"
     },
     {
@@ -522,7 +522,7 @@
       "source_file": "src/utils/projectUtils.ts",
       "source_location": "L68",
       "id": "utils_projectutils_gethealthscore",
-      "community": 2,
+      "community": 10,
       "norm_label": "gethealthscore()"
     },
     {
@@ -576,7 +576,7 @@
       "source_file": "src/components/settings/BaselineManager.tsx",
       "source_location": "L24",
       "id": "settings_baselinemanager_baselinemanager",
-      "community": 0,
+      "community": 5,
       "norm_label": "baselinemanager()"
     },
     {
@@ -621,7 +621,7 @@
       "source_file": "src/components/tasks/BoardView.tsx",
       "source_location": "L12",
       "id": "tasks_boardview_boardview",
-      "community": 5,
+      "community": 3,
       "norm_label": "boardview()"
     },
     {
@@ -711,7 +711,7 @@
       "source_file": "src/components/tasks/TaskView.tsx",
       "source_location": "L1",
       "id": "src_components_tasks_taskview_tsx",
-      "community": 5,
+      "community": 3,
       "norm_label": "taskview.tsx"
     },
     {
@@ -720,7 +720,7 @@
       "source_file": "src/components/tasks/TaskView.tsx",
       "source_location": "L12",
       "id": "tasks_taskview_taskview",
-      "community": 5,
+      "community": 3,
       "norm_label": "taskview()"
     },
     {
@@ -801,7 +801,7 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L1",
       "id": "src_components_layout_themeflyout_tsx",
-      "community": 5,
+      "community": 11,
       "norm_label": "themeflyout.tsx"
     },
     {
@@ -810,7 +810,7 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L7",
       "id": "layout_themeflyout_themeflyoutprops",
-      "community": 5,
+      "community": 11,
       "norm_label": "themeflyoutprops"
     },
     {
@@ -819,7 +819,7 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L12",
       "id": "layout_themeflyout_themedef",
-      "community": 5,
+      "community": 11,
       "norm_label": "themedef"
     },
     {
@@ -828,7 +828,7 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L26",
       "id": "layout_themeflyout_themes",
-      "community": 5,
+      "community": 11,
       "norm_label": "themes"
     },
     {
@@ -837,7 +837,7 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L545",
       "id": "layout_themeflyout_dark_map",
-      "community": 5,
+      "community": 11,
       "norm_label": "dark_map"
     },
     {
@@ -846,7 +846,7 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L560",
       "id": "layout_themeflyout_light_map",
-      "community": 5,
+      "community": 11,
       "norm_label": "light_map"
     },
     {
@@ -855,7 +855,7 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L575",
       "id": "layout_themeflyout_filtercategory",
-      "community": 5,
+      "community": 11,
       "norm_label": "filtercategory"
     },
     {
@@ -864,7 +864,7 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L577",
       "id": "layout_themeflyout_themeflyout",
-      "community": 5,
+      "community": 11,
       "norm_label": "themeflyout()"
     },
     {
@@ -1062,7 +1062,7 @@
       "source_file": "src/components/layout/NotificationFlyout.tsx",
       "source_location": "L22",
       "id": "layout_notificationflyout_notificationflyout",
-      "community": 5,
+      "community": 1,
       "norm_label": "notificationflyout()"
     },
     {
@@ -1071,7 +1071,7 @@
       "source_file": "src/components/layout/SetupView.tsx",
       "source_location": "L1",
       "id": "src_components_layout_setupview_tsx",
-      "community": 5,
+      "community": 3,
       "norm_label": "setupview.tsx"
     },
     {
@@ -1080,7 +1080,7 @@
       "source_file": "src/components/layout/SetupView.tsx",
       "source_location": "L8",
       "id": "layout_setupview_setupview",
-      "community": 5,
+      "community": 3,
       "norm_label": "setupview()"
     },
     {
@@ -1098,7 +1098,7 @@
       "source_file": "src/components/scheduler/SchedulerView.tsx",
       "source_location": "L9",
       "id": "scheduler_schedulerview_schedulerview",
-      "community": 5,
+      "community": 3,
       "norm_label": "schedulerview()"
     },
     {
@@ -1170,7 +1170,7 @@
       "source_file": "src/components/shared/ViewExportButton.tsx",
       "source_location": "L27",
       "id": "shared_viewexportbutton_viewexportbutton",
-      "community": 5,
+      "community": 2,
       "norm_label": "viewexportbutton()"
     },
     {
@@ -1278,7 +1278,7 @@
       "source_file": "src/components/shared/Button.tsx",
       "source_location": "L1",
       "id": "src_components_shared_button_tsx",
-      "community": 3,
+      "community": 4,
       "norm_label": "button.tsx"
     },
     {
@@ -1287,7 +1287,7 @@
       "source_file": "src/components/shared/Button.tsx",
       "source_location": "L6",
       "id": "shared_button_cn",
-      "community": 3,
+      "community": 4,
       "norm_label": "cn()"
     },
     {
@@ -1296,7 +1296,7 @@
       "source_file": "src/components/shared/Button.tsx",
       "source_location": "L10",
       "id": "shared_button_buttonprops",
-      "community": 3,
+      "community": 4,
       "norm_label": "buttonprops"
     },
     {
@@ -1305,7 +1305,7 @@
       "source_file": "src/components/shared/Button.tsx",
       "source_location": "L16",
       "id": "shared_button_button",
-      "community": 3,
+      "community": 4,
       "norm_label": "button()"
     },
     {
@@ -1314,7 +1314,7 @@
       "source_file": "src/components/shared/Modal.tsx",
       "source_location": "L1",
       "id": "src_components_shared_modal_tsx",
-      "community": 3,
+      "community": 4,
       "norm_label": "modal.tsx"
     },
     {
@@ -1323,7 +1323,7 @@
       "source_file": "src/components/shared/Modal.tsx",
       "source_location": "L6",
       "id": "shared_modal_modalprops",
-      "community": 3,
+      "community": 4,
       "norm_label": "modalprops"
     },
     {
@@ -1332,7 +1332,7 @@
       "source_file": "src/components/shared/Modal.tsx",
       "source_location": "L15",
       "id": "shared_modal_modal",
-      "community": 3,
+      "community": 4,
       "norm_label": "modal()"
     },
     {
@@ -1341,7 +1341,7 @@
       "source_file": "src/components/shared/HelpModal.tsx",
       "source_location": "L1",
       "id": "src_components_shared_helpmodal_tsx",
-      "community": 10,
+      "community": 4,
       "norm_label": "helpmodal.tsx"
     },
     {
@@ -1350,7 +1350,7 @@
       "source_file": "src/components/shared/HelpModal.tsx",
       "source_location": "L29",
       "id": "shared_helpmodal_helpmodalprops",
-      "community": 10,
+      "community": 4,
       "norm_label": "helpmodalprops"
     },
     {
@@ -1359,7 +1359,7 @@
       "source_file": "src/components/shared/HelpModal.tsx",
       "source_location": "L35",
       "id": "shared_helpmodal_helpmodal",
-      "community": 10,
+      "community": 4,
       "norm_label": "helpmodal()"
     },
     {
@@ -1368,7 +1368,7 @@
       "source_file": "src/components/defects/DefectView.tsx",
       "source_location": "L1",
       "id": "src_components_defects_defectview_tsx",
-      "community": 4,
+      "community": 3,
       "norm_label": "defectview.tsx"
     },
     {
@@ -1377,7 +1377,7 @@
       "source_file": "src/components/defects/DefectView.tsx",
       "source_location": "L33",
       "id": "defects_defectview_viewmode",
-      "community": 4,
+      "community": 3,
       "norm_label": "viewmode"
     },
     {
@@ -1386,7 +1386,7 @@
       "source_file": "src/components/defects/DefectView.tsx",
       "source_location": "L34",
       "id": "defects_defectview_densitymode",
-      "community": 4,
+      "community": 3,
       "norm_label": "densitymode"
     },
     {
@@ -1395,7 +1395,7 @@
       "source_file": "src/components/defects/DefectView.tsx",
       "source_location": "L36",
       "id": "defects_defectview_def_st_map",
-      "community": 4,
+      "community": 3,
       "norm_label": "def_st_map"
     },
     {
@@ -1467,7 +1467,7 @@
       "source_file": "src/components/dashboard/BurndownChart.tsx",
       "source_location": "L29",
       "id": "dashboard_burndownchart_burndownchart",
-      "community": 5,
+      "community": 3,
       "norm_label": "burndownchart()"
     },
     {
@@ -1476,7 +1476,7 @@
       "source_file": "src/components/dashboard/OverviewView.tsx",
       "source_location": "L1",
       "id": "src_components_dashboard_overviewview_tsx",
-      "community": 2,
+      "community": 0,
       "norm_label": "overviewview.tsx"
     },
     {
@@ -1485,7 +1485,7 @@
       "source_file": "src/components/dashboard/OverviewView.tsx",
       "source_location": "L37",
       "id": "dashboard_overviewview_overviewview",
-      "community": 2,
+      "community": 10,
       "norm_label": "overviewview()"
     },
     {
@@ -1503,7 +1503,7 @@
       "source_file": "src/components/dashboard/ModuleDeliveryMatrix.tsx",
       "source_location": "L20",
       "id": "dashboard_moduledeliverymatrix_moduledeliverymatrix",
-      "community": 5,
+      "community": 3,
       "norm_label": "moduledeliverymatrix()"
     },
     {
@@ -1539,7 +1539,7 @@
       "source_file": "src/components/dashboard/DashboardView.tsx",
       "source_location": "L78",
       "id": "dashboard_dashboardview_dashboardview",
-      "community": 5,
+      "community": 10,
       "norm_label": "dashboardview()"
     },
     {
@@ -1557,7 +1557,7 @@
       "source_file": "src/components/dashboard/PredictiveIntelligence.tsx",
       "source_location": "L17",
       "id": "dashboard_predictiveintelligence_predictiveintelligence",
-      "community": 5,
+      "community": 3,
       "norm_label": "predictiveintelligence()"
     },
     {
@@ -1611,7 +1611,7 @@
       "source_file": "src/components/team/CapacityView.tsx",
       "source_location": "L37",
       "id": "team_capacityview_capacityview",
-      "community": 5,
+      "community": 3,
       "norm_label": "capacityview()"
     },
     {
@@ -1692,7 +1692,7 @@
       "source_file": "src/components/architect/ReleaseRoadmap.tsx",
       "source_location": "L1",
       "id": "src_components_architect_releaseroadmap_tsx",
-      "community": 0,
+      "community": 5,
       "norm_label": "releaseroadmap.tsx"
     },
     {
@@ -1701,7 +1701,7 @@
       "source_file": "src/components/architect/ReleaseRoadmap.tsx",
       "source_location": "L31",
       "id": "architect_releaseroadmap_releaseroadmap",
-      "community": 0,
+      "community": 5,
       "norm_label": "releaseroadmap()"
     },
     {
@@ -1737,7 +1737,7 @@
       "source_file": "src/components/architect/RegistryView.tsx",
       "source_location": "L1",
       "id": "src_components_architect_registryview_tsx",
-      "community": 5,
+      "community": 3,
       "norm_label": "registryview.tsx"
     },
     {
@@ -1746,7 +1746,7 @@
       "source_file": "src/components/architect/RegistryView.tsx",
       "source_location": "L22",
       "id": "architect_registryview_registryview",
-      "community": 5,
+      "community": 3,
       "norm_label": "registryview()"
     },
     {
@@ -1791,7 +1791,7 @@
       "source_file": "src/components/architect/FieldArchitect.tsx",
       "source_location": "L1",
       "id": "src_components_architect_fieldarchitect_tsx",
-      "community": 4,
+      "community": 0,
       "norm_label": "fieldarchitect.tsx"
     },
     {
@@ -1800,7 +1800,7 @@
       "source_file": "src/components/architect/FieldArchitect.tsx",
       "source_location": "L48",
       "id": "architect_fieldarchitect_domaintab",
-      "community": 4,
+      "community": 0,
       "norm_label": "domaintab"
     },
     {
@@ -1809,7 +1809,7 @@
       "source_file": "src/components/architect/FieldArchitect.tsx",
       "source_location": "L50",
       "id": "architect_fieldarchitect_fieldarchitect",
-      "community": 4,
+      "community": 0,
       "norm_label": "fieldarchitect()"
     },
     {
@@ -1818,7 +1818,7 @@
       "source_file": "src/components/risks/RAIDView.tsx",
       "source_location": "L1",
       "id": "src_components_risks_raidview_tsx",
-      "community": 3,
+      "community": 0,
       "norm_label": "raidview.tsx"
     },
     {
@@ -1836,7 +1836,7 @@
       "source_file": "src/components/retro/SprintRetroView.tsx",
       "source_location": "L1",
       "id": "src_components_retro_sprintretroview_tsx",
-      "community": 5,
+      "community": 0,
       "norm_label": "sprintretroview.tsx"
     },
     {
@@ -1845,7 +1845,7 @@
       "source_file": "src/components/retro/SprintRetroView.tsx",
       "source_location": "L29",
       "id": "retro_sprintretroview_categories",
-      "community": 5,
+      "community": 0,
       "norm_label": "categories"
     },
     {
@@ -1854,7 +1854,7 @@
       "source_file": "src/components/retro/SprintRetroView.tsx",
       "source_location": "L36",
       "id": "retro_sprintretroview_sprintretroview",
-      "community": 5,
+      "community": 3,
       "norm_label": "sprintretroview()"
     },
     {
@@ -1863,7 +1863,7 @@
       "source_file": "src/components/log/LogView.tsx",
       "source_location": "L1",
       "id": "src_components_log_logview_tsx",
-      "community": 5,
+      "community": 2,
       "norm_label": "logview.tsx"
     },
     {
@@ -1872,7 +1872,7 @@
       "source_file": "src/components/log/LogView.tsx",
       "source_location": "L10",
       "id": "log_logview_logview",
-      "community": 5,
+      "community": 2,
       "norm_label": "logview()"
     },
     {
@@ -1881,7 +1881,7 @@
       "source_file": "src/components/timeline/TimelineView.tsx",
       "source_location": "L1",
       "id": "src_components_timeline_timelineview_tsx",
-      "community": 0,
+      "community": 5,
       "norm_label": "timelineview.tsx"
     },
     {
@@ -1890,7 +1890,7 @@
       "source_file": "src/components/timeline/TimelineView.tsx",
       "source_location": "L31",
       "id": "timeline_timelineview_zoommode",
-      "community": 0,
+      "community": 5,
       "norm_label": "zoommode"
     },
     {
@@ -1899,7 +1899,7 @@
       "source_file": "src/components/timeline/TimelineView.tsx",
       "source_location": "L32",
       "id": "timeline_timelineview_sortmode",
-      "community": 0,
+      "community": 5,
       "norm_label": "sortmode"
     },
     {
@@ -1908,7 +1908,7 @@
       "source_file": "src/components/timeline/TimelineView.tsx",
       "source_location": "L33",
       "id": "timeline_timelineview_viewmode",
-      "community": 0,
+      "community": 5,
       "norm_label": "viewmode"
     },
     {
@@ -1917,7 +1917,7 @@
       "source_file": "src/components/timeline/TimelineView.tsx",
       "source_location": "L35",
       "id": "timeline_timelineview_montecarlotaskresult",
-      "community": 0,
+      "community": 5,
       "norm_label": "montecarlotaskresult"
     },
     {
@@ -1926,7 +1926,7 @@
       "source_file": "src/components/timeline/TimelineView.tsx",
       "source_location": "L41",
       "id": "timeline_timelineview_hitarea",
-      "community": 0,
+      "community": 5,
       "norm_label": "hitarea"
     },
     {
@@ -1935,7 +1935,7 @@
       "source_file": "src/components/timeline/TimelineView.tsx",
       "source_location": "L49",
       "id": "timeline_timelineview_timelineview",
-      "community": 0,
+      "community": 5,
       "norm_label": "timelineview()"
     },
     {
@@ -1962,7 +1962,7 @@
       "source_file": "src/components/reports/CxoEmailModal.tsx",
       "source_location": "L30",
       "id": "reports_cxoemailmodal_cxoemailmodal",
-      "community": 0,
+      "community": 10,
       "norm_label": "cxoemailmodal()"
     },
     {
@@ -1971,7 +1971,7 @@
       "source_file": "src/components/reports/ReportView.tsx",
       "source_location": "L1",
       "id": "src_components_reports_reportview_tsx",
-      "community": 2,
+      "community": 10,
       "norm_label": "reportview.tsx"
     },
     {
@@ -1980,7 +1980,7 @@
       "source_file": "src/components/reports/ReportView.tsx",
       "source_location": "L42",
       "id": "reports_reportview_colors",
-      "community": 2,
+      "community": 10,
       "norm_label": "colors"
     },
     {
@@ -1989,7 +1989,7 @@
       "source_file": "src/components/reports/ReportView.tsx",
       "source_location": "L44",
       "id": "reports_reportview_reporttype",
-      "community": 2,
+      "community": 10,
       "norm_label": "reporttype"
     },
     {
@@ -1998,7 +1998,7 @@
       "source_file": "src/components/reports/ReportView.tsx",
       "source_location": "L46",
       "id": "reports_reportview_reportview",
-      "community": 2,
+      "community": 10,
       "norm_label": "reportview()"
     },
     {
@@ -2007,7 +2007,7 @@
       "source_file": "src/components/deliveries/DeliveriesView.tsx",
       "source_location": "L1",
       "id": "src_components_deliveries_deliveriesview_tsx",
-      "community": 3,
+      "community": 5,
       "norm_label": "deliveriesview.tsx"
     },
     {
@@ -2016,7 +2016,7 @@
       "source_file": "src/components/deliveries/DeliveriesView.tsx",
       "source_location": "L50",
       "id": "deliveries_deliveriesview_viewmode",
-      "community": 3,
+      "community": 5,
       "norm_label": "viewmode"
     },
     {
@@ -2025,7 +2025,7 @@
       "source_file": "src/components/deliveries/DeliveriesView.tsx",
       "source_location": "L51",
       "id": "deliveries_deliveriesview_heatmapperspective",
-      "community": 3,
+      "community": 5,
       "norm_label": "heatmapperspective"
     },
     {
@@ -2034,7 +2034,7 @@
       "source_file": "src/components/deliveries/DeliveriesView.tsx",
       "source_location": "L52",
       "id": "deliveries_deliveriesview_autofitstrategy",
-      "community": 3,
+      "community": 5,
       "norm_label": "autofitstrategy"
     },
     {
@@ -2043,7 +2043,7 @@
       "source_file": "src/components/deliveries/DeliveriesView.tsx",
       "source_location": "L54",
       "id": "deliveries_deliveriesview_del_st_map",
-      "community": 3,
+      "community": 5,
       "norm_label": "del_st_map"
     },
     {
@@ -2052,7 +2052,7 @@
       "source_file": "src/components/deliveries/DeliveriesView.tsx",
       "source_location": "L63",
       "id": "deliveries_deliveriesview_alm_st_map",
-      "community": 3,
+      "community": 5,
       "norm_label": "alm_st_map"
     },
     {
@@ -2070,7 +2070,7 @@
       "source_file": "src/components/deliveries/DeliveriesView.tsx",
       "source_location": "L1263",
       "id": "deliveries_deliveriesview_deliverymodalprops",
-      "community": 3,
+      "community": 5,
       "norm_label": "deliverymodalprops"
     },
     {
@@ -2079,7 +2079,7 @@
       "source_file": "src/components/deliveries/DeliveriesView.tsx",
       "source_location": "L1270",
       "id": "deliveries_deliveriesview_deliverymodal",
-      "community": 0,
+      "community": 5,
       "norm_label": "deliverymodal()"
     },
     {
@@ -2227,10 +2227,55 @@
       "norm_label": "excelthemepalette"
     },
     {
+      "label": "THEME_PALETTES",
+      "file_type": "code",
+      "source_file": "src/services/excelService.ts",
+      "source_location": "L50",
+      "id": "services_excelservice_theme_palettes",
+      "community": 2,
+      "norm_label": "theme_palettes"
+    },
+    {
+      "label": "isColorDark()",
+      "file_type": "code",
+      "source_file": "src/services/excelService.ts",
+      "source_location": "L91",
+      "id": "services_excelservice_iscolordark",
+      "community": 2,
+      "norm_label": "iscolordark()"
+    },
+    {
+      "label": "getReadableText()",
+      "file_type": "code",
+      "source_file": "src/services/excelService.ts",
+      "source_location": "L101",
+      "id": "services_excelservice_getreadabletext",
+      "community": 2,
+      "norm_label": "getreadabletext()"
+    },
+    {
+      "label": "blendColors()",
+      "file_type": "code",
+      "source_file": "src/services/excelService.ts",
+      "source_location": "L105",
+      "id": "services_excelservice_blendcolors",
+      "community": 2,
+      "norm_label": "blendcolors()"
+    },
+    {
+      "label": "parseCssColorToArgb()",
+      "file_type": "code",
+      "source_file": "src/services/excelService.ts",
+      "source_location": "L120",
+      "id": "services_excelservice_parsecsscolortoargb",
+      "community": 2,
+      "norm_label": "parsecsscolortoargb()"
+    },
+    {
       "label": "getThemePalette()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L45",
+      "source_location": "L144",
       "id": "services_excelservice_getthemepalette",
       "community": 2,
       "norm_label": "getthemepalette()"
@@ -2239,7 +2284,7 @@
       "label": "drawTopKpiCard()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L103",
+      "source_location": "L243",
       "id": "services_excelservice_drawtopkpicard",
       "community": 2,
       "norm_label": "drawtopkpicard()"
@@ -2248,7 +2293,7 @@
       "label": "styleHeaderCell()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L155",
+      "source_location": "L295",
       "id": "services_excelservice_styleheadercell",
       "community": 2,
       "norm_label": "styleheadercell()"
@@ -2257,7 +2302,7 @@
       "label": "styleZebraRow()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L172",
+      "source_location": "L314",
       "id": "services_excelservice_stylezebrarow",
       "community": 2,
       "norm_label": "stylezebrarow()"
@@ -2266,7 +2311,7 @@
       "label": "formatStatusCell()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L195",
+      "source_location": "L337",
       "id": "services_excelservice_formatstatuscell",
       "community": 2,
       "norm_label": "formatstatuscell()"
@@ -2275,7 +2320,7 @@
       "label": "formatPriorityCell()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L222",
+      "source_location": "L364",
       "id": "services_excelservice_formatprioritycell",
       "community": 2,
       "norm_label": "formatprioritycell()"
@@ -2284,7 +2329,7 @@
       "label": "parseExcelDate()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L246",
+      "source_location": "L388",
       "id": "services_excelservice_parseexceldate",
       "community": 2,
       "norm_label": "parseexceldate()"
@@ -2293,7 +2338,7 @@
       "label": "cleanText()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L271",
+      "source_location": "L413",
       "id": "services_excelservice_cleantext",
       "community": 2,
       "norm_label": "cleantext()"
@@ -2302,7 +2347,7 @@
       "label": "getThemeTint()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L288",
+      "source_location": "L430",
       "id": "services_excelservice_getthemetint",
       "community": 2,
       "norm_label": "getthemetint()"
@@ -2311,7 +2356,7 @@
       "label": "getWeekNumber()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L305",
+      "source_location": "L447",
       "id": "services_excelservice_getweeknumber",
       "community": 2,
       "norm_label": "getweeknumber()"
@@ -2320,7 +2365,7 @@
       "label": "getHealthScore()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L313",
+      "source_location": "L455",
       "id": "services_excelservice_gethealthscore",
       "community": 2,
       "norm_label": "gethealthscore()"
@@ -2329,7 +2374,7 @@
       "label": "S()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L323",
+      "source_location": "L465",
       "id": "services_excelservice_s",
       "community": 2,
       "norm_label": "s()"
@@ -2338,7 +2383,7 @@
       "label": "cleanFmtDate()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L328",
+      "source_location": "L470",
       "id": "services_excelservice_cleanfmtdate",
       "community": 2,
       "norm_label": "cleanfmtdate()"
@@ -2347,7 +2392,7 @@
       "label": "generateCanvasChart()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L338",
+      "source_location": "L480",
       "id": "services_excelservice_generatecanvaschart",
       "community": 2,
       "norm_label": "generatecanvaschart()"
@@ -2356,7 +2401,7 @@
       "label": "formatProgressGradient()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L817",
+      "source_location": "L959",
       "id": "services_excelservice_formatprogressgradient",
       "community": 2,
       "norm_label": "formatprogressgradient()"
@@ -2365,7 +2410,7 @@
       "label": "styleUnifiedRow()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L858",
+      "source_location": "L1000",
       "id": "services_excelservice_styleunifiedrow",
       "community": 2,
       "norm_label": "styleunifiedrow()"
@@ -2374,7 +2419,7 @@
       "label": "styleFeatureRolloutRow()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L967",
+      "source_location": "L1109",
       "id": "services_excelservice_stylefeaturerolloutrow",
       "community": 2,
       "norm_label": "stylefeaturerolloutrow()"
@@ -2383,7 +2428,7 @@
       "label": "buildExecutiveDashboardSheet()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L1071",
+      "source_location": "L1213",
       "id": "services_excelservice_buildexecutivedashboardsheet",
       "community": 2,
       "norm_label": "buildexecutivedashboardsheet()"
@@ -2392,7 +2437,7 @@
       "label": "buildUnifiedTasksSheet()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L1777",
+      "source_location": "L1919",
       "id": "services_excelservice_buildunifiedtaskssheet",
       "community": 2,
       "norm_label": "buildunifiedtaskssheet()"
@@ -2401,7 +2446,7 @@
       "label": "buildFeatureRolloutsSheet()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L1983",
+      "source_location": "L2125",
       "id": "services_excelservice_buildfeaturerolloutssheet",
       "community": 2,
       "norm_label": "buildfeaturerolloutssheet()"
@@ -2410,7 +2455,7 @@
       "label": "buildFeatureMatrixWorkbook()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L2242",
+      "source_location": "L2384",
       "id": "services_excelservice_buildfeaturematrixworkbook",
       "community": 2,
       "norm_label": "buildfeaturematrixworkbook()"
@@ -2419,7 +2464,7 @@
       "label": "exportFeatureMatrixExcel()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L2386",
+      "source_location": "L2528",
       "id": "services_excelservice_exportfeaturematrixexcel",
       "community": 2,
       "norm_label": "exportfeaturematrixexcel()"
@@ -2428,7 +2473,7 @@
       "label": "exportProjectExcel()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L2409",
+      "source_location": "L2551",
       "id": "services_excelservice_exportprojectexcel",
       "community": 2,
       "norm_label": "exportprojectexcel()"
@@ -2437,7 +2482,7 @@
       "label": "parseCsvIntoWorksheet()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L2989",
+      "source_location": "L3131",
       "id": "services_excelservice_parsecsvintoworksheet",
       "community": 1,
       "norm_label": "parsecsvintoworksheet()"
@@ -2446,7 +2491,7 @@
       "label": "importProjectExcel()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L3041",
+      "source_location": "L3183",
       "id": "services_excelservice_importprojectexcel",
       "community": 1,
       "norm_label": "importprojectexcel()"
@@ -2455,7 +2500,7 @@
       "label": "importDeliveriesFromExcel()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L3559",
+      "source_location": "L3701",
       "id": "services_excelservice_importdeliveriesfromexcel",
       "community": 1,
       "norm_label": "importdeliveriesfromexcel()"
@@ -2464,7 +2509,7 @@
       "label": "downloadDeliveryTemplate()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L3603",
+      "source_location": "L3745",
       "id": "services_excelservice_downloaddeliverytemplate",
       "community": 2,
       "norm_label": "downloaddeliverytemplate()"
@@ -2527,9 +2572,9 @@
       "label": "useProject()",
       "file_type": "code",
       "source_file": "src/store/ProjectContext.tsx",
-      "source_location": "L521",
+      "source_location": "L527",
       "id": "store_projectcontext_useproject",
-      "community": 5,
+      "community": 3,
       "norm_label": "useproject()"
     },
     {
@@ -2601,7 +2646,7 @@
       "source_file": "src/store/defaultState.ts",
       "source_location": "L1",
       "id": "src_store_defaultstate_ts",
-      "community": 4,
+      "community": 0,
       "norm_label": "defaultstate.ts"
     },
     {
@@ -2610,7 +2655,7 @@
       "source_file": "src/store/defaultState.ts",
       "source_location": "L3",
       "id": "store_defaultstate_default_task_cols",
-      "community": 4,
+      "community": 0,
       "norm_label": "default_task_cols"
     },
     {
@@ -2619,7 +2664,7 @@
       "source_file": "src/store/defaultState.ts",
       "source_location": "L23",
       "id": "store_defaultstate_default_defect_cols",
-      "community": 4,
+      "community": 0,
       "norm_label": "default_defect_cols"
     },
     {
@@ -2628,7 +2673,7 @@
       "source_file": "src/store/defaultState.ts",
       "source_location": "L39",
       "id": "store_defaultstate_default_delivery_cols",
-      "community": 4,
+      "community": 0,
       "norm_label": "default_delivery_cols"
     },
     {
@@ -3123,7 +3168,7 @@
       "source_file": "wiki/Home.md",
       "source_location": "L1",
       "id": "wiki_home_md",
-      "community": 12,
+      "community": 13,
       "norm_label": "home.md"
     },
     {
@@ -3132,7 +3177,7 @@
       "source_file": "wiki/Home.md",
       "source_location": "L1",
       "id": "wiki_home_welcome_to_the_projectpulse_wiki",
-      "community": 12,
+      "community": 13,
       "norm_label": "welcome to the projectpulse wiki"
     },
     {
@@ -3141,7 +3186,7 @@
       "source_file": "wiki/Home.md",
       "source_location": "L9",
       "id": "wiki_home_core_documentation",
-      "community": 12,
+      "community": 13,
       "norm_label": "\ud83d\udcda core documentation"
     },
     {
@@ -3150,7 +3195,7 @@
       "source_file": "wiki/Home.md",
       "source_location": "L16",
       "id": "wiki_home_key_highlights",
-      "community": 12,
+      "community": 13,
       "norm_label": "\u26a1 key highlights"
     },
     {
@@ -3159,7 +3204,7 @@
       "source_file": "wiki/_Sidebar.md",
       "source_location": "L1",
       "id": "wiki_sidebar_md",
-      "community": 15,
+      "community": 16,
       "norm_label": "_sidebar.md"
     },
     {
@@ -3168,7 +3213,7 @@
       "source_file": "wiki/_Footer.md",
       "source_location": "L1",
       "id": "wiki_footer_md",
-      "community": 16,
+      "community": 17,
       "norm_label": "_footer.md"
     },
     {
@@ -3177,7 +3222,7 @@
       "source_file": "design-system/MASTER.md",
       "source_location": "L1",
       "id": "design_system_master_md",
-      "community": 11,
+      "community": 12,
       "norm_label": "master.md"
     },
     {
@@ -3186,7 +3231,7 @@
       "source_file": "design-system/MASTER.md",
       "source_location": "L1",
       "id": "design_system_master_projectpulse_design_system_master_specification",
-      "community": 11,
+      "community": 12,
       "norm_label": "projectpulse design system \u2014 master specification"
     },
     {
@@ -3195,7 +3240,7 @@
       "source_file": "design-system/MASTER.md",
       "source_location": "L3",
       "id": "design_system_master_1_product_foundations",
-      "community": 11,
+      "community": 12,
       "norm_label": "1. product foundations"
     },
     {
@@ -3204,7 +3249,7 @@
       "source_file": "design-system/MASTER.md",
       "source_location": "L16",
       "id": "design_system_master_2_typography_hierarchies",
-      "community": 11,
+      "community": 12,
       "norm_label": "2. typography & hierarchies"
     },
     {
@@ -3213,7 +3258,7 @@
       "source_file": "design-system/MASTER.md",
       "source_location": "L25",
       "id": "design_system_master_3_surface_border_semantics_styleseed_standard",
-      "community": 11,
+      "community": 12,
       "norm_label": "3. surface & border semantics (styleseed standard)"
     },
     {
@@ -3222,7 +3267,7 @@
       "source_file": "design-system/MASTER.md",
       "source_location": "L39",
       "id": "design_system_master_4_interaction_motion_rules",
-      "community": 11,
+      "community": 12,
       "norm_label": "4. interaction & motion rules"
     },
     {
@@ -3230,7 +3275,7 @@
       "file_type": "code",
       "source_file": "src/components/architect/FieldArchitect.tsx",
       "source_location": "L296",
-      "community": 4,
+      "community": 0,
       "norm_label": "shieldcheck()",
       "id": "architect_fieldarchitect_shieldcheck"
     },
@@ -3257,7 +3302,7 @@
       "file_type": "code",
       "source_file": "architect/ReleaseRoadmap.tsx",
       "source_location": "L1",
-      "community": 0,
+      "community": 5,
       "norm_label": "releaseroadmap.tsx",
       "id": "architect_releaseroadmap_tsx"
     },
@@ -3266,7 +3311,7 @@
       "file_type": "code",
       "source_file": "settings/BaselineManager.tsx",
       "source_location": "L1",
-      "community": 0,
+      "community": 5,
       "norm_label": "baselinemanager.tsx",
       "id": "settings_baselinemanager_tsx"
     }
@@ -4613,9 +4658,9 @@
       "source_file": "src/components/architect/StepTemplates.tsx",
       "source_location": "L30",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_architect_steptemplates_tsx",
-      "target": "types_index_taskstatus",
-      "confidence_score": 1.0
+      "target": "types_index_taskstatus"
     },
     {
       "relation": "imports",
@@ -5020,9 +5065,9 @@
       "source_file": "src/components/architect/StepTemplates.tsx",
       "source_location": "L30",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_architect_steptemplates_tsx",
-      "target": "types_index_subtask",
-      "confidence_score": 1.0
+      "target": "types_index_subtask"
     },
     {
       "relation": "imports",
@@ -5108,9 +5153,9 @@
       "source_file": "src/components/architect/StepTemplates.tsx",
       "source_location": "L30",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_architect_steptemplates_tsx",
-      "target": "types_index_task",
-      "confidence_score": 1.0
+      "target": "types_index_task"
     },
     {
       "relation": "imports",
@@ -11921,9 +11966,9 @@
       "source_file": "src/components/architect/StepTemplates.tsx",
       "source_location": "L37",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_architect_steptemplates_tsx",
-      "target": "architect_steptemplates_syncstep",
-      "confidence_score": 1.0
+      "target": "architect_steptemplates_syncstep"
     },
     {
       "relation": "contains",
@@ -11931,9 +11976,9 @@
       "source_file": "src/components/architect/StepTemplates.tsx",
       "source_location": "L42",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_architect_steptemplates_tsx",
-      "target": "architect_steptemplates_smartsyncsubtasks",
-      "confidence_score": 1.0
+      "target": "architect_steptemplates_smartsyncsubtasks"
     },
     {
       "relation": "contains",
@@ -13032,6 +13077,56 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/services/excelService.ts",
+      "source_location": "L50",
+      "weight": 1.0,
+      "source": "src_services_excelservice_ts",
+      "target": "services_excelservice_theme_palettes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/excelService.ts",
+      "source_location": "L91",
+      "weight": 1.0,
+      "source": "src_services_excelservice_ts",
+      "target": "services_excelservice_iscolordark",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/excelService.ts",
+      "source_location": "L101",
+      "weight": 1.0,
+      "source": "src_services_excelservice_ts",
+      "target": "services_excelservice_getreadabletext",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/excelService.ts",
+      "source_location": "L105",
+      "weight": 1.0,
+      "source": "src_services_excelservice_ts",
+      "target": "services_excelservice_blendcolors",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/excelService.ts",
+      "source_location": "L120",
+      "weight": 1.0,
+      "source": "src_services_excelservice_ts",
+      "target": "services_excelservice_parsecsscolortoargb",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/excelService.ts",
       "source_location": "L45",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -13314,6 +13409,50 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/services/excelService.ts",
+      "source_location": "L102",
+      "weight": 1.0,
+      "source": "services_excelservice_getreadabletext",
+      "target": "services_excelservice_iscolordark",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/excelService.ts",
+      "source_location": "L197",
+      "weight": 1.0,
+      "source": "services_excelservice_getthemepalette",
+      "target": "services_excelservice_iscolordark",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/excelService.ts",
+      "source_location": "L301",
+      "weight": 1.0,
+      "source": "services_excelservice_styleheadercell",
+      "target": "services_excelservice_iscolordark",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/excelService.ts",
+      "source_location": "L3767",
+      "weight": 1.0,
+      "source": "services_excelservice_downloaddeliverytemplate",
+      "target": "services_excelservice_iscolordark",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/excelService.ts",
       "source_location": "L2252",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -13330,6 +13469,17 @@
       "confidence_score": 1.0,
       "source": "services_excelservice_exportprojectexcel",
       "target": "services_excelservice_getthemepalette"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/excelService.ts",
+      "source_location": "L3747",
+      "weight": 1.0,
+      "source": "services_excelservice_downloaddeliverytemplate",
+      "target": "services_excelservice_getthemepalette",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -13413,6 +13563,17 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "src/services/excelService.ts",
+      "source_location": "L3791",
+      "weight": 1.0,
+      "source": "services_excelservice_downloaddeliverytemplate",
+      "target": "services_excelservice_stylezebrarow",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/excelService.ts",
       "source_location": "L958",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -13429,6 +13590,17 @@
       "confidence_score": 1.0,
       "source": "services_excelservice_stylefeaturerolloutrow",
       "target": "services_excelservice_formatstatuscell"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "src/services/excelService.ts",
+      "source_location": "L3792",
+      "weight": 1.0,
+      "source": "services_excelservice_downloaddeliverytemplate",
+      "target": "services_excelservice_formatstatuscell",
+      "confidence_score": 1.0
     },
     {
       "relation": "calls",
@@ -14513,5 +14685,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "759c1a2c77f240a12e1183ec3fcf1e4ab6700383"
+  "built_at_commit": "250855d7786a9aeba9e6f7d5c117dd913489c1f7"
 }

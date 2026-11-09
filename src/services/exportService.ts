@@ -105,7 +105,7 @@ export const exportViewToExcel = async (state: ProjectState, viewId: string): Pr
   wb.created = new Date();
   const fileDate = getFileStamp();
   let filename = `ProjectPulse_${viewId.toUpperCase()}_${fileDate}.xlsx`;
-  const palette = getThemePalette();
+  const palette = getThemePalette(state);
 
   switch (viewId) {
     case 'tasks': {
