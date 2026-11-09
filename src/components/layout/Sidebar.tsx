@@ -92,6 +92,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
     }
   }, [currentHub]);
 
+  // Global listener to open CXO Email Brief modal from any trigger
+  useEffect(() => {
+    const handleOpenCxo = () => setIsCxoEmailOpen(true);
+    window.addEventListener('open-cxo-email', handleOpenCxo);
+    return () => window.removeEventListener('open-cxo-email', handleOpenCxo);
+  }, []);
+
   const toggleHub = (hubId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setExpandedHubs(prev => ({ ...prev, [hubId]: !prev[hubId] }));

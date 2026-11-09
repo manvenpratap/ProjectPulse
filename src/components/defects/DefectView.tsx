@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
+import ViewExportButton from '../shared/ViewExportButton';
 import clsx from 'clsx';
 import { Defect, DefectStatus } from '../../types';
 import DefectModal from './DefectModal';
@@ -244,6 +245,8 @@ const DefectView: React.FC = () => {
                 </button>
               )}
             </div>
+
+            <ViewExportButton viewId="defects" label="Export Defects" />
 
             <Button variant="primary" size="sm" onClick={() => handleEdit(null)} className="h-9 px-2 sm:px-4 active:scale-95 shrink-0 font-bold">
               <Plus size={15} className="sm:mr-1.5" />

@@ -3,11 +3,11 @@ import { useProject } from '../../store/ProjectContext';
 import TaskGrid from './TaskGrid';
 import BoardView from './BoardView';
 import TaskModal from './TaskModal';
-import { ListTodo, Plus, LayoutGrid, Kanban, FileSpreadsheet } from 'lucide-react';
+import { ListTodo, Plus, LayoutGrid, Kanban } from 'lucide-react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
+import ViewExportButton from '../shared/ViewExportButton';
 import clsx from 'clsx';
-import { exportProjectExcel } from '../../services/excelService';
 
 const TaskView: React.FC = () => {
   const { state } = useProject();
@@ -63,10 +63,7 @@ const TaskView: React.FC = () => {
                 <span className="hidden sm:inline">Board</span>
               </button>
             </div>
-            <Button variant="outline" size="sm" onClick={() => exportProjectExcel(state)} className="mr-1 h-9 font-bold active:scale-95 px-2.5 sm:px-3">
-              <FileSpreadsheet size={15} className="text-emerald-500 sm:mr-1.5" />
-              <span className="hidden sm:inline">Export Excel</span>
-            </Button>
+            <ViewExportButton viewId="tasks" label="Export Tasks" className="mr-1" />
             <Button variant="primary" size="sm" onClick={handleAddNewTask} className="h-9 font-bold active:scale-95 px-2.5 sm:px-3">
               <Plus size={15} className="sm:mr-1" />
               <span className="hidden sm:inline">New Task</span>

@@ -919,3 +919,4 @@ export const GLOBAL_SHORTCUTS: ShortcutItem[] = [
   { keys: 'G T', action: 'Jump directly to Tasks Matrix', category: 'Navigation' },
   { keys: 'Double-Click Cell', action: 'Quick inline edit on supported spreadsheet table cells', category: 'Actions' }
 ];
+

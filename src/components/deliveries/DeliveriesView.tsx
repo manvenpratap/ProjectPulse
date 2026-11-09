@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { Delivery, TaskStatus } from '../../types';
 import { fmtDate, todayStr, daysDiff } from '../../utils/projectUtils';
-import { exportProjectExcel } from '../../services/excelService';
+import ViewExportButton from '../shared/ViewExportButton';
 import { 
   Package, 
   CheckCircle2, 
@@ -306,10 +306,7 @@ export const DeliveriesView: React.FC = () => {
               </button>
             </div>
 
-            <Button variant="outline" size="sm" onClick={() => exportProjectExcel(state)} title="Export Excel with Deliveries sheet" className="h-9 px-2.5 sm:px-3 font-bold active:scale-95 min-w-[36px]">
-              <FileSpreadsheet size={14} className="text-emerald-500 sm:mr-1.5" />
-              <span className="hidden sm:inline">Export</span>
-            </Button>
+            <ViewExportButton viewId="deliveries" label="Export Deliveries" />
 
             <Button variant="primary" size="sm" onClick={handleOpenCreate} className="h-9 px-2.5 sm:px-3 font-bold active:scale-95 min-w-[36px]">
               <Plus size={14} className="sm:mr-1" />

@@ -3,6 +3,7 @@ import { LucideIcon, HelpCircle } from 'lucide-react';
 import { useProject } from '../../store/ProjectContext';
 import { useAuth } from '../../store/AuthContext';
 import { getHubForView } from '../../config/navigation';
+import { ShareExportMenu } from './ShareExportMenu';
 import clsx from 'clsx';
 
 interface PageHeaderProps {
@@ -11,6 +12,7 @@ interface PageHeaderProps {
   subtitle?: React.ReactNode;
   actions?: React.ReactNode;
   showHubTabs?: boolean;
+  showShareExport?: boolean;
   className?: string;
 }
 
@@ -20,6 +22,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   subtitle,
   actions,
   showHubTabs = true,
+  showShareExport = true,
   className = '',
 }) => {
   const { state, setView } = useProject();
@@ -63,9 +66,10 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           </div>
         </div>
 
-        {actions && (
+        {(actions || showShareExport) && (
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 max-w-[60vw] sm:max-w-none">
             {actions}
+            {showShareExport && <ShareExportMenu />}
           </div>
         )}
       </div>

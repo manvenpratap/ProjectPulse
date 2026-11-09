@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
+import ViewExportButton from '../shared/ViewExportButton';
 import clsx from 'clsx';
 import { Feature, Task, TaskStatus } from '../../types';
 import { daysDiff, fmtDate, todayStr } from '../../utils/projectUtils';
@@ -457,6 +458,9 @@ export const FunctionalMatrix: React.FC = () => {
                 {coveragePct}%
               </span>
             </button>
+
+            {/* Export Matrix */}
+            <ViewExportButton viewId="features" label="Export Matrix" />
 
             {/* Create Feature */}
             <Button variant="primary" size="sm" onClick={handleAddFeature} className="h-8 rounded-xl font-bold px-2.5 sm:px-3 active:scale-95 shrink-0 text-xs">
