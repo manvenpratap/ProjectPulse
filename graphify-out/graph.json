@@ -9,7 +9,7 @@
       "source_file": "vite.config.ts",
       "source_location": "L1",
       "id": "vite_config_ts",
-      "community": 12,
+      "community": 14,
       "norm_label": "vite.config.ts"
     },
     {
@@ -18,7 +18,7 @@
       "source_file": "vite.config.ts",
       "source_location": "L7",
       "id": "projectpulse_2_0_vite_config_env",
-      "community": 12,
+      "community": 14,
       "norm_label": "env"
     },
     {
@@ -27,7 +27,7 @@
       "source_file": "server.ts",
       "source_location": "L1",
       "id": "server_ts",
-      "community": 13,
+      "community": 15,
       "norm_label": "server.ts"
     },
     {
@@ -36,7 +36,7 @@
       "source_file": "server.ts",
       "source_location": "L9",
       "id": "projectpulse_2_0_server_startserver",
-      "community": 13,
+      "community": 15,
       "norm_label": "startserver()"
     },
     {
@@ -81,7 +81,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L1",
       "id": "src_types_index_ts",
-      "community": 0,
+      "community": 2,
       "norm_label": "index.ts"
     },
     {
@@ -99,7 +99,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L14",
       "id": "types_index_taskpriority",
-      "community": 0,
+      "community": 4,
       "norm_label": "taskpriority"
     },
     {
@@ -108,7 +108,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L21",
       "id": "types_index_defectstatus",
-      "community": 0,
+      "community": 4,
       "norm_label": "defectstatus"
     },
     {
@@ -126,7 +126,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L46",
       "id": "types_index_task",
-      "community": 0,
+      "community": 2,
       "norm_label": "task"
     },
     {
@@ -144,7 +144,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L77",
       "id": "types_index_member",
-      "community": 0,
+      "community": 2,
       "norm_label": "member"
     },
     {
@@ -153,7 +153,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L93",
       "id": "types_index_defect",
-      "community": 4,
+      "community": 2,
       "norm_label": "defect"
     },
     {
@@ -162,7 +162,7 @@
       "source_file": "src/types/index.ts",
       "source_location": "L111",
       "id": "types_index_projectreport",
-      "community": 0,
+      "community": 4,
       "norm_label": "projectreport"
     },
     {
@@ -175,10 +175,19 @@
       "norm_label": "customfield"
     },
     {
-      "label": "StepTemplate",
+      "label": "FieldConfig",
       "file_type": "code",
       "source_file": "src/types/index.ts",
       "source_location": "L135",
+      "id": "types_index_fieldconfig",
+      "community": 4,
+      "norm_label": "fieldconfig"
+    },
+    {
+      "label": "StepTemplate",
+      "file_type": "code",
+      "source_file": "src/types/index.ts",
+      "source_location": "L146",
       "id": "types_index_steptemplate",
       "community": 0,
       "norm_label": "steptemplate"
@@ -187,52 +196,52 @@
       "label": "WidgetLayout",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L144",
+      "source_location": "L155",
       "id": "types_index_widgetlayout",
-      "community": 0,
+      "community": 2,
       "norm_label": "widgetlayout"
     },
     {
       "label": "Delivery",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L158",
+      "source_location": "L169",
       "id": "types_index_delivery",
-      "community": 3,
+      "community": 2,
       "norm_label": "delivery"
     },
     {
       "label": "ProjectState",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L192",
+      "source_location": "L203",
       "id": "types_index_projectstate",
-      "community": 0,
+      "community": 4,
       "norm_label": "projectstate"
     },
     {
       "label": "LogEntry",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L227",
+      "source_location": "L242",
       "id": "types_index_logentry",
-      "community": 0,
+      "community": 2,
       "norm_label": "logentry"
     },
     {
       "label": "Feature",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L240",
+      "source_location": "L255",
       "id": "types_index_feature",
-      "community": 0,
+      "community": 2,
       "norm_label": "feature"
     },
     {
       "label": "RaidItem",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L249",
+      "source_location": "L264",
       "id": "types_index_raiditem",
       "community": 2,
       "norm_label": "raiditem"
@@ -241,7 +250,7 @@
       "label": "Decision",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L267",
+      "source_location": "L282",
       "id": "types_index_decision",
       "community": 2,
       "norm_label": "decision"
@@ -250,7 +259,7 @@
       "label": "Baseline",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L284",
+      "source_location": "L299",
       "id": "types_index_baseline",
       "community": 0,
       "norm_label": "baseline"
@@ -259,7 +268,7 @@
       "label": "Release",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L301",
+      "source_location": "L316",
       "id": "types_index_release",
       "community": 0,
       "norm_label": "release"
@@ -268,25 +277,25 @@
       "label": "RetroItem",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L309",
+      "source_location": "L324",
       "id": "types_index_retroitem",
-      "community": 1,
+      "community": 5,
       "norm_label": "retroitem"
     },
     {
       "label": "ProjectSettings",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L322",
+      "source_location": "L337",
       "id": "types_index_projectsettings",
-      "community": 0,
+      "community": 2,
       "norm_label": "projectsettings"
     },
     {
       "label": "UserRole",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L349",
+      "source_location": "L364",
       "id": "types_index_userrole",
       "community": 1,
       "norm_label": "userrole"
@@ -295,7 +304,7 @@
       "label": "RolePermissions",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L351",
+      "source_location": "L366",
       "id": "types_index_rolepermissions",
       "community": 1,
       "norm_label": "rolepermissions"
@@ -304,7 +313,7 @@
       "label": "UserAccount",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L366",
+      "source_location": "L381",
       "id": "types_index_useraccount",
       "community": 1,
       "norm_label": "useraccount"
@@ -369,7 +378,7 @@
       "source_file": "src/config/viewHelpData.ts",
       "source_location": "L1",
       "id": "src_config_viewhelpdata_ts",
-      "community": 4,
+      "community": 7,
       "norm_label": "viewhelpdata.ts"
     },
     {
@@ -378,7 +387,7 @@
       "source_file": "src/config/viewHelpData.ts",
       "source_location": "L1",
       "id": "config_viewhelpdata_viewhelpitem",
-      "community": 4,
+      "community": 7,
       "norm_label": "viewhelpitem"
     },
     {
@@ -387,7 +396,7 @@
       "source_file": "src/config/viewHelpData.ts",
       "source_location": "L19",
       "id": "config_viewhelpdata_standardfielditem",
-      "community": 4,
+      "community": 7,
       "norm_label": "standardfielditem"
     },
     {
@@ -396,7 +405,7 @@
       "source_file": "src/config/viewHelpData.ts",
       "source_location": "L26",
       "id": "config_viewhelpdata_shortcutitem",
-      "community": 4,
+      "community": 7,
       "norm_label": "shortcutitem"
     },
     {
@@ -405,7 +414,7 @@
       "source_file": "src/config/viewHelpData.ts",
       "source_location": "L32",
       "id": "config_viewhelpdata_view_help_data",
-      "community": 4,
+      "community": 7,
       "norm_label": "view_help_data"
     },
     {
@@ -414,7 +423,7 @@
       "source_file": "src/config/viewHelpData.ts",
       "source_location": "L831",
       "id": "config_viewhelpdata_standard_field_guide",
-      "community": 4,
+      "community": 7,
       "norm_label": "standard_field_guide"
     },
     {
@@ -423,7 +432,7 @@
       "source_file": "src/config/viewHelpData.ts",
       "source_location": "L912",
       "id": "config_viewhelpdata_global_shortcuts",
-      "community": 4,
+      "community": 7,
       "norm_label": "global_shortcuts"
     },
     {
@@ -441,7 +450,7 @@
       "source_file": "src/utils/projectUtils.ts",
       "source_location": "L4",
       "id": "utils_projectutils_nowiso",
-      "community": 0,
+      "community": 4,
       "norm_label": "nowiso()"
     },
     {
@@ -477,7 +486,7 @@
       "source_file": "src/utils/projectUtils.ts",
       "source_location": "L27",
       "id": "utils_projectutils_addbusdays",
-      "community": 0,
+      "community": 4,
       "norm_label": "addbusdays()"
     },
     {
@@ -513,7 +522,7 @@
       "source_file": "src/utils/projectUtils.ts",
       "source_location": "L68",
       "id": "utils_projectutils_gethealthscore",
-      "community": 2,
+      "community": 1,
       "norm_label": "gethealthscore()"
     },
     {
@@ -621,7 +630,7 @@
       "source_file": "src/components/tasks/TaskGrid.tsx",
       "source_location": "L1",
       "id": "src_components_tasks_taskgrid_tsx",
-      "community": 3,
+      "community": 0,
       "norm_label": "taskgrid.tsx"
     },
     {
@@ -630,7 +639,7 @@
       "source_file": "src/components/tasks/TaskGrid.tsx",
       "source_location": "L34",
       "id": "tasks_taskgrid_taskgridprops",
-      "community": 3,
+      "community": 0,
       "norm_label": "taskgridprops"
     },
     {
@@ -639,7 +648,7 @@
       "source_file": "src/components/tasks/TaskGrid.tsx",
       "source_location": "L39",
       "id": "tasks_taskgrid_densitymode",
-      "community": 3,
+      "community": 0,
       "norm_label": "densitymode"
     },
     {
@@ -648,7 +657,7 @@
       "source_file": "src/components/tasks/TaskGrid.tsx",
       "source_location": "L41",
       "id": "tasks_taskgrid_st_map",
-      "community": 3,
+      "community": 0,
       "norm_label": "st_map"
     },
     {
@@ -657,7 +666,7 @@
       "source_file": "src/components/tasks/TaskGrid.tsx",
       "source_location": "L50",
       "id": "tasks_taskgrid_pri_map",
-      "community": 3,
+      "community": 0,
       "norm_label": "pri_map"
     },
     {
@@ -666,7 +675,7 @@
       "source_file": "src/components/tasks/TaskGrid.tsx",
       "source_location": "L57",
       "id": "tasks_taskgrid_taskgrid",
-      "community": 3,
+      "community": 0,
       "norm_label": "taskgrid()"
     },
     {
@@ -702,7 +711,7 @@
       "source_file": "src/components/tasks/TaskView.tsx",
       "source_location": "L1",
       "id": "src_components_tasks_taskview_tsx",
-      "community": 2,
+      "community": 0,
       "norm_label": "taskview.tsx"
     },
     {
@@ -711,7 +720,7 @@
       "source_file": "src/components/tasks/TaskView.tsx",
       "source_location": "L12",
       "id": "tasks_taskview_taskview",
-      "community": 2,
+      "community": 0,
       "norm_label": "taskview()"
     },
     {
@@ -792,7 +801,7 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L1",
       "id": "src_components_layout_themeflyout_tsx",
-      "community": 9,
+      "community": 11,
       "norm_label": "themeflyout.tsx"
     },
     {
@@ -801,7 +810,7 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L7",
       "id": "layout_themeflyout_themeflyoutprops",
-      "community": 9,
+      "community": 11,
       "norm_label": "themeflyoutprops"
     },
     {
@@ -810,7 +819,7 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L12",
       "id": "layout_themeflyout_themedef",
-      "community": 9,
+      "community": 11,
       "norm_label": "themedef"
     },
     {
@@ -819,7 +828,7 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L26",
       "id": "layout_themeflyout_themes",
-      "community": 9,
+      "community": 11,
       "norm_label": "themes"
     },
     {
@@ -828,7 +837,7 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L545",
       "id": "layout_themeflyout_dark_map",
-      "community": 9,
+      "community": 11,
       "norm_label": "dark_map"
     },
     {
@@ -837,7 +846,7 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L560",
       "id": "layout_themeflyout_light_map",
-      "community": 9,
+      "community": 11,
       "norm_label": "light_map"
     },
     {
@@ -846,7 +855,7 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L575",
       "id": "layout_themeflyout_filtercategory",
-      "community": 9,
+      "community": 11,
       "norm_label": "filtercategory"
     },
     {
@@ -855,7 +864,7 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L577",
       "id": "layout_themeflyout_themeflyout",
-      "community": 9,
+      "community": 11,
       "norm_label": "themeflyout()"
     },
     {
@@ -1089,7 +1098,7 @@
       "source_file": "src/components/scheduler/SchedulerView.tsx",
       "source_location": "L9",
       "id": "scheduler_schedulerview_schedulerview",
-      "community": 1,
+      "community": 0,
       "norm_label": "schedulerview()"
     },
     {
@@ -1269,7 +1278,7 @@
       "source_file": "src/components/shared/Button.tsx",
       "source_location": "L1",
       "id": "src_components_shared_button_tsx",
-      "community": 4,
+      "community": 5,
       "norm_label": "button.tsx"
     },
     {
@@ -1278,7 +1287,7 @@
       "source_file": "src/components/shared/Button.tsx",
       "source_location": "L6",
       "id": "shared_button_cn",
-      "community": 4,
+      "community": 5,
       "norm_label": "cn()"
     },
     {
@@ -1287,7 +1296,7 @@
       "source_file": "src/components/shared/Button.tsx",
       "source_location": "L10",
       "id": "shared_button_buttonprops",
-      "community": 4,
+      "community": 5,
       "norm_label": "buttonprops"
     },
     {
@@ -1296,7 +1305,7 @@
       "source_file": "src/components/shared/Button.tsx",
       "source_location": "L16",
       "id": "shared_button_button",
-      "community": 4,
+      "community": 5,
       "norm_label": "button()"
     },
     {
@@ -1305,7 +1314,7 @@
       "source_file": "src/components/shared/Modal.tsx",
       "source_location": "L1",
       "id": "src_components_shared_modal_tsx",
-      "community": 4,
+      "community": 7,
       "norm_label": "modal.tsx"
     },
     {
@@ -1314,7 +1323,7 @@
       "source_file": "src/components/shared/Modal.tsx",
       "source_location": "L6",
       "id": "shared_modal_modalprops",
-      "community": 4,
+      "community": 7,
       "norm_label": "modalprops"
     },
     {
@@ -1323,7 +1332,7 @@
       "source_file": "src/components/shared/Modal.tsx",
       "source_location": "L15",
       "id": "shared_modal_modal",
-      "community": 4,
+      "community": 7,
       "norm_label": "modal()"
     },
     {
@@ -1332,7 +1341,7 @@
       "source_file": "src/components/shared/HelpModal.tsx",
       "source_location": "L1",
       "id": "src_components_shared_helpmodal_tsx",
-      "community": 4,
+      "community": 7,
       "norm_label": "helpmodal.tsx"
     },
     {
@@ -1341,7 +1350,7 @@
       "source_file": "src/components/shared/HelpModal.tsx",
       "source_location": "L29",
       "id": "shared_helpmodal_helpmodalprops",
-      "community": 4,
+      "community": 7,
       "norm_label": "helpmodalprops"
     },
     {
@@ -1350,7 +1359,7 @@
       "source_file": "src/components/shared/HelpModal.tsx",
       "source_location": "L35",
       "id": "shared_helpmodal_helpmodal",
-      "community": 4,
+      "community": 7,
       "norm_label": "helpmodal()"
     },
     {
@@ -1431,7 +1440,7 @@
       "source_file": "src/components/dashboard/AIPulseAnalysis.tsx",
       "source_location": "L1",
       "id": "src_components_dashboard_aipulseanalysis_tsx",
-      "community": 4,
+      "community": 5,
       "norm_label": "aipulseanalysis.tsx"
     },
     {
@@ -1440,7 +1449,7 @@
       "source_file": "src/components/dashboard/AIPulseAnalysis.tsx",
       "source_location": "L8",
       "id": "dashboard_aipulseanalysis_aipulseanalysis",
-      "community": 4,
+      "community": 5,
       "norm_label": "aipulseanalysis()"
     },
     {
@@ -1458,7 +1467,7 @@
       "source_file": "src/components/dashboard/BurndownChart.tsx",
       "source_location": "L29",
       "id": "dashboard_burndownchart_burndownchart",
-      "community": 1,
+      "community": 0,
       "norm_label": "burndownchart()"
     },
     {
@@ -1476,7 +1485,7 @@
       "source_file": "src/components/dashboard/OverviewView.tsx",
       "source_location": "L37",
       "id": "dashboard_overviewview_overviewview",
-      "community": 2,
+      "community": 1,
       "norm_label": "overviewview()"
     },
     {
@@ -1494,7 +1503,7 @@
       "source_file": "src/components/dashboard/ModuleDeliveryMatrix.tsx",
       "source_location": "L20",
       "id": "dashboard_moduledeliverymatrix_moduledeliverymatrix",
-      "community": 1,
+      "community": 0,
       "norm_label": "moduledeliverymatrix()"
     },
     {
@@ -1503,7 +1512,7 @@
       "source_file": "src/components/dashboard/DashboardView.tsx",
       "source_location": "L1",
       "id": "src_components_dashboard_dashboardview_tsx",
-      "community": 0,
+      "community": 1,
       "norm_label": "dashboardview.tsx"
     },
     {
@@ -1512,7 +1521,7 @@
       "source_file": "src/components/dashboard/DashboardView.tsx",
       "source_location": "L62",
       "id": "dashboard_dashboardview_severity_colors",
-      "community": 0,
+      "community": 1,
       "norm_label": "severity_colors"
     },
     {
@@ -1521,7 +1530,7 @@
       "source_file": "src/components/dashboard/DashboardView.tsx",
       "source_location": "L69",
       "id": "dashboard_dashboardview_status_colors",
-      "community": 0,
+      "community": 1,
       "norm_label": "status_colors"
     },
     {
@@ -1548,7 +1557,7 @@
       "source_file": "src/components/dashboard/PredictiveIntelligence.tsx",
       "source_location": "L17",
       "id": "dashboard_predictiveintelligence_predictiveintelligence",
-      "community": 1,
+      "community": 0,
       "norm_label": "predictiveintelligence()"
     },
     {
@@ -1557,7 +1566,7 @@
       "source_file": "src/components/team/MemberHierarchy.tsx",
       "source_location": "L1",
       "id": "src_components_team_memberhierarchy_tsx",
-      "community": 4,
+      "community": 5,
       "norm_label": "memberhierarchy.tsx"
     },
     {
@@ -1566,7 +1575,7 @@
       "source_file": "src/components/team/MemberHierarchy.tsx",
       "source_location": "L14",
       "id": "team_memberhierarchy_node",
-      "community": 4,
+      "community": 5,
       "norm_label": "node"
     },
     {
@@ -1575,7 +1584,7 @@
       "source_file": "src/components/team/MemberHierarchy.tsx",
       "source_location": "L32",
       "id": "team_memberhierarchy_memberhierarchy",
-      "community": 4,
+      "community": 5,
       "norm_label": "memberhierarchy()"
     },
     {
@@ -1602,7 +1611,7 @@
       "source_file": "src/components/team/CapacityView.tsx",
       "source_location": "L37",
       "id": "team_capacityview_capacityview",
-      "community": 1,
+      "community": 0,
       "norm_label": "capacityview()"
     },
     {
@@ -1647,7 +1656,7 @@
       "source_file": "src/components/architect/FunctionalMatrix.tsx",
       "source_location": "L1",
       "id": "src_components_architect_functionalmatrix_tsx",
-      "community": 0,
+      "community": 3,
       "norm_label": "functionalmatrix.tsx"
     },
     {
@@ -1656,7 +1665,7 @@
       "source_file": "src/components/architect/FunctionalMatrix.tsx",
       "source_location": "L45",
       "id": "architect_functionalmatrix_viewmode",
-      "community": 0,
+      "community": 3,
       "norm_label": "viewmode"
     },
     {
@@ -1665,7 +1674,7 @@
       "source_file": "src/components/architect/FunctionalMatrix.tsx",
       "source_location": "L46",
       "id": "architect_functionalmatrix_complexityfilter",
-      "community": 0,
+      "community": 3,
       "norm_label": "complexityfilter"
     },
     {
@@ -1674,7 +1683,7 @@
       "source_file": "src/components/architect/FunctionalMatrix.tsx",
       "source_location": "L48",
       "id": "architect_functionalmatrix_functionalmatrix",
-      "community": 0,
+      "community": 3,
       "norm_label": "functionalmatrix()"
     },
     {
@@ -1701,7 +1710,7 @@
       "source_file": "src/components/architect/ScaffolderView.tsx",
       "source_location": "L1",
       "id": "src_components_architect_scaffolderview_tsx",
-      "community": 0,
+      "community": 4,
       "norm_label": "scaffolderview.tsx"
     },
     {
@@ -1710,7 +1719,7 @@
       "source_file": "src/components/architect/ScaffolderView.tsx",
       "source_location": "L26",
       "id": "architect_scaffolderview_scaffoldmodule",
-      "community": 0,
+      "community": 4,
       "norm_label": "scaffoldmodule"
     },
     {
@@ -1719,7 +1728,7 @@
       "source_file": "src/components/architect/ScaffolderView.tsx",
       "source_location": "L36",
       "id": "architect_scaffolderview_scaffolderview",
-      "community": 0,
+      "community": 4,
       "norm_label": "scaffolderview()"
     },
     {
@@ -1728,7 +1737,7 @@
       "source_file": "src/components/architect/RegistryView.tsx",
       "source_location": "L1",
       "id": "src_components_architect_registryview_tsx",
-      "community": 1,
+      "community": 5,
       "norm_label": "registryview.tsx"
     },
     {
@@ -1737,7 +1746,7 @@
       "source_file": "src/components/architect/RegistryView.tsx",
       "source_location": "L22",
       "id": "architect_registryview_registryview",
-      "community": 1,
+      "community": 5,
       "norm_label": "registryview()"
     },
     {
@@ -1768,22 +1777,22 @@
       "norm_label": "fieldarchitect.tsx"
     },
     {
+      "label": "DomainTab",
+      "file_type": "code",
+      "source_file": "src/components/architect/FieldArchitect.tsx",
+      "source_location": "L48",
+      "id": "architect_fieldarchitect_domaintab",
+      "community": 4,
+      "norm_label": "domaintab"
+    },
+    {
       "label": "FieldArchitect()",
       "file_type": "code",
       "source_file": "src/components/architect/FieldArchitect.tsx",
-      "source_location": "L22",
+      "source_location": "L50",
       "id": "architect_fieldarchitect_fieldarchitect",
       "community": 4,
       "norm_label": "fieldarchitect()"
-    },
-    {
-      "label": "ShieldCheck()",
-      "file_type": "code",
-      "source_file": "src/components/architect/FieldArchitect.tsx",
-      "source_location": "L296",
-      "id": "architect_fieldarchitect_shieldcheck",
-      "community": 4,
-      "norm_label": "shieldcheck()"
     },
     {
       "label": "RAIDView.tsx",
@@ -1809,7 +1818,7 @@
       "source_file": "src/components/retro/SprintRetroView.tsx",
       "source_location": "L1",
       "id": "src_components_retro_sprintretroview_tsx",
-      "community": 1,
+      "community": 5,
       "norm_label": "sprintretroview.tsx"
     },
     {
@@ -1818,7 +1827,7 @@
       "source_file": "src/components/retro/SprintRetroView.tsx",
       "source_location": "L29",
       "id": "retro_sprintretroview_categories",
-      "community": 1,
+      "community": 5,
       "norm_label": "categories"
     },
     {
@@ -1827,7 +1836,7 @@
       "source_file": "src/components/retro/SprintRetroView.tsx",
       "source_location": "L36",
       "id": "retro_sprintretroview_sprintretroview",
-      "community": 1,
+      "community": 5,
       "norm_label": "sprintretroview()"
     },
     {
@@ -1944,7 +1953,7 @@
       "source_file": "src/components/reports/ReportView.tsx",
       "source_location": "L1",
       "id": "src_components_reports_reportview_tsx",
-      "community": 2,
+      "community": 0,
       "norm_label": "reportview.tsx"
     },
     {
@@ -1953,7 +1962,7 @@
       "source_file": "src/components/reports/ReportView.tsx",
       "source_location": "L42",
       "id": "reports_reportview_colors",
-      "community": 2,
+      "community": 0,
       "norm_label": "colors"
     },
     {
@@ -1962,7 +1971,7 @@
       "source_file": "src/components/reports/ReportView.tsx",
       "source_location": "L44",
       "id": "reports_reportview_reporttype",
-      "community": 2,
+      "community": 0,
       "norm_label": "reporttype"
     },
     {
@@ -1971,7 +1980,7 @@
       "source_file": "src/components/reports/ReportView.tsx",
       "source_location": "L46",
       "id": "reports_reportview_reportview",
-      "community": 2,
+      "community": 0,
       "norm_label": "reportview()"
     },
     {
@@ -2041,7 +2050,7 @@
       "label": "DeliveryModalProps",
       "file_type": "code",
       "source_file": "src/components/deliveries/DeliveriesView.tsx",
-      "source_location": "L1226",
+      "source_location": "L1263",
       "id": "deliveries_deliveriesview_deliverymodalprops",
       "community": 3,
       "norm_label": "deliverymodalprops"
@@ -2050,7 +2059,7 @@
       "label": "DeliveryModal()",
       "file_type": "code",
       "source_file": "src/components/deliveries/DeliveriesView.tsx",
-      "source_location": "L1233",
+      "source_location": "L1270",
       "id": "deliveries_deliveriesview_deliverymodal",
       "community": 3,
       "norm_label": "deliverymodal()"
@@ -2169,7 +2178,7 @@
       "source_file": "src/services/aiService.ts",
       "source_location": "L1",
       "id": "src_services_aiservice_ts",
-      "community": 4,
+      "community": 5,
       "norm_label": "aiservice.ts"
     },
     {
@@ -2178,7 +2187,7 @@
       "source_file": "src/services/aiService.ts",
       "source_location": "L3",
       "id": "services_aiservice_analyzeproject",
-      "community": 4,
+      "community": 5,
       "norm_label": "analyzeproject()"
     },
     {
@@ -2322,7 +2331,7 @@
       "source_file": "src/store/ProjectContext.tsx",
       "source_location": "L1",
       "id": "src_store_projectcontext_tsx",
-      "community": 0,
+      "community": 4,
       "norm_label": "projectcontext.tsx"
     },
     {
@@ -2331,7 +2340,7 @@
       "source_file": "src/store/ProjectContext.tsx",
       "source_location": "L12",
       "id": "store_projectcontext_projectcontexttype",
-      "community": 0,
+      "community": 4,
       "norm_label": "projectcontexttype"
     },
     {
@@ -2340,7 +2349,7 @@
       "source_file": "src/store/ProjectContext.tsx",
       "source_location": "L37",
       "id": "store_projectcontext_valid_views",
-      "community": 0,
+      "community": 4,
       "norm_label": "valid_views"
     },
     {
@@ -2349,7 +2358,7 @@
       "source_file": "src/store/ProjectContext.tsx",
       "source_location": "L44",
       "id": "store_projectcontext_getviewfromurl",
-      "community": 0,
+      "community": 4,
       "norm_label": "getviewfromurl()"
     },
     {
@@ -2358,7 +2367,7 @@
       "source_file": "src/store/ProjectContext.tsx",
       "source_location": "L59",
       "id": "store_projectcontext_projectcontext",
-      "community": 0,
+      "community": 4,
       "norm_label": "projectcontext"
     },
     {
@@ -2367,16 +2376,16 @@
       "source_file": "src/store/ProjectContext.tsx",
       "source_location": "L61",
       "id": "store_projectcontext_projectprovider",
-      "community": 0,
+      "community": 4,
       "norm_label": "projectprovider()"
     },
     {
       "label": "useProject()",
       "file_type": "code",
       "source_file": "src/store/ProjectContext.tsx",
-      "source_location": "L517",
+      "source_location": "L521",
       "id": "store_projectcontext_useproject",
-      "community": 1,
+      "community": 0,
       "norm_label": "useproject()"
     },
     {
@@ -2448,16 +2457,43 @@
       "source_file": "src/store/defaultState.ts",
       "source_location": "L1",
       "id": "src_store_defaultstate_ts",
-      "community": 0,
+      "community": 4,
       "norm_label": "defaultstate.ts"
+    },
+    {
+      "label": "DEFAULT_TASK_COLS",
+      "file_type": "code",
+      "source_file": "src/store/defaultState.ts",
+      "source_location": "L3",
+      "id": "store_defaultstate_default_task_cols",
+      "community": 4,
+      "norm_label": "default_task_cols"
+    },
+    {
+      "label": "DEFAULT_DEFECT_COLS",
+      "file_type": "code",
+      "source_file": "src/store/defaultState.ts",
+      "source_location": "L23",
+      "id": "store_defaultstate_default_defect_cols",
+      "community": 4,
+      "norm_label": "default_defect_cols"
+    },
+    {
+      "label": "DEFAULT_DELIVERY_COLS",
+      "file_type": "code",
+      "source_file": "src/store/defaultState.ts",
+      "source_location": "L39",
+      "id": "store_defaultstate_default_delivery_cols",
+      "community": 4,
+      "norm_label": "default_delivery_cols"
     },
     {
       "label": "getDefaultState()",
       "file_type": "code",
       "source_file": "src/store/defaultState.ts",
-      "source_location": "L3",
+      "source_location": "L62",
       "id": "store_defaultstate_getdefaultstate",
-      "community": 0,
+      "community": 4,
       "norm_label": "getdefaultstate()"
     },
     {
@@ -2466,7 +2502,7 @@
       "source_file": "PROJECT_CONTEXT.md",
       "source_location": "L1",
       "id": "project_context_md",
-      "community": 7,
+      "community": 9,
       "norm_label": "project_context.md"
     },
     {
@@ -2475,7 +2511,7 @@
       "source_file": "PROJECT_CONTEXT.md",
       "source_location": "L1",
       "id": "projectpulse_2_0_project_context_projectpulse_project_context_system_architecture",
-      "community": 7,
+      "community": 9,
       "norm_label": "projectpulse \u2014 project context & system architecture"
     },
     {
@@ -2484,7 +2520,7 @@
       "source_file": "PROJECT_CONTEXT.md",
       "source_location": "L8",
       "id": "projectpulse_2_0_project_context_system_architecture",
-      "community": 7,
+      "community": 9,
       "norm_label": "\ud83c\udfdb\ufe0f system architecture"
     },
     {
@@ -2493,7 +2529,7 @@
       "source_file": "PROJECT_CONTEXT.md",
       "source_location": "L13",
       "id": "projectpulse_2_0_project_context_codeblock_1",
-      "community": 7,
+      "community": 9,
       "norm_label": "code:mermaid (flowchart td)"
     },
     {
@@ -2502,7 +2538,7 @@
       "source_file": "PROJECT_CONTEXT.md",
       "source_location": "L39",
       "id": "projectpulse_2_0_project_context_project_governance_delivery_workflow",
-      "community": 7,
+      "community": 9,
       "norm_label": "\ud83d\udd04 project governance & delivery workflow"
     },
     {
@@ -2511,7 +2547,7 @@
       "source_file": "PROJECT_CONTEXT.md",
       "source_location": "L44",
       "id": "projectpulse_2_0_project_context_codeblock_2",
-      "community": 7,
+      "community": 9,
       "norm_label": "code:mermaid (flowchart lr)"
     },
     {
@@ -2520,7 +2556,7 @@
       "source_file": "PROJECT_CONTEXT.md",
       "source_location": "L55",
       "id": "projectpulse_2_0_project_context_bi_directional_excel_sync_sequence",
-      "community": 7,
+      "community": 9,
       "norm_label": "\u26a1 bi-directional excel sync sequence"
     },
     {
@@ -2529,7 +2565,7 @@
       "source_file": "PROJECT_CONTEXT.md",
       "source_location": "L60",
       "id": "projectpulse_2_0_project_context_codeblock_3",
-      "community": 7,
+      "community": 9,
       "norm_label": "code:mermaid (sequencediagram)"
     },
     {
@@ -2538,7 +2574,7 @@
       "source_file": "PROJECT_CONTEXT.md",
       "source_location": "L80",
       "id": "projectpulse_2_0_project_context_project_data_flow_pipeline",
-      "community": 7,
+      "community": 9,
       "norm_label": "\ud83c\udf0a project data flow pipeline"
     },
     {
@@ -2547,7 +2583,7 @@
       "source_file": "PROJECT_CONTEXT.md",
       "source_location": "L85",
       "id": "projectpulse_2_0_project_context_codeblock_4",
-      "community": 7,
+      "community": 9,
       "norm_label": "code:mermaid (flowchart lr)"
     },
     {
@@ -2556,7 +2592,7 @@
       "source_file": "PROJECT_CONTEXT.md",
       "source_location": "L113",
       "id": "projectpulse_2_0_project_context_workstation_session_lifecycle",
-      "community": 7,
+      "community": 9,
       "norm_label": "\u23f1\ufe0f workstation session lifecycle"
     },
     {
@@ -2565,7 +2601,7 @@
       "source_file": "PROJECT_CONTEXT.md",
       "source_location": "L118",
       "id": "projectpulse_2_0_project_context_codeblock_5",
-      "community": 7,
+      "community": 9,
       "norm_label": "code:mermaid (statediagram-v2)"
     },
     {
@@ -2574,7 +2610,7 @@
       "source_file": "ANTI_AI_SLOP_PLAN.md",
       "source_location": "L1",
       "id": "anti_ai_slop_plan_md",
-      "community": 8,
+      "community": 10,
       "norm_label": "anti_ai_slop_plan.md"
     },
     {
@@ -2583,7 +2619,7 @@
       "source_file": "ANTI_AI_SLOP_PLAN.md",
       "source_location": "L1",
       "id": "projectpulse_2_0_anti_ai_slop_plan_anti_ai_slop_implementation_plan_projectpulse_2_0",
-      "community": 8,
+      "community": 10,
       "norm_label": "anti-ai-slop implementation plan: projectpulse 2.0"
     },
     {
@@ -2592,7 +2628,7 @@
       "source_file": "ANTI_AI_SLOP_PLAN.md",
       "source_location": "L12",
       "id": "projectpulse_2_0_anti_ai_slop_plan_1_executive_summary_design_direction",
-      "community": 8,
+      "community": 10,
       "norm_label": "1. executive summary & design direction"
     },
     {
@@ -2601,7 +2637,7 @@
       "source_file": "ANTI_AI_SLOP_PLAN.md",
       "source_location": "L14",
       "id": "projectpulse_2_0_anti_ai_slop_plan_1_1_brand_identity_voice",
-      "community": 8,
+      "community": 10,
       "norm_label": "1.1 brand identity & voice"
     },
     {
@@ -2610,7 +2646,7 @@
       "source_file": "ANTI_AI_SLOP_PLAN.md",
       "source_location": "L21",
       "id": "projectpulse_2_0_anti_ai_slop_plan_1_2_design_tokens_system_replacements",
-      "community": 8,
+      "community": 10,
       "norm_label": "1.2 design tokens & system replacements"
     },
     {
@@ -2619,7 +2655,7 @@
       "source_file": "ANTI_AI_SLOP_PLAN.md",
       "source_location": "L44",
       "id": "projectpulse_2_0_anti_ai_slop_plan_2_actionable_task_checklist",
-      "community": 8,
+      "community": 10,
       "norm_label": "2. actionable task checklist"
     },
     {
@@ -2628,7 +2664,7 @@
       "source_file": "ANTI_AI_SLOP_PLAN.md",
       "source_location": "L48",
       "id": "projectpulse_2_0_anti_ai_slop_plan_batch_1_token_discipline_background_de_slopping_priority_1",
-      "community": 8,
+      "community": 10,
       "norm_label": "batch 1: token discipline & background de-slopping (priority 1)"
     },
     {
@@ -2637,7 +2673,7 @@
       "source_file": "ANTI_AI_SLOP_PLAN.md",
       "source_location": "L72",
       "id": "projectpulse_2_0_anti_ai_slop_plan_batch_2_icon_copy_de_slopping_priority_1",
-      "community": 8,
+      "community": 10,
       "norm_label": "batch 2: icon & copy de-slopping (priority 1)"
     },
     {
@@ -2646,7 +2682,7 @@
       "source_file": "ANTI_AI_SLOP_PLAN.md",
       "source_location": "L94",
       "id": "projectpulse_2_0_anti_ai_slop_plan_batch_3_the_10_vital_states_ux_ui_architecture_priority_1_2",
-      "community": 8,
+      "community": 10,
       "norm_label": "batch 3: the 10 vital states ux/ui architecture (priority 1 & 2)"
     },
     {
@@ -2655,7 +2691,7 @@
       "source_file": "ANTI_AI_SLOP_PLAN.md",
       "source_location": "L138",
       "id": "projectpulse_2_0_anti_ai_slop_plan_batch_4_animation_interaction_discipline_priority_3",
-      "community": 8,
+      "community": 10,
       "norm_label": "batch 4: animation & interaction discipline (priority 3)"
     },
     {
@@ -2664,7 +2700,7 @@
       "source_file": "ANTI_AI_SLOP_PLAN.md",
       "source_location": "L147",
       "id": "projectpulse_2_0_anti_ai_slop_plan_3_verification_acceptance_criteria",
-      "community": 8,
+      "community": 10,
       "norm_label": "3. verification & acceptance criteria"
     },
     {
@@ -2673,7 +2709,7 @@
       "source_file": "README.md",
       "source_location": "L1",
       "id": "readme_md",
-      "community": 6,
+      "community": 8,
       "norm_label": "readme.md"
     },
     {
@@ -2682,7 +2718,7 @@
       "source_file": "README.md",
       "source_location": "L1",
       "id": "projectpulse_2_0_readme_projectpulse_2_0",
-      "community": 6,
+      "community": 8,
       "norm_label": "projectpulse 2.0"
     },
     {
@@ -2691,7 +2727,7 @@
       "source_file": "README.md",
       "source_location": "L8",
       "id": "projectpulse_2_0_readme_system_architecture_compiled_diagrams",
-      "community": 6,
+      "community": 8,
       "norm_label": "\ud83c\udfdb\ufe0f system architecture & compiled diagrams"
     },
     {
@@ -2700,7 +2736,7 @@
       "source_file": "README.md",
       "source_location": "L22",
       "id": "projectpulse_2_0_readme_quick_start",
-      "community": 6,
+      "community": 8,
       "norm_label": "\ud83d\ude80 quick start"
     },
     {
@@ -2709,7 +2745,7 @@
       "source_file": "README.md",
       "source_location": "L24",
       "id": "projectpulse_2_0_readme_prerequisites",
-      "community": 6,
+      "community": 8,
       "norm_label": "prerequisites"
     },
     {
@@ -2718,7 +2754,7 @@
       "source_file": "README.md",
       "source_location": "L28",
       "id": "projectpulse_2_0_readme_installation_launch",
-      "community": 6,
+      "community": 8,
       "norm_label": "installation & launch"
     },
     {
@@ -2727,7 +2763,7 @@
       "source_file": "README.md",
       "source_location": "L29",
       "id": "projectpulse_2_0_readme_codeblock_1",
-      "community": 6,
+      "community": 8,
       "norm_label": "code:bash (# 1. install dependencies)"
     },
     {
@@ -2736,7 +2772,7 @@
       "source_file": "README.md",
       "source_location": "L42",
       "id": "projectpulse_2_0_readme_production_build",
-      "community": 6,
+      "community": 8,
       "norm_label": "production build"
     },
     {
@@ -2745,7 +2781,7 @@
       "source_file": "README.md",
       "source_location": "L43",
       "id": "projectpulse_2_0_readme_codeblock_2",
-      "community": 6,
+      "community": 8,
       "norm_label": "code:bash (npm run build)"
     },
     {
@@ -2754,34 +2790,34 @@
       "source_file": "README.md",
       "source_location": "L50",
       "id": "projectpulse_2_0_readme_key_capabilities_operational_modules",
-      "community": 6,
+      "community": 8,
       "norm_label": "\ud83d\udee0\ufe0f key capabilities & operational modules"
     },
     {
       "label": "\ud83d\udcc1 Repository Structure",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L70",
+      "source_location": "L71",
       "id": "projectpulse_2_0_readme_repository_structure",
-      "community": 6,
+      "community": 8,
       "norm_label": "\ud83d\udcc1 repository structure"
     },
     {
       "label": "code:block3 (ProjectPulse 2.0/)",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L72",
+      "source_location": "L73",
       "id": "projectpulse_2_0_readme_codeblock_3",
-      "community": 6,
+      "community": 8,
       "norm_label": "code:block3 (projectpulse 2.0/)"
     },
     {
       "label": "\ud83d\udcc4 License",
       "file_type": "document",
       "source_file": "README.md",
-      "source_location": "L112",
+      "source_location": "L113",
       "id": "projectpulse_2_0_readme_license",
-      "community": 6,
+      "community": 8,
       "norm_label": "\ud83d\udcc4 license"
     },
     {
@@ -2790,7 +2826,7 @@
       "source_file": "wiki/Architecture-and-System-Design.md",
       "source_location": "L1",
       "id": "wiki_architecture_and_system_design_md",
-      "community": 5,
+      "community": 6,
       "norm_label": "architecture-and-system-design.md"
     },
     {
@@ -2799,7 +2835,7 @@
       "source_file": "wiki/Architecture-and-System-Design.md",
       "source_location": "L1",
       "id": "wiki_architecture_and_system_design_projectpulse_architecture_system_design",
-      "community": 5,
+      "community": 6,
       "norm_label": "projectpulse \u2014 architecture & system design"
     },
     {
@@ -2808,7 +2844,7 @@
       "source_file": "wiki/Architecture-and-System-Design.md",
       "source_location": "L9",
       "id": "wiki_architecture_and_system_design_1_system_architecture",
-      "community": 5,
+      "community": 6,
       "norm_label": "\ud83c\udfdb\ufe0f 1. system architecture"
     },
     {
@@ -2817,7 +2853,7 @@
       "source_file": "wiki/Architecture-and-System-Design.md",
       "source_location": "L11",
       "id": "wiki_architecture_and_system_design_codeblock_1",
-      "community": 5,
+      "community": 6,
       "norm_label": "code:mermaid (flowchart td)"
     },
     {
@@ -2826,7 +2862,7 @@
       "source_file": "wiki/Architecture-and-System-Design.md",
       "source_location": "L35",
       "id": "wiki_architecture_and_system_design_architectural_breakdown_component_responsibilities",
-      "community": 5,
+      "community": 6,
       "norm_label": "architectural breakdown & component responsibilities"
     },
     {
@@ -2835,7 +2871,7 @@
       "source_file": "wiki/Architecture-and-System-Design.md",
       "source_location": "L46",
       "id": "wiki_architecture_and_system_design_2_project_governance_delivery_workflow",
-      "community": 5,
+      "community": 6,
       "norm_label": "\ud83d\udd04 2. project governance & delivery workflow"
     },
     {
@@ -2844,7 +2880,7 @@
       "source_file": "wiki/Architecture-and-System-Design.md",
       "source_location": "L48",
       "id": "wiki_architecture_and_system_design_codeblock_2",
-      "community": 5,
+      "community": 6,
       "norm_label": "code:mermaid (flowchart lr)"
     },
     {
@@ -2853,7 +2889,7 @@
       "source_file": "wiki/Architecture-and-System-Design.md",
       "source_location": "L57",
       "id": "wiki_architecture_and_system_design_operational_workflow_stages",
-      "community": 5,
+      "community": 6,
       "norm_label": "operational workflow stages"
     },
     {
@@ -2862,7 +2898,7 @@
       "source_file": "wiki/Architecture-and-System-Design.md",
       "source_location": "L67",
       "id": "wiki_architecture_and_system_design_3_bi_directional_excel_sync_sequence",
-      "community": 5,
+      "community": 6,
       "norm_label": "\u26a1 3. bi-directional excel sync sequence"
     },
     {
@@ -2871,7 +2907,7 @@
       "source_file": "wiki/Architecture-and-System-Design.md",
       "source_location": "L69",
       "id": "wiki_architecture_and_system_design_codeblock_3",
-      "community": 5,
+      "community": 6,
       "norm_label": "code:mermaid (sequencediagram)"
     },
     {
@@ -2880,7 +2916,7 @@
       "source_file": "wiki/Architecture-and-System-Design.md",
       "source_location": "L87",
       "id": "wiki_architecture_and_system_design_execution_sequence_details",
-      "community": 5,
+      "community": 6,
       "norm_label": "execution sequence details"
     },
     {
@@ -2889,7 +2925,7 @@
       "source_file": "wiki/Architecture-and-System-Design.md",
       "source_location": "L95",
       "id": "wiki_architecture_and_system_design_4_project_data_flow_pipeline",
-      "community": 5,
+      "community": 6,
       "norm_label": "\ud83c\udf0a 4. project data flow pipeline"
     },
     {
@@ -2898,7 +2934,7 @@
       "source_file": "wiki/Architecture-and-System-Design.md",
       "source_location": "L97",
       "id": "wiki_architecture_and_system_design_codeblock_4",
-      "community": 5,
+      "community": 6,
       "norm_label": "code:mermaid (flowchart lr)"
     },
     {
@@ -2907,7 +2943,7 @@
       "source_file": "wiki/Architecture-and-System-Design.md",
       "source_location": "L123",
       "id": "wiki_architecture_and_system_design_data_pipeline_mechanics_invariants",
-      "community": 5,
+      "community": 6,
       "norm_label": "data pipeline mechanics & invariants"
     },
     {
@@ -2916,7 +2952,7 @@
       "source_file": "wiki/Architecture-and-System-Design.md",
       "source_location": "L132",
       "id": "wiki_architecture_and_system_design_5_workstation_session_lifecycle",
-      "community": 5,
+      "community": 6,
       "norm_label": "\u23f1\ufe0f 5. workstation session lifecycle"
     },
     {
@@ -2925,7 +2961,7 @@
       "source_file": "wiki/Architecture-and-System-Design.md",
       "source_location": "L134",
       "id": "wiki_architecture_and_system_design_codeblock_5",
-      "community": 5,
+      "community": 6,
       "norm_label": "code:mermaid (statediagram-v2)"
     },
     {
@@ -2934,7 +2970,7 @@
       "source_file": "wiki/Architecture-and-System-Design.md",
       "source_location": "L147",
       "id": "wiki_architecture_and_system_design_lifecycle_state_machine_rules",
-      "community": 5,
+      "community": 6,
       "norm_label": "lifecycle state machine rules"
     },
     {
@@ -2943,7 +2979,7 @@
       "source_file": "wiki/Home.md",
       "source_location": "L1",
       "id": "wiki_home_md",
-      "community": 11,
+      "community": 13,
       "norm_label": "home.md"
     },
     {
@@ -2952,7 +2988,7 @@
       "source_file": "wiki/Home.md",
       "source_location": "L1",
       "id": "wiki_home_welcome_to_the_projectpulse_wiki",
-      "community": 11,
+      "community": 13,
       "norm_label": "welcome to the projectpulse wiki"
     },
     {
@@ -2961,7 +2997,7 @@
       "source_file": "wiki/Home.md",
       "source_location": "L9",
       "id": "wiki_home_core_documentation",
-      "community": 11,
+      "community": 13,
       "norm_label": "\ud83d\udcda core documentation"
     },
     {
@@ -2970,7 +3006,7 @@
       "source_file": "wiki/Home.md",
       "source_location": "L16",
       "id": "wiki_home_key_highlights",
-      "community": 11,
+      "community": 13,
       "norm_label": "\u26a1 key highlights"
     },
     {
@@ -2979,7 +3015,7 @@
       "source_file": "wiki/_Sidebar.md",
       "source_location": "L1",
       "id": "wiki_sidebar_md",
-      "community": 14,
+      "community": 16,
       "norm_label": "_sidebar.md"
     },
     {
@@ -2988,7 +3024,7 @@
       "source_file": "wiki/_Footer.md",
       "source_location": "L1",
       "id": "wiki_footer_md",
-      "community": 15,
+      "community": 17,
       "norm_label": "_footer.md"
     },
     {
@@ -2997,7 +3033,7 @@
       "source_file": "design-system/MASTER.md",
       "source_location": "L1",
       "id": "design_system_master_md",
-      "community": 10,
+      "community": 12,
       "norm_label": "master.md"
     },
     {
@@ -3006,7 +3042,7 @@
       "source_file": "design-system/MASTER.md",
       "source_location": "L1",
       "id": "design_system_master_projectpulse_design_system_master_specification",
-      "community": 10,
+      "community": 12,
       "norm_label": "projectpulse design system \u2014 master specification"
     },
     {
@@ -3015,7 +3051,7 @@
       "source_file": "design-system/MASTER.md",
       "source_location": "L3",
       "id": "design_system_master_1_product_foundations",
-      "community": 10,
+      "community": 12,
       "norm_label": "1. product foundations"
     },
     {
@@ -3024,7 +3060,7 @@
       "source_file": "design-system/MASTER.md",
       "source_location": "L16",
       "id": "design_system_master_2_typography_hierarchies",
-      "community": 10,
+      "community": 12,
       "norm_label": "2. typography & hierarchies"
     },
     {
@@ -3033,7 +3069,7 @@
       "source_file": "design-system/MASTER.md",
       "source_location": "L25",
       "id": "design_system_master_3_surface_border_semantics_styleseed_standard",
-      "community": 10,
+      "community": 12,
       "norm_label": "3. surface & border semantics (styleseed standard)"
     },
     {
@@ -3042,15 +3078,24 @@
       "source_file": "design-system/MASTER.md",
       "source_location": "L39",
       "id": "design_system_master_4_interaction_motion_rules",
-      "community": 10,
+      "community": 12,
       "norm_label": "4. interaction & motion rules"
+    },
+    {
+      "label": "ShieldCheck()",
+      "file_type": "code",
+      "source_file": "src/components/architect/FieldArchitect.tsx",
+      "source_location": "L296",
+      "community": 4,
+      "norm_label": "shieldcheck()",
+      "id": "architect_fieldarchitect_shieldcheck"
     },
     {
       "label": "sampleData.ts",
       "file_type": "code",
       "source_file": "src/services/sampleData.ts",
       "source_location": "L1",
-      "community": 0,
+      "community": 4,
       "norm_label": "sampledata.ts",
       "id": "src_services_sampledata_ts"
     },
@@ -3059,7 +3104,7 @@
       "file_type": "code",
       "source_file": "src/services/sampleData.ts",
       "source_location": "L5",
-      "community": 0,
+      "community": 4,
       "norm_label": "getwebsample()",
       "id": "services_sampledata_getwebsample"
     },
@@ -3651,6 +3696,16 @@
       "confidence_score": 1.0,
       "source": "src_types_index_ts",
       "target": "types_index_customfield"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/index.ts",
+      "source_location": "L135",
+      "weight": 1.0,
+      "source": "src_types_index_ts",
+      "target": "types_index_fieldconfig",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -4656,9 +4711,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "types_index_taskpriority",
-      "confidence_score": 1.0
+      "target": "types_index_taskpriority"
     },
     {
       "relation": "imports",
@@ -4997,9 +5052,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "types_index_member",
-      "confidence_score": 1.0
+      "target": "types_index_member"
     },
     {
       "relation": "imports",
@@ -5074,9 +5129,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "types_index_defect",
-      "confidence_score": 1.0
+      "target": "types_index_defect"
     },
     {
       "relation": "imports",
@@ -5121,6 +5176,28 @@
       "confidence_score": 1.0,
       "source": "src_store_projectcontext_tsx",
       "target": "types_index_customfield"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/architect/FieldArchitect.tsx",
+      "source_location": "L41",
+      "weight": 1.0,
+      "source": "src_components_architect_fieldarchitect_tsx",
+      "target": "types_index_fieldconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store/defaultState.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "source": "src_store_defaultstate_ts",
+      "target": "types_index_fieldconfig",
+      "confidence_score": 1.0
     },
     {
       "relation": "imports",
@@ -5173,9 +5250,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "types_index_delivery",
-      "confidence_score": 1.0
+      "target": "types_index_delivery"
     },
     {
       "relation": "imports",
@@ -5283,9 +5360,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "types_index_logentry",
-      "confidence_score": 1.0
+      "target": "types_index_logentry"
     },
     {
       "relation": "imports",
@@ -5327,9 +5404,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "types_index_feature",
-      "confidence_score": 1.0
+      "target": "types_index_feature"
     },
     {
       "relation": "imports",
@@ -5371,9 +5448,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "types_index_raiditem",
-      "confidence_score": 1.0
+      "target": "types_index_raiditem"
     },
     {
       "relation": "imports",
@@ -5415,9 +5492,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "types_index_decision",
-      "confidence_score": 1.0
+      "target": "types_index_decision"
     },
     {
       "relation": "imports",
@@ -5437,9 +5514,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "types_index_baseline",
-      "confidence_score": 1.0
+      "target": "types_index_baseline"
     },
     {
       "relation": "imports",
@@ -5481,9 +5558,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "types_index_release",
-      "confidence_score": 1.0
+      "target": "types_index_release"
     },
     {
       "relation": "imports",
@@ -11705,6 +11782,60 @@
       "target": "store_projectcontext_useproject"
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/architect/FieldArchitect.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_components_architect_fieldarchitect_tsx",
+      "target": "src_store_defaultstate_ts",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/architect/FieldArchitect.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_components_architect_fieldarchitect_tsx",
+      "target": "store_defaultstate_default_task_cols",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/architect/FieldArchitect.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_components_architect_fieldarchitect_tsx",
+      "target": "store_defaultstate_default_defect_cols",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/architect/FieldArchitect.tsx",
+      "source_location": "L42",
+      "weight": 1.0,
+      "source": "src_components_architect_fieldarchitect_tsx",
+      "target": "store_defaultstate_default_delivery_cols",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/architect/FieldArchitect.tsx",
+      "source_location": "L48",
+      "weight": 1.0,
+      "source": "src_components_architect_fieldarchitect_tsx",
+      "target": "architect_fieldarchitect_domaintab",
+      "confidence_score": 1.0
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "src/components/architect/FieldArchitect.tsx",
@@ -12145,9 +12276,9 @@
       "source_file": "src/components/deliveries/DeliveriesView.tsx",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_deliveries_deliveriesview_tsx",
-      "target": "services_excelservice_importdeliveriesfromexcel",
-      "confidence_score": 1.0
+      "target": "services_excelservice_importdeliveriesfromexcel"
     },
     {
       "relation": "imports",
@@ -12156,9 +12287,9 @@
       "source_file": "src/components/deliveries/DeliveriesView.tsx",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_deliveries_deliveriesview_tsx",
-      "target": "services_excelservice_downloaddeliverytemplate",
-      "confidence_score": 1.0
+      "target": "services_excelservice_downloaddeliverytemplate"
     },
     {
       "relation": "contains",
@@ -12302,9 +12433,9 @@
       "source_file": "src/services/exportService.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_exportservice_ts",
-      "target": "services_excelservice_getthemepalette",
-      "confidence_score": 1.0
+      "target": "services_excelservice_getthemepalette"
     },
     {
       "relation": "imports",
@@ -12313,9 +12444,9 @@
       "source_file": "src/services/exportService.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_exportservice_ts",
-      "target": "services_excelservice_drawtopkpicard",
-      "confidence_score": 1.0
+      "target": "services_excelservice_drawtopkpicard"
     },
     {
       "relation": "imports",
@@ -12324,9 +12455,9 @@
       "source_file": "src/services/exportService.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_exportservice_ts",
-      "target": "services_excelservice_stylezebrarow",
-      "confidence_score": 1.0
+      "target": "services_excelservice_stylezebrarow"
     },
     {
       "relation": "imports",
@@ -12335,9 +12466,9 @@
       "source_file": "src/services/exportService.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_exportservice_ts",
-      "target": "services_excelservice_formatstatuscell",
-      "confidence_score": 1.0
+      "target": "services_excelservice_formatstatuscell"
     },
     {
       "relation": "imports",
@@ -12346,9 +12477,9 @@
       "source_file": "src/services/exportService.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_exportservice_ts",
-      "target": "services_excelservice_formatprioritycell",
-      "confidence_score": 1.0
+      "target": "services_excelservice_formatprioritycell"
     },
     {
       "relation": "imports",
@@ -12357,9 +12488,9 @@
       "source_file": "src/services/exportService.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_exportservice_ts",
-      "target": "services_excelservice_parseexceldate",
-      "confidence_score": 1.0
+      "target": "services_excelservice_parseexceldate"
     },
     {
       "relation": "imports",
@@ -12368,9 +12499,9 @@
       "source_file": "src/services/exportService.ts",
       "source_location": "L3",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_exportservice_ts",
-      "target": "services_excelservice_styleheadercell",
-      "confidence_score": 1.0
+      "target": "services_excelservice_styleheadercell"
     },
     {
       "relation": "contains",
@@ -12641,9 +12772,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L22",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "services_excelservice_excelthemepalette",
-      "confidence_score": 1.0
+      "target": "services_excelservice_excelthemepalette"
     },
     {
       "relation": "contains",
@@ -12651,9 +12782,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L45",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "services_excelservice_getthemepalette",
-      "confidence_score": 1.0
+      "target": "services_excelservice_getthemepalette"
     },
     {
       "relation": "contains",
@@ -12661,9 +12792,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L103",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "services_excelservice_drawtopkpicard",
-      "confidence_score": 1.0
+      "target": "services_excelservice_drawtopkpicard"
     },
     {
       "relation": "contains",
@@ -12671,9 +12802,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L155",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "services_excelservice_styleheadercell",
-      "confidence_score": 1.0
+      "target": "services_excelservice_styleheadercell"
     },
     {
       "relation": "contains",
@@ -12681,9 +12812,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L172",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "services_excelservice_stylezebrarow",
-      "confidence_score": 1.0
+      "target": "services_excelservice_stylezebrarow"
     },
     {
       "relation": "contains",
@@ -12691,9 +12822,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L195",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "services_excelservice_formatstatuscell",
-      "confidence_score": 1.0
+      "target": "services_excelservice_formatstatuscell"
     },
     {
       "relation": "contains",
@@ -12701,9 +12832,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L222",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "services_excelservice_formatprioritycell",
-      "confidence_score": 1.0
+      "target": "services_excelservice_formatprioritycell"
     },
     {
       "relation": "contains",
@@ -12711,9 +12842,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L246",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "services_excelservice_parseexceldate",
-      "confidence_score": 1.0
+      "target": "services_excelservice_parseexceldate"
     },
     {
       "relation": "contains",
@@ -12721,9 +12852,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L271",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "services_excelservice_cleantext",
-      "confidence_score": 1.0
+      "target": "services_excelservice_cleantext"
     },
     {
       "relation": "contains",
@@ -12741,9 +12872,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L921",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "services_excelservice_parsecsvintoworksheet",
-      "confidence_score": 1.0
+      "target": "services_excelservice_parsecsvintoworksheet"
     },
     {
       "relation": "contains",
@@ -12761,9 +12892,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L1491",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "services_excelservice_importdeliveriesfromexcel",
-      "confidence_score": 1.0
+      "target": "services_excelservice_importdeliveriesfromexcel"
     },
     {
       "relation": "contains",
@@ -12771,9 +12902,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L1535",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_services_excelservice_ts",
-      "target": "services_excelservice_downloaddeliverytemplate",
-      "confidence_score": 1.0
+      "target": "services_excelservice_downloaddeliverytemplate"
     },
     {
       "relation": "imports_from",
@@ -12793,9 +12924,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L295",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_excelservice_exportprojectexcel",
-      "target": "services_excelservice_getthemepalette",
-      "confidence_score": 1.0
+      "target": "services_excelservice_getthemepalette"
     },
     {
       "relation": "calls",
@@ -12804,9 +12935,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L342",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_excelservice_exportprojectexcel",
-      "target": "services_excelservice_drawtopkpicard",
-      "confidence_score": 1.0
+      "target": "services_excelservice_drawtopkpicard"
     },
     {
       "relation": "calls",
@@ -12815,9 +12946,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L498",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_excelservice_exportprojectexcel",
-      "target": "services_excelservice_styleheadercell",
-      "confidence_score": 1.0
+      "target": "services_excelservice_styleheadercell"
     },
     {
       "relation": "calls",
@@ -12826,9 +12957,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L1002",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_excelservice_importprojectexcel",
-      "target": "services_excelservice_parsecsvintoworksheet",
-      "confidence_score": 1.0
+      "target": "services_excelservice_parsecsvintoworksheet"
     },
     {
       "relation": "calls",
@@ -12837,9 +12968,9 @@
       "source_file": "src/services/excelService.ts",
       "source_location": "L1495",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "services_excelservice_importdeliveriesfromexcel",
-      "target": "services_excelservice_importprojectexcel",
-      "confidence_score": 1.0
+      "target": "services_excelservice_importprojectexcel"
     },
     {
       "relation": "imports",
@@ -13048,6 +13179,36 @@
       "confidence_score": 1.0,
       "source": "src_store_authcontext_tsx",
       "target": "store_authcontext_useauth"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store/defaultState.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "source": "src_store_defaultstate_ts",
+      "target": "store_defaultstate_default_task_cols",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store/defaultState.ts",
+      "source_location": "L23",
+      "weight": 1.0,
+      "source": "src_store_defaultstate_ts",
+      "target": "store_defaultstate_default_defect_cols",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "src/store/defaultState.ts",
+      "source_location": "L39",
+      "weight": 1.0,
+      "source": "src_store_defaultstate_ts",
+      "target": "store_defaultstate_default_delivery_cols",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -13674,5 +13835,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "805721764c9665a10c45acd8f56e89ae59a8075d"
+  "built_at_commit": "884ce21b14f28a2f88e1d1e2b89bba3eb771342f"
 }

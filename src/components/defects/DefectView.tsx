@@ -193,7 +193,17 @@ const DefectView: React.FC = () => {
 
   const isAllSelected = filteredDefects.length > 0 && selectedIds.size === filteredDefects.length;
 
-  const columns = useMemo<ColumnDef<Defect>[]>(() => [
+  // User-configured column customizations from Field Architect
+  const defColMap = useMemo(() => {
+    const map: Record<string, { label: string; width?: number; visible?: boolean }> = {};
+    (state.defCols || []).forEach(c => {
+      map[c.key] = { label: c.label, width: c.width, visible: c.visible !== false };
+    });
+    return map;
+  }, [state.defCols]);
+
+  const columns = useMemo<ColumnDef<Defect>[]>(() => {
+    const baseCols: ColumnDef<Defect>[] = [
     {
       id: 'edit',
       header: '',
@@ -212,7 +222,7 @@ const DefectView: React.FC = () => {
     },
     {
       id: 'id',
-      header: 'DEFECT ID',
+      header: defColMap['id']?.label || 'DEFECT ID',
       headerTitle: 'Persistent defect identifier (e.g. DEF-001). Click to sort.',
       sortable: true,
       width: 'w-24',
@@ -225,7 +235,7 @@ const DefectView: React.FC = () => {
     },
     {
       id: 'title',
-      header: 'SUMMARY & SCOPE',
+      header: defColMap['title']?.label || 'SUMMARY & SCOPE',
       headerTitle: 'Summary of the issue, failure symptom, or regression. Click to sort.',
       sortable: true,
       width: 'min-w-[280px]',
@@ -245,7 +255,7 @@ const DefectView: React.FC = () => {
     },
     {
       id: 'severity',
-      header: 'SEVERITY',
+      header: defColMap['severity']?.label || 'SEVERITY',
       headerTitle: 'Impact severity tier (S1-Blocker, S2-Critical, S3-Major, S4-Minor). Click to sort.',
       sortable: true,
       width: 'w-28',
@@ -275,7 +285,7 @@ const DefectView: React.FC = () => {
     },
     {
       id: 'priority',
-      header: 'PRIORITY',
+      header: defColMap['priority']?.label || 'PRIORITY',
       headerTitle: 'Fix urgency for triage and sprint allocation. Click to sort.',
       sortable: true,
       width: 'w-24',
@@ -300,7 +310,7 @@ const DefectView: React.FC = () => {
     },
     {
       id: 'status',
-      header: 'STATUS',
+      header: defColMap['status']?.label || 'STATUS',
       headerTitle: 'Resolution lifecycle state (New, Open, In Progress, Resolved, Retest, Closed). Click to sort.',
       sortable: true,
       width: 'w-32',
@@ -329,7 +339,7 @@ const DefectView: React.FC = () => {
     },
     {
       id: 'assignee',
-      header: 'ASSIGNEE',
+      header: defColMap['assignee']?.label || 'ASSIGNEE',
       headerTitle: 'Assigned engineer or QA lead investigating the defect. Click to sort.',
       sortable: true,
       width: 'w-36',
@@ -360,7 +370,7 @@ const DefectView: React.FC = () => {
     },
     {
       id: 'linkedId',
-      header: 'LINKED ITEM',
+      header: defColMap['linkedId']?.label || 'LINKED ITEM',
       headerTitle: 'Associated task ID or GUI screen origin',
       width: 'w-32',
       filter: <span className="text-[10px] text-[var(--color-text-faint)] pl-1">—</span>,
@@ -372,7 +382,7 @@ const DefectView: React.FC = () => {
     },
     {
       id: 'updatedAt',
-      header: 'UPDATED',
+      header: defColMap['updatedAt']?.label || 'UPDATED',
       headerTitle: 'Timestamp of last modification or comment. Click to sort.',
       sortable: true,
       width: 'w-28',
@@ -396,7 +406,31 @@ const DefectView: React.FC = () => {
         </span>
       )
     }
-  ], [severities, filterSeverity, priorities, filterPriority, filterStatus, assignees, filterAssignee]);
+  ];
+
+  // Append user-defined custom fields from Field Architect
+  (state.defCustomFields || []).forEach(cf => {
+    baseCols.push({
+      id: `cf_${cf.name}`,
+      header: cf.name.toUpperCase(),
+      headerTitle: `Custom Field: ${cf.name}`,
+      sortable: true,
+      width: 'w-32',
+      cell: (defect) => {
+        const val = (defect as any)[cf.name];
+        if (val === undefined || val === null || val === '') return <span className="text-[10px] text-[var(--color-text-faint)] italic">—</span>;
+        if (cf.type === 'checkbox') return <span className="font-semibold text-xs text-emerald-400">{val ? '✓ Yes' : '✕ No'}</span>;
+        return <span className="text-xs text-[var(--color-text)] truncate max-w-[150px]">{String(val)}</span>;
+      }
+    });
+  });
+
+  // Filter columns that are marked hidden (except edit, id, and title)
+  return baseCols.filter(c => {
+    if (c.id === 'edit' || c.id === 'id' || c.id === 'title') return true;
+    return defColMap[c.id]?.visible !== false;
+  });
+  }, [state.defCols, state.defCustomFields, defColMap, severities, filterSeverity, priorities, filterPriority, filterStatus, assignees, filterAssignee]);
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)] text-[var(--color-text)]">

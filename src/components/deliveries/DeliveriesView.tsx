@@ -196,10 +196,20 @@ export const DeliveriesView: React.FC = () => {
 
   const pagination = usePagination<Delivery>(filteredDeliveries, 10, 'pp_page_size_deliveries');
 
-  const columns = useMemo<ColumnDef<Delivery>[]>(() => [
+  // User-configured column customizations from Field Architect
+  const delColMap = useMemo(() => {
+    const map: Record<string, { label: string; width?: number; visible?: boolean }> = {};
+    (state.delCols || []).forEach(c => {
+      map[c.key] = { label: c.label, width: c.width, visible: c.visible !== false };
+    });
+    return map;
+  }, [state.delCols]);
+
+  const columns = useMemo<ColumnDef<Delivery>[]>(() => {
+    const baseCols: ColumnDef<Delivery>[] = [
     {
       id: 'almId',
-      header: 'ALM ID / PDN',
+      header: delColMap['almId']?.label || 'ALM ID / PDN',
       headerTitle: 'Application Lifecycle Management tracking ID and Package Delivery Note code. Click to sort.',
       sortable: true,
       width: 'w-28',
@@ -219,7 +229,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'name',
-      header: 'DELIVERY SCOPE & DETAILS',
+      header: delColMap['name']?.label || 'DELIVERY SCOPE & DETAILS',
       headerTitle: 'Package title and delivery scope narrative. Click to sort.',
       sortable: true,
       width: 'min-w-[260px]',
@@ -242,7 +252,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'almStatus',
-      header: 'ALM STATUS',
+      header: delColMap['almStatus']?.label || 'ALM STATUS',
       headerTitle: 'Current delivery lifecycle status (New, Scheduled, In Progress, Ready for Deployment, Closed). Click to sort.',
       sortable: true,
       width: 'w-32',
@@ -267,7 +277,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'environment',
-      header: 'ENV',
+      header: delColMap['environment']?.label || 'ENV',
       headerTitle: 'Target deployment infrastructure tier (DEV, SIT, UAT, STAGING, PROD). Click to sort.',
       sortable: true,
       width: 'w-24',
@@ -298,7 +308,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'status',
-      header: 'DEPLOY STATUS',
+      header: delColMap['status']?.label || 'DEPLOY STATUS',
       headerTitle: 'Deployment pipeline status (Pending, Deployed, Verified, Rolled Back). Click to sort.',
       sortable: true,
       width: 'w-32',
@@ -312,7 +322,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'releaseVersion',
-      header: 'RELEASE',
+      header: delColMap['releaseVersion']?.label || 'RELEASE',
       headerTitle: 'Mapped release vehicle (e.g. v1.0.0, Q3 Release). Click to sort.',
       sortable: true,
       width: 'w-24',
@@ -336,7 +346,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'signOffStatus',
-      header: 'SIGN-OFF',
+      header: delColMap['signOffStatus']?.label || 'SIGN-OFF',
       headerTitle: 'Quality and stakeholder sign-off status (Pending, Approved, Conditionally Approved, Rejected). Click to sort.',
       sortable: true,
       width: 'w-32',
@@ -362,7 +372,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'smokeTestStatus',
-      header: 'SMOKE GATE',
+      header: delColMap['smokeTestStatus']?.label || 'SMOKE GATE',
       headerTitle: 'Automated smoke test gate status (Passed, Failed, In Progress, Blocked). Click to sort.',
       sortable: true,
       width: 'w-28',
@@ -392,7 +402,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'linkedScope',
-      header: 'LINKED SCOPE',
+      header: delColMap['linkedScope']?.label || 'LINKED SCOPE',
       headerTitle: 'Total count of tasks and GUI screens bundled into this delivery note',
       width: 'w-32',
       filter: null,
@@ -406,7 +416,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'targetDeliveryDate',
-      header: 'TARGET DATE',
+      header: delColMap['targetDeliveryDate']?.label || 'TARGET DATE',
       headerTitle: 'Scheduled calendar delivery date. Click to sort.',
       sortable: true,
       width: 'w-28',
@@ -424,7 +434,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'leadVar',
-      header: 'LEAD / VAR',
+      header: delColMap['leadVar']?.label || 'LEAD / VAR',
       headerTitle: 'Lead time and schedule variance against baseline target',
       width: 'w-24',
       align: 'right',
@@ -440,52 +450,79 @@ export const DeliveriesView: React.FC = () => {
           </span>
         </div>
       )
-    },
-    {
-      id: 'actions',
-      header: '',
-      width: 'w-10',
-      align: 'center',
-      filter: (filterStatus !== 'all' || filterEnv !== 'all' || filterVersion !== 'all' || filterSmoke !== 'all') ? (
-        <button
-          onClick={() => {
-            setFilterStatus('all');
-            setFilterEnv('all');
-            setFilterVersion('all');
-            setFilterSmoke('all');
-          }}
-          className="text-[10px] text-[var(--color-primary-hex)] hover:underline font-bold"
-        >
-          Reset
-        </button>
-      ) : null,
-      cell: (item) => (
-        <div className="flex items-center justify-center gap-1 whitespace-nowrap">
-          <button
-            onClick={(e) => { e.stopPropagation(); handleOpenEdit(item); }}
-            className="w-7 h-7 flex items-center justify-center text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-lg transition-colors cursor-pointer"
-            title="Edit delivery"
-            aria-label="Edit delivery"
-          >
-            <Edit3 size={13} />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              if (confirm(`Delete delivery ${item.almId}?`)) {
-                deleteDelivery(item.id);
-              }
-            }}
-            className="w-7 h-7 flex items-center justify-center text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
-            title="Delete delivery"
-            aria-label="Delete delivery"
-          >
-            <Trash2 size={13} />
-          </button>
-        </div>
-      )
     }
-  ], [filterStatus, filterEnv, filterVersion, filterSmoke]);
+  ];
+
+  // Append user-defined custom fields from Field Architect
+  (state.delCustomFields || []).forEach(cf => {
+    baseCols.push({
+      id: `cf_${cf.name}`,
+      header: cf.name.toUpperCase(),
+      headerTitle: `Custom Field: ${cf.name}`,
+      sortable: true,
+      width: 'w-32',
+      cell: (item) => {
+        const val = (item as any)[cf.name];
+        if (val === undefined || val === null || val === '') return <span className="text-[10px] text-[var(--color-text-faint)] italic">—</span>;
+        if (cf.type === 'checkbox') return <span className="font-semibold text-xs text-emerald-400">{val ? '✓ Yes' : '✕ No'}</span>;
+        return <span className="text-xs text-[var(--color-text)] truncate max-w-[150px]">{String(val)}</span>;
+      }
+    });
+  });
+
+  // Filter columns that are marked hidden (except almId and name)
+  const visibleCols = baseCols.filter(c => {
+    if (c.id === 'almId' || c.id === 'name') return true;
+    return delColMap[c.id]?.visible !== false;
+  });
+
+  visibleCols.push({
+    id: 'actions',
+    header: '',
+    width: 'w-10',
+    align: 'center',
+    filter: (filterStatus !== 'all' || filterEnv !== 'all' || filterVersion !== 'all' || filterSmoke !== 'all') ? (
+      <button
+        onClick={() => {
+          setFilterStatus('all');
+          setFilterEnv('all');
+          setFilterVersion('all');
+          setFilterSmoke('all');
+        }}
+        className="text-[10px] text-[var(--color-primary-hex)] hover:underline font-bold"
+      >
+        Reset
+      </button>
+    ) : null,
+    cell: (item) => (
+      <div className="flex items-center justify-center gap-1 whitespace-nowrap">
+        <button
+          onClick={(e) => { e.stopPropagation(); handleOpenEdit(item); }}
+          className="w-7 h-7 flex items-center justify-center text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-lg transition-colors cursor-pointer"
+          title="Edit delivery"
+          aria-label="Edit delivery"
+        >
+          <Edit3 size={13} />
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            if (confirm(`Delete delivery ${item.almId}?`)) {
+              deleteDelivery(item.id);
+            }
+          }}
+          className="w-7 h-7 flex items-center justify-center text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
+          title="Delete delivery"
+          aria-label="Delete delivery"
+        >
+          <Trash2 size={13} />
+        </button>
+      </div>
+    )
+  });
+
+  return visibleCols;
+  }, [state.delCols, state.delCustomFields, delColMap, filterStatus, filterEnv, filterVersion, filterSmoke]);
 
   // Handlers
   const toggleSelect = (id: string) => {

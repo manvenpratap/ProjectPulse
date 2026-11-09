@@ -128,6 +128,10 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
           dropdowns: { ...defaultState.dropdowns, ...(parsed.dropdowns || {}) },
           customFields: parsed.customFields || [],
           defCustomFields: parsed.defCustomFields || [],
+          delCustomFields: parsed.delCustomFields || [],
+          cols: parsed.cols || defaultState.cols,
+          defCols: parsed.defCols || defaultState.defCols,
+          delCols: parsed.delCols || defaultState.delCols,
           stepTemplates: parsed.stepTemplates || defaultState.stepTemplates || [],
           theme: finalTheme
         });

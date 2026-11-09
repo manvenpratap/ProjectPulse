@@ -1,4 +1,63 @@
-import { ProjectState, TaskStatus, TaskPriority, DefectStatus } from '../types';
+import { ProjectState, TaskStatus, TaskPriority, DefectStatus, FieldConfig } from '../types';
+
+export const DEFAULT_TASK_COLS: FieldConfig[] = [
+  { key: 'id', label: 'TASK ID', width: 90, type: 'text', visible: true, required: true },
+  { key: 'name', label: 'TASK NAME & CHECKLIST', width: 320, type: 'text', visible: true, required: true },
+  { key: 'module', label: 'MODULE & SCOPE', width: 180, type: 'select', mapKey: 'module', visible: true, required: true },
+  { key: 'status', label: 'STATUS', width: 130, type: 'select', mapKey: 'status', visible: true, required: true },
+  { key: 'priority', label: 'PRIORITY', width: 110, type: 'select', mapKey: 'priority', visible: true, required: true },
+  { key: 'assignee', label: 'ASSIGNEE', width: 150, type: 'select', mapKey: 'member', visible: true },
+  { key: 'dueDate', label: 'DUE DATE', width: 130, type: 'date', visible: true },
+  { key: 'progress', label: 'PROGRESS', width: 110, type: 'progress', visible: true },
+  { key: 'startDate', label: 'PLANNED START', width: 120, type: 'date', visible: true },
+  { key: 'actCompletionDate', label: 'COMPLETED DATE', width: 120, type: 'date', visible: true },
+  { key: 'estDays', label: 'EST. EFFORT (DAYS)', width: 100, type: 'number', visible: true },
+  { key: 'actDays', label: 'ACT. EFFORT (DAYS)', width: 100, type: 'number', visible: true },
+  { key: 'category', label: 'CATEGORY', width: 120, type: 'select', mapKey: 'category', visible: true },
+  { key: 'release', label: 'TARGET RELEASE', width: 120, type: 'select', mapKey: 'version', visible: true },
+  { key: 'dependsOn', label: 'DEPENDENCIES', width: 110, type: 'text', visible: true },
+  { key: 'guiScreens', label: 'GUI SCREENS', width: 140, type: 'text', visible: true },
+  { key: 'notes', label: 'NOTES & REMARKS', width: 180, type: 'text', visible: true }
+];
+
+export const DEFAULT_DEFECT_COLS: FieldConfig[] = [
+  { key: 'id', label: 'DEFECT ID', width: 90, type: 'text', visible: true, required: true },
+  { key: 'title', label: 'SUMMARY & SCOPE', width: 260, type: 'text', visible: true, required: true },
+  { key: 'severity', label: 'SEVERITY', width: 120, type: 'select', mapKey: 'defectSeverity', visible: true, required: true },
+  { key: 'priority', label: 'PRIORITY', width: 110, type: 'select', mapKey: 'defectPriority', visible: true, required: true },
+  { key: 'status', label: 'STATUS', width: 120, type: 'select', mapKey: 'defectStatus', visible: true, required: true },
+  { key: 'assignee', label: 'ASSIGNEE', width: 140, type: 'select', mapKey: 'member', visible: true },
+  { key: 'reporter', label: 'REPORTER', width: 130, type: 'select', mapKey: 'member', visible: true },
+  { key: 'linkedId', label: 'LINKED ITEM', width: 120, type: 'text', visible: true },
+  { key: 'type', label: 'DEFECT TYPE', width: 130, type: 'select', mapKey: 'defectType', visible: true },
+  { key: 'createdAt', label: 'REPORTED DATE', width: 110, type: 'date', visible: true },
+  { key: 'updatedAt', label: 'LAST UPDATED', width: 110, type: 'date', visible: true },
+  { key: 'steps', label: 'REPRODUCTION STEPS', width: 200, type: 'text', visible: true },
+  { key: 'desc', label: 'DETAILS & LOGS', width: 200, type: 'text', visible: true }
+];
+
+export const DEFAULT_DELIVERY_COLS: FieldConfig[] = [
+  { key: 'almId', label: 'DEFECT ID - ALM ID', width: 140, type: 'text', visible: true, required: true },
+  { key: 'id', label: 'DELIVERY ID', width: 110, type: 'text', visible: true },
+  { key: 'name', label: 'DESCRIPTION - ALM DESCRIPTION', width: 280, type: 'text', visible: true, required: true },
+  { key: 'pdn', label: 'PDN INFO', width: 130, type: 'text', visible: true, required: true },
+  { key: 'pdnProcessingDate', label: 'PDN PROCESSING DATE', width: 140, type: 'date', visible: true, required: true },
+  { key: 'componentsDelivered', label: 'COMPONENTS DELIVERED', width: 240, type: 'text', visible: true, required: true },
+  { key: 'category', label: 'CATEGORY', width: 140, type: 'select', mapKey: 'deliveryCategory', visible: true, required: true },
+  { key: 'module', label: 'MODULE', width: 130, type: 'select', mapKey: 'module', visible: true, required: true },
+  { key: 'environment', label: 'ENVIRONMENT', width: 110, type: 'select', mapKey: 'deliveryEnv', visible: true },
+  { key: 'almStatus', label: 'ALM STATUS', width: 130, type: 'select', mapKey: 'almStatus', visible: true, required: true },
+  { key: 'status', label: 'DEPLOYMENT STATUS', width: 130, type: 'select', mapKey: 'deliveryStatus', visible: true },
+  { key: 'releaseVersion', label: 'RELEASE VERSION', width: 120, type: 'select', mapKey: 'version', visible: true },
+  { key: 'signOffStatus', label: 'SIGN-OFF STATUS', width: 120, type: 'select', mapKey: 'deliverySignOff', visible: true },
+  { key: 'smokeTestStatus', label: 'SMOKE TEST GATE', width: 130, type: 'select', mapKey: 'smokeTestStatus', visible: true },
+  { key: 'approver', label: 'APPROVER / LEAD', width: 130, type: 'select', mapKey: 'member', visible: true },
+  { key: 'reportedBy', label: 'REPORTED BY', width: 130, type: 'select', mapKey: 'member', visible: true, required: true },
+  { key: 'fixedBy', label: 'DEFECT FIXED BY', width: 130, type: 'select', mapKey: 'member', visible: true, required: true },
+  { key: 'targetDeliveryDate', label: 'TARGET DATE', width: 130, type: 'date', visible: true },
+  { key: 'actualDeliveryDate', label: 'ACTUAL DATE', width: 130, type: 'date', visible: true },
+  { key: 'rollbackPlan', label: 'ROLLBACK PLAN', width: 180, type: 'text', visible: true }
+];
 
 export const getDefaultState = (): ProjectState => ({
   name: '',
@@ -37,6 +96,10 @@ export const getDefaultState = (): ProjectState => ({
   },
   customFields: [],
   defCustomFields: [],
+  delCustomFields: [],
+  cols: DEFAULT_TASK_COLS,
+  defCols: DEFAULT_DEFECT_COLS,
+  delCols: DEFAULT_DELIVERY_COLS,
   stepTemplates: [
     {
       name: 'Server-Side Workflow', category: 'Server Module', steps: [

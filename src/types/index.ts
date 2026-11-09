@@ -126,10 +126,21 @@ export interface ProjectReport {
 export interface CustomField {
   name: string;
   type: 'text' | 'number' | 'date' | 'dropdown' | 'checkbox';
-  source?: 'local' | 'global';
+  source?: 'local' | 'global' | 'manual';
   globalKey?: string;
   options?: string[];
   required?: boolean;
+}
+
+export interface FieldConfig {
+  key: string;
+  label: string;
+  width?: number;
+  type?: 'text' | 'number' | 'date' | 'select' | 'progress' | 'checkbox';
+  required?: boolean;
+  visible?: boolean;
+  mapKey?: string;
+  tooltip?: string;
 }
 
 export interface StepTemplate {
@@ -207,6 +218,10 @@ export interface ProjectState {
   dropdowns: Record<string, string[]>;
   customFields: CustomField[];
   defCustomFields: CustomField[];
+  delCustomFields?: CustomField[];
+  cols?: FieldConfig[];
+  defCols?: FieldConfig[];
+  delCols?: FieldConfig[];
   stepTemplates: StepTemplate[];
   settings: ProjectSettings;
   view: string;

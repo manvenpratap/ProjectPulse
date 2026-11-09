@@ -260,10 +260,20 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask, onNewTask }) => {
     );
   }
 
-  const columns = useMemo<ColumnDef<Task>[]>(() => [
+  // User-configured column customizations from Field Architect
+  const colMap = useMemo(() => {
+    const map: Record<string, { label: string; width?: number; visible?: boolean }> = {};
+    (state.cols || []).forEach(c => {
+      map[c.key] = { label: c.label, width: c.width, visible: c.visible !== false };
+    });
+    return map;
+  }, [state.cols]);
+
+  const columns = useMemo<ColumnDef<Task>[]>(() => {
+    const baseCols: ColumnDef<Task>[] = [
     {
       id: 'id',
-      header: 'TASK ID',
+      header: colMap['id']?.label || 'TASK ID',
       headerTitle: 'Unique persistent task identifier (e.g. T-101). Click to sort.',
       sortable: true,
       width: 'w-24',
@@ -280,7 +290,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask, onNewTask }) => {
     },
     {
       id: 'module',
-      header: 'MODULE & SCOPE',
+      header: colMap['module']?.label || 'MODULE & SCOPE',
       headerTitle: 'Functional architectural domain of the codebase this task impacts. Click to sort.',
       sortable: true,
       width: 'w-44',
@@ -311,7 +321,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask, onNewTask }) => {
     },
     {
       id: 'name',
-      header: 'TASK NAME & CHECKLIST',
+      header: colMap['name']?.label || 'TASK NAME & CHECKLIST',
       headerTitle: 'Task title and subtask checklist status. Indented rows indicate child subtasks. Click to sort.',
       sortable: true,
       width: 'min-w-[320px]',
@@ -353,7 +363,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask, onNewTask }) => {
     },
     {
       id: 'status',
-      header: 'STATUS',
+      header: colMap['status']?.label || 'STATUS',
       headerTitle: 'Current task lifecycle state (Not Started, In Progress, Review, Completed, On Hold, Cancelled). Click badge in rows to quick-cycle. Click to sort.',
       sortable: true,
       width: 'w-32',
@@ -382,7 +392,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask, onNewTask }) => {
     },
     {
       id: 'priority',
-      header: 'PRIORITY',
+      header: colMap['priority']?.label || 'PRIORITY',
       headerTitle: 'Execution urgency (Critical, High, Medium, Low). Prioritizes linear capacity leveling. Click to sort.',
       sortable: true,
       width: 'w-24',
@@ -407,7 +417,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask, onNewTask }) => {
     },
     {
       id: 'assignee',
-      header: 'ASSIGNEE',
+      header: colMap['assignee']?.label || 'ASSIGNEE',
       headerTitle: 'Accountable module owner or developer. Subtask contributors roll up automatically. Click to sort.',
       sortable: true,
       width: 'w-36',
@@ -438,7 +448,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask, onNewTask }) => {
     },
     {
       id: 'dueDate',
-      header: 'DUE DATE',
+      header: colMap['dueDate']?.label || 'DUE DATE',
       headerTitle: 'Planned feasibility target completion date. Evaluated against Baseline Due Date. Click to sort.',
       sortable: true,
       width: 'w-36',
@@ -461,7 +471,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask, onNewTask }) => {
     },
     {
       id: 'progress',
-      header: 'PROGRESS',
+      header: colMap['progress']?.label || 'PROGRESS',
       headerTitle: 'Granular completion percentage (0–100%). Click or slide to adjust. Click to sort.',
       sortable: true,
       width: 'w-28',
@@ -481,37 +491,65 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask, onNewTask }) => {
           </div>
         </div>
       )
-    },
-    {
-      id: 'actions',
-      header: '',
-      width: 'w-10',
-      align: 'center',
-      filter: (selectedModule !== 'all' || selectedStatus !== 'all' || selectedAssignee !== 'all' || selectedPriority !== 'all') ? (
-        <button
-          onClick={() => {
-            setSelectedModule('all');
-            setSelectedStatus('all');
-            setSelectedAssignee('all');
-            setSelectedPriority('all');
-          }}
-          title="Reset inline filters"
-          className="text-[10px] text-[var(--color-primary-hex)] hover:underline font-bold px-1.5 py-0.5 rounded"
-        >
-          Reset
-        </button>
-      ) : null,
-      cell: (task) => (
-        <button
-          onClick={(e) => { e.stopPropagation(); onEditTask(task.id); }}
-          className="p-1 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors opacity-70 group-hover:opacity-100 cursor-pointer"
-          title="Edit task"
-        >
-          <MoreHorizontal size={14} />
-        </button>
-      )
     }
-  ], [state.tasks, selectedModule, modules, selectedStatus, selectedPriority, selectedAssignee, assignees, onEditTask]);
+  ];
+
+  // Append user-defined custom fields from Field Architect
+  (state.customFields || []).forEach(cf => {
+    baseCols.push({
+      id: `cf_${cf.name}`,
+      header: cf.name.toUpperCase(),
+      headerTitle: `Custom Field: ${cf.name}`,
+      sortable: true,
+      width: 'w-32',
+      cell: (task) => {
+        const val = (task as any)[cf.name];
+        if (val === undefined || val === null || val === '') return <span className="text-[10px] text-[var(--color-text-faint)] italic">—</span>;
+        if (cf.type === 'checkbox') return <span className="font-semibold text-xs text-emerald-400">{val ? '✓ Yes' : '✕ No'}</span>;
+        return <span className="text-xs text-[var(--color-text)] truncate max-w-[150px]">{String(val)}</span>;
+      }
+    });
+  });
+
+  // Filter columns that are marked hidden (except id, name, and actions)
+  const visibleCols = baseCols.filter(c => {
+    if (c.id === 'id' || c.id === 'name') return true;
+    return colMap[c.id]?.visible !== false;
+  });
+
+  // Actions column is always last
+  visibleCols.push({
+    id: 'actions',
+    header: '',
+    width: 'w-10',
+    align: 'center',
+    filter: (selectedModule !== 'all' || selectedStatus !== 'all' || selectedAssignee !== 'all' || selectedPriority !== 'all') ? (
+      <button
+        onClick={() => {
+          setSelectedModule('all');
+          setSelectedStatus('all');
+          setSelectedAssignee('all');
+          setSelectedPriority('all');
+        }}
+        title="Reset inline filters"
+        className="text-[10px] text-[var(--color-primary-hex)] hover:underline font-bold px-1.5 py-0.5 rounded"
+      >
+        Reset
+      </button>
+    ) : null,
+    cell: (task) => (
+      <button
+        onClick={(e) => { e.stopPropagation(); onEditTask(task.id); }}
+        className="p-1 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors opacity-70 group-hover:opacity-100 cursor-pointer"
+        title="Edit task"
+      >
+        <MoreHorizontal size={14} />
+      </button>
+    )
+  });
+
+  return visibleCols;
+  }, [state.tasks, state.cols, state.customFields, colMap, selectedModule, modules, selectedStatus, selectedPriority, selectedAssignee, assignees, onEditTask]);
 
   const isAllSelected = filteredTasks.length > 0 && selectedTaskIds.size === filteredTasks.length;
 

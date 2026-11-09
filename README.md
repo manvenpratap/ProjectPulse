@@ -63,7 +63,8 @@ npm start
 12. **Team Capacity Hub**: Real-time FTE load distribution, leave schedules, role quotas, and cross-project utilization balancing.
 13. **Bi-Directional Excel Synchronization**: Production-grade ExcelJS engine generating multi-tab relational workbooks (Tasks, Deliveries, RAID, Defects, Decisions, Releases, Members) and round-trip state reconstruction.
 14. **Role-Based Access Control (RBAC) & Authentication**: Secure multi-persona session management (Admin, Project Manager, Developer, Stakeholder), route access guards (`AccessDenied`), quick persona switching for testing, and an Admin Governance Studio for live role assignment, granular view overrides, and user enrollment.
-15. **26+ Curated Themes**: High-contrast, theme-adaptive CSS design tokens with fluid typography and light/dark mode overrides.
+15. **Field Architect & Custom Schema Studio**: Two-panel dynamic metadata architect allowing in-place customization of system core attributes (custom column headers, pixel widths, visibility toggling, order repositioning, and factory reset defaults) alongside proprietary custom field extensions (text, numeric, temporal, boolean, manual selection, and global registry linkages) dynamically synced across Tasks, Defects, and Deliveries tables.
+16. **26+ Curated Themes**: High-contrast, theme-adaptive CSS design tokens with fluid typography and light/dark mode overrides.
 
 ---
 
