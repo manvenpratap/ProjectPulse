@@ -419,9 +419,9 @@ const DefectView: React.FC = () => {
           <div className="overflow-x-auto rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs max-w-full">
             <table className="w-full text-left border-collapse min-w-[1050px] table-fixed">
               <thead>
-                <tr className="bg-[var(--color-surface-offset)] border-b-2 border-[var(--color-border)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)] select-none">
+                <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)]/60 text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] select-none">
                   {/* Bulk Checkbox */}
-                  <th className="p-2.5 w-10 text-center border-r border-[var(--color-divider)]">
+                  <th className="p-2.5 w-10 text-center">
                     <input 
                       type="checkbox"
                       checked={isAllSelected}
@@ -432,17 +432,17 @@ const DefectView: React.FC = () => {
                   </th>
 
                   {/* Row Number (#) */}
-                  <th className="p-2.5 w-11 text-center border-r border-[var(--color-divider)] td-rn font-mono text-[10px]" title="Sequential defect index">
+                  <th className="p-2.5 w-11 text-center td-rn font-mono text-[10px]" title="Sequential defect index">
                     #
                   </th>
 
                   {/* Edit Action */}
-                  <th className="p-2.5 w-10 text-center border-r border-[var(--color-divider)]" title="Quick edit defect"></th>
+                  <th className="p-2.5 w-10 text-center" title="Quick edit defect"></th>
 
                   {/* Defect ID */}
                   <th 
                     onClick={() => handleSort('id')}
-                    className="p-2.5 w-26 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                    className="p-2.5 w-26 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
                     title="Unique defect tracking identifier (e.g. DEF-101). Click to sort."
                   >
                     <div className="flex items-center justify-between gap-1">
@@ -456,7 +456,7 @@ const DefectView: React.FC = () => {
                   {/* Title / Summary */}
                   <th 
                     onClick={() => handleSort('title')}
-                    className="p-2.5 min-w-[260px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                    className="p-2.5 min-w-[260px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
                     title="Summary of the issue, failure symptom, or regression. Click to sort."
                   >
                     <div className="flex items-center justify-between gap-1">
@@ -470,7 +470,7 @@ const DefectView: React.FC = () => {
                   {/* Severity */}
                   <th 
                     onClick={() => handleSort('severity')}
-                    className="p-2.5 w-30 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                    className="p-2.5 w-30 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
                     title="Impact severity tier (S1-Blocker, S2-Critical, S3-Major, S4-Minor). Click to sort."
                   >
                     <div className="flex items-center justify-between gap-1">
@@ -484,7 +484,7 @@ const DefectView: React.FC = () => {
                   {/* Priority */}
                   <th 
                     onClick={() => handleSort('priority')}
-                    className="p-2.5 w-26 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)] text-center"
+                    className="p-2.5 w-26 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors text-center"
                     title="Fix urgency for triage and sprint allocation. Click to sort."
                   >
                     <div className="flex items-center justify-center gap-1">
@@ -498,7 +498,7 @@ const DefectView: React.FC = () => {
                   {/* Status */}
                   <th 
                     onClick={() => handleSort('status')}
-                    className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                    className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
                     title="Resolution lifecycle state (New, Open, In Progress, Resolved, Retest, Closed). Click to sort."
                   >
                     <div className="flex items-center justify-between gap-1">
@@ -512,7 +512,7 @@ const DefectView: React.FC = () => {
                   {/* Assignee */}
                   <th 
                     onClick={() => handleSort('assignee')}
-                    className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                    className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
                     title="Assigned engineer or QA lead investigating the defect. Click to sort."
                   >
                     <div className="flex items-center justify-between gap-1">
@@ -524,7 +524,7 @@ const DefectView: React.FC = () => {
                   </th>
 
                   {/* Linked Item */}
-                  <th className="p-2.5 w-32 border-r border-[var(--color-divider)]" title="Associated task ID or GUI screen origin">
+                  <th className="p-2.5 w-32" title="Associated task ID or GUI screen origin">
                     LINKED ITEM
                   </th>
 
@@ -546,21 +546,21 @@ const DefectView: React.FC = () => {
                 {/* Inline Filters Row */}
                 {showInlineFilters && (
                   <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-border)] text-xs">
-                    <th className="p-1 border-r border-[var(--color-divider)]"></th>
-                    <th className="p-1 border-r border-[var(--color-divider)]"></th>
-                    <th className="p-1 border-r border-[var(--color-divider)]"></th>
-                    <th className="p-1 border-r border-[var(--color-divider)]">
+                    <th className="p-1"></th>
+                    <th className="p-1"></th>
+                    <th className="p-1"></th>
+                    <th className="p-1">
                       <span className="text-[10px] text-[var(--color-text-faint)] font-mono pl-1">—</span>
                     </th>
-                    <th className="p-1 border-r border-[var(--color-divider)]">
+                    <th className="p-1">
                       <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by topbar search</span>
                     </th>
                     {/* Severity Filter */}
-                    <th className="p-1 border-r border-[var(--color-divider)]">
+                    <th className="p-1">
                       <select
                         value={filterSeverity}
                         onChange={e => setFilterSeverity(e.target.value)}
-                        className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none"
+                        className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
                       >
                         <option value="all">All Severities</option>
                         {severities.map(s => (
@@ -569,11 +569,11 @@ const DefectView: React.FC = () => {
                       </select>
                     </th>
                     {/* Priority Filter */}
-                    <th className="p-1 border-r border-[var(--color-divider)]">
+                    <th className="p-1">
                       <select
                         value={filterPriority}
                         onChange={e => setFilterPriority(e.target.value)}
-                        className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none"
+                        className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
                       >
                         <option value="all">All</option>
                         {priorities.map(p => (
@@ -582,11 +582,11 @@ const DefectView: React.FC = () => {
                       </select>
                     </th>
                     {/* Status Filter */}
-                    <th className="p-1 border-r border-[var(--color-divider)]">
+                    <th className="p-1">
                       <select
                         value={filterStatus}
                         onChange={e => setFilterStatus(e.target.value)}
-                        className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none"
+                        className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
                       >
                         <option value="all">All Statuses</option>
                         {Object.values(DefectStatus).map(s => (
@@ -595,11 +595,11 @@ const DefectView: React.FC = () => {
                       </select>
                     </th>
                     {/* Assignee Filter */}
-                    <th className="p-1 border-r border-[var(--color-divider)]">
+                    <th className="p-1">
                       <select
                         value={filterAssignee}
                         onChange={e => setFilterAssignee(e.target.value)}
-                        className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none"
+                        className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
                       >
                         <option value="all">All Team</option>
                         {assignees.map(a => (
@@ -607,7 +607,7 @@ const DefectView: React.FC = () => {
                         ))}
                       </select>
                     </th>
-                    <th className="p-1 border-r border-[var(--color-divider)]"></th>
+                    <th className="p-1"></th>
                     <th className="p-1 text-center">
                       {(filterStatus !== 'all' || filterSeverity !== 'all' || filterPriority !== 'all' || filterAssignee !== 'all') && (
                         <button
@@ -638,13 +638,13 @@ const DefectView: React.FC = () => {
                       key={defect.id}
                       onClick={() => handleEdit(defect.id)}
                       className={clsx(
-                        "group hover:bg-[var(--color-surface-2)] transition-colors cursor-pointer relative",
+                        "group hover:bg-[var(--color-surface-2)]/70 transition-colors cursor-pointer relative",
                         isSelected && "bg-[var(--color-primary-highlight-hex)]/40",
                         isS1 && "is-overdue"
                       )}
                     >
                       {/* Checkbox */}
-                      <td className={clsx("p-2.5 text-center border-r border-[var(--color-divider)]", padY)} onClick={e => e.stopPropagation()}>
+                      <td className={clsx("p-2.5 text-center", padY)} onClick={e => e.stopPropagation()}>
                         <input 
                           type="checkbox"
                           checked={isSelected}
@@ -654,12 +654,12 @@ const DefectView: React.FC = () => {
                       </td>
 
                       {/* Row Num */}
-                      <td className={clsx("p-2.5 text-center border-r border-[var(--color-divider)] td-rn font-mono", padY)}>
+                      <td className={clsx("p-2.5 text-center td-rn font-mono", padY)}>
                         {pagination.startIndex + idx + 1}
                       </td>
 
                       {/* Edit Button */}
-                      <td className={clsx("p-1 text-center border-r border-[var(--color-divider)]", padY)} onClick={e => e.stopPropagation()}>
+                      <td className={clsx("p-1 text-center", padY)} onClick={e => e.stopPropagation()}>
                         <button
                           onClick={() => handleEdit(defect.id)}
                           className="w-5 h-5 inline-flex items-center justify-center rounded hover:bg-[var(--color-surface-offset)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer"
@@ -670,12 +670,12 @@ const DefectView: React.FC = () => {
                       </td>
 
                       {/* Defect ID */}
-                      <td className={clsx("p-2.5 font-mono font-bold text-[11px] text-rose-500 border-r border-[var(--color-divider)]", padY)}>
+                      <td className={clsx("p-2.5 font-mono font-bold text-[11px] text-rose-500", padY)}>
                         {defect.id}
                       </td>
 
                       {/* Summary & Scope */}
-                      <td className={clsx("p-2.5 border-r border-[var(--color-divider)]", padY)}>
+                      <td className={clsx("p-2.5", padY)}>
                         <div className="font-bold text-xs text-[var(--color-text)] leading-tight truncate">
                           {defect.title}
                         </div>
@@ -687,7 +687,7 @@ const DefectView: React.FC = () => {
                       </td>
 
                       {/* Severity */}
-                      <td className={clsx("p-2.5 border-r border-[var(--color-divider)]", padY)}>
+                      <td className={clsx("p-2.5", padY)}>
                         <span className={clsx(
                           "px-2 py-0.5 rounded text-[10px] font-bold font-mono inline-block",
                           defect.severity?.startsWith('S1') ? "bg-rose-500/15 text-rose-500 border border-rose-500/30" :
@@ -700,14 +700,14 @@ const DefectView: React.FC = () => {
                       </td>
 
                       {/* Priority */}
-                      <td className={clsx("p-2.5 text-center border-r border-[var(--color-divider)]", padY)}>
+                      <td className={clsx("p-2.5 text-center", padY)}>
                         <span className={clsx("pri-badge", `pri-${(defect.priority || 'medium').toLowerCase()}`)}>
                           {defect.priority || 'Medium'}
                         </span>
                       </td>
 
                       {/* Status */}
-                      <td className={clsx("p-2.5 border-r border-[var(--color-divider)]", padY)}>
+                      <td className={clsx("p-2.5", padY)}>
                         <button
                           onClick={(e) => handleCycleStatus(defect, e)}
                           title="Click to cycle status"
@@ -719,7 +719,7 @@ const DefectView: React.FC = () => {
                       </td>
 
                       {/* Assignee */}
-                      <td className={clsx("p-2.5 border-r border-[var(--color-divider)]", padY)}>
+                      <td className={clsx("p-2.5", padY)}>
                         {defect.assignee ? (
                           <div className="flex items-center gap-1.5">
                             <div className="w-5 h-5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold text-[9px] flex items-center justify-center shrink-0 border border-[var(--color-primary-hex)]/30">
@@ -735,7 +735,7 @@ const DefectView: React.FC = () => {
                       </td>
 
                       {/* Linked Scope */}
-                      <td className={clsx("p-2.5 font-mono text-[11px] text-[var(--color-text-muted)] border-r border-[var(--color-divider)] truncate", padY)}>
+                      <td className={clsx("p-2.5 font-mono text-[11px] text-[var(--color-text-muted)] truncate", padY)}>
                         {defect.linkedId ? `${defect.linkedType || 'Task'}: ${defect.linkedId}` : '—'}
                       </td>
 
