@@ -35,6 +35,7 @@ import {
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
 import ViewExportButton from '../shared/ViewExportButton';
+import TablePagination, { usePagination } from '../shared/TablePagination';
 import clsx from 'clsx';
 import { Feature, Task, TaskStatus } from '../../types';
 import { daysDiff, fmtDate, todayStr } from '../../utils/projectUtils';
@@ -238,6 +239,8 @@ export const FunctionalMatrix: React.FC = () => {
       return true;
     });
   }, [features, searchTerm, complexityFilter, selectedModule, selectedStatus, featureMetrics]);
+
+  const pagination = usePagination<Feature>(filteredFeatures, 10, 'pp_page_size_features');
 
   // ── 5. Feature Action Handlers ──
   const handleAddFeature = () => {
@@ -850,22 +853,22 @@ export const FunctionalMatrix: React.FC = () => {
         {/* ── VIEW MODE 2: TABULAR LIST (Matches projectpulse.html) ── */}
         {viewMode === 'table' && (
           <div className="overflow-x-auto rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs max-w-full">
-            <table className="w-full text-left border-collapse min-w-[950px] table-fixed">
+            <table className="w-full text-left border-collapse min-w-[950px]">
               <thead>
-                <tr className="bg-[var(--color-surface-offset)] border-b-2 border-[var(--color-border)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)] select-none">
-                  <th className="p-2.5 w-11 text-center border-r border-[var(--color-divider)] td-rn font-mono text-[10px]">#</th>
-                  <th className="p-2.5 w-64 border-r border-[var(--color-divider)]">Feature Node</th>
-                  <th className="p-2.5 w-28 border-r border-[var(--color-divider)]">Status</th>
-                  <th className="p-2.5 w-28 border-r border-[var(--color-divider)]">Release</th>
-                  <th className="p-2.5 w-32 border-r border-[var(--color-divider)]">Category</th>
-                  <th className="p-2.5 w-40 border-r border-[var(--color-divider)]">Maturation</th>
-                  <th className="p-2.5 w-44 border-r border-[var(--color-divider)]">Mapped Screens</th>
-                  <th className="p-2.5 w-36 border-r border-[var(--color-divider)]">Impacted Modules</th>
-                  <th className="p-2.5 w-20 text-center">Actions</th>
+                <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)]/60 text-[10px] font-bold uppercase tracking-widest text-[var(--color-text-muted)] select-none">
+                  <th className="px-2.5 py-2 w-11 text-center td-rn font-mono text-[10px]" title="Sequential feature index">#</th>
+                  <th className="px-3 py-2 min-w-[260px]" title="Strategic capability name and architectural scope">Feature Node</th>
+                  <th className="px-3 py-2 w-28 whitespace-nowrap" title="Implementation lifecycle status (Planned, Active, Done, At Risk)">Status</th>
+                  <th className="px-3 py-2 w-24 whitespace-nowrap" title="Target release milestone">Release</th>
+                  <th className="px-3 py-2 w-28 whitespace-nowrap" title="Functional architectural domain category">Category</th>
+                  <th className="px-3 py-2 w-36 whitespace-nowrap" title="Backlog completion percentage across mapped tasks">Maturation</th>
+                  <th className="px-3 py-2 w-36 whitespace-nowrap" title="Total count of GUI screen views implementing this capability">Mapped Screens</th>
+                  <th className="px-3 py-2 w-36 whitespace-nowrap" title="Software components and modules impacted">Impacted Modules</th>
+                  <th className="px-2 py-2 w-20 text-center">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[var(--color-divider)] text-xs">
-                {filteredFeatures.map((f, idx) => {
+              <tbody className="divide-y divide-[var(--color-divider)]/40 text-xs">
+                {pagination.paginatedItems.map((f, idx) => {
                   const actualIdx = features.indexOf(f);
                   const mObj = featureMetrics[f.name] || {
                     totTasks: 0,
@@ -884,18 +887,26 @@ export const FunctionalMatrix: React.FC = () => {
                       key={f.name}
                       onClick={() => setSelectedFeature(f)}
                       className={clsx(
-                        "hover:bg-[var(--color-surface-2)]/60 transition-colors cursor-pointer",
-                        mObj.overdueTasks > 0 && "is-overdue"
+                        "group hover:bg-[var(--color-surface-2)]/70 transition-colors cursor-pointer",
+                        mObj.overdueTasks > 0 && "is-overdue border-l-4 border-l-rose-500 bg-rose-500/[0.02]"
                       )}
                     >
-                      <td className="p-2.5 text-center font-mono font-bold text-xs text-[var(--color-text-faint)] border-r border-[var(--color-divider)] td-rn">
-                        {idx + 1}
+                      <td className="px-2.5 py-2 text-center font-mono font-bold text-xs text-[var(--color-text-faint)] td-rn">
+                        {pagination.startIndex + idx + 1}
                       </td>
-                      <td className="p-2.5 font-bold text-[var(--color-text)] border-r border-[var(--color-divider)]">
-                        <div className="font-extrabold text-xs">{f.name}</div>
-                        <div className="text-[11px] text-[var(--color-text-muted)] line-clamp-1 font-normal">{f.desc}</div>
+                      <td className="px-3 py-2 max-w-[300px]">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <span className="font-bold text-xs text-[var(--color-text)] truncate" title={f.name}>
+                            {f.name}
+                          </span>
+                          {f.desc && (
+                            <span className="text-[10px] text-[var(--color-text-muted)] truncate hidden xl:inline max-w-[150px] shrink-0" title={f.desc}>
+                              · {f.desc}
+                            </span>
+                          )}
+                        </div>
                       </td>
-                      <td className="p-2.5 border-r border-[var(--color-divider)]">
+                      <td className="px-3 py-2 whitespace-nowrap">
                         <span className={clsx(
                           "st-badge text-[10px]",
                           mObj.status === 'Done' ? "st-completed" : mObj.status === 'At Risk' ? "st-blocked" : mObj.status === 'Active' ? "st-in-progress" : "st-scheduled"
@@ -904,27 +915,31 @@ export const FunctionalMatrix: React.FC = () => {
                           <span>{mObj.status}</span>
                         </span>
                       </td>
-                      <td className="p-2.5 border-r border-[var(--color-divider)] font-mono text-[11px] text-[var(--color-text-muted)]">
+                      <td className="px-3 py-2 font-mono text-[11px] text-[var(--color-text-muted)] whitespace-nowrap">
                         {f.release || '—'}
                       </td>
-                      <td className="p-2.5 border-r border-[var(--color-divider)]">
+                      <td className="px-3 py-2 whitespace-nowrap">
                         <span className="px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-semibold text-[10px] border border-indigo-500/20">
                           {f.category || 'General'}
                         </span>
                       </td>
-                      <td className="p-2.5 border-r border-[var(--color-divider)]">
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between text-[11px]">
-                            <span className="font-bold">{mObj.avgProg}%</span>
-                            <span className="text-[10px] text-[var(--color-text-faint)]">{mObj.doneTasks}/{mObj.totTasks}</span>
+                      <td className="px-3 py-2 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <div className="h-1.5 w-16 bg-[var(--color-surface-2)] rounded-full overflow-hidden border border-[var(--color-divider)]/40 shadow-inner">
+                            <div 
+                              className={clsx(
+                                "h-full rounded-full transition-all",
+                                mObj.avgProg >= 100 ? "bg-emerald-500" : mObj.avgProg >= 40 ? "bg-cyan-500" : "bg-amber-500"
+                              )} 
+                              style={{ width: `${mObj.avgProg}%` }} 
+                            />
                           </div>
-                          <div className="h-1.5 w-full bg-[var(--color-surface-2)] rounded-full overflow-hidden">
-                            <div className="h-full bg-cyan-500 rounded-full" style={{ width: `${mObj.avgProg}%` }} />
-                          </div>
+                          <span className="font-bold font-mono text-[11px]">{mObj.avgProg}%</span>
+                          <span className="text-[10px] text-[var(--color-text-faint)] font-mono">({mObj.doneTasks}/{mObj.totTasks})</span>
                         </div>
                       </td>
-                      <td className="p-2.5 border-r border-[var(--color-divider)]">
-                        <div className="flex items-center gap-1 flex-wrap">
+                      <td className="px-3 py-2 whitespace-nowrap">
+                        <div className="flex items-center gap-1">
                           <span className="font-bold font-mono text-xs">{f.screens.length}</span>
                           <span className="text-[11px] text-[var(--color-text-muted)]">screens</span>
                           {f.screens.length > 0 && (
@@ -934,10 +949,10 @@ export const FunctionalMatrix: React.FC = () => {
                           )}
                         </div>
                       </td>
-                      <td className="p-2.5 border-r border-[var(--color-divider)] text-[11px] text-[var(--color-text-muted)] truncate">
+                      <td className="px-3 py-2 text-[11px] text-[var(--color-text-muted)] truncate max-w-[160px] whitespace-nowrap">
                         {mObj.impactedModules.join(', ') || '—'}
                       </td>
-                      <td className="p-2.5 text-center" onClick={e => e.stopPropagation()}>
+                      <td className="px-2 py-2 text-center whitespace-nowrap" onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-center gap-1">
                           <button
                             onClick={() => startEdit(actualIdx)}
@@ -962,6 +977,15 @@ export const FunctionalMatrix: React.FC = () => {
                 })}
               </tbody>
             </table>
+            <TablePagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              totalItems={pagination.totalItems}
+              pageSize={pagination.pageSize}
+              onPageChange={pagination.setCurrentPage}
+              onPageSizeChange={pagination.setPageSize}
+              itemLabel="features"
+            />
           </div>
         )}
 
