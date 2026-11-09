@@ -7,7 +7,6 @@ import {
   Bell, 
   Palette, 
   Search, 
-  Plus, 
   HelpCircle,
   Menu
 } from 'lucide-react';
@@ -24,7 +23,7 @@ interface TopbarProps {
 
 const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
   const { state, setView, searchTerm, setSearchTerm } = useProject();
-  const { currentUser, canPerform, hasViewAccess } = useAuth();
+  const { currentUser, hasViewAccess } = useAuth();
   const [isThemeOpen, setIsThemeOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
@@ -210,17 +209,6 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
                 onOpenAccessManager={() => setIsAccessManagerOpen(true)}
               />
             </div>
-          )}
-
-          {canPerform('canCreateTask') && hasViewAccess('tasks') && (
-            <Button 
-              variant="primary" 
-              size="sm" 
-              onClick={() => setView('tasks')}
-              className="h-9 rounded-xl shadow-sm px-3 md:px-4 text-xs font-semibold"
-            >
-              <Plus size={16} className="md:mr-1.5" /> <span className="hidden md:inline">New Task</span>
-            </Button>
           )}
         </div>
       </header>
