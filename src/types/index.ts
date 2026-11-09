@@ -216,6 +216,7 @@ export interface ProjectState {
   log: LogEntry[];
   features: Feature[];
   dropdowns: Record<string, string[]>;
+  dropdownDefaults?: Record<string, string>;
   customFields: CustomField[];
   defCustomFields: CustomField[];
   delCustomFields?: CustomField[];

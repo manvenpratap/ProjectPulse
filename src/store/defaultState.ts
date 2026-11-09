@@ -94,6 +94,21 @@ export const getDefaultState = (): ProjectState => ({
     smokeTestStatus: ['Not Run', 'Running', 'Passed', 'Failed'],
     almStatus: ['New', 'Open', 'In Progress', 'Fixed', 'Ready for Test', 'Retest', 'Closed', 'Rejected', 'Reopened']
   },
+  dropdownDefaults: {
+    status: 'Not Started',
+    priority: 'Medium',
+    category: 'Feature',
+    defectStatus: 'New',
+    defectPriority: 'Medium',
+    defectSeverity: 'S3 - Medium',
+    defectType: 'Functional Bug',
+    deliveryStatus: 'Scheduled',
+    deliveryCategory: 'Feature Release',
+    deliveryEnv: 'Production',
+    deliverySignOff: 'Pending',
+    smokeTestStatus: 'Not Run',
+    almStatus: 'New'
+  },
   customFields: [],
   defCustomFields: [],
   delCustomFields: [],

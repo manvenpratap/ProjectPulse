@@ -100,7 +100,7 @@ export const NAV_HUBS: NavHub[] = [
       { id: 'scaffolder', label: 'Project Architect', shortLabel: 'Scaffolder', icon: Blocks, description: 'Component and module generator' },
       { id: 'fields', label: 'Field Architect', shortLabel: 'Custom Fields', icon: Database, description: 'Metadata schemas and attributes' },
       { id: 'steps', label: 'Step Templates', shortLabel: 'Blueprints', icon: BookOpen, description: 'Automated technical workflow steps' },
-      { id: 'dropdowns', label: 'Pulse Registry', shortLabel: 'Registries', icon: ListChecks, description: 'Taxonomies and lookup libraries' },
+      { id: 'dropdowns', label: 'Option Libraries', shortLabel: 'Option Libraries', icon: ListChecks, description: 'Standardized taxonomies and lookup lists' },
     ]
   },
   {

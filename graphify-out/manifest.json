@@ -16,12 +16,12 @@
     "hash": "2b36426d5ad7e08ef79746aa524f4fb7"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/types/index.ts": {
-    "mtime": 1794246395.5199926,
-    "hash": "9184226db7347933b88c0f76f7251850"
+    "mtime": 1794250734.0145657,
+    "hash": "1dbc48e960ab9ef3d3c78757664e1cbf"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/config/navigation.ts": {
-    "mtime": 1794193962.5473535,
-    "hash": "7559e324d0381b2e864d7533cfa69940"
+    "mtime": 1794250756.141554,
+    "hash": "accb51a93698ff169dd1e80d9215f10f"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/config/viewHelpData.ts": {
     "mtime": 1794194439.8724759,
@@ -196,8 +196,8 @@
     "hash": "75dc18afa68d6d55575461e124d86ba6"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/RegistryView.tsx": {
-    "mtime": 1794110844.2852046,
-    "hash": "f7cf40718253afb85d4b74432287a0dc"
+    "mtime": 1794250867.1163259,
+    "hash": "f72920819c8015302ab7bd9f1442ff0f"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/StepTemplates.tsx": {
     "mtime": 1794249935.2078261,
@@ -232,11 +232,11 @@
     "hash": "f038ac6a1b904c2de05c8a7164fd90f5"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/deliveries/DeliveriesView.tsx": {
-    "mtime": 1794249798.8357525,
+    "mtime": 1794250678.538778,
     "hash": "51ecedd5501a4ab2b309afda355d373c"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/services/exportService.ts": {
-    "mtime": 1794249788.7860491,
+    "mtime": 1794250678.725473,
     "hash": "16a94ec124a0e59eb79962f5bb438c33"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/services/aiService.ts": {
@@ -244,7 +244,7 @@
     "hash": "3831d10f9898767fec9bb04dcdd905fb"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/services/excelService.ts": {
-    "mtime": 1794250471.1511078,
+    "mtime": 1794250678.6668391,
     "hash": "d65f5557c4b03959bfce365309aa03f4"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/store/ProjectContext.tsx": {
@@ -256,8 +256,8 @@
     "hash": "26cdbc0e935ffa1b3e63866960b0cd1c"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/store/defaultState.ts": {
-    "mtime": 1794246395.4781663,
-    "hash": "9069f589350a9cc41b3ede0ed9427337"
+    "mtime": 1794250743.738056,
+    "hash": "dd84dd716bd0803551a26e084acb9598"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/PROJECT_CONTEXT.md": {
     "mtime": 1794070731.6787875,
