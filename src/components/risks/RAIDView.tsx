@@ -28,7 +28,6 @@ import {
 import clsx from 'clsx';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
-import ViewExportButton from '../shared/ViewExportButton';
 import Modal from '../shared/Modal';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef } from '../shared/DataTable';
@@ -532,7 +531,6 @@ const RAIDView: React.FC = () => {
         subtitle="Risks, Assumptions, Issues, Dependencies & Decisions"
         actions={
           <div className="flex items-center gap-2">
-            <ViewExportButton viewId="risks" label="Export RAID" />
             <button 
               onClick={() => handleOpenRaidModal()}
               className="min-h-[38px] px-3 bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] rounded-xl text-xs font-semibold flex items-center gap-1.5 active:scale-95 shadow-sm cursor-pointer transition-transform"

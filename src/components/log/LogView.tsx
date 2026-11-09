@@ -3,7 +3,6 @@ import { useProject } from '../../store/ProjectContext';
 import { History, Search, Filter, MessageSquare, Clock } from 'lucide-react';
 import { fmtDate } from '../../utils/projectUtils';
 import PageHeader from '../shared/PageHeader';
-import ViewExportButton from '../shared/ViewExportButton';
 import clsx from 'clsx';
 import { LogEntry } from '../../types';
 
@@ -33,7 +32,6 @@ const LogView: React.FC = () => {
         subtitle={`${state.log.length} Transactional Entries Recorded`}
         actions={
           <div className="flex items-center gap-2">
-            <ViewExportButton viewId="log" label="Export Log" />
             <div className="relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
               <input 

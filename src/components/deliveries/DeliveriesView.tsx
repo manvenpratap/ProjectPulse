@@ -2,8 +2,7 @@ import React, { useState, useMemo, useRef } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { Delivery, TaskStatus } from '../../types';
 import { fmtDate, todayStr, daysDiff } from '../../utils/projectUtils';
-import ViewExportButton from '../shared/ViewExportButton';
-import { importDeliveriesFromExcel, downloadDeliveryTemplate } from '../../services/excelService';
+import { importDeliveriesFromExcel } from '../../services/excelService';
 import { 
   Package, 
   CheckCircle2, 
@@ -679,18 +678,6 @@ export const DeliveriesView: React.FC = () => {
                 <Upload size={13} className={isImporting ? "animate-spin" : "text-sky-500"} />
                 <span className="hidden sm:inline">{isImporting ? 'Importing...' : 'Import'}</span>
               </button>
-
-              <button
-                onClick={() => downloadDeliveryTemplate(state)}
-                title="Download 12-Column Delivery Template (.xlsx)"
-                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors active:scale-95 shadow-2xs h-9 cursor-pointer"
-                data-testid="download-delivery-template-button"
-              >
-                <Download size={13} />
-                <span className="hidden md:inline">Template</span>
-              </button>
-
-              <ViewExportButton viewId="deliveries" label="Export Deliveries" />
             </div>
 
             <Button variant="primary" size="sm" onClick={handleOpenCreate} className="h-9 px-2.5 sm:px-3 font-bold active:scale-95 min-w-[36px]">

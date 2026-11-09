@@ -18,12 +18,13 @@ import {
   exportViewToExcel, 
   exportViewToCSV, 
   exportViewToJSON, 
+  exportProjectJSON,
   exportViewToHTML, 
   copyViewSummaryToClipboard, 
   shareViewViaEmail,
   getViewItemCount 
 } from '../../services/exportService';
-import { exportProjectExcel } from '../../services/excelService';
+import { exportProjectExcel, exportFeatureMatrixExcel, downloadDeliveryTemplate } from '../../services/excelService';
 
 interface ShareExportMenuProps {
   viewId?: string;
@@ -119,6 +120,31 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
     setIsOpen(false);
   };
 
+  const handleExportFeatureMatrix = async () => {
+    try {
+      setExporting('feature-matrix');
+      await exportFeatureMatrixExcel(state);
+      setIsOpen(false);
+    } finally {
+      setExporting(null);
+    }
+  };
+
+  const handleDownloadDeliveryTemplate = async () => {
+    try {
+      setExporting('delivery-template');
+      await downloadDeliveryTemplate(state);
+      setIsOpen(false);
+    } finally {
+      setExporting(null);
+    }
+  };
+
+  const handleExportFullProjectJSON = () => {
+    exportProjectJSON(state);
+    setIsOpen(false);
+  };
+
   const handleShareEmail = () => {
     shareViewViaEmail(state, activeView);
     setIsOpen(false);
@@ -151,7 +177,7 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
   const viewTitle = activeView.charAt(0).toUpperCase() + activeView.slice(1);
 
   return (
-    <div className={`relative inline-block text-left ${isOpen ? 'z-50' : ''} ${className}`} ref={menuRef}>
+    <div className={`relative inline-block text-left ${isOpen ? 'z-[60]' : ''} ${className}`} ref={menuRef}>
       {/* Trigger Button */}
       <button
         type="button"
@@ -170,7 +196,7 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
       {/* Dropdown Menu */}
       {isOpen && (
         <div 
-          className="absolute right-0 mt-1.5 w-72 sm:w-80 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xl z-50 overflow-hidden divide-y divide-[var(--color-divider)] animate-in fade-in zoom-in-95 duration-100"
+          className="absolute right-0 mt-1.5 w-72 sm:w-84 max-h-[calc(100vh-120px)] overflow-y-auto custom-scroll rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xl z-[60] divide-y divide-[var(--color-divider)] animate-in fade-in zoom-in-95 duration-100"
           role="menu"
           aria-orientation="vertical"
         >
@@ -325,6 +351,56 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
               </div>
             </button>
 
+            {/* Feature Matrix Deep Dive (when on features view) */}
+            {activeView === 'features' && (
+              <button
+                onClick={handleExportFeatureMatrix}
+                disabled={exporting === 'feature-matrix'}
+                className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-lg transition-colors cursor-pointer group text-left disabled:opacity-50"
+                role="menuitem"
+              >
+                <div className="w-6 h-6 rounded-md bg-purple-600/10 text-purple-600 flex items-center justify-center shrink-0">
+                  <Layers size={13} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-xs text-[var(--color-text)] flex items-center gap-1.5">
+                    <span>Export Feature Matrix (.xlsx)</span>
+                    <span className="text-[9px] font-bold text-purple-700 dark:text-purple-400 bg-purple-500/10 px-1 py-0.2 rounded">
+                      5 Sheets
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-[var(--color-text-muted)] truncate">
+                    Architecture, screens, components & schema pack
+                  </div>
+                </div>
+              </button>
+            )}
+
+            {/* Delivery Import Template (when on deliveries view) */}
+            {activeView === 'deliveries' && (
+              <button
+                onClick={handleDownloadDeliveryTemplate}
+                disabled={exporting === 'delivery-template'}
+                className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-lg transition-colors cursor-pointer group text-left disabled:opacity-50"
+                role="menuitem"
+              >
+                <div className="w-6 h-6 rounded-md bg-sky-600/10 text-sky-600 flex items-center justify-center shrink-0">
+                  <Download size={13} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-xs text-[var(--color-text)] flex items-center gap-1.5">
+                    <span>Download Delivery Template (.xlsx)</span>
+                    <span className="text-[9px] font-bold text-sky-700 dark:text-sky-400 bg-sky-500/10 px-1 py-0.2 rounded">
+                      Template
+                    </span>
+                  </div>
+                  <div className="text-[10px] text-[var(--color-text-muted)] truncate">
+                    12-column standardized ALM import template
+                  </div>
+                </div>
+              </button>
+            )}
+
             {/* Master Excel */}
             <button
               onClick={handleExportMasterExcel}
@@ -339,11 +415,11 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
                 <div className="font-semibold text-xs text-[var(--color-text)] flex items-center gap-1.5">
                   <span>Export Master Excel (.xlsx)</span>
                   <span className="text-[9px] font-bold text-teal-700 dark:text-teal-400 bg-teal-500/10 px-1 py-0.2 rounded">
-                    Full
+                    15 Sheets
                   </span>
                 </div>
                 <div className="text-[10px] text-[var(--color-text-muted)] truncate">
-                  Complete 10-sheet enterprise workbook
+                  Complete multi-sheet enterprise workbook
                 </div>
               </div>
             </button>
@@ -382,6 +458,28 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
                 </div>
                 <div className="text-[10px] text-[var(--color-text-muted)] truncate">
                   Raw structured records with metadata
+                </div>
+              </div>
+            </button>
+
+            {/* Full Project JSON Backup */}
+            <button
+              onClick={handleExportFullProjectJSON}
+              className="w-full flex items-center gap-2.5 px-2.5 py-1.5 text-xs text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-lg transition-colors cursor-pointer group text-left"
+              role="menuitem"
+            >
+              <div className="w-6 h-6 rounded-md bg-indigo-600/10 text-indigo-600 flex items-center justify-center shrink-0">
+                <Code size={13} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-xs text-[var(--color-text)] flex items-center gap-1.5">
+                  <span>Export Full Project JSON (.json)</span>
+                  <span className="text-[9px] font-bold text-indigo-700 dark:text-indigo-400 bg-indigo-500/10 px-1 py-0.2 rounded">
+                    Backup
+                  </span>
+                </div>
+                <div className="text-[10px] text-[var(--color-text-muted)] truncate">
+                  Full workspace snapshot with all entities
                 </div>
               </div>
             </button>

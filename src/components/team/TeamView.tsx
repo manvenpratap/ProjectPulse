@@ -40,7 +40,6 @@ import Button from '../shared/Button';
 import clsx from 'clsx';
 import MemberHierarchy from './MemberHierarchy';
 import PageHeader from '../shared/PageHeader';
-import ViewExportButton from '../shared/ViewExportButton';
 import { motion, AnimatePresence } from 'motion/react';
 import { getWeekNumber } from '../../utils/projectUtils';
 import TablePagination, { usePagination } from '../shared/TablePagination';
@@ -859,7 +858,6 @@ const TeamView: React.FC = () => {
         subtitle={`${members.length} Active Engineers • Strategic Capacity & Skills Matrix`}
         actions={
           <div className="flex items-center gap-2">
-            <ViewExportButton viewId="team" label="Export Team" />
             <Button 
               variant="primary" 
               size="sm" 

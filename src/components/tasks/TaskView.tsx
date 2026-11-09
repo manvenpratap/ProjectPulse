@@ -6,7 +6,6 @@ import TaskModal from './TaskModal';
 import { ListTodo, Plus, LayoutGrid, Kanban } from 'lucide-react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
-import ViewExportButton from '../shared/ViewExportButton';
 import clsx from 'clsx';
 
 const TaskView: React.FC = () => {
@@ -63,7 +62,6 @@ const TaskView: React.FC = () => {
                 <span className="hidden sm:inline">Board</span>
               </button>
             </div>
-            <ViewExportButton viewId="tasks" label="Export Tasks" className="mr-1" />
             <Button variant="primary" size="sm" onClick={handleAddNewTask} className="h-9 font-bold active:scale-95 px-2.5 sm:px-3">
               <Plus size={15} className="sm:mr-1" />
               <span className="hidden sm:inline">New Task</span>

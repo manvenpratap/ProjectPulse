@@ -32,7 +32,6 @@ import {
 import clsx from 'clsx';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
-import { exportProjectExcel } from '../../services/excelService';
 
 const OverviewView: React.FC = () => {
   const { state, setView, updateProject, addLog } = useProject();
@@ -220,17 +219,6 @@ const OverviewView: React.FC = () => {
         subtitle="Composite delivery health, early warning bottleneck signals, and real-time simulation"
         actions={
           <div className="flex items-center gap-2.5">
-            {canPerform('canExportExcel') && (
-              <button 
-                onClick={() => exportProjectExcel(state)}
-                className="h-9 px-3.5 bg-[var(--color-surface)] border border-[var(--color-border)] hover:bg-[var(--color-surface-2)] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-[var(--color-text)] rounded-xl text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors"
-                aria-label="Export project report to Excel"
-              >
-                <FileSpreadsheet size={15} className="text-emerald-500" /> 
-                <span>Export Excel</span>
-                <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono rounded bg-[var(--color-surface-2)] border border-[var(--color-border)] text-[var(--color-text-faint)]">⌘E</kbd>
-              </button>
-            )}
             {hasViewAccess('dash') && (
               <button 
                 onClick={() => setView('dash')}

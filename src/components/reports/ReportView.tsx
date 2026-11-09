@@ -22,7 +22,6 @@ import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
 import clsx from 'clsx';
 import { TaskStatus, TaskPriority } from '../../types';
-import { exportProjectExcel } from '../../services/excelService';
 import { getHealthScore, fmtDate } from '../../utils/projectUtils';
 import { 
   BarChart, 
@@ -122,9 +121,6 @@ Project Management Office (PMO)`;
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="sm" className="h-9 font-bold active:scale-95" onClick={handlePrint}>
               <Printer size={15} className="mr-1.5" /> Print Sheet
-            </Button>
-            <Button variant="primary" size="sm" className="h-9 px-4 font-bold shadow-sm active:scale-95" onClick={() => exportProjectExcel(state)}>
-              <Download size={15} className="mr-1.5" /> Export Excel Pack
             </Button>
           </div>
         }

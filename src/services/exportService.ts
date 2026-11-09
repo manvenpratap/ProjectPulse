@@ -612,6 +612,38 @@ export const exportViewToJSON = (state: ProjectState, viewId: string): string =>
 };
 
 // ─────────────────────────────────────────────────────────────
+// FULL PROJECT JSON EXPORTER (Complete Workspace Backup)
+// ─────────────────────────────────────────────────────────────
+export const exportProjectJSON = (state: ProjectState): string => {
+  const fileDate = getFileStamp();
+  const safeName = (state.name || 'Workspace').replace(/[\/*?:"<>|\s]/g, '_');
+  const filename = `ProjectPulse_${safeName}_Backup_${fileDate}.json`;
+
+  const payload = {
+    schemaVersion: '2.0.0',
+    exportedAt: new Date().toISOString(),
+    project: state.name,
+    recordCounts: {
+      tasks: state.tasks?.length || 0,
+      deliveries: state.deliveries?.length || 0,
+      defects: state.defects?.length || 0,
+      features: state.features?.length || 0,
+      raids: state.raids?.length || 0,
+      decisions: state.decisions?.length || 0,
+      members: state.members?.length || 0,
+      log: state.log?.length || 0,
+      releases: state.releases?.length || 0
+    },
+    state
+  };
+
+  const jsonStr = JSON.stringify(payload, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json;charset=utf-8;' });
+  saveBlob(blob, filename);
+  return filename;
+};
+
+// ─────────────────────────────────────────────────────────────
 // 4. STANDALONE INTERACTIVE HTML EXPORTER
 // ─────────────────────────────────────────────────────────────
 export const exportViewToHTML = (state: ProjectState, viewId: string): string => {

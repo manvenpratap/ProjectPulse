@@ -72,32 +72,13 @@ async def test_share_export_zindex():
         await page.screenshot(path=screenshot_path, full_page=False)
         print(f"[SCREENSHOT] Saved screenshot to: {screenshot_path}")
 
-        # Close Share & Export dropdown and test ViewExportButton ("Export Tasks")
+        # Close Share & Export dropdown and verify separate ViewExportButton is NOT present
         await page.keyboard.press("Escape")
         await page.wait_for_timeout(300)
 
-        view_export_toggle = page.locator("button[aria-label='More export options for Export Tasks']")
-        if await view_export_toggle.is_visible():
-            print("[1.1] Testing ViewExportButton dropdown z-index...")
-            await view_export_toggle.click()
-            await page.wait_for_timeout(400)
-            view_menu = page.locator("div[role='menu']")
-            assert await view_menu.is_visible(), "ViewExport dropdown menu should be visible"
-            csv_opt = page.locator("button:has-text('CSV File (.csv)')")
-            assert await csv_opt.is_visible()
-            csv_box = await csv_opt.bounding_box()
-            csv_elem = await page.evaluate(
-                """({x, y}) => {
-                    const el = document.elementFromPoint(x, y);
-                    return el ? el.innerText || el.tagName : null;
-                }""",
-                {"x": csv_box["x"] + csv_box["width"] / 2, "y": csv_box["y"] + csv_box["height"] / 2}
-            )
-            print(f"ViewExport item at point: {csv_elem}")
-            assert "CSV" in (csv_elem or "")
-            print("[PASS] ViewExportButton dropdown is top-most and NOT obscured!")
-            await page.keyboard.press("Escape")
-            await page.wait_for_timeout(300)
+        separate_export = page.locator("button:has-text('Export Tasks')")
+        assert not await separate_export.is_visible(), "Separate 'Export Tasks' button must NOT be present!"
+        print("[PASS] Verified no separate Export Tasks button on tasks screen!")
 
         # Step 2: Test on #/defects as well
         print("[2] Navigating to #/defects and testing dropdown...")

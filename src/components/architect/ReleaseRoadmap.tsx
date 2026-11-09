@@ -24,7 +24,6 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
-import ViewExportButton from '../shared/ViewExportButton';
 import Modal from '../shared/Modal';
 import clsx from 'clsx';
 
@@ -162,7 +161,6 @@ export const ReleaseRoadmap: React.FC = () => {
         subtitle="Define delivery cycles, coordinate milestone rollouts, and monitor scope completion"
         actions={
           <div className="flex items-center gap-2">
-            <ViewExportButton viewId="releases" label="Export Releases" />
             <Button variant="primary" size="sm" onClick={openAddModal} className="h-9 px-4 rounded-xl font-bold active:scale-95">
               <Plus size={15} className="mr-1.5" /> Add Release Version
             </Button>

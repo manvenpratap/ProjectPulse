@@ -38,13 +38,23 @@ async def test_deliveries_traceability():
             await page.goto(f"{BASE_URL}/#/deliveries", wait_until="networkidle")
         await page.wait_for_timeout(1200)
 
-        # Step 2: Trigger Deliveries Excel export
-        print("[2] Triggering Deliveries Excel export via ViewExportButton...")
-        export_btn = page.locator("button:has-text('Export Deliveries')").first
-        assert await export_btn.is_visible(), "Export Deliveries button should be visible"
+        # Step 2: Trigger Deliveries Excel export via Share & Export menu
+        print("[2] Triggering Deliveries Excel export via Share & Export menu...")
+        # Verify separate export button is NOT present
+        separate_export_btn = page.locator("button:has-text('Export Deliveries')")
+        assert not await separate_export_btn.is_visible(), "Separate 'Export Deliveries' button must NOT be present!"
+        
+        # Open Share & Export dropdown
+        share_btn = page.locator("button[aria-label='Share and export data']")
+        assert await share_btn.is_visible(), "Share & Export button should be visible"
+        await share_btn.click()
+        await page.wait_for_timeout(400)
+
+        export_menu_item = page.locator("div[role='menu'] button:has-text('Export Deliveries (.xlsx)')")
+        assert await export_menu_item.is_visible(), "'Export Deliveries (.xlsx)' item must be visible in Share & Export menu"
 
         async with page.expect_download() as download_info:
-            await export_btn.click()
+            await export_menu_item.click()
         
         download = await download_info.value
         export_path = os.path.join(DOWNLOADS_DIR, download.suggested_filename)
