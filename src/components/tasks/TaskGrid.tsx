@@ -432,36 +432,36 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
         )}
       </AnimatePresence>
 
-      {/* ── 3. Desktop Table (Full HTML System Standards) ── */}
+      {/* ── 3. Desktop Table (Linear-grade Precision Data Grid) ── */}
       <div className="hidden lg:block rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto custom-scroll">
           <table className="w-full text-left border-collapse min-w-[1100px] table-fixed">
           <thead>
             {/* Header Row */}
-            <tr className="bg-[var(--color-surface-offset)] border-b-2 border-[var(--color-border)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)] select-none">
+            <tr className="bg-[var(--color-surface-offset)]/90 backdrop-blur-md border-b border-[var(--color-border)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)] select-none">
               {/* Checkbox Column */}
-              <th className="p-2.5 w-10 text-center border-r border-[var(--color-divider)]">
+              <th className="p-2.5 w-10 text-center">
                 <input 
                   type="checkbox"
                   checked={isAllSelected}
                   onChange={toggleSelectAll}
                   aria-label="Select all tasks"
-                  className="rounded border-[var(--color-divider)] cursor-pointer"
+                  className="rounded border-[var(--color-divider)] text-[var(--color-primary-hex)] cursor-pointer"
                 />
               </th>
 
               {/* Row Num Column (#) */}
-              <th className="p-2.5 w-11 text-center border-r border-[var(--color-divider)] td-rn font-mono text-[10px]" title="Sequential row index">
+              <th className="p-2.5 w-11 text-center td-rn font-mono text-[10px]" title="Sequential row index">
                 #
               </th>
 
               {/* Expand Column */}
-              <th className="p-2.5 w-8 text-center border-r border-[var(--color-divider)]" title="Expand or collapse subtasks"></th>
+              <th className="p-2.5 w-8 text-center" title="Expand or collapse subtasks"></th>
 
               {/* Task ID */}
               <th 
                 onClick={() => handleSort('id')}
-                className="p-2.5 w-24 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                className="p-2.5 w-24 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
                 title="Unique persistent task identifier (e.g. T-101). Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
@@ -475,7 +475,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               {/* Module & Screen */}
               <th 
                 onClick={() => handleSort('module')}
-                className="p-2.5 w-40 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                className="p-2.5 w-40 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
                 title="Functional architectural domain of the codebase this task impacts. Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
@@ -489,7 +489,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               {/* Task Name & Checklist */}
               <th 
                 onClick={() => handleSort('name')}
-                className="p-2.5 min-w-[260px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                className="p-2.5 min-w-[280px] cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
                 title="Task title and subtask checklist status. Indented rows indicate child subtasks. Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
@@ -503,7 +503,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               {/* Status */}
               <th 
                 onClick={() => handleSort('status')}
-                className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
                 title="Current task lifecycle state (Not Started, In Progress, Review, Completed, On Hold, Cancelled). Click badge in rows to quick-cycle. Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
@@ -517,7 +517,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               {/* Priority */}
               <th 
                 onClick={() => handleSort('priority')}
-                className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)] text-center"
+                className="p-2.5 w-28 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors text-center"
                 title="Execution urgency (Critical, High, Medium, Low). Prioritizes linear capacity leveling. Click to sort."
               >
                 <div className="flex items-center justify-center gap-1">
@@ -531,7 +531,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               {/* Assignee */}
               <th 
                 onClick={() => handleSort('assignee')}
-                className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                className="p-2.5 w-36 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
                 title="Accountable module owner or developer. Subtask contributors roll up automatically. Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
@@ -545,7 +545,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               {/* Due Date */}
               <th 
                 onClick={() => handleSort('dueDate')}
-                className="p-2.5 w-30 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                className="p-2.5 w-32 cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
                 title="Planned feasibility target completion date. Evaluated against Baseline Due Date. Click to sort."
               >
                 <div className="flex items-center justify-between gap-1">
@@ -559,7 +559,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
               {/* Progress */}
               <th 
                 onClick={() => handleSort('progress')}
-                className="p-2.5 w-28 text-right cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors border-r border-[var(--color-divider)]"
+                className="p-2.5 w-32 text-right cursor-pointer hover:bg-[var(--color-surface-2)] transition-colors"
                 title="Granular completion percentage (0–100%). Click or slide to adjust. Click to sort."
               >
                 <div className="flex items-center justify-end gap-1">
@@ -576,23 +576,23 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
 
             {/* Inline Column Filters Row (Matching projectpulse.html) */}
             {showInlineFilters && (
-              <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-border)] text-xs">
+              <tr className="bg-[var(--color-surface-2)]/60 border-b border-[var(--color-divider)] text-xs">
                 {/* Empty check / rn / expand */}
-                <th className="p-1 border-r border-[var(--color-divider)]"></th>
-                <th className="p-1 border-r border-[var(--color-divider)]"></th>
-                <th className="p-1 border-r border-[var(--color-divider)]"></th>
+                <th className="p-1.5"></th>
+                <th className="p-1.5"></th>
+                <th className="p-1.5"></th>
 
                 {/* ID filter dummy */}
-                <th className="p-1 border-r border-[var(--color-divider)]">
+                <th className="p-1.5">
                   <span className="text-[10px] text-[var(--color-text-faint)] font-mono pl-1">—</span>
                 </th>
 
                 {/* Module filter */}
-                <th className="p-1 border-r border-[var(--color-divider)]">
+                <th className="p-1.5">
                   <select
                     value={selectedModule}
                     onChange={e => setSelectedModule(e.target.value)}
-                    className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none"
+                    className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-2 py-1 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
                   >
                     <option value="all">All Modules</option>
                     {modules.map(m => (
@@ -602,16 +602,16 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                 </th>
 
                 {/* Name filter */}
-                <th className="p-1 border-r border-[var(--color-divider)]">
-                  <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by topbar search</span>
+                <th className="p-1.5">
+                  <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by search</span>
                 </th>
 
                 {/* Status filter */}
-                <th className="p-1 border-r border-[var(--color-divider)]">
+                <th className="p-1.5">
                   <select
                     value={selectedStatus}
                     onChange={e => setSelectedStatus(e.target.value)}
-                    className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none"
+                    className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-2 py-1 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
                   >
                     <option value="all">All Statuses</option>
                     {Object.values(TaskStatus).map(s => (
@@ -621,11 +621,11 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                 </th>
 
                 {/* Priority filter */}
-                <th className="p-1 border-r border-[var(--color-divider)]">
+                <th className="p-1.5">
                   <select
                     value={selectedPriority}
                     onChange={e => setSelectedPriority(e.target.value)}
-                    className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none"
+                    className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-2 py-1 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
                   >
                     <option value="all">All</option>
                     {Object.values(TaskPriority).map(p => (
@@ -635,11 +635,11 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                 </th>
 
                 {/* Assignee filter */}
-                <th className="p-1 border-r border-[var(--color-divider)]">
+                <th className="p-1.5">
                   <select
                     value={selectedAssignee}
                     onChange={e => setSelectedAssignee(e.target.value)}
-                    className="w-full bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none"
+                    className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 focus:border-[var(--color-primary-hex)] rounded-lg px-2 py-1 text-[11px] font-semibold text-[var(--color-text)] outline-none transition-all shadow-2xs"
                   >
                     <option value="all">All Team</option>
                     {assignees.map(a => (
@@ -649,16 +649,16 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                 </th>
 
                 {/* Date */}
-                <th className="p-1 border-r border-[var(--color-divider)]">
+                <th className="p-1.5">
                   <span className="text-[10px] text-[var(--color-text-faint)] pl-1">—</span>
                 </th>
 
                 {/* Progress */}
-                <th className="p-1 border-r border-[var(--color-divider)]">
+                <th className="p-1.5">
                   <span className="text-[10px] text-[var(--color-text-faint)] pl-1">—</span>
                 </th>
 
-                <th className="p-1 text-center">
+                <th className="p-1.5 text-center">
                   {(selectedModule !== 'all' || selectedStatus !== 'all' || selectedAssignee !== 'all' || selectedPriority !== 'all') && (
                     <button
                       onClick={() => {
@@ -668,7 +668,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                         setSelectedPriority('all');
                       }}
                       title="Reset inline filters"
-                      className="text-[10px] text-[var(--color-primary-hex)] hover:underline font-bold"
+                      className="text-[10px] text-[var(--color-primary-hex)] hover:underline font-bold px-1.5 py-0.5 rounded"
                     >
                       Reset
                     </button>
@@ -678,66 +678,66 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
             )}
           </thead>
 
-          <tbody className="divide-y divide-[var(--color-divider)]">
+          <tbody className="divide-y divide-[var(--color-divider)]/40">
             {pagination.paginatedItems.map((task, idx) => {
               const overdue = daysDiff(task.dueDate)! < 0 && task.status !== TaskStatus.COMPLETED && task.status !== TaskStatus.CANCELLED;
               const blocked = isBlocked(task, state.tasks);
               const isExpanded = expandedTasks.has(task.id);
               const isSelected = selectedTaskIds.has(task.id);
               const isMilestone = (task.startDate && task.startDate === task.dueDate) || task.subtasks.some(s => s.name.toLowerCase().includes('milestone'));
-              const padY = density === 'compact' ? "py-1.5" : "py-3";
+              const padY = density === 'compact' ? "py-2" : "py-3.5";
 
               return (
                 <React.Fragment key={task.id}>
                   <tr 
                     onClick={() => onEditTask(task.id)}
                     className={clsx(
-                      "group hover:bg-[var(--color-surface-2)] transition-colors cursor-pointer relative",
-                      isSelected && "bg-[var(--color-primary-highlight-hex)]/40",
-                      overdue && "is-overdue",
-                      isMilestone && "is-milestone"
+                      "group hover:bg-[var(--color-surface-2)]/70 transition-colors cursor-pointer relative",
+                      isSelected && "bg-[var(--color-primary-highlight-hex)]/35",
+                      overdue && "is-overdue border-l-4 border-l-rose-500 bg-rose-500/[0.02]",
+                      isMilestone && "is-milestone bg-amber-500/[0.02]"
                     )}
                   >
                     {/* Checkbox */}
-                    <td className={clsx("p-2.5 text-center border-r border-[var(--color-divider)]", padY)} onClick={e => e.stopPropagation()}>
+                    <td className={clsx("p-2.5 text-center", padY)} onClick={e => e.stopPropagation()}>
                       <input 
                         type="checkbox"
                         checked={isSelected}
                         onChange={(e) => toggleSelectTask(task.id, e as any)}
-                        className="rounded border-[var(--color-divider)] cursor-pointer"
+                        className="rounded border-[var(--color-divider)] text-[var(--color-primary-hex)] cursor-pointer"
                       />
                     </td>
 
                     {/* Row Num */}
-                    <td className={clsx("p-2.5 text-center border-r border-[var(--color-divider)] td-rn font-mono", padY)}>
+                    <td className={clsx("p-2.5 text-center td-rn font-mono text-[10px] text-[var(--color-text-faint)]", padY)}>
                       {pagination.startIndex + idx + 1}
                     </td>
 
                     {/* Expand Subtasks Button */}
-                    <td className={clsx("p-1 text-center border-r border-[var(--color-divider)]", padY)}>
+                    <td className={clsx("p-1 text-center", padY)}>
                       {task.subtasks.length > 0 ? (
                         <button
                           onClick={(e) => toggleExpand(task.id, e)}
                           title={`${isExpanded ? 'Collapse' : 'Expand'} subtasks`}
-                          className="w-5 h-5 inline-flex items-center justify-center rounded hover:bg-[var(--color-surface-offset)] text-[var(--color-text-muted)] cursor-pointer transition-transform"
+                          className="w-5 h-5 inline-flex items-center justify-center rounded-md hover:bg-[var(--color-surface-2)] text-[var(--color-text-muted)] cursor-pointer transition-transform"
                         >
-                          <ChevronRight size={13} className={clsx("transition-transform", isExpanded && "rotate-90")} />
+                          <ChevronRight size={13} className={clsx("transition-transform duration-150", isExpanded && "rotate-90 text-[var(--color-primary-hex)]")} />
                         </button>
                       ) : null}
                     </td>
 
                     {/* Task ID */}
-                    <td className={clsx("p-2.5 font-mono font-bold text-[11px] text-[var(--color-primary-hex)] border-r border-[var(--color-divider)]", padY)}>
+                    <td className={clsx("p-2.5 font-mono font-bold text-[11px] text-[var(--color-primary-hex)]", padY)}>
                       <div className="flex items-center gap-1.5">
                         {blocked && <Lock size={11} className="text-amber-500 shrink-0" title="Blocked by dependency" />}
-                        <span>{task.id}</span>
+                        <span className="hover:underline">{task.id}</span>
                       </div>
                     </td>
 
                     {/* Module & Scope */}
-                    <td className={clsx("p-2.5 border-r border-[var(--color-divider)]", padY)}>
-                      <div className="flex flex-col">
-                        <span className="text-xs font-bold text-[var(--color-text)] truncate max-w-[140px]">
+                    <td className={clsx("p-2.5", padY)}>
+                      <div className="flex flex-col gap-0.5">
+                        <span className="text-xs font-semibold text-[var(--color-text)] truncate max-w-[140px]">
                           {task.module}
                         </span>
                         <span className="text-[10px] text-[var(--color-text-muted)] font-mono truncate">
@@ -747,25 +747,25 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                     </td>
 
                     {/* Task Name & Checklist */}
-                    <td className={clsx("p-2.5 border-r border-[var(--color-divider)]", padY)}>
+                    <td className={clsx("p-2.5", padY)}>
                       <div className="flex items-center gap-2 flex-wrap">
                         {isMilestone && <span title="Milestone">🚩</span>}
-                        <span className="text-xs font-bold text-[var(--color-text)] leading-tight">
+                        <span className="text-xs font-bold text-[var(--color-text)] leading-snug group-hover:text-[var(--color-primary-hex)] transition-colors">
                           {task.name}
                         </span>
                         {task.release && (
-                          <span className="px-1.5 py-0.2 rounded bg-indigo-500/10 text-indigo-600 text-[9px] font-mono font-bold">
+                          <span className="px-1.5 py-0.2 rounded-md bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)] text-[9px] font-mono font-bold">
                             {task.release}
                           </span>
                         )}
                         {task.subtasks.length > 0 && (
                           <button
                             onClick={(e) => toggleExpand(task.id, e)}
-                            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-medium text-indigo-600"
+                            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-[10px] font-semibold text-indigo-500 transition-colors cursor-pointer"
                             title="Toggle Checklist"
                           >
                             <CheckSquare size={10} />
-                            {task.subtasks.filter(s => s.done).length}/{task.subtasks.length}
+                            <span>{task.subtasks.filter(s => s.done).length}/{task.subtasks.length}</span>
                           </button>
                         )}
                       </div>
@@ -777,11 +777,11 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                     </td>
 
                     {/* Status Pill (st-badge) */}
-                    <td className={clsx("p-2.5 border-r border-[var(--color-divider)]", padY)}>
+                    <td className={clsx("p-2.5", padY)}>
                       <button
                         onClick={(e) => handleCycleStatus(task, e)}
                         title="Click to cycle status"
-                        className={clsx("st-badge cursor-pointer", `st-${ST_MAP[task.status] || 'not-started'}`)}
+                        className={clsx("st-badge cursor-pointer shadow-2xs active:scale-95", `st-${ST_MAP[task.status] || 'not-started'}`)}
                       >
                         <span className="dot" />
                         <span>{task.status}</span>
@@ -789,20 +789,20 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                     </td>
 
                     {/* Priority Pill (pri-badge) */}
-                    <td className={clsx("p-2.5 text-center border-r border-[var(--color-divider)]", padY)}>
-                      <span className={clsx("pri-badge", `pri-${PRI_MAP[task.priority] || 'medium'}`)}>
+                    <td className={clsx("p-2.5 text-center", padY)}>
+                      <span className={clsx("pri-badge shadow-2xs", `pri-${PRI_MAP[task.priority] || 'medium'}`)}>
                         {task.priority}
                       </span>
                     </td>
 
                     {/* Assignee */}
-                    <td className={clsx("p-2.5 border-r border-[var(--color-divider)]", padY)}>
+                    <td className={clsx("p-2.5", padY)}>
                       {task.assignee ? (
-                        <div className="flex items-center gap-1.5">
-                          <div className="w-5 h-5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold text-[9px] flex items-center justify-center shrink-0 border border-[var(--color-primary-hex)]/30">
+                        <div className="flex items-center gap-2">
+                          <div className="w-5 h-5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold text-[9px] flex items-center justify-center shrink-0 border border-[var(--color-primary-hex)]/30 shadow-2xs">
                             {task.assignee.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase()}
                           </div>
-                          <span className="text-xs font-medium text-[var(--color-text)] truncate max-w-[100px]">
+                          <span className="text-xs font-medium text-[var(--color-text)] truncate max-w-[120px]">
                             {task.assignee}
                           </span>
                         </div>
@@ -812,21 +812,30 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                     </td>
 
                     {/* Due Date */}
-                    <td className={clsx("p-2.5 font-mono text-[11px] border-r border-[var(--color-divider)]", padY)}>
-                      <span className={clsx(overdue ? "text-red-500 font-bold" : "text-[var(--color-text-muted)]")}>
-                        {fmtDate(task.dueDate)}
-                      </span>
+                    <td className={clsx("p-2.5 font-mono text-[11px]", padY)}>
+                      <div className="flex items-center gap-1.5">
+                        <span className={clsx(
+                          overdue ? "text-rose-500 font-bold" : "text-[var(--color-text-muted)]"
+                        )}>
+                          {fmtDate(task.dueDate)}
+                        </span>
+                        {overdue && (
+                          <span className="text-[9px] font-bold px-1 py-0.2 rounded bg-rose-500/10 text-rose-500 border border-rose-500/20">
+                            Overdue
+                          </span>
+                        )}
+                      </div>
                     </td>
 
                     {/* Progress Bar */}
-                    <td className={clsx("p-2.5 text-right border-r border-[var(--color-divider)]", padY)}>
-                      <div className="flex items-center justify-end gap-2">
-                        <span className="text-[10px] font-mono font-bold text-[var(--color-text)]">{task.progress}%</span>
-                        <div className="w-14 h-1.5 bg-[var(--color-surface-2)] rounded-full overflow-hidden border border-black/5">
+                    <td className={clsx("p-2.5 text-right", padY)}>
+                      <div className="flex items-center justify-end gap-2.5">
+                        <span className="text-[11px] font-mono tabular-nums font-bold text-[var(--color-text)]">{task.progress}%</span>
+                        <div className="w-16 h-1.5 bg-[var(--color-surface-2)] rounded-full overflow-hidden border border-[var(--color-divider)]/40 shadow-inner">
                           <div 
                             className={clsx(
-                              "h-full transition-all",
-                              task.progress >= 100 ? "bg-emerald-500" : task.progress >= 50 ? "bg-[var(--color-primary-hex)]" : "bg-amber-500"
+                              "h-full rounded-full transition-all duration-300",
+                              task.progress >= 100 ? "bg-gradient-to-r from-emerald-500 to-teal-400" : task.progress >= 50 ? "bg-[var(--color-primary-hex)]" : "bg-amber-500"
                             )} 
                             style={{ width: `${task.progress}%` }} 
                           />
@@ -838,7 +847,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                     <td className={clsx("p-2 text-center", padY)} onClick={e => e.stopPropagation()}>
                       <button
                         onClick={() => onEditTask(task.id)}
-                        className="p-1 rounded-md text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-offset)]"
+                        className="p-1.5 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors opacity-70 group-hover:opacity-100 cursor-pointer"
                         title="Edit task"
                       >
                         <MoreHorizontal size={14} />
@@ -846,53 +855,55 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                     </td>
                   </tr>
 
-                  {/* ── Subtasks Expansion Rows (Matching projectpulse.html) ── */}
+                  {/* ── Subtasks Expansion Rows (Clean Tree Hierarchy) ── */}
                   {isExpanded && task.subtasks.map((st, sIdx) => {
                     return (
                       <tr
                         key={st.id}
-                        className="bg-[var(--color-surface-2)]/40 hover:bg-[var(--color-surface-2)]/80 transition-colors text-xs"
+                        className="bg-[var(--color-surface-2)]/30 hover:bg-[var(--color-surface-2)]/70 transition-colors text-xs border-b border-[var(--color-divider)]/30"
                       >
                         {/* Blank check */}
-                        <td className="p-2 border-r border-[var(--color-divider)]"></td>
+                        <td className="p-2 text-center"></td>
 
                         {/* Subtask Row Number (e.g. 1.1, 1.2) */}
-                        <td className="p-2 text-center border-r border-[var(--color-divider)] font-mono text-[9px] text-[var(--color-text-faint)]">
-                          {idx + 1}.{sIdx + 1}
+                        <td className="p-2 text-center font-mono text-[9px] text-[var(--color-text-faint)]">
+                          {pagination.startIndex + idx + 1}.{sIdx + 1}
                         </td>
 
-                        {/* Blank expand */}
-                        <td className="p-2 border-r border-[var(--color-divider)]"></td>
+                        {/* Hierarchy Indicator */}
+                        <td className="p-1 text-center font-mono text-[var(--color-text-faint)]">
+                          └
+                        </td>
 
                         {/* Subtask ID */}
-                        <td className="p-2 font-mono text-[10px] text-[var(--color-text-muted)] border-r border-[var(--color-divider)]">
+                        <td className="p-2 font-mono text-[10px] text-[var(--color-text-muted)]">
                           {st.id}
                         </td>
 
                         {/* Scope */}
-                        <td className="p-2 border-r border-[var(--color-divider)] text-[11px] text-[var(--color-text-muted)] italic">
+                        <td className="p-2 text-[11px] text-[var(--color-text-muted)] italic">
                           Subtask
                         </td>
 
                         {/* Subtask Name & Checklist toggle */}
-                        <td className="p-2 border-r border-[var(--color-divider)]">
+                        <td className="p-2">
                           <div 
                             onClick={(e) => handleToggleSubtask(task, st.id, e)}
-                            className="flex items-center gap-2 cursor-pointer group"
+                            className="flex items-center gap-2 cursor-pointer group/st"
                           >
                             {st.done ? (
                               <CheckSquare size={13} className="text-emerald-500 shrink-0" />
                             ) : (
-                              <Square size={13} className="text-[var(--color-text-faint)] group-hover:text-[var(--color-primary-hex)] shrink-0" />
+                              <Square size={13} className="text-[var(--color-text-faint)] group-hover/st:text-[var(--color-primary-hex)] shrink-0" />
                             )}
-                            <span className={clsx("text-xs font-medium", st.done ? "line-through text-[var(--color-text-muted)]" : "text-[var(--color-text)]")}>
+                            <span className={clsx("text-xs font-medium transition-colors", st.done ? "line-through text-[var(--color-text-muted)]" : "text-[var(--color-text)]")}>
                               {st.name}
                             </span>
                           </div>
                         </td>
 
                         {/* Subtask Status */}
-                        <td className="p-2 border-r border-[var(--color-divider)]">
+                        <td className="p-2">
                           <span className={clsx("st-badge text-[9px] py-0.5", st.done ? "st-completed" : "st-in-progress")}>
                             <span className="dot" />
                             <span>{st.done ? 'Completed' : 'In Progress'}</span>
@@ -900,22 +911,22 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask }) => {
                         </td>
 
                         {/* Priority */}
-                        <td className="p-2 border-r border-[var(--color-divider)] text-center">
+                        <td className="p-2 text-center">
                           <span className="text-[10px] text-[var(--color-text-faint)]">—</span>
                         </td>
 
                         {/* Assignee */}
-                        <td className="p-2 border-r border-[var(--color-divider)]">
+                        <td className="p-2">
                           <span className="text-[11px] text-[var(--color-text-muted)]">{st.assignee || '—'}</span>
                         </td>
 
                         {/* Due Date */}
-                        <td className="p-2 border-r border-[var(--color-divider)] text-[10px] font-mono text-[var(--color-text-faint)]">
+                        <td className="p-2 text-[10px] font-mono text-[var(--color-text-faint)]">
                           {st.dueDate ? fmtDate(st.dueDate) : '—'}
                         </td>
 
                         {/* Progress */}
-                        <td className="p-2 border-r border-[var(--color-divider)] text-right">
+                        <td className="p-2 text-right">
                           <span className="text-[10px] font-mono text-[var(--color-text-muted)]">{st.done ? '100%' : '0%'}</span>
                         </td>
 
