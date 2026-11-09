@@ -78,6 +78,8 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const imported = await importProjectExcel(buffer);
       setState(prev => ({
         ...getDefaultState(),
+        name: imported.name || 'Project Titan: Global Cloud Banking Platform',
+        desc: imported.desc || 'Core Enterprise Cloud Architecture & ALM Suite',
         ...imported,
         view: 'overview',
         theme: prev.theme || 'pulse'

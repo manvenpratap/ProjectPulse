@@ -55,7 +55,7 @@ export const ReleaseRoadmap: React.FC = () => {
 
   // Filtered releases
   const filteredReleases = releases.filter(r => {
-    const matchesSearch = r.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = (r.name || '').toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = filterStatus === 'all' || r.status === filterStatus;
     return matchesSearch && matchesStatus;
   });

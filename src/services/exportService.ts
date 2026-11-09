@@ -1,6 +1,15 @@
 import ExcelJS from 'exceljs';
 import { ProjectState, Task, Defect, Delivery, RaidItem, Decision, Member, LogEntry } from '../types';
-import { exportProjectExcel } from './excelService';
+import { 
+  exportProjectExcel,
+  getThemePalette,
+  drawTopKpiCard,
+  styleZebraRow,
+  formatStatusCell,
+  formatPriorityCell,
+  parseExcelDate,
+  styleHeaderCell
+} from './excelService';
 import { getHealthScore } from '../utils/projectUtils';
 
 // Helper to trigger browser file download from Blob
@@ -93,78 +102,150 @@ export const exportViewToExcel = async (state: ProjectState, viewId: string): Pr
   wb.created = new Date();
   const fileDate = getFileStamp();
   let filename = `ProjectPulse_${viewId.toUpperCase()}_${fileDate}.xlsx`;
+  const palette = getThemePalette();
 
   switch (viewId) {
     case 'tasks': {
-      const ws = wb.addWorksheet('Tasks Matrix');
-      ws.columns = [
-        { header: 'Task ID', key: 'id', width: 14 },
-        { header: 'Module', key: 'module', width: 22 },
-        { header: 'Task Name', key: 'name', width: 42 },
-        { header: 'Status', key: 'status', width: 16 },
-        { header: 'Priority', key: 'priority', width: 14 },
-        { header: 'Assignee', key: 'assignee', width: 22 },
-        { header: 'Due Date', key: 'dueDate', width: 16 },
-        { header: 'Progress', key: 'progress', width: 14 },
-        { header: 'Est Days', key: 'estDays', width: 12 },
-        { header: 'Act Days', key: 'actDays', width: 12 },
-        { header: 'Dependencies', key: 'dependsOn', width: 20 },
-        { header: 'Category', key: 'category', width: 18 },
-        { header: 'Release', key: 'release', width: 16 },
-        { header: 'Start Date', key: 'startDate', width: 16 },
-        { header: 'GUI Screens', key: 'guiScreens', width: 25 },
-        { header: 'Notes', key: 'notes', width: 35 }
+      const ws = wb.addWorksheet('Tasks Matrix', {
+        views: [{ state: 'frozen', ySplit: 7, xSplit: 3 }]
+      });
+      ws.properties.tabColor = { argb: palette.emerald };
+      const taskCols = [
+        { header: 'Task ID', key: 'id', width: 14, bg: palette.navy },
+        { header: 'Module', key: 'module', width: 22, bg: palette.indigo },
+        { header: 'Task Name', key: 'name', width: 40, bg: palette.navy },
+        { header: 'Status', key: 'status', width: 16, bg: palette.emerald },
+        { header: 'Priority', key: 'priority', width: 14, bg: palette.emerald },
+        { header: 'Assignee', key: 'assignee', width: 22, bg: palette.emerald },
+        { header: 'Due Date', key: 'dueDate', width: 16, bg: palette.amber },
+        { header: 'Delay (d)', key: 'delay', width: 12, bg: palette.amber },
+        { header: 'Progress', key: 'progress', width: 14, bg: palette.emerald },
+        { header: 'Est Days', key: 'estDays', width: 12, bg: palette.rose },
+        { header: 'Act Days', key: 'actDays', width: 12, bg: palette.rose },
+        { header: 'Variance (d)', key: 'variance', width: 14, bg: palette.rose },
+        { header: 'Dependencies', key: 'dependsOn', width: 20, bg: palette.indigo },
+        { header: 'Category', key: 'category', width: 18, bg: palette.indigo },
+        { header: 'Release', key: 'release', width: 16, bg: palette.indigo },
+        { header: 'Start Date', key: 'startDate', width: 16, bg: palette.amber },
+        { header: 'GUI Screens', key: 'guiScreens', width: 25, bg: palette.slate },
+        { header: 'Notes', key: 'notes', width: 35, bg: palette.slate }
       ];
-      styleHeaderRow(ws.getRow(1), 'FF1E293B');
+      ws.columns = taskCols.map(c => ({ key: c.key, width: c.width }));
 
-      state.tasks.forEach(t => {
-        ws.addRow({
+      const total = state.tasks.length;
+      const done = state.tasks.filter(t => t.status === 'Completed').length;
+      const pct = total ? Math.round((done / total) * 100) : 0;
+      const estEff = state.tasks.reduce((s, t) => s + (t.estDays || 0), 0);
+      const actEff = state.tasks.reduce((s, t) => s + (t.actDays || 0), 0);
+      const overdue = state.tasks.filter(t => t.dueDate && t.status !== 'Completed' && new Date(t.dueDate).getTime() < Date.now()).length;
+
+      ws.getRow(1).height = 10;
+      ws.mergeCells('A2:H2');
+      ws.getRow(2).height = 20;
+      const tsTitle = ws.getCell('A2');
+      tsTitle.value = ' >> COCKPIT.TELEMETRY: TASK REGISTRY VIEW';
+      tsTitle.font = { name: 'Courier New', size: 10, bold: true, color: { argb: palette.indigo } };
+      tsTitle.alignment = { vertical: 'middle', indent: 1 };
+
+      drawTopKpiCard(ws, 1, 3, 3, 3, 'Delivery Progress', `${done} / ${total}`, `${pct}% complete`, palette.emerald, { isDark: palette.isDark });
+      drawTopKpiCard(ws, 5, 3, 3, 3, 'Effort Telemetry', `${estEff.toFixed(1)} / ${actEff.toFixed(1)} d`, 'Est vs Act', palette.blue, { isDark: palette.isDark });
+      drawTopKpiCard(ws, 9, 3, 3, 3, 'Health Indices', `${overdue} overdue`, 'Schedule risk', overdue > 0 ? palette.rose : palette.emerald, { isDark: palette.isDark });
+
+      ws.getRow(6).height = 10;
+      const hdr = ws.getRow(7);
+      hdr.height = 30;
+      taskCols.forEach((col, idx) => {
+        const cell = hdr.getCell(idx + 1);
+        cell.value = col.header;
+        styleHeaderCell(cell, col.bg);
+      });
+      ws.autoFilter = { from: 'A7', to: `R${Math.max(8, state.tasks.length + 7)}` };
+
+      state.tasks.forEach((t, i) => {
+        const rowIdx = i + 8;
+        const row = ws.addRow({
           id: t.id,
           module: t.module,
           name: t.name,
           status: t.status,
           priority: t.priority,
           assignee: t.assignee || 'Unassigned',
-          dueDate: t.dueDate,
-          progress: `${t.progress || 0}%`,
+          dueDate: parseExcelDate(t.dueDate),
+          delay: { formula: `IF(AND(D${rowIdx}<>"Completed", G${rowIdx}<TODAY(), G${rowIdx}<>""), TODAY()-G${rowIdx}, 0)` },
+          progress: (t.progress || 0) / 100,
           estDays: t.estDays || 0,
           actDays: t.actDays || 0,
+          variance: { formula: `K${rowIdx}-J${rowIdx}` },
           dependsOn: t.dependsOn?.join(', ') || '',
           category: t.category || 'Feature',
           release: t.release || 'v1.0.0',
-          startDate: t.startDate || '',
+          startDate: parseExcelDate(t.startDate),
           guiScreens: t.guiScreens?.join(', ') || '',
           notes: t.notes || ''
         });
+        row.height = 20;
+        styleZebraRow(row, i, palette, taskCols.length);
+        row.getCell('progress').numFmt = '0%';
+        formatStatusCell(row.getCell('status'), t.status, palette);
+        formatPriorityCell(row.getCell('priority'), t.priority, palette);
       });
       break;
     }
 
     case 'deliveries': {
-      const ws = wb.addWorksheet('ALM Deliveries');
-      ws.columns = [
-        { header: 'Delivery ID', key: 'id', width: 14 },
-        { header: 'ALM Defect ID', key: 'almId', width: 18 },
-        { header: 'Scope / PDN Title', key: 'name', width: 44 },
-        { header: 'PDN Code', key: 'pdn', width: 18 },
-        { header: 'Environment', key: 'environment', width: 14 },
-        { header: 'ALM Status', key: 'almStatus', width: 18 },
-        { header: 'Deploy State', key: 'status', width: 18 },
-        { header: 'Sign-off', key: 'signOffStatus', width: 16 },
-        { header: 'Approver', key: 'approver', width: 20 },
-        { header: 'Smoke Gate', key: 'smokeTestStatus', width: 16 },
-        { header: 'Module', key: 'module', width: 20 },
-        { header: 'Release Version', key: 'releaseVersion', width: 16 },
-        { header: 'Target Date', key: 'targetDeliveryDate', width: 16 },
-        { header: 'Actual Date', key: 'actualDeliveryDate', width: 16 },
-        { header: 'Lead Time (d)', key: 'leadTimeDays', width: 14 },
-        { header: 'Variance (d)', key: 'variance', width: 14 },
-        { header: 'Linked Tasks', key: 'linkedTasks', width: 24 }
+      const ws = wb.addWorksheet('ALM Deliveries', {
+        views: [{ state: 'frozen', ySplit: 7, xSplit: 3 }]
+      });
+      ws.properties.tabColor = { argb: palette.indigo };
+      const delCols = [
+        { header: 'Delivery ID', key: 'id', width: 14, bg: palette.navy },
+        { header: 'ALM Defect ID', key: 'almId', width: 18, bg: palette.navy },
+        { header: 'Scope / PDN Title', key: 'name', width: 44, bg: palette.navy },
+        { header: 'PDN Code', key: 'pdn', width: 18, bg: palette.indigo },
+        { header: 'Environment', key: 'environment', width: 14, bg: palette.indigo },
+        { header: 'ALM Status', key: 'almStatus', width: 18, bg: palette.amber },
+        { header: 'Deploy State', key: 'status', width: 18, bg: palette.amber },
+        { header: 'Sign-off', key: 'signOffStatus', width: 16, bg: palette.amber },
+        { header: 'Approver', key: 'approver', width: 20, bg: palette.amber },
+        { header: 'Smoke Gate', key: 'smokeTestStatus', width: 16, bg: palette.amber },
+        { header: 'Module', key: 'module', width: 20, bg: palette.emerald },
+        { header: 'Release Version', key: 'releaseVersion', width: 16, bg: palette.emerald },
+        { header: 'Target Date', key: 'targetDeliveryDate', width: 16, bg: palette.rose },
+        { header: 'Actual Date', key: 'actualDeliveryDate', width: 16, bg: palette.rose },
+        { header: 'Lead Time (d)', key: 'leadTimeDays', width: 14, bg: palette.slate },
+        { header: 'Variance (d)', key: 'variance', width: 14, bg: palette.slate },
+        { header: 'Linked Tasks', key: 'linkedTasks', width: 24, bg: palette.slate }
       ];
-      styleHeaderRow(ws.getRow(1), 'FF312E81');
+      ws.columns = delCols.map(c => ({ key: c.key, width: c.width }));
 
-      (state.deliveries || []).forEach(d => {
-        ws.addRow({
+      const totalDels = (state.deliveries || []).length;
+      const deployedDels = (state.deliveries || []).filter(d => d.status === 'Deployed').length;
+      const delPct = totalDels ? Math.round((deployedDels / totalDels) * 100) : 0;
+
+      ws.getRow(1).height = 10;
+      ws.mergeCells('A2:H2');
+      ws.getRow(2).height = 20;
+      const delsTitle = ws.getCell('A2');
+      delsTitle.value = ' >> COCKPIT.TELEMETRY: ALM & PDN DELIVERY SCHEDULE';
+      delsTitle.font = { name: 'Courier New', size: 10, bold: true, color: { argb: palette.indigo } };
+      delsTitle.alignment = { vertical: 'middle', indent: 1 };
+
+      drawTopKpiCard(ws, 1, 3, 3, 3, 'Deployment Health', `${deployedDels} / ${totalDels}`, `${delPct}% deployed`, palette.indigo, { isDark: palette.isDark });
+      drawTopKpiCard(ws, 5, 3, 3, 3, 'Approval Gate', `${(state.deliveries || []).filter(d => d.signOffStatus === 'Approved').length} Approved`, 'Executive sign-offs', palette.emerald, { isDark: palette.isDark });
+      drawTopKpiCard(ws, 9, 3, 3, 3, 'Smoke Testing', `${(state.deliveries || []).filter(d => d.smokeTestStatus === 'Passed').length} Passed`, 'Verification gate', palette.blue, { isDark: palette.isDark });
+
+      ws.getRow(6).height = 10;
+      const hdr = ws.getRow(7);
+      hdr.height = 30;
+      delCols.forEach((col, idx) => {
+        const cell = hdr.getCell(idx + 1);
+        cell.value = col.header;
+        styleHeaderCell(cell, col.bg);
+      });
+      ws.autoFilter = { from: 'A7', to: `Q${Math.max(8, (state.deliveries || []).length + 7)}` };
+
+      (state.deliveries || []).forEach((d, i) => {
+        const row = ws.addRow({
           id: d.id,
           almId: d.almId,
           name: d.name,
@@ -177,36 +258,70 @@ export const exportViewToExcel = async (state: ProjectState, viewId: string): Pr
           smokeTestStatus: d.smokeTestStatus,
           module: d.module,
           releaseVersion: d.releaseVersion,
-          targetDeliveryDate: d.targetDeliveryDate,
-          actualDeliveryDate: d.actualDeliveryDate || '',
+          targetDeliveryDate: parseExcelDate(d.targetDeliveryDate),
+          actualDeliveryDate: parseExcelDate(d.actualDeliveryDate),
           leadTimeDays: d.leadTimeDays || 0,
           variance: d.variance || 0,
           linkedTasks: d.linkedTasks?.join(', ') || ''
         });
+        row.height = 20;
+        styleZebraRow(row, i, palette, delCols.length);
+        formatStatusCell(row.getCell('status'), d.status, palette);
+        formatStatusCell(row.getCell('signOffStatus'), d.signOffStatus, palette);
+        formatStatusCell(row.getCell('smokeTestStatus'), d.smokeTestStatus, palette);
       });
       break;
     }
 
     case 'defects': {
-      const ws = wb.addWorksheet('Defect Workshop');
-      ws.columns = [
-        { header: 'Defect ID', key: 'id', width: 14 },
-        { header: 'Summary / Title', key: 'title', width: 42 },
-        { header: 'Severity', key: 'severity', width: 14 },
-        { header: 'Priority', key: 'priority', width: 14 },
-        { header: 'Status', key: 'status', width: 16 },
-        { header: 'Assignee', key: 'assignee', width: 22 },
-        { header: 'Reported By', key: 'reporter', width: 20 },
-        { header: 'Linked Task', key: 'linkedId', width: 16 },
-        { header: 'Logged Date', key: 'createdAt', width: 16 },
-        { header: 'Updated Date', key: 'updatedAt', width: 16 },
-        { header: 'Description', key: 'desc', width: 40 },
-        { header: 'Steps to Reproduce', key: 'steps', width: 40 }
+      const ws = wb.addWorksheet('Defect Workshop', {
+        views: [{ state: 'frozen', ySplit: 7, xSplit: 3 }]
+      });
+      ws.properties.tabColor = { argb: palette.rose };
+      const defCols = [
+        { header: 'Defect ID', key: 'id', width: 14, bg: palette.navy },
+        { header: 'Summary / Title', key: 'title', width: 42, bg: palette.navy },
+        { header: 'Severity', key: 'severity', width: 14, bg: palette.rose },
+        { header: 'Priority', key: 'priority', width: 14, bg: palette.rose },
+        { header: 'Status', key: 'status', width: 16, bg: palette.emerald },
+        { header: 'Assignee', key: 'assignee', width: 22, bg: palette.indigo },
+        { header: 'Reported By', key: 'reporter', width: 20, bg: palette.indigo },
+        { header: 'Linked Task', key: 'linkedId', width: 16, bg: palette.indigo },
+        { header: 'Logged Date', key: 'createdAt', width: 16, bg: palette.amber },
+        { header: 'Updated Date', key: 'updatedAt', width: 16, bg: palette.amber },
+        { header: 'Description', key: 'desc', width: 40, bg: palette.slate },
+        { header: 'Steps to Reproduce', key: 'steps', width: 40, bg: palette.slate }
       ];
-      styleHeaderRow(ws.getRow(1), 'FF881337');
+      ws.columns = defCols.map(c => ({ key: c.key, width: c.width }));
 
-      (state.defects || []).forEach(d => {
-        ws.addRow({
+      const totalDef = (state.defects || []).length;
+      const activeDef = (state.defects || []).filter(d => d.status !== 'Closed' && d.status !== 'Fixed').length;
+      const critDef = (state.defects || []).filter(d => d.severity?.includes('Blocker') || d.severity?.includes('S1')).length;
+
+      ws.getRow(1).height = 10;
+      ws.mergeCells('A2:H2');
+      ws.getRow(2).height = 20;
+      const dfsTitle = ws.getCell('A2');
+      dfsTitle.value = ' >> COCKPIT.TELEMETRY: QUALITY ASSURANCE & DEFECT WORKSHOP';
+      dfsTitle.font = { name: 'Courier New', size: 10, bold: true, color: { argb: palette.rose } };
+      dfsTitle.alignment = { vertical: 'middle', indent: 1 };
+
+      drawTopKpiCard(ws, 1, 3, 3, 3, 'Defect Load', `${activeDef} active`, `${totalDef} total logged`, palette.rose, { isDark: palette.isDark });
+      drawTopKpiCard(ws, 5, 3, 3, 3, 'Resolution Rate', `${totalDef - activeDef} fixed`, 'Verified closures', palette.emerald, { isDark: palette.isDark });
+      drawTopKpiCard(ws, 9, 3, 3, 3, 'Blockers', `${critDef} S1 Critical`, 'Production gating', critDef > 0 ? palette.rose : palette.emerald, { isDark: palette.isDark });
+
+      ws.getRow(6).height = 10;
+      const hdr = ws.getRow(7);
+      hdr.height = 30;
+      defCols.forEach((col, idx) => {
+        const cell = hdr.getCell(idx + 1);
+        cell.value = col.header;
+        styleHeaderCell(cell, col.bg);
+      });
+      ws.autoFilter = { from: 'A7', to: `L${Math.max(8, (state.defects || []).length + 7)}` };
+
+      (state.defects || []).forEach((d, i) => {
+        const row = ws.addRow({
           id: d.id,
           title: d.title,
           severity: d.severity,
@@ -215,18 +330,26 @@ export const exportViewToExcel = async (state: ProjectState, viewId: string): Pr
           assignee: d.assignee || 'Unassigned',
           reporter: d.reporter || 'QA Team',
           linkedId: d.linkedId || '',
-          createdAt: d.createdAt ? d.createdAt.split('T')[0] : '',
-          updatedAt: d.updatedAt ? d.updatedAt.split('T')[0] : '',
+          createdAt: parseExcelDate(d.createdAt),
+          updatedAt: parseExcelDate(d.updatedAt),
           desc: d.desc || '',
           steps: d.steps || ''
         });
+        row.height = 20;
+        styleZebraRow(row, i, palette, defCols.length);
+        formatPriorityCell(row.getCell('severity'), d.severity, palette);
+        formatPriorityCell(row.getCell('priority'), d.priority, palette);
+        formatStatusCell(row.getCell('status'), d.status, palette);
       });
       break;
     }
 
     case 'features': {
-      const ws = wb.addWorksheet('Functional Matrix');
-      ws.columns = [
+      const ws = wb.addWorksheet('Functional Matrix', {
+        views: [{ state: 'frozen', ySplit: 1 }]
+      });
+      ws.properties.tabColor = { argb: palette.teal };
+      const featCols = [
         { header: 'Feature ID', key: 'id', width: 14 },
         { header: 'Feature Name', key: 'name', width: 36 },
         { header: 'Description', key: 'desc', width: 44 },
@@ -236,10 +359,11 @@ export const exportViewToExcel = async (state: ProjectState, viewId: string): Pr
         { header: 'Linked Screens', key: 'screens', width: 28 },
         { header: 'Linked Tasks', key: 'tasks', width: 28 }
       ];
-      styleHeaderRow(ws.getRow(1), 'FF065F46');
+      ws.columns = featCols.map(c => ({ key: c.key, width: c.width }));
+      for (let c = 1; c <= featCols.length; c++) styleHeaderCell(ws.getRow(1).getCell(c), palette.teal);
 
-      (state.features || []).forEach(f => {
-        ws.addRow({
+      (state.features || []).forEach((f, i) => {
+        const row = ws.addRow({
           id: f.id,
           name: f.name,
           desc: f.desc || '',
@@ -249,13 +373,18 @@ export const exportViewToExcel = async (state: ProjectState, viewId: string): Pr
           screens: (f.screens || []).join(', '),
           tasks: (f.tasks || []).join(', ')
         });
+        row.height = 20;
+        styleZebraRow(row, i, palette, featCols.length);
       });
       break;
     }
 
     case 'risks': {
-      const ws = wb.addWorksheet('RAID Register');
-      ws.columns = [
+      const ws = wb.addWorksheet('RAID Register', {
+        views: [{ state: 'frozen', ySplit: 1 }]
+      });
+      ws.properties.tabColor = { argb: palette.amber };
+      const raidCols = [
         { header: 'RAID ID', key: 'id', width: 14 },
         { header: 'Type', key: 'type', width: 16 },
         { header: 'Title & Context', key: 'title', width: 40 },
@@ -267,10 +396,11 @@ export const exportViewToExcel = async (state: ProjectState, viewId: string): Pr
         { header: 'Target Date', key: 'targetDate', width: 16 },
         { header: 'Mitigation Plan', key: 'mitigation', width: 44 }
       ];
-      styleHeaderRow(ws.getRow(1), 'FF7C2D12');
+      ws.columns = raidCols.map(c => ({ key: c.key, width: c.width }));
+      for (let c = 1; c <= raidCols.length; c++) styleHeaderCell(ws.getRow(1).getCell(c), palette.amber);
 
-      (state.raids || []).forEach(r => {
-        ws.addRow({
+      (state.raids || []).forEach((r, i) => {
+        const row = ws.addRow({
           id: r.id,
           type: r.type,
           title: r.title,
@@ -279,14 +409,19 @@ export const exportViewToExcel = async (state: ProjectState, viewId: string): Pr
           severity: r.severity || `${r.impact} (${r.probability}/5)`,
           owner: r.owner,
           status: r.status,
-          targetDate: r.targetDate || '',
+          targetDate: parseExcelDate(r.dueDate || (r as any).targetDate),
           mitigation: r.mitigation
         });
+        row.height = 20;
+        styleZebraRow(row, i, palette, raidCols.length);
+        formatPriorityCell(row.getCell('impact'), r.impact, palette);
+        formatStatusCell(row.getCell('status'), r.status, palette);
       });
 
       // Add Decisions Sheet
-      const ds = wb.addWorksheet('Decisions Log');
-      ds.columns = [
+      const ds = wb.addWorksheet('Decisions Log', { views: [{ state: 'frozen', ySplit: 1 }] });
+      ds.properties.tabColor = { argb: palette.purple };
+      const decCols = [
         { header: 'Decision ID', key: 'id', width: 16 },
         { header: 'Decision Title', key: 'title', width: 40 },
         { header: 'Owner / Approver', key: 'owner', width: 22 },
@@ -294,84 +429,68 @@ export const exportViewToExcel = async (state: ProjectState, viewId: string): Pr
         { header: 'Target Date', key: 'targetDate', width: 16 },
         { header: 'Context & Impact', key: 'desc', width: 44 }
       ];
-      styleHeaderRow(ds.getRow(1), 'FF1E293B');
+      ds.columns = decCols.map(c => ({ key: c.key, width: c.width }));
+      for (let c = 1; c <= decCols.length; c++) styleHeaderCell(ds.getRow(1).getCell(c), palette.purple);
 
-      (state.decisions || []).forEach(d => {
-        ds.addRow({
+      (state.decisions || []).forEach((d, i) => {
+        const row = ds.addRow({
           id: d.id,
           title: d.title,
-          owner: d.owner,
+          owner: d.approver || (d as any).owner,
           status: d.status,
-          targetDate: d.targetDate || '',
-          desc: d.desc || ''
+          targetDate: parseExcelDate(d.dueDate || (d as any).targetDate),
+          desc: d.desc || d.rationale || ''
         });
+        row.height = 20;
+        styleZebraRow(row, i, palette, decCols.length);
+        formatStatusCell(row.getCell('status'), d.status, palette);
       });
       break;
     }
 
     case 'team': {
-      const ws = wb.addWorksheet('Team Directory');
-      ws.columns = [
+      const ws = wb.addWorksheet('Team Directory', {
+        views: [{ state: 'frozen', ySplit: 1 }]
+      });
+      ws.properties.tabColor = { argb: palette.blue };
+      const teamCols = [
         { header: 'Member ID', key: 'id', width: 14 },
         { header: 'Full Name', key: 'name', width: 26 },
         { header: 'Role / Designation', key: 'role', width: 26 },
+        { header: 'Emp ID', key: 'empId', width: 16 },
         { header: 'Email Address', key: 'email', width: 30 },
         { header: 'Status', key: 'status', width: 14 },
-        { header: 'Reports To', key: 'reportsTo', width: 22 },
-        { header: 'Skills / Competencies', key: 'skills', width: 36 },
-        { header: 'Planned Leaves', key: 'plannedLeaves', width: 30 }
+        { header: 'Location', key: 'location', width: 20 },
+        { header: 'Skills / Competencies', key: 'skills', width: 36 }
       ];
-      styleHeaderRow(ws.getRow(1), 'FF0369A1');
+      ws.columns = teamCols.map(c => ({ key: c.key, width: c.width }));
+      for (let c = 1; c <= teamCols.length; c++) styleHeaderCell(ws.getRow(1).getCell(c), palette.blue);
 
-      (state.members || []).forEach(m => {
-        ws.addRow({
+      (state.members || []).forEach((m, i) => {
+        const skillsStr = Array.isArray(m.skills) ? m.skills.join(', ') : (m.skills || '');
+        const row = ws.addRow({
           id: m.id,
           name: m.name,
-          role: m.role,
+          role: m.role || 'Member',
+          empId: m.empId || '',
           email: m.email || '',
           status: m.status || 'Active',
-          reportsTo: m.reportsTo || 'N/A',
-          skills: (m.skills || []).join(', '),
-          plannedLeaves: (m.plannedLeaves || []).join(', ')
+          location: m.location || '',
+          skills: skillsStr
         });
-      });
-      break;
-    }
-
-    case 'log': {
-      const ws = wb.addWorksheet('Activity Audit Log');
-      ws.columns = [
-        { header: 'Timestamp', key: 'timestamp', width: 22 },
-        { header: 'Actor / User', key: 'user', width: 20 },
-        { header: 'Action', key: 'action', width: 20 },
-        { header: 'Entity ID', key: 'taskId', width: 16 },
-        { header: 'Entity Name', key: 'taskName', width: 34 },
-        { header: 'Field Modified', key: 'field', width: 18 },
-        { header: 'Old Value', key: 'oldVal', width: 22 },
-        { header: 'New Value', key: 'newVal', width: 22 },
-        { header: 'Comment', key: 'comment', width: 36 }
-      ];
-      styleHeaderRow(ws.getRow(1), 'FF1E293B');
-
-      (state.log || []).forEach(l => {
-        ws.addRow({
-          timestamp: l.timestamp,
-          user: l.user,
-          action: l.action,
-          taskId: l.taskId,
-          taskName: l.taskName,
-          field: l.field || '',
-          oldVal: l.oldVal || '',
-          newVal: l.newVal || '',
-          comment: l.comment || ''
-        });
+        row.height = 20;
+        styleZebraRow(row, i, palette, teamCols.length);
+        formatStatusCell(row.getCell('status'), m.status, palette);
       });
       break;
     }
 
     case 'releases': {
-      const ws = wb.addWorksheet('Release Roadmap');
-      ws.columns = [
+      const ws = wb.addWorksheet('Release Roadmap', {
+        views: [{ state: 'frozen', ySplit: 1 }]
+      });
+      ws.properties.tabColor = { argb: palette.indigo };
+      const relCols = [
         { header: 'Release Version', key: 'version', width: 18 },
         { header: 'Release Title', key: 'title', width: 36 },
         { header: 'Target Date', key: 'targetDate', width: 16 },
@@ -380,21 +499,25 @@ export const exportViewToExcel = async (state: ProjectState, viewId: string): Pr
         { header: 'Completed Tasks', key: 'doneCount', width: 16 },
         { header: 'Progress', key: 'progress', width: 14 }
       ];
-      styleHeaderRow(ws.getRow(1), 'FF4338CA');
+      ws.columns = relCols.map(c => ({ key: c.key, width: c.width }));
+      for (let c = 1; c <= relCols.length; c++) styleHeaderCell(ws.getRow(1).getCell(c), palette.indigo);
 
-      (state.releases || []).forEach(r => {
+      (state.releases || []).forEach((r, i) => {
         const rTasks = state.tasks.filter(t => t.release === r.version);
         const rDone = rTasks.filter(t => t.status === 'Completed').length;
         const pct = rTasks.length > 0 ? Math.round((rDone / rTasks.length) * 100) : 0;
-        ws.addRow({
+        const row = ws.addRow({
           version: r.version,
           title: r.title,
-          targetDate: r.targetDate,
+          targetDate: parseExcelDate(r.targetDate),
           status: r.status,
           taskCount: rTasks.length,
           doneCount: rDone,
           progress: `${pct}%`
         });
+        row.height = 20;
+        styleZebraRow(row, i, palette, relCols.length);
+        formatStatusCell(row.getCell('status'), r.status, palette);
       });
       break;
     }

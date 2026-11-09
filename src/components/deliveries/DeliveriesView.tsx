@@ -1,8 +1,9 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { Delivery, TaskStatus } from '../../types';
 import { fmtDate, todayStr, daysDiff } from '../../utils/projectUtils';
 import ViewExportButton from '../shared/ViewExportButton';
+import { importDeliveriesFromExcel, downloadDeliveryTemplate } from '../../services/excelService';
 import { 
   Package, 
   CheckCircle2, 
@@ -35,7 +36,9 @@ import {
   Server,
   Monitor,
   GitBranch,
-  ArrowRight
+  ArrowRight,
+  Upload,
+  Download
 } from 'lucide-react';
 import clsx from 'clsx';
 import Button from '../shared/Button';
@@ -70,8 +73,30 @@ const ALM_ST_MAP: Record<string, string> = {
 };
 
 export const DeliveriesView: React.FC = () => {
-  const { state, saveDelivery, deleteDelivery, batchUpdateDeliveries, setView } = useProject();
+  const { state, saveDelivery, deleteDelivery, batchUpdateDeliveries, setView, updateProject } = useProject();
   const { deliveries = [], tasks = [], members = [], dropdowns = {} } = state;
+
+  // File import state
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isImporting, setIsImporting] = useState(false);
+
+  const handleImportDeliveries = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    try {
+      const mergedDeliveries = await importDeliveriesFromExcel(file, state.deliveries || []);
+      const newCount = mergedDeliveries.length - (state.deliveries || []).length;
+      updateProject({ deliveries: mergedDeliveries });
+      alert(`Deliveries imported successfully! ${mergedDeliveries.length} total records (${newCount > 0 ? `${newCount} added, ` : ''}${Math.min(mergedDeliveries.length, (state.deliveries || []).length)} synced).`);
+    } catch (err: any) {
+      alert('Failed to import deliveries: ' + (err.message || String(err)));
+    } finally {
+      setIsImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   // View state
   const [viewMode, setViewMode] = useState<ViewMode>('table');
@@ -227,7 +252,7 @@ export const DeliveriesView: React.FC = () => {
           onChange={e => setFilterStatus(e.target.value)}
           className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
         >
-          <option value="all">All</option>
+          <option key="all" value="all">All</option>
           {['Scheduled', 'In Progress', 'Ready for Deployment', 'Deployed', 'Cancelled', 'Rolled Back'].map(s => (
             <option key={s} value={s}>{s}</option>
           ))}
@@ -252,7 +277,7 @@ export const DeliveriesView: React.FC = () => {
           onChange={e => setFilterEnv(e.target.value)}
           className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
         >
-          <option value="all">All</option>
+          <option key="all" value="all">All</option>
           {['Production', 'Staging', 'UAT', 'QA', 'Dev'].map(e => (
             <option key={e} value={e}>{e}</option>
           ))}
@@ -297,7 +322,7 @@ export const DeliveriesView: React.FC = () => {
           onChange={e => setFilterVersion(e.target.value)}
           className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
         >
-          <option value="all">All</option>
+          <option key="all" value="all">All</option>
           {['v1.0.0', 'v1.1.0', 'v2.0.0-Beta', 'v2.1.0'].map(v => (
             <option key={v} value={v}>{v}</option>
           ))}
@@ -347,7 +372,7 @@ export const DeliveriesView: React.FC = () => {
           onChange={e => setFilterSmoke(e.target.value)}
           className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] rounded-lg px-1.5 py-0.5 text-[11px] text-[var(--color-text)] outline-none transition-colors"
         >
-          <option value="all">All</option>
+          <option key="all" value="all">All</option>
           {['Passed', 'Running', 'Failed', 'Not Run'].map(s => (
             <option key={s} value={s}>{s}</option>
           ))}
@@ -598,7 +623,38 @@ export const DeliveriesView: React.FC = () => {
               </button>
             </div>
 
-            <ViewExportButton viewId="deliveries" label="Export Deliveries" />
+            <div className="flex items-center gap-1.5">
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept=".xlsx,.xls,.csv"
+                onChange={handleImportDeliveries}
+                className="hidden"
+                data-testid="deliveries-file-input"
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isImporting}
+                title="Import Deliveries from Excel or CSV"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text)] transition-colors active:scale-95 shadow-2xs h-9 cursor-pointer"
+                data-testid="import-deliveries-button"
+              >
+                <Upload size={13} className={isImporting ? "animate-spin" : "text-sky-500"} />
+                <span className="hidden sm:inline">{isImporting ? 'Importing...' : 'Import'}</span>
+              </button>
+
+              <button
+                onClick={() => downloadDeliveryTemplate()}
+                title="Download 12-Column Delivery Template (.xlsx)"
+                className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors active:scale-95 shadow-2xs h-9 cursor-pointer"
+                data-testid="download-delivery-template-button"
+              >
+                <Download size={13} />
+                <span className="hidden md:inline">Template</span>
+              </button>
+
+              <ViewExportButton viewId="deliveries" label="Export Deliveries" />
+            </div>
 
             <Button variant="primary" size="sm" onClick={handleOpenCreate} className="h-9 px-2.5 sm:px-3 font-bold active:scale-95 min-w-[36px]">
               <Plus size={14} className="sm:mr-1" />
@@ -709,11 +765,12 @@ export const DeliveriesView: React.FC = () => {
             onChange={e => setFilterEnv(e.target.value)}
             className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-[var(--color-primary-hex)]"
           >
-            <option value="all">All Envs</option>
-            {dropdowns.deliveryEnv?.map((env: string) => (
-              <option key={env} value={env}>{env}</option>
-            )) || ['Production', 'Staging', 'UAT', 'QA', 'Dev'].map(env => (
-              <option key={env} value={env}>{env}</option>
+            <option key="all" value="all">All Envs</option>
+            {(dropdowns.deliveryEnv && dropdowns.deliveryEnv.length > 0
+              ? dropdowns.deliveryEnv
+              : ['Production', 'Staging', 'UAT', 'QA', 'Dev']
+            ).map((env: string, idx: number) => (
+              <option key={`env-${env}-${idx}`} value={env}>{env}</option>
             ))}
           </select>
 
@@ -723,9 +780,9 @@ export const DeliveriesView: React.FC = () => {
             onChange={e => setFilterStatus(e.target.value)}
             className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-[var(--color-primary-hex)]"
           >
-            <option value="all">All Statuses</option>
-            {['Scheduled', 'In Progress', 'Ready for Deployment', 'Deployed', 'Cancelled', 'Rolled Back'].map(s => (
-              <option key={s} value={s}>{s}</option>
+            <option key="all" value="all">All Statuses</option>
+            {['Scheduled', 'In Progress', 'Ready for Deployment', 'Deployed', 'Cancelled', 'Rolled Back'].map((s, idx) => (
+              <option key={`status-${s}-${idx}`} value={s}>{s}</option>
             ))}
           </select>
 
@@ -735,12 +792,16 @@ export const DeliveriesView: React.FC = () => {
             onChange={e => setFilterVersion(e.target.value)}
             className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-[var(--color-primary-hex)]"
           >
-            <option value="all">All Releases</option>
-            {state.releases?.map(r => (
-              <option key={r.id} value={r.name}>{r.name} ({r.status})</option>
-            )) || ['v1.0.0', 'v1.1.0', 'v2.0.0-Beta', 'v2.1.0'].map(v => (
-              <option key={v} value={v}>{v}</option>
-            ))}
+            <option key="all" value="all">All Releases</option>
+            {state.releases && state.releases.length > 0 ? (
+              state.releases.map((r, idx) => (
+                <option key={`rel-${r.version || idx}`} value={r.version}>{r.version} ({r.title || r.status})</option>
+              ))
+            ) : (
+              ['v1.0.0', 'v1.1.0', 'v2.0.0-Beta', 'v2.1.0'].map((v, idx) => (
+                <option key={`rel-fallback-${v}-${idx}`} value={v}>{v}</option>
+              ))
+            )}
           </select>
 
           {/* Column Autofit Strategy & Filter Toggle (ProjectPulse standard) */}
@@ -768,11 +829,11 @@ export const DeliveriesView: React.FC = () => {
                   className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-[var(--color-primary-hex)]"
                   title="Table column autofit engine layout mode"
                 >
-                  <option value="comfortable">Comfortable</option>
-                  <option value="compact">Compact Dense</option>
-                  <option value="content-only">Wrap Content</option>
-                  <option value="header-only">Header Bounds</option>
-                  <option value="all">Full Fill</option>
+                  <option key="comfortable" value="comfortable">Comfortable</option>
+                  <option key="compact" value="compact">Compact Dense</option>
+                  <option key="content-only" value="content-only">Wrap Content</option>
+                  <option key="header-only" value="header-only">Header Bounds</option>
+                  <option key="all" value="all">Full Fill</option>
                 </select>
               </div>
             </div>
@@ -797,7 +858,7 @@ export const DeliveriesView: React.FC = () => {
                 defaultValue=""
                 className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-2 py-1 text-xs cursor-pointer"
               >
-                <option value="" disabled>Set ALM Status...</option>
+                <option key="placeholder-status" value="" disabled>Set ALM Status...</option>
                 {['New', 'Open', 'In Progress', 'Fixed', 'Ready for Test', 'Retest', 'Closed', 'Rejected', 'Reopened'].map(s => (
                   <option key={s} value={s}>{s}</option>
                 ))}
@@ -812,7 +873,7 @@ export const DeliveriesView: React.FC = () => {
                 defaultValue=""
                 className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-2 py-1 text-xs cursor-pointer"
               >
-                <option value="" disabled>Set Category...</option>
+                <option key="placeholder-category" value="" disabled>Set Category...</option>
                 {['GSP++ Delivery', 'Regression/NRT Defect'].map(c => (
                   <option key={c} value={c}>{c}</option>
                 ))}
@@ -1396,11 +1457,15 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
                 onChange={e => setReleaseVersion(e.target.value)}
                 className="w-full mt-1 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg px-2.5 py-1.5 text-xs text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary-hex)]"
               >
-                {state.releases?.map(r => (
-                  <option key={r.id} value={r.name}>{r.name}</option>
-                )) || ['v1.0.0', 'v1.1.0', 'v2.0.0-Beta', 'v2.1.0'].map(v => (
-                  <option key={v} value={v}>{v}</option>
-                ))}
+                {state.releases && state.releases.length > 0 ? (
+                  state.releases.map(r => (
+                    <option key={r.version} value={r.version}>{r.version} - {r.title}</option>
+                  ))
+                ) : (
+                  ['v1.0.0', 'v1.1.0', 'v2.0.0-Beta', 'v2.1.0'].map(v => (
+                    <option key={v} value={v}>{v}</option>
+                  ))
+                )}
               </select>
             </div>
           </div>
@@ -1454,7 +1519,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
                 onChange={e => setApprover(e.target.value)}
                 className="w-full mt-1 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg px-2.5 py-1.5 text-xs text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary-hex)]"
               >
-                <option value="">Unassigned</option>
+                <option key="unassigned" value="">Unassigned</option>
                 {members.map(m => (
                   <option key={m.id} value={m.name}>{m.name}</option>
                 ))}
@@ -1467,7 +1532,7 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
                 onChange={e => setFixedBy(e.target.value)}
                 className="w-full mt-1 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg px-2.5 py-1.5 text-xs text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary-hex)]"
               >
-                <option value="">Unassigned</option>
+                <option key="unassigned" value="">Unassigned</option>
                 {members.map(m => (
                   <option key={m.id} value={m.name}>{m.name}</option>
                 ))}
