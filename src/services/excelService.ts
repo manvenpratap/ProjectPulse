@@ -282,78 +282,873 @@ export function cleanText(val: any): string {
 }
 
 // ============================================================================
-// 2. MASTER EXCEL WORKBOOK EXPORTER (High-End HTML Parity)
+// 2. HIGH-RESOLUTION CANVAS CHART & COCKPIT TELEMETRY ENGINE
 // ============================================================================
 
-export const exportProjectExcel = async (state: ProjectState): Promise<string> => {
-  const wb = new ExcelJS.Workbook();
-  wb.creator = 'ProjectPulse 2.0';
-  wb.lastModifiedBy = 'ProjectPulse 2.0';
-  wb.created = new Date();
-  wb.modified = new Date();
+export function getThemeTint(argb: string, factor: number, palette: ExcelThemePalette): string {
+  const hex = (argb || 'FF6366F1').substring(Math.max(0, argb.length - 6));
+  let r = parseInt(hex.substring(0, 2), 16) || 0;
+  let g = parseInt(hex.substring(2, 4), 16) || 0;
+  let b = parseInt(hex.substring(4, 6), 16) || 0;
 
-  const palette = getThemePalette();
+  const bgHex = (palette.bg || 'FF090D16').substring(Math.max(0, palette.bg.length - 6));
+  const bgR = parseInt(bgHex.substring(0, 2), 16) || (palette.isDark ? 9 : 248);
+  const bgG = parseInt(bgHex.substring(2, 4), 16) || (palette.isDark ? 13 : 250);
+  const bgB = parseInt(bgHex.substring(4, 6), 16) || (palette.isDark ? 22 : 252);
 
-  // ─────────────────────────────────────────────────────────────
-  // SHEET 1: EXECUTIVE DASHBOARD (Cockpit Overview & Portfolio KPIs)
-  // ─────────────────────────────────────────────────────────────
+  r = Math.round(r * factor + bgR * (1 - factor));
+  g = Math.round(g * factor + bgG * (1 - factor));
+  b = Math.round(b * factor + bgB * (1 - factor));
+  return 'FF' + r.toString(16).padStart(2, '0').toUpperCase() + g.toString(16).padStart(2, '0').toUpperCase() + b.toString(16).padStart(2, '0').toUpperCase();
+}
+
+export function getWeekNumber(d: Date): number {
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dayNum = date.getUTCDay() || 7;
+  date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  return Math.ceil((((date.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+}
+
+export function getHealthScore(tasks: Task[]): number {
+  if (!tasks || !tasks.length) return 100;
+  const now = Date.now();
+  const overdue = tasks.filter(t => t.dueDate && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED && new Date(t.dueDate).getTime() < now).length;
+  const blocked = tasks.filter(t => t.status === TaskStatus.BLOCKED).length;
+  const critOverdue = tasks.filter(t => t.priority === TaskPriority.CRITICAL && t.dueDate && t.status !== TaskStatus.COMPLETED && new Date(t.dueDate).getTime() < now).length;
+  const deduction = (overdue * 3) + (blocked * 5) + (critOverdue * 8);
+  return Math.max(10, Math.min(100, 100 - deduction));
+}
+
+const S = (val: any): string => {
+  if (val === null || val === undefined) return '';
+  return String(val).trim();
+};
+
+const cleanFmtDate = (d: any): string => {
+  if (!d || d === '-' || d === '—') return '-';
+  try {
+    const dateObj = new Date(d);
+    return isNaN(dateObj.getTime()) ? '-' : dateObj.toISOString().split('T')[0];
+  } catch {
+    return '-';
+  }
+};
+
+export function generateCanvasChart(
+  width: number,
+  height: number,
+  type: 'donut' | 'bar' | 'line' | 'horizontalBar' | 'stackedHorizontalBar' | 'stackedArea',
+  data: any,
+  colors?: any,
+  palette?: ExcelThemePalette
+): string | null {
+  if (typeof document === 'undefined' || typeof document.createElement !== 'function') {
+    return null;
+  }
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = width * 2;
+    canvas.height = height * 2;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    ctx.scale(2, 2);
+
+    const isDarkTheme = palette?.isDark ?? false;
+    const toWebColor = (col: string) => {
+      if (!col) return '#475569';
+      let clean = col.replace('#', '');
+      if (clean.length === 8) return '#' + clean.substring(2);
+      return '#' + clean;
+    };
+    const hexToRgba = (hex: string, alpha: number) => {
+      let c = toWebColor(hex).replace('#', '');
+      if (c.length === 3) c = c[0] + c[0] + c[1] + c[1] + c[2] + c[2];
+      const r = parseInt(c.substring(0, 2), 16) || 0;
+      const g = parseInt(c.substring(2, 4), 16) || 0;
+      const b = parseInt(c.substring(4, 6), 16) || 0;
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    };
+
+    const bgColor = palette?.surface || (isDarkTheme ? '#121722' : '#FFFFFF');
+    ctx.fillStyle = toWebColor(bgColor);
+    ctx.fillRect(0, 0, width, height);
+    const scale = Math.min(1.5, height / 240);
+
+    const VIBRANT_GRADIENTS = [
+      { start: '#4F46E5', end: '#818CF8' },
+      { start: '#10B981', end: '#34D399' },
+      { start: '#F59E0B', end: '#FBBF24' },
+      { start: '#EF4444', end: '#F87171' },
+      { start: '#3B82F6', end: '#60A5FA' },
+      { start: '#8B5CF6', end: '#A78BFA' },
+      { start: '#EC4899', end: '#F472B6' },
+      { start: '#06B6D4', end: '#22D3EE' },
+      { start: '#F97316', end: '#FB923C' }
+    ];
+
+    if (type === 'donut') {
+      const items: { label: string; value: number; color: string }[] = data || [];
+      const total = items.reduce((sum, item) => sum + (item.value || 0), 0) || 1;
+      const centerX = width * 0.32;
+      const centerY = height * 0.5;
+      const radius = Math.min(width, height) * 0.35;
+      const innerRadius = radius * 0.55;
+
+      // Decorative outer arcs
+      ctx.strokeStyle = isDarkTheme ? 'rgba(99, 102, 241, 0.18)' : 'rgba(99, 102, 241, 0.08)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius * 1.15, 0, 2 * Math.PI);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, innerRadius * 0.75, 0, 2 * Math.PI);
+      ctx.stroke();
+
+      for (let angle = 0; angle < 360; angle += 30) {
+        const rad = (angle * Math.PI) / 180;
+        const xStart = centerX + Math.cos(rad) * radius * 1.15;
+        const yStart = centerY + Math.sin(rad) * radius * 1.15;
+        const xEnd = centerX + Math.cos(rad) * (radius * 1.15 - 4);
+        const yEnd = centerY + Math.sin(rad) * (radius * 1.15 - 4);
+        ctx.beginPath();
+        ctx.moveTo(xStart, yStart);
+        ctx.lineTo(xEnd, yEnd);
+        ctx.stroke();
+      }
+
+      let startAngle = -Math.PI / 2;
+      items.forEach(item => {
+        const sliceAngle = (item.value / total) * 2 * Math.PI;
+        if (sliceAngle <= 0) return;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, startAngle, startAngle + sliceAngle);
+        ctx.arc(centerX, centerY, innerRadius, startAngle + sliceAngle, startAngle, true);
+        ctx.closePath();
+        ctx.fillStyle = toWebColor(item.color);
+        ctx.fill();
+
+        ctx.strokeStyle = toWebColor(bgColor);
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        startAngle += sliceAngle;
+      });
+
+      if (colors?.centerText) {
+        ctx.fillStyle = isDarkTheme ? '#FFFFFF' : '#0F172A';
+        ctx.font = 'bold ' + Math.round(9 * scale) + 'px Courier New, monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(colors.centerText, centerX, centerY);
+      }
+
+      const legendX = width * 0.58;
+      let legendY = height * 0.18;
+      const boxSize = 8;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+
+      let itemsToDisplay = items;
+      if (items.length > 8) {
+        const top7 = items.slice(0, 7);
+        const remainingVal = items.slice(7).reduce((sum, item) => sum + item.value, 0);
+        itemsToDisplay = [...top7, { label: 'OTHER', value: remainingVal, color: '#94A3B8' }];
+      }
+
+      itemsToDisplay.forEach(item => {
+        ctx.fillStyle = toWebColor(item.color);
+        ctx.fillRect(legendX, legendY - boxSize / 2, boxSize, boxSize);
+        ctx.fillStyle = isDarkTheme ? '#E2E8F0' : '#0F172A';
+        ctx.font = 'bold ' + Math.round(7.5 * scale) + 'px Courier New, monospace';
+        const pct = Math.round((item.value / total) * 100);
+        const cleanLbl = String(item.label).toUpperCase().substring(0, 12);
+        ctx.fillText(`${cleanLbl}: ${item.value} (${pct}%)`, legendX + boxSize + 8, legendY);
+        legendY += 20;
+      });
+    } else if (type === 'bar') {
+      const labels: string[] = data.labels || [];
+      const values: number[] = data.values || [];
+      const numBars = labels.length || 1;
+      const padL = Math.round(35 * scale);
+      const padR = Math.round(15 * scale);
+      const padT = Math.round(30 * scale);
+      const padB = numBars > 8 ? Math.round(45 * scale) : Math.round(25 * scale);
+      const chartW = width - padL - padR;
+      const chartH = height - padT - padB;
+      const maxVal = Math.max(...values, 1) * 1.15;
+
+      ctx.strokeStyle = isDarkTheme ? '#334155' : '#F1F5F9';
+      ctx.lineWidth = 1;
+      ctx.font = Math.round(8 * scale) + 'px Courier New, monospace';
+      ctx.fillStyle = isDarkTheme ? '#94A3B8' : '#64748B';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+
+      for (let i = 0; i <= 4; i++) {
+        const y = padT + chartH * (1 - i / 4);
+        const v = Math.round(maxVal * (i / 4));
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(width - padR, y);
+        ctx.stroke();
+        ctx.fillText(String(v), padL - 4, y);
+      }
+
+      const barWidth = (chartW / numBars) * 0.55;
+      const spacing = (chartW / numBars);
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+
+      values.forEach((val, idx) => {
+        const xCenter = padL + idx * spacing + spacing / 2;
+        const x = xCenter - barWidth / 2;
+        const y = padT + chartH * (1 - val / maxVal);
+        const h = chartH * (val / maxVal);
+
+        const gradConf = VIBRANT_GRADIENTS[idx % VIBRANT_GRADIENTS.length];
+        const barGrad = ctx.createLinearGradient(0, y, 0, height - padB);
+        barGrad.addColorStop(0, gradConf.start);
+        barGrad.addColorStop(1, gradConf.end);
+        ctx.fillStyle = barGrad;
+        ctx.fillRect(x, y, barWidth, h);
+
+        ctx.fillStyle = isDarkTheme ? '#FFFFFF' : '#1E293B';
+        ctx.font = 'bold ' + Math.round(8.5 * scale) + 'px Courier New, monospace';
+        ctx.textBaseline = 'bottom';
+        ctx.fillText(String(Math.round(val)), xCenter, y - 2);
+
+        ctx.fillStyle = isDarkTheme ? '#94A3B8' : '#64748B';
+        ctx.font = Math.round(8 * scale) + 'px Courier New, monospace';
+        ctx.save();
+        ctx.translate(xCenter, height - padB + 4);
+        if (numBars > 6) {
+          ctx.rotate(-Math.PI / 4);
+          ctx.textAlign = 'right';
+          ctx.textBaseline = 'middle';
+        } else {
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'top';
+        }
+        ctx.fillText(labels[idx] || '', 0, 0);
+        ctx.restore();
+      });
+
+      const legendY = 12;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.font = 'bold ' + Math.round(7.5 * scale) + 'px Courier New, monospace';
+      ctx.fillStyle = isDarkTheme ? '#E2E8F0' : '#475569';
+      ctx.fillText(colors?.title || 'DELIVERY VELOCITY & THROUGHPUT', Math.round(15 * scale), legendY);
+    } else if (type === 'line') {
+      const labels: string[] = data.labels || [];
+      const ideal: number[] = data.ideal || [];
+      const actual: number[] = data.actual || [];
+      const padL = Math.round(35 * scale);
+      const padR = Math.round(15 * scale);
+      const padT = Math.round(30 * scale);
+      const padB = Math.round(25 * scale);
+      const chartW = width - padL - padR;
+      const chartH = height - padT - padB;
+      const maxVal = Math.max(...ideal, ...actual, 1) * 1.15;
+      const numPoints = labels.length || 1;
+
+      ctx.strokeStyle = isDarkTheme ? '#334155' : '#F1F5F9';
+      ctx.lineWidth = 1;
+      ctx.font = Math.round(8 * scale) + 'px Courier New, monospace';
+      ctx.fillStyle = isDarkTheme ? '#94A3B8' : '#64748B';
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+
+      for (let i = 0; i <= 4; i++) {
+        const y = padT + chartH * (1 - i / 4);
+        const v = Math.round(maxVal * (i / 4));
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(width - padR, y);
+        ctx.stroke();
+        ctx.fillText(String(v), padL - 4, y);
+      }
+
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+      labels.forEach((lbl, idx) => {
+        const x = padL + (idx / Math.max(1, numPoints - 1)) * chartW;
+        ctx.fillText(lbl, x, height - padB + 4);
+      });
+
+      const getPt = (idx: number, val: number) => {
+        const x = padL + (idx / Math.max(1, numPoints - 1)) * chartW;
+        const y = padT + chartH * (1 - val / maxVal);
+        return { x, y };
+      };
+
+      ctx.strokeStyle = isDarkTheme ? '#475569' : '#CBD5E1';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ideal.forEach((val, idx) => {
+        const pt = getPt(idx, val);
+        if (idx === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y);
+      });
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      const actualColor = toWebColor(palette?.indigo || '#6366F1');
+      const areaGrad = ctx.createLinearGradient(0, padT, 0, height - padB);
+      areaGrad.addColorStop(0, hexToRgba(actualColor, 0.25));
+      areaGrad.addColorStop(1, hexToRgba(actualColor, 0.0));
+      ctx.fillStyle = areaGrad;
+      ctx.beginPath();
+      actual.forEach((val, idx) => {
+        const pt = getPt(idx, val);
+        if (idx === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y);
+      });
+      const ptLast = getPt(numPoints - 1, 0);
+      const ptFirst = getPt(0, 0);
+      ctx.lineTo(ptLast.x, ptLast.y);
+      ctx.lineTo(ptFirst.x, ptFirst.y);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = actualColor;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      actual.forEach((val, idx) => {
+        const pt = getPt(idx, val);
+        if (idx === 0) ctx.moveTo(pt.x, pt.y); else ctx.lineTo(pt.x, pt.y);
+      });
+      ctx.stroke();
+
+      actual.forEach((val, idx) => {
+        const pt = getPt(idx, val);
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, Math.round(3.5 * scale), 0, 2 * Math.PI);
+        ctx.fillStyle = toWebColor(bgColor);
+        ctx.fill();
+        ctx.strokeStyle = actualColor;
+        ctx.lineWidth = Math.round(1.5 * scale);
+        ctx.stroke();
+      });
+
+      const legendY = 12;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.font = 'bold ' + Math.round(7.5 * scale) + 'px Courier New, monospace';
+      ctx.fillStyle = isDarkTheme ? '#94A3B8' : '#64748B';
+      ctx.fillText('IDEAL BURN', width - 215, legendY);
+      ctx.fillStyle = isDarkTheme ? '#FFFFFF' : '#0F172A';
+      ctx.fillText('ACTUAL REMAINING', width - 95, legendY);
+    } else if (type === 'horizontalBar') {
+      const labels: string[] = data.labels || [];
+      const values: number[] = data.values || [];
+      const numBars = labels.length || 1;
+      const padL = Math.round(140 * scale);
+      const padR = Math.round(50 * scale);
+      const padT = Math.round(30 * scale);
+      const padB = Math.round(20 * scale);
+      const chartW = width - padL - padR;
+      const chartH = height - padT - padB;
+      const barHeight = Math.max(8, Math.min(18, (chartH / numBars) * 0.55));
+      const spacing = chartH / numBars;
+      const maxVal = Math.max(...values, 100);
+
+      values.forEach((val, idx) => {
+        const yCenter = padT + idx * spacing + spacing / 2;
+        const y = yCenter - barHeight / 2;
+        const w = chartW * (Math.min(maxVal, Math.max(0, val)) / maxVal);
+
+        ctx.fillStyle = isDarkTheme ? '#334155' : '#F1F5F9';
+        ctx.fillRect(padL, y, chartW, barHeight);
+
+        const barGrad = ctx.createLinearGradient(padL, 0, padL + chartW, 0);
+        const gradConf = VIBRANT_GRADIENTS[idx % VIBRANT_GRADIENTS.length];
+        barGrad.addColorStop(0, gradConf.start);
+        barGrad.addColorStop(1, gradConf.end);
+        ctx.fillStyle = barGrad;
+        ctx.fillRect(padL, y, w, barHeight);
+
+        ctx.fillStyle = isDarkTheme ? '#E2E8F0' : '#475569';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.font = 'bold ' + Math.round(7.5 * scale) + 'px Courier New, monospace';
+        const rawLbl = String(labels[idx] || '').substring(0, 16);
+        ctx.fillText(rawLbl, padL - 8, yCenter);
+
+        ctx.fillStyle = isDarkTheme ? '#FFFFFF' : '#0F172A';
+        ctx.textAlign = 'left';
+        ctx.fillText(Math.round(val) + '%', padL + w + 4, yCenter);
+      });
+
+      const legendY = 12;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.font = 'bold ' + Math.round(7.5 * scale) + 'px Courier New, monospace';
+      ctx.fillStyle = isDarkTheme ? '#E2E8F0' : '#475569';
+      ctx.fillText(colors?.title || 'PROGRESS DENSITY BY MODULE', Math.round(15 * scale), legendY);
+    } else if (type === 'stackedHorizontalBar') {
+      const labels: string[] = data.labels || [];
+      const series: { label: string; values: number[]; color: string }[] = data.series || [];
+      const numBars = labels.length || 1;
+      const padL = Math.round(130 * scale);
+      const padR = Math.round(40 * scale);
+      const padT = Math.round(30 * scale);
+      const padB = Math.round(20 * scale);
+      const chartW = width - padL - padR;
+      const chartH = height - padT - padB;
+      const barHeight = Math.max(8, Math.min(18, (chartH / numBars) * 0.55));
+      const spacing = chartH / numBars;
+
+      let maxVal = 1;
+      for (let i = 0; i < numBars; i++) {
+        let sum = 0;
+        series.forEach(s => { sum += (s.values[i] || 0); });
+        if (sum > maxVal) maxVal = sum;
+      }
+      maxVal = Math.max(maxVal, 1) * 1.1;
+
+      for (let i = 0; i < numBars; i++) {
+        const yCenter = padT + i * spacing + spacing / 2;
+        const y = yCenter - barHeight / 2;
+        ctx.fillStyle = isDarkTheme ? '#334155' : '#F1F5F9';
+        ctx.fillRect(padL, y, chartW, barHeight);
+
+        let accW = 0;
+        series.forEach(s => {
+          const val = s.values[i] || 0;
+          if (val <= 0) return;
+          const w = chartW * (val / maxVal);
+          ctx.fillStyle = toWebColor(s.color);
+          ctx.fillRect(padL + accW, y, w, barHeight);
+          accW += w;
+        });
+
+        ctx.fillStyle = isDarkTheme ? '#E2E8F0' : '#475569';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.font = 'bold ' + Math.round(7.5 * scale) + 'px Courier New, monospace';
+        ctx.fillText(String(labels[i] || '').substring(0, 15), padL - 8, yCenter);
+      }
+
+      const legendY = 12;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.font = 'bold ' + Math.round(7.5 * scale) + 'px Courier New, monospace';
+      if (series[0]) {
+        ctx.fillStyle = toWebColor(series[0].color);
+        ctx.fillRect(width - 150, legendY - 4, 8, 8);
+        ctx.fillStyle = isDarkTheme ? '#94A3B8' : '#64748B';
+        ctx.fillText(series[0].label.toUpperCase(), width - 138, legendY);
+      }
+      if (series[1]) {
+        ctx.fillStyle = toWebColor(series[1].color);
+        ctx.fillRect(width - 80, legendY - 4, 8, 8);
+        ctx.fillStyle = isDarkTheme ? '#FFFFFF' : '#0F172A';
+        ctx.fillText(series[1].label.toUpperCase(), width - 68, legendY);
+      }
+    } else if (type === 'stackedArea') {
+      const labels: string[] = data.labels || [];
+      const series: { label: string; values: number[]; color: string }[] = data.series || [];
+      const numPoints = labels.length || 1;
+      const numSeries = series.length;
+      const padL = Math.round(35 * scale);
+      const padR = Math.round(15 * scale);
+      const padT = Math.round(30 * scale);
+      const padB = Math.round(25 * scale);
+      const chartW = width - padL - padR;
+      const chartH = height - padT - padB;
+
+      let maxStackedVal = 1;
+      for (let idx = 0; idx < numPoints; idx++) {
+        let sum = 0;
+        for (let sIdx = 0; sIdx < numSeries; sIdx++) {
+          sum += (series[sIdx].values[idx] || 0);
+        }
+        if (sum > maxStackedVal) maxStackedVal = sum;
+      }
+      maxStackedVal = Math.max(maxStackedVal, 1) * 1.15;
+
+      const accBottom: number[] = new Array(numPoints).fill(0);
+      const accTop: number[] = new Array(numPoints).fill(0);
+
+      series.forEach(s => {
+        ctx.beginPath();
+        for (let i = 0; i < numPoints; i++) {
+          accTop[i] = accBottom[i] + (s.values[i] || 0);
+          const x = padL + (i / Math.max(1, numPoints - 1)) * chartW;
+          const y = padT + chartH * (1 - accTop[i] / maxStackedVal);
+          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        for (let i = numPoints - 1; i >= 0; i--) {
+          const x = padL + (i / Math.max(1, numPoints - 1)) * chartW;
+          const y = padT + chartH * (1 - accBottom[i] / maxStackedVal);
+          ctx.lineTo(x, y);
+        }
+        ctx.closePath();
+        ctx.fillStyle = toWebColor(s.color);
+        ctx.fill();
+
+        for (let i = 0; i < numPoints; i++) {
+          accBottom[i] = accTop[i];
+        }
+      });
+
+      const legendY = 12;
+      let legendX = padL;
+      ctx.font = 'bold ' + Math.round(7.5 * scale) + 'px Courier New, monospace';
+      ctx.textBaseline = 'middle';
+      ctx.textAlign = 'left';
+      series.forEach(s => {
+        ctx.fillStyle = toWebColor(s.color);
+        ctx.fillRect(legendX, legendY - 4, 7, 7);
+        ctx.fillStyle = isDarkTheme ? '#E2E8F0' : '#0F172A';
+        ctx.fillText(s.label.toUpperCase(), legendX + 11, legendY);
+        legendX += ctx.measureText(s.label.toUpperCase()).width + 20;
+      });
+    }
+
+    return canvas.toDataURL('image/png').split(',')[1];
+  } catch (err) {
+    console.warn('Canvas chart generation error:', err);
+    return null;
+  }
+}
+
+export function formatProgressGradient(cell: ExcelJS.Cell, progressVal: number, palette: ExcelThemePalette, isTask = false) {
+  cell.alignment = { horizontal: 'center', vertical: 'middle' };
+  cell.numFmt = '0%';
+  const p = Math.round(progressVal * 100);
+  const isDark = palette.isDark;
+  let startColor: string;
+  let endColor: string;
+  let fontColor: string;
+
+  if (p < 30) {
+    startColor = isDark ? 'FF7F1D1D' : 'FFFFEAEA';
+    endColor = isDark ? 'FF991B1B' : 'FFFFC1C1';
+    fontColor = isDark ? 'FFFEE2E2' : 'FF991B1B';
+  } else if (p < 75) {
+    startColor = isDark ? 'FF78350F' : 'FFFFF4E2';
+    endColor = isDark ? 'FF92400E' : 'FFFFDCA8';
+    fontColor = isDark ? 'FFFEF3C7' : 'FF92400E';
+  } else {
+    startColor = isDark ? 'FF064E3B' : 'FFF0FDF4';
+    endColor = isDark ? 'FF15803D' : 'FFBBF7D0';
+    fontColor = isDark ? 'FFF0FDF4' : 'FF166534';
+  }
+
+  cell.fill = {
+    type: 'gradient',
+    gradient: 'angle',
+    degree: 90,
+    stops: [
+      { position: 0, color: { argb: startColor } },
+      { position: 1, color: { argb: endColor } }
+    ]
+  };
+  cell.font = { name: 'Segoe UI', size: isTask ? 10 : 9, bold: true, color: { argb: fontColor } };
+  cell.border = {
+    top: { style: 'thin', color: { argb: isDark ? 'FF334155' : 'FFD1D5DB' } },
+    bottom: { style: 'medium', color: { argb: isDark ? 'FF475569' : 'FF9CA3AF' } },
+    left: { style: 'thin', color: { argb: isDark ? 'FF334155' : 'FFD1D5DB' } },
+    right: { style: 'thin', color: { argb: isDark ? 'FF475569' : 'FF9CA3AF' } }
+  };
+}
+
+export function styleUnifiedRow(
+  row: ExcelJS.Row,
+  level: number,
+  statusVal: string,
+  priorityVal: string,
+  palette: ExcelThemePalette,
+  colCount: number
+) {
+  const isDark = palette.isDark;
+  const primaryColor = palette.indigo || 'FF6366F1';
+  const textColor = isDark ? 'FFFFFFFF' : 'FF1F2937';
+  const mutedTextColor = palette.slate || 'FF64748B';
+
+  let nameFont: Partial<ExcelJS.Font>;
+  let otherFont: Partial<ExcelJS.Font>;
+  let bgFill: string;
+  let rowHeight = 22;
+  let borderStyle: any;
+
+  if (level === 0) {
+    rowHeight = 26;
+    nameFont = { name: 'Segoe UI', size: 11, bold: true, color: { argb: textColor } };
+    otherFont = { name: 'Segoe UI', size: 10, bold: true, color: { argb: isDark ? 'FFE2E8F0' : textColor } };
+    bgFill = getThemeTint(primaryColor, 0.15, palette);
+    borderStyle = {
+      top: { style: 'medium', color: { argb: primaryColor } },
+      bottom: { style: 'medium', color: { argb: primaryColor } },
+      left: { style: 'thick', color: { argb: primaryColor } },
+      right: { style: 'thin', color: { argb: isDark ? 'FF334155' : 'FFE2E8F0' } }
+    };
+  } else if (level === 1) {
+    rowHeight = 22;
+    nameFont = { name: 'Segoe UI', size: 9.5, bold: true, color: { argb: textColor } };
+    otherFont = { name: 'Segoe UI', size: 9, color: { argb: mutedTextColor } };
+    bgFill = getThemeTint(primaryColor, 0.08, palette);
+    borderStyle = {
+      top: { style: 'thin', color: { argb: isDark ? 'FF334155' : 'FFE2E8F0' } },
+      bottom: { style: 'thin', color: { argb: isDark ? 'FF334155' : 'FFE2E8F0' } },
+      left: { style: 'medium', color: { argb: primaryColor } },
+      right: { style: 'thin', color: { argb: isDark ? 'FF334155' : 'FFE2E8F0' } }
+    };
+  } else {
+    rowHeight = 20;
+    nameFont = { name: 'Segoe UI', size: 8.5, italic: true, color: { argb: mutedTextColor } };
+    otherFont = { name: 'Segoe UI', size: 8.5, italic: true, color: { argb: mutedTextColor } };
+    bgFill = getThemeTint(primaryColor, 0.03, palette);
+    borderStyle = {
+      top: { style: 'thin', color: { argb: isDark ? 'FF1E293B' : 'FFF1F5F9' } },
+      bottom: { style: 'thin', color: { argb: isDark ? 'FF1E293B' : 'FFF1F5F9' } },
+      left: { style: 'thin', color: { argb: isDark ? 'FF334155' : 'FFE2E8F0' } },
+      right: { style: 'thin', color: { argb: isDark ? 'FF334155' : 'FFE2E8F0' } }
+    };
+  }
+  row.height = rowHeight;
+
+  for (let c = 2; c <= colCount; c++) {
+    const cell = row.getCell(c);
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bgFill } };
+    cell.border = {
+      top: borderStyle.top,
+      bottom: borderStyle.bottom,
+      left: c === 2 ? borderStyle.left : undefined,
+      right: c === colCount ? borderStyle.right : { style: 'thin', color: { argb: isDark ? 'FF334155' : 'FFE2E8F0' } }
+    };
+    cell.font = (c === 3) ? nameFont : otherFont;
+    cell.alignment = { vertical: 'middle', horizontal: 'left' };
+  }
+
+  const idCell = row.getCell('id');
+  if (idCell) {
+    idCell.font = { name: 'Consolas', size: level === 0 ? 9.5 : 9, color: { argb: isDark ? 'FF94A3B8' : 'FF475569' }, bold: level === 0 };
+    idCell.alignment = { horizontal: 'center', vertical: 'middle' };
+  }
+
+  ['type', 'category', 'module', 'moduleType', 'complexity'].forEach(k => {
+    const cell = row.getCell(k);
+    if (cell) cell.alignment = { horizontal: 'center', vertical: 'middle' };
+  });
+
+  ['startDate', 'dueDate', 'actCompletionDate'].forEach(k => {
+    const cell = row.getCell(k);
+    if (cell) cell.alignment = { horizontal: 'center', vertical: 'middle' };
+  });
+
+  ['estEffort', 'actEffort'].forEach(k => {
+    const cell = row.getCell(k);
+    if (cell) {
+      cell.alignment = { horizontal: 'right', vertical: 'middle' };
+      cell.numFmt = '#,##0.0';
+    }
+  });
+
+  const progCell = row.getCell('progress');
+  if (progCell && progCell.value !== undefined && progCell.value !== null && progCell.value !== '') {
+    const pVal = typeof progCell.value === 'number' ? progCell.value : parseFloat(String(progCell.value)) || 0;
+    formatProgressGradient(progCell, pVal, palette, level === 0);
+  }
+
+  const statusCell = row.getCell('status');
+  if (statusCell && statusVal) {
+    formatStatusCell(statusCell, statusVal, palette);
+  }
+
+  const priCell = row.getCell('priority');
+  if (priCell && priorityVal) {
+    formatPriorityCell(priCell, priorityVal, palette);
+  }
+}
+
+export function styleFeatureRolloutRow(
+  row: ExcelJS.Row,
+  level: number,
+  statusVal: string,
+  palette: ExcelThemePalette,
+  colCount: number
+) {
+  const isDark = palette.isDark;
+  const primaryColor = palette.indigo || 'FF6366F1';
+  const textColor = isDark ? 'FFFFFFFF' : 'FF1F2937';
+  const mutedTextColor = palette.slate || 'FF64748B';
+
+  let nameFont: Partial<ExcelJS.Font>;
+  let otherFont: Partial<ExcelJS.Font>;
+  let bgFill: string;
+  let rowHeight = 22;
+  let borderStyle: any;
+
+  if (level === 0) {
+    rowHeight = 28;
+    nameFont = { name: 'Segoe UI', size: 12, bold: true, color: { argb: textColor } };
+    otherFont = { name: 'Segoe UI', size: 10.5, bold: true, color: { argb: isDark ? 'FFE2E8F0' : textColor } };
+    bgFill = getThemeTint(primaryColor, 0.18, palette);
+    borderStyle = {
+      top: { style: 'medium', color: { argb: primaryColor } },
+      bottom: { style: 'thick', color: { argb: primaryColor } },
+      left: { style: 'thick', color: { argb: primaryColor } },
+      right: { style: 'thin', color: { argb: isDark ? 'FF334155' : 'FFE2E8F0' } }
+    };
+  } else if (level === 1) {
+    rowHeight = 24;
+    nameFont = { name: 'Segoe UI', size: 10.5, bold: true, color: { argb: textColor } };
+    otherFont = { name: 'Segoe UI', size: 9.5, bold: true, color: { argb: isDark ? 'FFE0E7FF' : textColor } };
+    bgFill = getThemeTint(primaryColor, 0.10, palette);
+    borderStyle = {
+      top: { style: 'thin', color: { argb: isDark ? 'FF334155' : 'FFE2E8F0' } },
+      bottom: { style: 'medium', color: { argb: primaryColor } },
+      left: { style: 'medium', color: { argb: primaryColor } },
+      right: { style: 'thin', color: { argb: isDark ? 'FF334155' : 'FFE2E8F0' } }
+    };
+  } else if (level === 2) {
+    rowHeight = 22;
+    nameFont = { name: 'Segoe UI', size: 9.5, color: { argb: textColor } };
+    otherFont = { name: 'Segoe UI', size: 9, color: { argb: mutedTextColor } };
+    bgFill = getThemeTint(primaryColor, 0.05, palette);
+    borderStyle = {
+      top: { style: 'thin', color: { argb: isDark ? 'FF1E293B' : 'FFE2E8F0' } },
+      bottom: { style: 'thin', color: { argb: isDark ? 'FF1E293B' : 'FFE2E8F0' } },
+      left: { style: 'thin', color: { argb: primaryColor } },
+      right: { style: 'thin', color: { argb: isDark ? 'FF334155' : 'FFE2E8F0' } }
+    };
+  } else {
+    rowHeight = 20;
+    nameFont = { name: 'Segoe UI', size: 8.5, italic: true, color: { argb: mutedTextColor } };
+    otherFont = { name: 'Segoe UI', size: 8.5, italic: true, color: { argb: mutedTextColor } };
+    bgFill = getThemeTint(primaryColor, 0.02, palette);
+    borderStyle = {
+      top: { style: 'thin', color: { argb: isDark ? 'FF1E293B' : 'FFF1F5F9' } },
+      bottom: { style: 'thin', color: { argb: isDark ? 'FF1E293B' : 'FFF1F5F9' } },
+      left: { style: 'thin', color: { argb: isDark ? 'FF334155' : 'FFE2E8F0' } },
+      right: { style: 'thin', color: { argb: isDark ? 'FF334155' : 'FFE2E8F0' } }
+    };
+  }
+  row.height = rowHeight;
+
+  for (let c = 2; c <= colCount; c++) {
+    const cell = row.getCell(c);
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bgFill } };
+    cell.border = {
+      top: borderStyle.top,
+      bottom: borderStyle.bottom,
+      left: c === 2 ? borderStyle.left : undefined,
+      right: c === colCount ? borderStyle.right : { style: 'thin', color: { argb: isDark ? 'FF334155' : 'FFE2E8F0' } }
+    };
+    cell.font = (c === 3) ? nameFont : otherFont;
+    cell.alignment = { vertical: 'middle', horizontal: 'left' };
+  }
+
+  const idCell = row.getCell('id');
+  if (idCell) {
+    idCell.font = { name: 'Consolas', size: level === 0 ? 10 : 9, color: { argb: isDark ? 'FF94A3B8' : 'FF475569' }, bold: level <= 1 };
+    idCell.alignment = { horizontal: 'center', vertical: 'middle' };
+  }
+
+  ['type', 'featureCategory', 'plannedReleaseDate'].forEach(k => {
+    const cell = row.getCell(k);
+    if (cell) cell.alignment = { horizontal: 'center', vertical: 'middle' };
+  });
+
+  const progCell = row.getCell('progress');
+  if (progCell && progCell.value !== undefined && progCell.value !== null && progCell.value !== '') {
+    const pVal = typeof progCell.value === 'number' ? progCell.value : parseFloat(String(progCell.value)) || 0;
+    formatProgressGradient(progCell, pVal, palette, level <= 1);
+  }
+
+  const statusCell = row.getCell('status');
+  if (statusCell && statusVal) {
+    formatStatusCell(statusCell, statusVal, palette);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// COMPREHENSIVE EXECUTIVE DASHBOARD SHEET
+// ─────────────────────────────────────────────────────────────
+export function buildExecutiveDashboardSheet(
+  wb: ExcelJS.Workbook,
+  state: ProjectState,
+  palette: ExcelThemePalette
+): ExcelJS.Worksheet {
   const ds = wb.addWorksheet('Executive Dashboard', {
     views: [{ showGridLines: false, state: 'frozen', ySplit: 6 }]
   });
   ds.properties.tabColor = { argb: palette.indigo };
-  ds.getColumn(1).width = 3.0;
-  for (let i = 2; i <= 20; i++) ds.getColumn(i).width = 15.0;
+  ds.getColumn(1).width = 2.5;
+  for (let i = 2; i <= 19; i++) ds.getColumn(i).width = 14.5;
+  ds.getColumn(20).width = 2.5;
+
+  const applyBg = (r: number, c: number, color: string) => {
+    ds.getCell(r, c).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: color } };
+  };
+
+  // Base background fill
+  for (let r = 1; r <= 280; r++) {
+    ds.getRow(r).height = 16;
+    for (let c = 2; c <= 19; c++) {
+      applyBg(r, c, palette.bg);
+    }
+  }
 
   // Header Banner
   ds.getRow(1).height = 12;
-  ds.mergeCells('B2:R2');
-  ds.getRow(2).height = 24;
+  ds.mergeCells('B2:S3');
+  ds.getRow(2).height = 20;
+  ds.getRow(3).height = 20;
   const dsTitle = ds.getCell('B2');
-  dsTitle.value = ' >> PROJECTPULSE 2.0 | EXECUTIVE GOVERNANCE & TELEMETRY COCKPIT';
-  dsTitle.font = { name: 'Segoe UI', size: 12, bold: true, color: { argb: palette.indigo } };
+  dsTitle.value = {
+    richText: [
+      { text: ` >> SYSTEM.PULSE: ${S(state.name || 'Project Workspace').toUpperCase()}`, font: { name: 'Courier New', size: 12, bold: true, color: { argb: palette.isDark ? 'FFFFFFFF' : palette.textDark } } },
+      { text: '   |   REAL-TIME PORTFOLIO & EXECUTIVE TELEMETRY', font: { name: 'Courier New', size: 8.5, bold: true, color: { argb: palette.indigo } } }
+    ]
+  };
   dsTitle.alignment = { vertical: 'middle', indent: 1 };
 
-  ds.mergeCells('B3:R3');
-  ds.getRow(3).height = 16;
-  const dsSub = ds.getCell('B3');
-  dsSub.value = `Project Portfolio: ${state.name || 'Untitled Workspace'} • Generated: ${new Date().toLocaleString()}`;
-  dsSub.font = { name: 'Segoe UI', size: 9, italic: true, color: { argb: palette.muted } };
-  dsSub.alignment = { vertical: 'top', indent: 1 };
+  const bannerGrad = {
+    type: 'gradient' as const,
+    gradient: 'angle' as const,
+    degree: 90,
+    stops: [
+      { position: 0, color: { argb: palette.bg } },
+      { position: 1, color: { argb: palette.surfaceAlt } }
+    ]
+  };
+  for (let c = 2; c <= 19; c++) {
+    ds.getCell(2, c).fill = bannerGrad;
+    ds.getCell(3, c).fill = bannerGrad;
+    ds.getCell(3, c).border = { bottom: { style: 'medium', color: { argb: palette.indigo } } };
+  }
 
-  // KPI Tiles (Row 4-6)
+  // KPI Calculations
   const totalTasks = state.tasks.length;
   const doneTasks = state.tasks.filter(t => t.status === TaskStatus.COMPLETED).length;
   const taskPct = totalTasks ? Math.round((doneTasks / totalTasks) * 100) : 0;
+  const now = Date.now();
+  const overdueTasks = state.tasks.filter(t => t.dueDate && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED && new Date(t.dueDate).getTime() < now).length;
+  const blockedTasks = state.tasks.filter(t => t.status === TaskStatus.BLOCKED).length;
+  const critTasks = state.tasks.filter(t => t.priority === TaskPriority.CRITICAL && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED).length;
+  const healthScore = getHealthScore(state.tasks);
 
-  const totalDels = (state.deliveries || []).length;
-  const deployedDels = (state.deliveries || []).filter(d => d.status === 'Deployed').length;
-  const delPct = totalDels ? Math.round((deployedDels / totalDels) * 100) : 0;
-
-  const totalDefects = (state.defects || []).length;
-  const activeDefects = (state.defects || []).filter(d => d.status !== 'Closed' && d.status !== 'Fixed').length;
-  const critDefects = (state.defects || []).filter(d => d.severity?.includes('Blocker') || d.severity?.includes('S1')).length;
-
-  const totalRaids = (state.raids || []).length;
-  const critRaids = (state.raids || []).filter(r => r.impact === 'Critical' || r.impact === 'High').length;
-
-  const totalMembers = (state.members || []).length;
-  const activeDecisions = (state.decisions || []).filter(d => d.status === 'Approved').length;
-
-  drawTopKpiCard(ds, 2, 4, 3, 3, 'Delivery Progress', `${doneTasks} / ${totalTasks}`, `${taskPct}% complete`, palette.emerald, { isDark: palette.isDark });
-  drawTopKpiCard(ds, 5, 4, 3, 3, 'ALM Deliveries', `${deployedDels} / ${totalDels}`, `${delPct}% deployed`, palette.indigo, { isDark: palette.isDark });
-  drawTopKpiCard(ds, 8, 4, 3, 3, 'Quality Defects', `${activeDefects} active`, `${critDefects} blockers`, critDefects > 0 ? palette.rose : palette.blue, { isDark: palette.isDark });
-  drawTopKpiCard(ds, 11, 4, 3, 3, 'RAID Exposure', `${critRaids} critical`, `${totalRaids} registered`, critRaids > 0 ? palette.amber : palette.emerald, { isDark: palette.isDark });
-  drawTopKpiCard(ds, 14, 4, 3, 3, 'Team Workstation', `${totalMembers} engineers`, 'Resource roster', palette.blue, { isDark: palette.isDark });
-  drawTopKpiCard(ds, 17, 4, 2, 3, 'Architecture ADRs', `${activeDecisions} approved`, `${state.decisions.length} total`, palette.purple, { isDark: palette.isDark });
+  // Row 4-6: KPI Cards
+  drawTopKpiCard(ds, 2, 4, 3, 3, 'Health Score', `${healthScore}%`, healthScore >= 80 ? '▲ On Track' : healthScore >= 60 ? '► Monitor' : '▼ Critical', healthScore >= 80 ? palette.emerald : healthScore >= 60 ? palette.amber : palette.rose, { isDark: palette.isDark });
+  drawTopKpiCard(ds, 5, 4, 3, 3, 'Total / Done', `${totalTasks} / ${doneTasks}`, `${taskPct}% delivery rate`, palette.indigo, { isDark: palette.isDark });
+  drawTopKpiCard(ds, 8, 4, 3, 3, 'Active Scope', `${totalTasks - doneTasks}`, `${totalTasks - doneTasks} tasks in flight`, palette.blue, { isDark: palette.isDark });
+  drawTopKpiCard(ds, 11, 4, 3, 3, 'Overdue', `${overdueTasks}`, overdueTasks > 0 ? '⚠ Attention Required' : '✔ On Schedule', overdueTasks > 0 ? palette.rose : palette.emerald, { isDark: palette.isDark });
+  drawTopKpiCard(ds, 14, 4, 3, 3, 'Blocked', `${blockedTasks}`, blockedTasks > 0 ? '⚠ Dependency debt' : '✔ Clear', blockedTasks > 0 ? palette.rose : palette.emerald, { isDark: palette.isDark });
+  drawTopKpiCard(ds, 17, 4, 3, 3, 'Critical Pri', `${critTasks}`, critTasks > 0 ? 'Escalate now' : 'Clear', critTasks > 0 ? palette.rose : palette.emerald, { isDark: palette.isDark });
 
   ds.getRow(7).height = 14;
 
-  // Portfolio Metadata Table
+  // Metadata Table (Rows 8-16)
   const metaStartRow = 8;
   ds.mergeCells(`B${metaStartRow}:H${metaStartRow}`);
-  ds.getCell(`B${metaStartRow}`).value = 'PORTFOLIO METADATA & STRATEGIC ALIGNMENT';
-  ds.getCell(`B${metaStartRow}`).font = { name: 'Segoe UI', size: 10, bold: true, color: { argb: palette.textDark } };
+  ds.getCell(`B${metaStartRow}`).value = ' >> PORTFOLIO METADATA & STRATEGIC ALIGNMENT';
+  ds.getCell(`B${metaStartRow}`).font = { name: 'Courier New', size: 9, bold: true, color: { argb: palette.blue } };
   ds.getCell(`B${metaStartRow}`).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: palette.surfaceAlt } };
+  ds.getCell(`B${metaStartRow}`).border = { bottom: { style: 'medium', color: { argb: palette.blue } } };
 
   const metaRows = [
     { label: 'Project Name', val: state.name },
@@ -376,8 +1171,1281 @@ export const exportProjectExcel = async (state: ProjectState): Promise<string> =
     ds.getCell(`C${rIdx}`).font = { name: 'Segoe UI', size: 9.5, color: { argb: palette.textDark } };
   });
 
+  // Table Drawing Helpers
+  const drawSectionTitle = (row: number, title: string) => {
+    ds.getRow(row).height = 20;
+    ds.mergeCells(row, 2, row, 19);
+    const cell = ds.getCell(row, 2);
+    cell.value = ' >> [' + S(title).toUpperCase() + ']';
+    cell.font = { name: 'Courier New', size: 9, bold: true, color: { argb: palette.blue } };
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: palette.surfaceAlt } };
+    cell.border = { bottom: { style: 'medium', color: { argb: palette.blue } } };
+    cell.alignment = { vertical: 'middle' };
+  };
+
+  const drawTableHeader = (row: number, headers: string[], startCol: number) => {
+    ds.getRow(row).height = 18;
+    headers.forEach((h, i) => {
+      const cell = ds.getCell(row, startCol + i);
+      cell.value = '[' + S(h).toUpperCase() + ']';
+      cell.font = { name: 'Courier New', size: 8, bold: true, color: { argb: palette.isDark ? 'FFFFFFFF' : palette.textDark } };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: palette.surfaceAlt } };
+      cell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+      cell.border = { bottom: { style: 'thin', color: { argb: palette.divider } } };
+    });
+  };
+
+  const drawTableRow = (row: number, values: any[], startCol: number, alternate: boolean) => {
+    ds.getRow(row).height = 18;
+    const bg = alternate ? getThemeTint(palette.blue, 0.08, palette) : getThemeTint(palette.blue, 0.02, palette);
+    values.forEach((val, i) => {
+      const cell = ds.getCell(row, startCol + i);
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } };
+      cell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+      if (val && val._styled) {
+        cell.value = S(val.text);
+        cell.font = { name: 'Courier New', size: 8.5, bold: val.bold, color: { argb: val.color } };
+      } else {
+        cell.value = S(val);
+        cell.font = { name: 'Courier New', size: 8.5, color: { argb: palette.textDark } };
+      }
+      cell.border = {
+        top: { style: 'thin', color: { argb: palette.divider } },
+        bottom: { style: 'thin', color: { argb: palette.divider } },
+        left: { style: 'thin', color: { argb: palette.divider } },
+        right: { style: 'thin', color: { argb: palette.divider } }
+      };
+    });
+  };
+
+  const styledVal = (text: any, color: string, bold: boolean) => ({
+    _styled: true,
+    text: S(text),
+    color: color.replace('#', ''),
+    bold
+  });
+
+  const addChart = (imgBase64: string | null, col: number, row: number, width = 500, height = 240) => {
+    if (!imgBase64) return;
+    try {
+      const imgId = wb.addImage({ base64: imgBase64, extension: 'png' });
+      ds.addImage(imgId, {
+        tl: { col, row },
+        ext: { width, height },
+        editAs: 'oneCell'
+      });
+    } catch (e) {
+      console.warn('Could not add chart image:', e);
+    }
+  };
+
+  // ── Prepare Chart Data Sets ──
+  const statusCounts: Record<string, number> = {};
+  state.tasks.forEach(t => { statusCounts[t.status] = (statusCounts[t.status] || 0) + 1; });
+  const statusChartData = Object.entries(statusCounts).map(([st, cnt]) => {
+    let color = palette.slate;
+    if (st === TaskStatus.COMPLETED) color = palette.emerald;
+    else if (st === TaskStatus.IN_PROGRESS) color = palette.indigo;
+    else if (st === TaskStatus.UNDER_REVIEW) color = palette.blue;
+    else if (st === TaskStatus.ON_HOLD) color = palette.amber;
+    else if (st === TaskStatus.BLOCKED) color = palette.rose;
+    return { label: st, value: cnt, color };
+  });
+
+  const priCounts: Record<string, number> = {};
+  state.tasks.forEach(t => { priCounts[t.priority] = (priCounts[t.priority] || 0) + 1; });
+  const priChartData = Object.entries(priCounts).map(([p, cnt]) => {
+    let color = palette.muted;
+    if (p === TaskPriority.CRITICAL) color = palette.rose;
+    else if (p === TaskPriority.HIGH) color = palette.amber;
+    else if (p === TaskPriority.MEDIUM) color = palette.blue;
+    return { label: p, value: cnt, color };
+  });
+
+  const compCounts: Record<string, number> = { 'Easy': 0, 'Medium': 0, 'Complex': 0 };
+  state.tasks.forEach(t => {
+    const c = t.complexity || 'Medium';
+    compCounts[c] = (compCounts[c] || 0) + 1;
+  });
+  const compChartData = [
+    { label: 'Easy', value: compCounts['Easy'], color: palette.emerald },
+    { label: 'Medium', value: compCounts['Medium'], color: palette.amber },
+    { label: 'Complex', value: compCounts['Complex'], color: palette.rose }
+  ].filter(item => item.value > 0);
+
+  // Velocity Bar Data
+  const vLs: { w: number; y: number; l: string }[] = [];
+  for (let i = 7; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i * 7);
+    vLs.push({ w: getWeekNumber(d), y: d.getFullYear(), l: d.toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) });
+  }
+  const velData = vLs.map(w => state.tasks
+    .filter(t => t.status === TaskStatus.COMPLETED && t.dueDate && getWeekNumber(new Date(t.dueDate)) === w.w && new Date(t.dueDate).getFullYear() === w.y)
+    .reduce((s, t) => s + (Number(t.estDays) || 0), 0));
+
+  // Burndown Line Data
+  const startDates = state.tasks.map(t => new Date(t.startDate)).filter(d => !isNaN(d.getTime()));
+  const endDates = state.tasks.map(t => new Date(t.dueDate)).filter(d => !isNaN(d.getTime()));
+  const bStart = startDates.length ? new Date(Math.min(...startDates.map(d => d.getTime()))) : new Date();
+  const bEnd = endDates.length ? new Date(Math.max(...endDates.map(d => d.getTime()))) : new Date(bStart.getTime() + 30 * 864e5);
+  const bWeeks = Math.max(2, Math.min(10, Math.ceil((bEnd.getTime() - bStart.getTime()) / (7 * 864e5)) + 1));
+  const bLabels = Array.from({ length: bWeeks }, (_, i) => new Date(bStart.getTime() + i * 7 * 864e5).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }));
+  const totalEffort = state.tasks.reduce((s, t) => s + (Number(t.estDays) || 0), 0);
+  const bIdeal = bLabels.map((_, i) => Math.max(0, Math.round(totalEffort - (totalEffort / Math.max(1, bWeeks - 1)) * i)));
+  const bActual = bLabels.map((_, i) => {
+    const wEnd = new Date(bStart.getTime() + (i + 1) * 7 * 864e5);
+    return Math.round(state.tasks
+      .filter(t => t.status !== TaskStatus.COMPLETED || new Date(t.updatedAt || t.dueDate) > wEnd)
+      .reduce((s, t) => s + (Number(t.estDays) || 0), 0));
+  });
+
+  // Task Category Donut
+  const catMap: Record<string, number> = {};
+  state.tasks.forEach(t => { const c = t.category || 'Strategic'; catMap[c] = (catMap[c] || 0) + 1; });
+  const catChartData = Object.entries(catMap).map(([cat, val], ci) => {
+    const vibrantColors = [palette.indigo, palette.emerald, palette.amber, palette.rose, palette.blue, palette.purple, palette.teal];
+    return { label: cat, value: val, color: vibrantColors[ci % vibrantColors.length] };
+  });
+
+  // Module Health Donut
+  const modSet = [...new Set(state.tasks.map(t => t.module).filter(Boolean))];
+  let modCompleted = 0; let modOnTrack = 0; let modBlocked = 0; let modOverdue = 0;
+  modSet.forEach(m => {
+    const mt = state.tasks.filter(t => t.module === m);
+    const mAvg = mt.length ? Math.round(mt.reduce((s, t) => s + (Number(t.progress) || 0), 0) / mt.length) : 0;
+    const hasBlocked = mt.some(t => t.status === TaskStatus.BLOCKED || t.status === TaskStatus.ON_HOLD);
+    const hasOverdue = mt.some(t => t.status !== TaskStatus.COMPLETED && t.dueDate && new Date(t.dueDate).getTime() < now);
+    if (mAvg === 100) modCompleted++;
+    else if (hasBlocked) modBlocked++;
+    else if (hasOverdue) modOverdue++;
+    else modOnTrack++;
+  });
+  const modHealthChartData = [
+    { label: 'Completed Modules', value: modCompleted, color: palette.emerald },
+    { label: 'On Track Active', value: modOnTrack, color: palette.indigo },
+    { label: 'Overdue / At Risk', value: modOverdue, color: palette.amber },
+    { label: 'Blocked Modules', value: modBlocked, color: palette.rose }
+  ].filter(item => item.value > 0);
+
+  // Team Workload Data
+  const teamNames = [...new Set(state.tasks.map(t => t.assignee).filter(Boolean))].slice(0, 8);
+  const doneMData = teamNames.map(m => state.tasks.filter(t => t.assignee === m && t.status === TaskStatus.COMPLETED).length);
+  const activeMData = teamNames.map(m => state.tasks.filter(t => t.assignee === m && t.status !== TaskStatus.COMPLETED).length);
+  const teamWorkloadData = {
+    labels: teamNames,
+    series: [
+      { label: 'Done', values: doneMData, color: '#10B981' },
+      { label: 'Active', values: activeMData, color: '#4F46E5' }
+    ]
+  };
+
+  // RAID Type Donut
+  const raidTypeMap: Record<string, number> = {};
+  (state.raids || []).forEach(r => { raidTypeMap[r.type] = (raidTypeMap[r.type] || 0) + 1; });
+  const raidTypeChartData = Object.entries(raidTypeMap).map(([t, val]) => ({
+    label: t,
+    value: val,
+    color: t === 'Risk' || t === 'Issue' ? palette.rose : t === 'Dependency' ? palette.indigo : palette.blue
+  }));
+
+  // Defect Modules Donut
+  const defModMap: Record<string, number> = {};
+  (state.defects || []).filter(d => d.status !== 'Closed' && d.status !== 'Fixed').forEach(d => {
+    const parentTask = state.tasks.find(t => t.id === d.linkedId);
+    const m = parentTask?.module || d.linkedType || 'General';
+    defModMap[m] = (defModMap[m] || 0) + 1;
+  });
+  const defModChartData = Object.entries(defModMap).map(([m, cnt], mi) => {
+    const vibrantColors = [palette.indigo, palette.emerald, palette.amber, palette.rose, palette.blue, palette.purple];
+    return { label: m, value: cnt, color: vibrantColors[mi % vibrantColors.length] };
+  });
+
+  // RAID Severity Donut
+  const raidSevMap: Record<string, number> = {};
+  (state.raids || []).forEach(r => {
+    const sev = r.severity || r.impact || 'Medium';
+    raidSevMap[sev] = (raidSevMap[sev] || 0) + 1;
+  });
+  const raidSevChartData = Object.entries(raidSevMap).map(([sev, cnt]) => ({
+    label: sev,
+    value: cnt,
+    color: sev === 'High' || sev === 'Critical' ? palette.rose : sev === 'Medium' ? palette.amber : palette.emerald
+  }));
+
+  // Defect Status Donut
+  const defStatMap: Record<string, number> = {};
+  (state.defects || []).filter(d => d.status !== 'Closed' && d.status !== 'Fixed').forEach(d => {
+    defStatMap[d.status] = (defStatMap[d.status] || 0) + 1;
+  });
+  const defStatChartData = Object.entries(defStatMap).map(([st, cnt]) => ({
+    label: st,
+    value: cnt,
+    color: st === 'New' ? palette.indigo : st === 'Assigned' ? palette.blue : st === 'Retest' ? palette.amber : palette.emerald
+  }));
+
+  // ── Render Visualization Panels (Rows 18-98) ──
+  drawSectionTitle(18, 'Scope Health, Priority & Complexity Profiles');
+  for (let r = 19; r <= 30; r++) ds.getRow(r).height = 20;
+  addChart(generateCanvasChart(500, 240, 'donut', statusChartData, { centerText: `${totalTasks} Tasks` }, palette), 1, 19);
+  addChart(generateCanvasChart(500, 240, 'donut', priChartData, { centerText: 'By Priority' }, palette), 7, 19);
+  addChart(generateCanvasChart(500, 240, 'donut', compChartData, { centerText: 'Complexity' }, palette), 13, 19);
+
+  drawSectionTitle(32, 'Predictive Velocity & Burndown Trajectory');
+  for (let r = 33; r <= 44; r++) ds.getRow(r).height = 20;
+  addChart(generateCanvasChart(750, 240, 'bar', { labels: vLs.map(w => w.l), values: velData }, { title: 'COMPLETED EFFORT BY WEEK' }, palette), 1, 33, 750, 240);
+  addChart(generateCanvasChart(750, 240, 'line', { labels: bLabels, ideal: bIdeal, actual: bActual }, {}, palette), 10, 33, 750, 240);
+
+  drawSectionTitle(46, 'Workstream Distribution & Module Health');
+  for (let r = 47; r <= 58; r++) ds.getRow(r).height = 20;
+  addChart(generateCanvasChart(500, 240, 'donut', catChartData, { centerText: 'Categories' }, palette), 1, 47);
+  addChart(generateCanvasChart(500, 240, 'donut', modHealthChartData, { centerText: 'Module Health' }, palette), 7, 47);
+  addChart(generateCanvasChart(500, 240, 'donut', raidTypeChartData, { centerText: 'RAID Types' }, palette), 13, 47);
+
+  drawSectionTitle(60, 'Resource Workload & Threat Exposure');
+  for (let r = 61; r <= 72; r++) ds.getRow(r).height = 20;
+  addChart(generateCanvasChart(500, 240, 'stackedHorizontalBar', teamWorkloadData, {}, palette), 1, 61);
+  addChart(generateCanvasChart(500, 240, 'donut', defModChartData, { centerText: 'Defect Modules' }, palette), 7, 61);
+  addChart(generateCanvasChart(500, 240, 'donut', raidSevChartData, { centerText: 'RAID Severity' }, palette), 13, 61);
+
+  drawSectionTitle(74, 'Defect Diagnostics & Quality Control');
+  for (let r = 75; r <= 86; r++) ds.getRow(r).height = 20;
+  addChart(generateCanvasChart(500, 240, 'donut', defStatChartData, { centerText: 'Defect Status' }, palette), 1, 75);
+
+  let curRow = 89;
+
+  // ── Governance Tables ──
+  // Section 1: Health & Distribution Directories
+  drawSectionTitle(curRow, 'Project Health & Distribution Directories');
+  curRow += 2;
+
+  drawTableHeader(curRow, ['Status', 'Count', '%'], 2);
+  const statusList = [TaskStatus.COMPLETED, TaskStatus.IN_PROGRESS, TaskStatus.UNDER_REVIEW, TaskStatus.ON_HOLD, TaskStatus.BLOCKED, TaskStatus.NOT_STARTED];
+  statusList.forEach((s, i) => {
+    const cnt = state.tasks.filter(t => t.status === s).length;
+    const pct = totalTasks ? Math.round((cnt / totalTasks) * 100) : 0;
+    drawTableRow(curRow + 1 + i, [styledVal(s, palette.indigo, true), cnt, `${pct}%`], 2, i % 2 === 1);
+  });
+
+  drawTableHeader(curRow, ['Priority', 'Count', '%'], 7);
+  const priList = [TaskPriority.CRITICAL, TaskPriority.HIGH, TaskPriority.MEDIUM, TaskPriority.LOW];
+  priList.forEach((p, i) => {
+    const cnt = state.tasks.filter(t => t.priority === p).length;
+    const pct = totalTasks ? Math.round((cnt / totalTasks) * 100) : 0;
+    drawTableRow(curRow + 1 + i, [styledVal(p, p === TaskPriority.CRITICAL ? palette.rose : palette.amber, true), cnt, `${pct}%`], 7, i % 2 === 1);
+  });
+
+  drawTableHeader(curRow, ['Metric', 'Duration (Days)'], 12);
+  drawTableRow(curRow + 1, ['Total Effort Estimated', totalEffort.toFixed(1)], 12, false);
+  drawTableRow(curRow + 2, ['Remaining Effort (Burndown)', (bActual[bActual.length - 1] || 0).toFixed(1)], 12, true);
+  drawTableRow(curRow + 3, ['Done Effort', (totalEffort - (bActual[bActual.length - 1] || 0)).toFixed(1)], 12, false);
+  curRow += Math.max(statusList.length, priList.length, 4) + 2;
+
+  // Section 2: Project Milestones
+  const msTasks = state.tasks.filter(t => (t.startDate && t.startDate === t.dueDate) || t.category === 'Milestone' || t.name.toLowerCase().includes('milestone'));
+  if (msTasks.length) {
+    drawSectionTitle(curRow, 'Project Milestones & Key Roadmap Markers');
+    curRow += 2;
+    ds.getRow(curRow).height = 18;
+    const msHeaders = [
+      { c1: 2, c2: 3, label: 'ID' },
+      { c1: 4, c2: 11, label: 'Milestone Name' },
+      { c1: 12, c2: 14, label: 'Due Date' },
+      { c1: 15, c2: 17, label: 'Status' },
+      { c1: 18, c2: 19, label: 'Progress' }
+    ];
+    msHeaders.forEach(h => {
+      if (h.c1 !== h.c2) ds.mergeCells(curRow, h.c1, curRow, h.c2);
+      const cell = ds.getCell(curRow, h.c1);
+      cell.value = `[${h.label.toUpperCase()}]`;
+      cell.font = { name: 'Courier New', size: 8, bold: true, color: { argb: palette.isDark ? 'FFFFFFFF' : palette.textDark } };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: palette.surfaceAlt } };
+      cell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+    });
+
+    msTasks.slice(0, 15).forEach((t, i) => {
+      const rIdx = curRow + 1 + i;
+      ds.getRow(rIdx).height = 20;
+      const bg = i % 2 === 1 ? getThemeTint(palette.blue, 0.08, palette) : getThemeTint(palette.blue, 0.02, palette);
+      ds.mergeCells(rIdx, 2, rIdx, 3);
+      ds.mergeCells(rIdx, 4, rIdx, 11);
+      ds.mergeCells(rIdx, 12, rIdx, 14);
+      ds.mergeCells(rIdx, 15, rIdx, 17);
+      ds.mergeCells(rIdx, 18, rIdx, 19);
+
+      for (let c = 2; c <= 19; c++) {
+        ds.getCell(rIdx, c).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } };
+        ds.getCell(rIdx, c).border = {
+          top: { style: 'thin', color: { argb: palette.divider } },
+          bottom: { style: 'thin', color: { argb: palette.divider } },
+          left: { style: 'thin', color: { argb: palette.divider } },
+          right: { style: 'thin', color: { argb: palette.divider } }
+        };
+      }
+
+      ds.getCell(rIdx, 2).value = t.id;
+      ds.getCell(rIdx, 4).value = t.name;
+      ds.getCell(rIdx, 12).value = cleanFmtDate(t.dueDate);
+      ds.getCell(rIdx, 15).value = t.status;
+      ds.getCell(rIdx, 18).value = `${t.progress || 0}%`;
+
+      [2, 4, 12, 15, 18].forEach(col => {
+        ds.getCell(rIdx, col).font = { name: 'Courier New', size: 8.5, color: { argb: palette.textDark } };
+        ds.getCell(rIdx, col).alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+      });
+      formatStatusCell(ds.getCell(rIdx, 15), t.status, palette);
+    });
+    curRow += msTasks.length + 2;
+  }
+
+  // Section 3: Team Directory & Resource Performance
+  if (state.members && state.members.length > 0) {
+    drawSectionTitle(curRow, 'Team Directory & Resource Performance');
+    curRow += 2;
+    ds.getRow(curRow).height = 18;
+    const teamHeaders = [
+      { c1: 2, c2: 5, label: 'Team Member' },
+      { c1: 6, c2: 9, label: 'Role' },
+      { c1: 10, c2: 11, label: 'Active Tasks' },
+      { c1: 12, c2: 13, label: 'Done' },
+      { c1: 14, c2: 15, label: 'Effort (Est)' },
+      { c1: 16, c2: 17, label: 'Effort (Act)' },
+      { c1: 18, c2: 19, label: 'Utilization%' }
+    ];
+    teamHeaders.forEach(h => {
+      if (h.c1 !== h.c2) ds.mergeCells(curRow, h.c1, curRow, h.c2);
+      const cell = ds.getCell(curRow, h.c1);
+      cell.value = `[${h.label.toUpperCase()}]`;
+      cell.font = { name: 'Courier New', size: 8, bold: true, color: { argb: palette.isDark ? 'FFFFFFFF' : palette.textDark } };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: palette.surfaceAlt } };
+      cell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+    });
+
+    state.members.slice(0, 20).forEach((m, i) => {
+      const mTasks = state.tasks.filter(t => t.assignee === m.name);
+      const mActive = mTasks.filter(t => t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED).length;
+      const mDone = mTasks.filter(t => t.status === TaskStatus.COMPLETED).length;
+      const mEst = mTasks.reduce((s, t) => s + (Number(t.estDays) || 0), 0);
+      const mAct = mTasks.reduce((s, t) => s + (Number(t.actDays) || 0), 0);
+      const capacity = (state.settings?.daysPerWeek || 5) * 4;
+      const utilization = capacity > 0 ? Math.round((mAct / capacity) * 100) : 0;
+      const rIdx = curRow + 1 + i;
+
+      ds.getRow(rIdx).height = 20;
+      const bg = i % 2 === 1 ? getThemeTint(palette.blue, 0.08, palette) : getThemeTint(palette.blue, 0.02, palette);
+      ds.mergeCells(rIdx, 2, rIdx, 5);
+      ds.mergeCells(rIdx, 6, rIdx, 9);
+      ds.mergeCells(rIdx, 10, rIdx, 11);
+      ds.mergeCells(rIdx, 12, rIdx, 13);
+      ds.mergeCells(rIdx, 14, rIdx, 15);
+      ds.mergeCells(rIdx, 16, rIdx, 17);
+      ds.mergeCells(rIdx, 18, rIdx, 19);
+
+      for (let c = 2; c <= 19; c++) {
+        ds.getCell(rIdx, c).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } };
+        ds.getCell(rIdx, c).border = {
+          top: { style: 'thin', color: { argb: palette.divider } },
+          bottom: { style: 'thin', color: { argb: palette.divider } },
+          left: { style: 'thin', color: { argb: palette.divider } },
+          right: { style: 'thin', color: { argb: palette.divider } }
+        };
+      }
+
+      ds.getCell(rIdx, 2).value = m.name;
+      ds.getCell(rIdx, 6).value = m.role || 'Engineer';
+      ds.getCell(rIdx, 10).value = mActive;
+      ds.getCell(rIdx, 12).value = mDone;
+      ds.getCell(rIdx, 14).value = mEst.toFixed(1);
+      ds.getCell(rIdx, 16).value = mAct.toFixed(1);
+      ds.getCell(rIdx, 18).value = `${utilization}%`;
+
+      [2, 6, 10, 12, 14, 16, 18].forEach(col => {
+        ds.getCell(rIdx, col).font = { name: 'Courier New', size: 8.5, color: { argb: palette.textDark } };
+        ds.getCell(rIdx, col).alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+      });
+    });
+    curRow += state.members.length + 2;
+  }
+
+  // Section 4: Module & Feature Delivery Intelligence
+  drawSectionTitle(curRow, 'Module & Feature Delivery Intelligence');
+  curRow += 2;
+  ds.getRow(curRow).height = 18;
+  const modFeatHeaders = [
+    { c1: 2, c2: 5, label: 'Module' },
+    { c1: 6, c2: 6, label: 'Tasks' },
+    { c1: 7, c2: 7, label: 'Done' },
+    { c1: 8, c2: 8, label: 'Overdue' },
+    { c1: 9, c2: 10, label: 'Avg Progress' },
+    { c1: 12, c2: 16, label: 'Feature Name' },
+    { c1: 17, c2: 17, label: 'Screens' },
+    { c1: 18, c2: 19, label: 'Feature Progress' }
+  ];
+  modFeatHeaders.forEach(h => {
+    if (h.c1 !== h.c2) ds.mergeCells(curRow, h.c1, curRow, h.c2);
+    const cell = ds.getCell(curRow, h.c1);
+    cell.value = `[${h.label.toUpperCase()}]`;
+    cell.font = { name: 'Courier New', size: 8, bold: true, color: { argb: palette.isDark ? 'FFFFFFFF' : palette.textDark } };
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: palette.surfaceAlt } };
+    cell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+  });
+
+  const feats = state.features || [];
+  const maxRows = Math.max(modSet.length, feats.length, 1);
+  for (let i = 0; i < maxRows; i++) {
+    const rIdx = curRow + 1 + i;
+    ds.getRow(rIdx).height = 20;
+    const bg = i % 2 === 1 ? getThemeTint(palette.blue, 0.08, palette) : getThemeTint(palette.blue, 0.02, palette);
+
+    ds.mergeCells(rIdx, 2, rIdx, 5);
+    ds.mergeCells(rIdx, 9, rIdx, 10);
+    ds.mergeCells(rIdx, 12, rIdx, 16);
+    ds.mergeCells(rIdx, 18, rIdx, 19);
+
+    for (let c = 2; c <= 19; c++) {
+      if (c === 11) continue;
+      ds.getCell(rIdx, c).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } };
+      ds.getCell(rIdx, c).border = {
+        top: { style: 'thin', color: { argb: palette.divider } },
+        bottom: { style: 'thin', color: { argb: palette.divider } },
+        left: { style: 'thin', color: { argb: palette.divider } },
+        right: { style: 'thin', color: { argb: palette.divider } }
+      };
+    }
+
+    if (i < modSet.length) {
+      const m = modSet[i];
+      const mt = state.tasks.filter(t => t.module === m);
+      const mDone = mt.filter(t => t.status === TaskStatus.COMPLETED).length;
+      const mOver = mt.filter(t => t.dueDate && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED && new Date(t.dueDate).getTime() < now).length;
+      const mAvg = mt.length ? Math.round(mt.reduce((s, t) => s + (Number(t.progress) || 0), 0) / mt.length) : 0;
+      ds.getCell(rIdx, 2).value = m;
+      ds.getCell(rIdx, 6).value = mt.length;
+      ds.getCell(rIdx, 7).value = mDone;
+      ds.getCell(rIdx, 8).value = mOver;
+      ds.getCell(rIdx, 9).value = `${mAvg}%`;
+    }
+
+    if (i < feats.length) {
+      const f = feats[i];
+      const scs = f.screens || [];
+      const fTasks = state.tasks.filter(t => (t.guiScreens || []).some(sc => scs.includes(sc)));
+      const fAvg = fTasks.length ? Math.round(fTasks.reduce((s, t) => s + (Number(t.progress) || 0), 0) / fTasks.length) : (f.status === 'Completed' ? 100 : 50);
+      ds.getCell(rIdx, 12).value = f.name;
+      ds.getCell(rIdx, 17).value = scs.length;
+      ds.getCell(rIdx, 18).value = `${fAvg}%`;
+    }
+
+    [2, 6, 7, 8, 9, 12, 17, 18].forEach(col => {
+      ds.getCell(rIdx, col).font = { name: 'Courier New', size: 8.5, color: { argb: palette.textDark } };
+      ds.getCell(rIdx, col).alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+    });
+  }
+  curRow += maxRows + 2;
+
+  // Section 5: Strategic RAID Intelligence
+  const activeRaids = (state.raids || []).filter(r => r.status === 'Open' || !r.status);
+  if (activeRaids.length) {
+    drawSectionTitle(curRow, 'Strategic RAID Threat Exposure Matrix');
+    curRow += 2;
+    ds.getRow(curRow).height = 18;
+    const raidHeaders = [
+      { c1: 2, c2: 2, label: 'ID' },
+      { c1: 3, c2: 3, label: 'Type' },
+      { c1: 4, c2: 13, label: 'Title & Mitigation Plan' },
+      { c1: 14, c2: 14, label: 'Impact' },
+      { c1: 15, c2: 15, label: 'Probability' },
+      { c1: 16, c2: 17, label: 'Owner' },
+      { c1: 18, c2: 19, label: 'Status' }
+    ];
+    raidHeaders.forEach(h => {
+      if (h.c1 !== h.c2) ds.mergeCells(curRow, h.c1, curRow, h.c2);
+      const cell = ds.getCell(curRow, h.c1);
+      cell.value = `[${h.label.toUpperCase()}]`;
+      cell.font = { name: 'Courier New', size: 8, bold: true, color: { argb: palette.isDark ? 'FFFFFFFF' : palette.textDark } };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: palette.surfaceAlt } };
+      cell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+    });
+
+    activeRaids.slice(0, 15).forEach((r, i) => {
+      const rIdx = curRow + 1 + i;
+      ds.getRow(rIdx).height = 20;
+      const bg = i % 2 === 1 ? getThemeTint(palette.blue, 0.08, palette) : getThemeTint(palette.blue, 0.02, palette);
+      ds.mergeCells(rIdx, 4, rIdx, 13);
+      ds.mergeCells(rIdx, 16, rIdx, 17);
+      ds.mergeCells(rIdx, 18, rIdx, 19);
+
+      for (let c = 2; c <= 19; c++) {
+        ds.getCell(rIdx, c).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } };
+        ds.getCell(rIdx, c).border = {
+          top: { style: 'thin', color: { argb: palette.divider } },
+          bottom: { style: 'thin', color: { argb: palette.divider } },
+          left: { style: 'thin', color: { argb: palette.divider } },
+          right: { style: 'thin', color: { argb: palette.divider } }
+        };
+      }
+
+      ds.getCell(rIdx, 2).value = r.id;
+      ds.getCell(rIdx, 3).value = r.type;
+      ds.getCell(rIdx, 4).value = `${r.title} ${r.mitigation ? `(Plan: ${r.mitigation})` : ''}`;
+      ds.getCell(rIdx, 14).value = r.impact || 'Medium';
+      ds.getCell(rIdx, 15).value = r.probability || 'Medium';
+      ds.getCell(rIdx, 16).value = r.owner || 'PMO';
+      ds.getCell(rIdx, 18).value = r.status || 'Open';
+
+      [2, 3, 4, 14, 15, 16, 18].forEach(col => {
+        ds.getCell(rIdx, col).font = { name: 'Courier New', size: 8.5, color: { argb: palette.textDark } };
+        ds.getCell(rIdx, col).alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+      });
+      formatPriorityCell(ds.getCell(rIdx, 14), r.impact || 'Medium', palette);
+    });
+    curRow += activeRaids.length + 2;
+  }
+
+  // Section 6: Open Defects Quality Triage
+  const openBugs = (state.defects || []).filter(d => d.status !== 'Closed' && d.status !== 'Fixed');
+  if (openBugs.length) {
+    drawSectionTitle(curRow, 'Quality Intelligence - Open Defects Log Snapshot');
+    curRow += 2;
+    ds.getRow(curRow).height = 18;
+    const defHeaders = [
+      { c1: 2, c2: 2, label: 'ID' },
+      { c1: 3, c2: 8, label: 'Title' },
+      { c1: 9, c2: 9, label: 'Type' },
+      { c1: 10, c2: 10, label: 'Severity' },
+      { c1: 11, c2: 11, label: 'Priority' },
+      { c1: 12, c2: 13, label: 'Assignee' },
+      { c1: 14, c2: 15, label: 'Reporter' },
+      { c1: 16, c2: 17, label: 'Created' },
+      { c1: 18, c2: 19, label: 'Status' }
+    ];
+    defHeaders.forEach(h => {
+      if (h.c1 !== h.c2) ds.mergeCells(curRow, h.c1, curRow, h.c2);
+      const cell = ds.getCell(curRow, h.c1);
+      cell.value = `[${h.label.toUpperCase()}]`;
+      cell.font = { name: 'Courier New', size: 8, bold: true, color: { argb: palette.isDark ? 'FFFFFFFF' : palette.textDark } };
+      cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: palette.surfaceAlt } };
+      cell.alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+    });
+
+    openBugs.slice(0, 15).forEach((d, i) => {
+      const rIdx = curRow + 1 + i;
+      ds.getRow(rIdx).height = 20;
+      const bg = i % 2 === 1 ? getThemeTint(palette.blue, 0.08, palette) : getThemeTint(palette.blue, 0.02, palette);
+      ds.mergeCells(rIdx, 3, rIdx, 8);
+      ds.mergeCells(rIdx, 12, rIdx, 13);
+      ds.mergeCells(rIdx, 14, rIdx, 15);
+      ds.mergeCells(rIdx, 16, rIdx, 17);
+      ds.mergeCells(rIdx, 18, rIdx, 19);
+
+      for (let c = 2; c <= 19; c++) {
+        ds.getCell(rIdx, c).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: bg } };
+        ds.getCell(rIdx, c).border = {
+          top: { style: 'thin', color: { argb: palette.divider } },
+          bottom: { style: 'thin', color: { argb: palette.divider } },
+          left: { style: 'thin', color: { argb: palette.divider } },
+          right: { style: 'thin', color: { argb: palette.divider } }
+        };
+      }
+
+      ds.getCell(rIdx, 2).value = d.id;
+      ds.getCell(rIdx, 3).value = d.title;
+      ds.getCell(rIdx, 9).value = d.type || 'Bug';
+      ds.getCell(rIdx, 10).value = d.severity;
+      ds.getCell(rIdx, 11).value = d.priority;
+      ds.getCell(rIdx, 12).value = d.assignee || 'Unassigned';
+      ds.getCell(rIdx, 14).value = d.reporter || 'QA';
+      ds.getCell(rIdx, 16).value = cleanFmtDate(d.createdAt);
+      ds.getCell(rIdx, 18).value = d.status;
+
+      [2, 3, 9, 10, 11, 12, 14, 16, 18].forEach(col => {
+        ds.getCell(rIdx, col).font = { name: 'Courier New', size: 8.5, color: { argb: palette.textDark } };
+        ds.getCell(rIdx, col).alignment = { vertical: 'middle', horizontal: 'left', indent: 1 };
+      });
+      formatPriorityCell(ds.getCell(rIdx, 10), d.severity, palette);
+      formatStatusCell(ds.getCell(rIdx, 18), d.status, palette);
+    });
+    curRow += openBugs.length + 2;
+  }
+
+  return ds;
+}
+
+// ─────────────────────────────────────────────────────────────
+// UNIFIED HIERARCHICAL TASKS & SUBTASKS SHEET
+// ─────────────────────────────────────────────────────────────
+export function buildUnifiedTasksSheet(
+  wb: ExcelJS.Workbook,
+  state: ProjectState,
+  palette: ExcelThemePalette
+): ExcelJS.Worksheet {
+  const ws = wb.addWorksheet('Tasks & Subtasks', {
+    views: [{ state: 'frozen', ySplit: 7, xSplit: 3 }]
+  });
+  ws.properties.tabColor = { argb: palette.indigo };
+  ws.properties.outlineProperties = {
+    summaryBelow: false
+  };
+
+  const cols = [
+    { header: '', key: '_spacer', width: 3 },
+    { header: 'ID', key: 'id', width: 15 },
+    { header: 'Task / Subtask Name', key: 'name', width: 45 },
+    { header: 'Type', key: 'type', width: 15 },
+    { header: 'Category', key: 'category', width: 20 },
+    { header: 'Module', key: 'module', width: 18 },
+    { header: 'Module Type', key: 'moduleType', width: 15 },
+    { header: 'Assignee', key: 'assignee', width: 22 },
+    { header: 'Status', key: 'status', width: 18 },
+    { header: 'Priority', key: 'priority', width: 15 },
+    { header: 'Progress', key: 'progress', width: 12 },
+    { header: 'Start Date', key: 'startDate', width: 15 },
+    { header: 'Due Date', key: 'dueDate', width: 15 },
+    { header: 'Actual Completion Date', key: 'actCompletionDate', width: 22 },
+    { header: 'Estimated Effort (d)', key: 'estEffort', width: 18 },
+    { header: 'Actual Effort (d)', key: 'actEffort', width: 15 },
+    { header: 'Complexity', key: 'complexity', width: 15 },
+    { header: 'Notes', key: 'notes', width: 40 }
+  ];
+
+  (state.customFields || []).forEach(f => {
+    cols.push({ header: f.name, key: f.name, width: 22 });
+  });
+  ws.columns = cols.map(c => ({ key: c.key, width: c.width }));
+
+  // Telemetry KPIs
+  const tasks = state.tasks || [];
+  const total = tasks.length;
+  const done = tasks.filter(t => t.status === TaskStatus.COMPLETED).length;
+  const progress = total ? Math.round((done / total) * 100) : 0;
+  const estEff = tasks.reduce((sum, t) => sum + (Number(t.estDays) || 0), 0);
+  const actEff = tasks.reduce((sum, t) => sum + (Number(t.actDays) || 0), 0);
+  const now = Date.now();
+  const overdue = tasks.filter(t => t.dueDate && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED && new Date(t.dueDate).getTime() < now).length;
+  const blocked = tasks.filter(t => t.status === TaskStatus.BLOCKED).length;
+
+  ws.getRow(1).height = 10;
+  ws.mergeCells('B2:R2');
+  ws.getRow(2).height = 24;
+  const titleCell = ws.getCell('B2');
+  titleCell.value = {
+    richText: [
+      { text: ' >> COCKPIT TELEMETRY  |  ', font: { name: 'Courier New', size: 11, bold: true, color: { argb: 'FFFFFFFF' } } },
+      { text: `HIERARCHICAL TASK & SUBTASK DELIVERY MATRIX  —  ${S(state.name || 'Project').toUpperCase()}`, font: { name: 'Courier New', size: 10, bold: true, color: { argb: 'FFE0E7FF' } } }
+    ]
+  };
+  titleCell.alignment = { vertical: 'middle', indent: 1 };
+
+  const bannerGradFill = {
+    type: 'gradient' as const,
+    gradient: 'angle' as const,
+    degree: 90,
+    stops: [
+      { position: 0, color: { argb: palette.indigo || 'FF4F46E5' } },
+      { position: 1, color: { argb: 'FF3730A3' } }
+    ]
+  };
+
+  for (let c = 2; c <= 18; c++) {
+    const cell = ws.getCell(2, c);
+    cell.fill = bannerGradFill;
+    cell.border = { bottom: { style: 'medium', color: { argb: palette.navy } } };
+  }
+
+  drawTopKpiCard(ws, 2, 3, 4, 3, 'Delivery Progress', `${done} / ${total}`, `${progress}% complete`, palette.indigo || 'FF6366F1', { isDark: palette.isDark });
+  drawTopKpiCard(ws, 6, 3, 4, 3, 'Effort Telemetry', `${estEff.toFixed(1)} / ${actEff.toFixed(1)} d`, 'Estimated vs Actual', palette.blue || 'FF3B82F6', { isDark: palette.isDark });
+  drawTopKpiCard(ws, 10, 3, 4, 3, 'Overdue Items', `${overdue}`, overdue > 0 ? '⚠ Attention Required' : '✔ On Schedule', overdue > 0 ? palette.rose : palette.emerald, { isDark: palette.isDark });
+  drawTopKpiCard(ws, 14, 3, 5, 3, 'Blocked Scope', `${blocked}`, blocked > 0 ? '⚠ Blocked' : '✔ Clear', blocked > 0 ? palette.rose : palette.emerald, { isDark: palette.isDark });
+
+  ws.getRow(6).height = 12;
+
+  // Header Row 7
+  const headerRow = ws.getRow(7);
+  headerRow.height = 28;
+  cols.forEach((col, colIdx) => {
+    if (colIdx === 0) return;
+    const cell = headerRow.getCell(colIdx + 1);
+    cell.value = S(col.header);
+    cell.font = { name: 'Segoe UI', size: 9.5, bold: true, color: { argb: 'FFFFFFFF' } };
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: palette.indigo } };
+    cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+    cell.border = {
+      bottom: { style: 'medium', color: { argb: palette.navy } },
+      right: { style: 'thin', color: { argb: palette.divider } }
+    };
+  });
+
+  let totalRowsAdded = 7;
+  (wb as any)._taskRowMap = (wb as any)._taskRowMap || {};
+
+  tasks.forEach(t => {
+    const taskRowVals: Record<string, any> = {
+      _spacer: '',
+      id: S(t.id),
+      name: '▶  ' + S(t.name),
+      type: 'Task',
+      category: S(t.category),
+      module: S(t.module),
+      moduleType: S(t.moduleType),
+      assignee: S(t.assignee),
+      status: S(t.status),
+      priority: S(t.priority),
+      progress: (t.progress || 0) / 100,
+      startDate: cleanFmtDate(t.startDate),
+      dueDate: cleanFmtDate(t.dueDate),
+      actCompletionDate: cleanFmtDate(t.actCompletionDate),
+      estEffort: t.estDays || 0,
+      actEffort: t.actDays || 0,
+      complexity: S(t.complexity || 'Medium'),
+      notes: S(t.notes)
+    };
+    (state.customFields || []).forEach(f => { taskRowVals[f.name] = S(t[f.name]); });
+
+    const row = ws.addRow(taskRowVals);
+    totalRowsAdded++;
+    (wb as any)._taskRowMap[t.id] = totalRowsAdded;
+    styleUnifiedRow(row, 0, S(t.status), S(t.priority), palette, cols.length);
+    row.outlineLevel = 0;
+
+    (t.subtasks || []).forEach(s => {
+      const subRowVals: Record<string, any> = {
+        _spacer: '',
+        id: S(s.id),
+        name: '    ◦ ' + S(s.name),
+        type: S(s.type) === 'screen' ? 'Screen' : 'Subtask',
+        category: '',
+        module: S(t.module),
+        moduleType: '',
+        assignee: S(t.assignee),
+        status: S(s.status || (s.done ? TaskStatus.COMPLETED : TaskStatus.NOT_STARTED)),
+        priority: '',
+        progress: s.progress !== undefined ? (s.progress > 1 ? s.progress / 100 : s.progress) : (s.done ? 1.0 : 0.0),
+        startDate: cleanFmtDate(s.startDate),
+        dueDate: cleanFmtDate(s.dueDate),
+        actCompletionDate: cleanFmtDate(s.actCompletionDate),
+        estEffort: s.effort || 0,
+        actEffort: s.actDays || 0,
+        complexity: '',
+        notes: ''
+      };
+      (state.customFields || []).forEach(f => { subRowVals[f.name] = ''; });
+
+      const sRow = ws.addRow(subRowVals);
+      totalRowsAdded++;
+      (wb as any)._taskRowMap[s.id] = totalRowsAdded;
+      styleUnifiedRow(sRow, 1, S(s.status || (s.done ? TaskStatus.COMPLETED : TaskStatus.NOT_STARTED)), '', palette, cols.length);
+      sRow.outlineLevel = 1;
+      sRow.hidden = true;
+    });
+
+    if ((!t.subtasks || t.subtasks.length === 0) && t.guiScreens && t.guiScreens.length > 0) {
+      t.guiScreens.forEach((sc, scIdx) => {
+        const scName = typeof sc === 'string' ? sc : ((sc as any).name || `Screen ${scIdx + 1}`);
+        const scRowVals: Record<string, any> = {
+          _spacer: '',
+          id: `${t.id}.SC${scIdx + 1}`,
+          name: '    ◦ ' + scName,
+          type: 'GUI Screen',
+          category: '',
+          module: S(t.module),
+          moduleType: 'GUI',
+          assignee: S(t.assignee),
+          status: S(t.status),
+          priority: '',
+          progress: (t.progress || 0) / 100,
+          startDate: '',
+          dueDate: '',
+          actCompletionDate: '',
+          estEffort: 0,
+          actEffort: 0,
+          complexity: '',
+          notes: ''
+        };
+        (state.customFields || []).forEach(f => { scRowVals[f.name] = ''; });
+
+        const scRow = ws.addRow(scRowVals);
+        totalRowsAdded++;
+        (wb as any)._taskRowMap[`${t.id}.SC${scIdx + 1}`] = totalRowsAdded;
+        (wb as any)._taskRowMap[scName] = totalRowsAdded;
+        styleUnifiedRow(scRow, 1, S(t.status), '', palette, cols.length);
+        scRow.outlineLevel = 1;
+        scRow.hidden = true;
+      });
+    }
+  });
+
+  return ws;
+}
+
+// ─────────────────────────────────────────────────────────────
+// UNIFIED FEATURE ROLLOUTS SHEET
+// ─────────────────────────────────────────────────────────────
+export function buildFeatureRolloutsSheet(
+  wb: ExcelJS.Workbook,
+  state: ProjectState,
+  palette: ExcelThemePalette
+): ExcelJS.Worksheet {
+  const ws = wb.addWorksheet('Feature Rollouts', {
+    views: [{ state: 'frozen', ySplit: 7, xSplit: 3 }]
+  });
+  ws.properties.tabColor = { argb: palette.indigo || 'FF6366F1' };
+  ws.properties.outlineProperties = {
+    summaryBelow: false
+  };
+
+  const cols = [
+    { header: '', key: '_spacer', width: 3 },
+    { header: 'ID / Release', key: 'id', width: 18 },
+    { header: 'Feature / Screen Name', key: 'name', width: 45 },
+    { header: 'Type', key: 'type', width: 15 },
+    { header: 'Feature Category', key: 'featureCategory', width: 20 },
+    { header: 'Planned Release Date', key: 'plannedReleaseDate', width: 22 },
+    { header: 'Module', key: 'module', width: 18 },
+    { header: 'Assignee', key: 'assignee', width: 25 },
+    { header: 'Status', key: 'status', width: 18 },
+    { header: 'Progress', key: 'progress', width: 12 },
+    { header: 'Task Link', key: 'link', width: 16 }
+  ];
+  ws.columns = cols.map(c => ({ key: c.key, width: c.width }));
+
+  const releaseGroups: Record<string, Feature[]> = {};
+  (state.features || []).forEach(feat => {
+    const rel = feat.release ? S(feat.release).trim() : 'Future Release';
+    if (!releaseGroups[rel]) releaseGroups[rel] = [];
+    releaseGroups[rel].push(feat);
+  });
+
+  const sortedReleases = Object.keys(releaseGroups).sort((a, b) => {
+    if (a === 'Future Release') return 1;
+    if (b === 'Future Release') return -1;
+    return a.localeCompare(b);
+  });
+
+  const totalFeats = state.features || [];
+  const releaseCount = sortedReleases.length;
+  const screenCount = totalFeats.reduce((sum, f) => sum + (f.screens || []).length, 0);
+  const backlogCount = (releaseGroups['Future Release'] || []).length;
+
+  ws.getRow(1).height = 10;
+  ws.mergeCells('B2:K2');
+  ws.getRow(2).height = 24;
+  const titleCell = ws.getCell('B2');
+  titleCell.value = {
+    richText: [
+      { text: ' >> COCKPIT TELEMETRY  |  ', font: { name: 'Courier New', size: 11, bold: true, color: { argb: 'FFFFFFFF' } } },
+      { text: `FEATURE ROLLOUT MATRIX & SCREEN DELIVERY  —  ${S(state.name || 'Project').toUpperCase()}`, font: { name: 'Courier New', size: 10, bold: true, color: { argb: 'FFE0E7FF' } } }
+    ]
+  };
+  titleCell.alignment = { vertical: 'middle', indent: 1 };
+
+  const bannerGradFill = {
+    type: 'gradient' as const,
+    gradient: 'angle' as const,
+    degree: 90,
+    stops: [
+      { position: 0, color: { argb: palette.indigo || 'FF4F46E5' } },
+      { position: 1, color: { argb: 'FF3730A3' } }
+    ]
+  };
+  for (let c = 2; c <= 11; c++) {
+    const cell = ws.getCell(2, c);
+    cell.fill = bannerGradFill;
+    cell.border = { bottom: { style: 'medium', color: { argb: palette.navy } } };
+  }
+
+  drawTopKpiCard(ws, 2, 3, 3, 3, 'Releases Mapped', `${releaseCount}`, `${backlogCount} in backlog`, palette.indigo || 'FF6366F1', { isDark: palette.isDark });
+  drawTopKpiCard(ws, 5, 3, 3, 3, 'Total Features', `${totalFeats.length}`, 'Feature nodes', palette.blue || 'FF3B82F6', { isDark: palette.isDark });
+  drawTopKpiCard(ws, 8, 3, 4, 3, 'Rollout Density', `${screenCount} screens`, 'GUI layout coverage', palette.emerald || 'FF10B981', { isDark: palette.isDark });
+
+  ws.getRow(6).height = 12;
+
+  const headerRow = ws.getRow(7);
+  headerRow.height = 28;
+  cols.forEach((col, colIdx) => {
+    if (colIdx === 0) return;
+    const cell = headerRow.getCell(colIdx + 1);
+    cell.value = col.header;
+    cell.font = { name: 'Segoe UI', size: 9.5, bold: true, color: { argb: 'FFFFFFFF' } };
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: palette.indigo } };
+    cell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+    cell.border = {
+      bottom: { style: 'medium', color: { argb: palette.navy } },
+      right: { style: 'thin', color: { argb: palette.divider } }
+    };
+  });
+
+  const tasks = state.tasks || [];
+  function resolveScreen(scName: string) {
+    const subMatches: any[] = [];
+    tasks.forEach(t => {
+      (t.subtasks || []).forEach(st => {
+        if (st.name === scName) {
+          subMatches.push({
+            id: st.id,
+            progress: st.progress !== undefined ? st.progress : (st.status === TaskStatus.COMPLETED || st.done ? 100 : 0),
+            status: st.status || (st.done ? TaskStatus.COMPLETED : TaskStatus.NOT_STARTED),
+            assignee: t.assignee || 'Unassigned',
+            module: t.module || '-'
+          });
+        }
+      });
+    });
+
+    if (subMatches.length > 0) {
+      const avgProg = Math.round(subMatches.reduce((sum, sm) => sum + sm.progress, 0) / subMatches.length);
+      let finalStatus = TaskStatus.NOT_STARTED;
+      if (subMatches.every(sm => sm.status === TaskStatus.COMPLETED)) finalStatus = TaskStatus.COMPLETED;
+      else if (subMatches.some(sm => sm.status === TaskStatus.BLOCKED)) finalStatus = TaskStatus.BLOCKED;
+      else if (subMatches.some(sm => sm.status === TaskStatus.IN_PROGRESS || sm.status === TaskStatus.UNDER_REVIEW)) finalStatus = TaskStatus.IN_PROGRESS;
+      else finalStatus = subMatches[0].status;
+
+      return {
+        progress: avgProg / 100,
+        status: finalStatus,
+        assignee: [...new Set(subMatches.map(sm => sm.assignee).filter(Boolean))].join(', ') || '-',
+        module: subMatches[0].module,
+        matchId: subMatches[0].id
+      };
+    }
+
+    const taskMatches = tasks.filter(t => (t.guiScreens || []).includes(scName));
+    if (taskMatches.length > 0) {
+      const avgProg = Math.round(taskMatches.reduce((sum, tm) => sum + (tm.progress || 0), 0) / taskMatches.length);
+      let finalStatus = TaskStatus.NOT_STARTED;
+      if (taskMatches.every(tm => tm.status === TaskStatus.COMPLETED)) finalStatus = TaskStatus.COMPLETED;
+      else if (taskMatches.some(tm => tm.status === TaskStatus.BLOCKED)) finalStatus = TaskStatus.BLOCKED;
+      else if (taskMatches.some(tm => tm.status === TaskStatus.IN_PROGRESS || tm.status === TaskStatus.UNDER_REVIEW)) finalStatus = TaskStatus.IN_PROGRESS;
+      else finalStatus = taskMatches[0].status;
+
+      return {
+        progress: avgProg / 100,
+        status: finalStatus,
+        assignee: [...new Set(taskMatches.map(tm => tm.assignee).filter(Boolean))].join(', ') || '-',
+        module: taskMatches[0].module || '-',
+        matchId: taskMatches[0].id
+      };
+    }
+
+    return { progress: 0, status: TaskStatus.NOT_STARTED, assignee: '-', module: '-', matchId: null };
+  }
+
+  sortedReleases.forEach(relName => {
+    const featsInRel = releaseGroups[relName];
+    let relTotalProgress = 0;
+    let relFeatsCount = 0;
+
+    featsInRel.forEach(feat => {
+      const scNames = feat.screens || [];
+      let featTotalProgress = 0;
+      let featScreensCount = 0;
+      scNames.forEach(scName => {
+        const scInfo = resolveScreen(scName);
+        featTotalProgress += scInfo.progress;
+        featScreensCount++;
+      });
+      if (featScreensCount > 0) {
+        relTotalProgress += featTotalProgress / featScreensCount;
+        relFeatsCount++;
+      }
+    });
+
+    const relAvgProgress = relFeatsCount > 0 ? (relTotalProgress / relFeatsCount) : 0;
+    const relObj = (state.releases || []).find(r => r.name === relName);
+    const relRow = ws.addRow({
+      _spacer: '',
+      id: S(relName),
+      name: `🚀  Release: ${S(relName)}`,
+      type: 'Release',
+      featureCategory: '',
+      plannedReleaseDate: relObj ? cleanFmtDate(relObj.date) : '',
+      module: '',
+      assignee: '',
+      status: relAvgProgress >= 1 ? 'Completed' : relAvgProgress > 0 ? 'In Progress' : 'Planned',
+      progress: relAvgProgress
+    });
+    styleFeatureRolloutRow(relRow, 0, relAvgProgress >= 1 ? 'Completed' : 'In Progress', palette, cols.length);
+    relRow.outlineLevel = 0;
+
+    featsInRel.forEach(feat => {
+      const scNames = feat.screens || [];
+      let featTotalProgress = 0;
+      let featScreensCount = 0;
+      const featAssignees = new Set<string>();
+
+      const resolvedScreensList = scNames.map(scName => {
+        const scInfo = resolveScreen(scName);
+        featTotalProgress += scInfo.progress;
+        featScreensCount++;
+        if (scInfo.assignee && scInfo.assignee !== '-') {
+          scInfo.assignee.split(', ').forEach(a => featAssignees.add(a));
+        }
+        return { name: scName, info: scInfo };
+      });
+
+      const featAvgProgress = featScreensCount > 0 ? (featTotalProgress / featScreensCount) : 0;
+      const featRelObj = feat.release ? (state.releases || []).find(r => r.name === feat.release) : null;
+      const featStatus = featAvgProgress >= 1 ? 'Completed' : featAvgProgress > 0 ? 'In Progress' : 'Not Started';
+
+      const featRow = ws.addRow({
+        _spacer: '',
+        id: '',
+        name: '    ◆  ' + S(feat.name),
+        type: 'Feature',
+        featureCategory: S(feat.category || ''),
+        plannedReleaseDate: featRelObj ? cleanFmtDate(featRelObj.date) : '',
+        module: '',
+        assignee: S(Array.from(featAssignees).join(', ') || '-'),
+        status: featStatus,
+        progress: featAvgProgress
+      });
+      styleFeatureRolloutRow(featRow, 1, featStatus, palette, cols.length);
+      featRow.outlineLevel = 1;
+      featRow.hidden = true;
+
+      resolvedScreensList.forEach(sc => {
+        const scInfo = sc.info;
+        const targetRowMap = (wb as any)._taskRowMap || {};
+        const screenRowIdx = scInfo.matchId ? targetRowMap[scInfo.matchId] : undefined;
+
+        const scRow = ws.addRow({
+          _spacer: '',
+          id: '',
+          name: '        ▸  ' + S(sc.name),
+          type: 'GUI Screen',
+          featureCategory: S(feat.category || ''),
+          plannedReleaseDate: '',
+          module: S(scInfo.module),
+          assignee: S(scInfo.assignee),
+          status: S(scInfo.status),
+          progress: scInfo.progress,
+          link: screenRowIdx ? { text: S(scInfo.matchId), hyperlink: `#'Tasks & Subtasks'!C${screenRowIdx}` } : ''
+        });
+        styleFeatureRolloutRow(scRow, 2, S(scInfo.status), palette, cols.length);
+        scRow.outlineLevel = 2;
+        scRow.hidden = true;
+
+        if (screenRowIdx) {
+          const linkCell = scRow.getCell('link');
+          linkCell.font = { name: 'Segoe UI', size: 9.5, underline: 'single', color: { argb: palette.isDark ? 'FF60A5FA' : 'FF1E40AF' } };
+          linkCell.alignment = { horizontal: 'center', vertical: 'middle' };
+        }
+      });
+    });
+  });
+
+  return ws;
+}
+
+// ─────────────────────────────────────────────────────────────
+// COMPLETE 5-SHEET FEATURE MATRIX WORKBOOK
+// ─────────────────────────────────────────────────────────────
+export function buildFeatureMatrixWorkbook(
+  state: ProjectState,
+  palette?: ExcelThemePalette
+): ExcelJS.Workbook {
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'ProjectPulse 2.0';
+  wb.lastModifiedBy = 'ProjectPulse 2.0';
+  wb.created = new Date();
+  wb.modified = new Date();
+
+  const pal = palette || getThemePalette();
+
+  // 1. Unified Feature Rollouts
+  buildFeatureRolloutsSheet(wb, state, pal);
+
+  // 2. Release Plan
+  const wsRel = wb.addWorksheet('Release Plan', { views: [{ state: 'frozen', ySplit: 7 }] });
+  wsRel.properties.tabColor = { argb: pal.emerald };
+  const relCols = [
+    { header: 'Release Version', key: 'name', width: 22 },
+    { header: 'Target Date', key: 'date', width: 16 },
+    { header: 'Feature Count', key: 'featCount', width: 16 },
+    { header: 'Screen Count', key: 'screenCount', width: 16 },
+    { header: 'Avg Completion', key: 'progress', width: 18 },
+    { header: 'Release Status', key: 'status', width: 18 }
+  ];
+  wsRel.columns = relCols;
+  wsRel.getRow(1).height = 10;
+  wsRel.mergeCells('A2:F2');
+  wsRel.getRow(2).height = 22;
+  wsRel.getCell('A2').value = ' >> COCKPIT TELEMETRY | ENTERPRISE RELEASE SCHEDULE';
+  wsRel.getCell('A2').font = { name: 'Courier New', size: 10, bold: true, color: { argb: pal.emerald } };
+  wsRel.getCell('A2').alignment = { vertical: 'middle', indent: 1 };
+
+  drawTopKpiCard(wsRel, 1, 3, 3, 3, 'Milestones', `${(state.releases || []).length} Releases`, 'Target plan', pal.emerald, { isDark: pal.isDark });
+  drawTopKpiCard(wsRel, 4, 3, 3, 3, 'Functional Coverage', `${(state.features || []).length} Features`, 'Total scope', pal.indigo, { isDark: pal.isDark });
+
+  wsRel.getRow(6).height = 10;
+  const relHdr = wsRel.getRow(7);
+  relHdr.height = 28;
+  relCols.forEach((col, idx) => {
+    const cell = relHdr.getCell(idx + 1);
+    cell.value = col.header;
+    styleHeaderCell(cell, pal.emerald);
+  });
+
+  (state.releases || []).forEach((r, idx) => {
+    const featsInRel = (state.features || []).filter(f => f.release === r.name);
+    const screenCount = featsInRel.reduce((sum, f) => sum + (f.screens || []).length, 0);
+    const row = wsRel.addRow({
+      name: r.name,
+      date: cleanFmtDate(r.date),
+      featCount: featsInRel.length,
+      screenCount,
+      progress: 0.85,
+      status: 'Active'
+    });
+    row.height = 20;
+    styleZebraRow(row, idx, pal, relCols.length);
+    formatProgressGradient(row.getCell('progress'), 0.85, pal);
+  });
+
+  // 3. Feature Details
+  const wsFeat = wb.addWorksheet('Feature Details', { views: [{ state: 'frozen', ySplit: 1 }] });
+  wsFeat.properties.tabColor = { argb: pal.blue };
+  const featCols = [
+    { header: 'Feature Name', key: 'name', width: 32 },
+    { header: 'Category / Domain', key: 'category', width: 22 },
+    { header: 'Target Release', key: 'release', width: 16 },
+    { header: 'Description', key: 'desc', width: 40 },
+    { header: 'Screens Count', key: 'screensCount', width: 14 },
+    { header: 'Screens List', key: 'screensList', width: 35 },
+    { header: 'Status', key: 'status', width: 16 }
+  ];
+  wsFeat.columns = featCols;
+  for (let c = 1; c <= featCols.length; c++) styleHeaderCell(wsFeat.getRow(1).getCell(c), pal.blue);
+
+  (state.features || []).forEach((f, idx) => {
+    const row = wsFeat.addRow({
+      name: f.name,
+      category: f.category || 'Strategic',
+      release: f.release || 'v1.0.0',
+      desc: f.desc || '',
+      screensCount: (f.screens || []).length,
+      screensList: (f.screens || []).join(', '),
+      status: f.status || 'Active'
+    });
+    row.height = 20;
+    styleZebraRow(row, idx, pal, featCols.length);
+    formatStatusCell(row.getCell('status'), f.status || 'In Progress', pal);
+  });
+
+  // 4. Traceability Matrix
+  const wsTrace = wb.addWorksheet('Traceability Matrix', { views: [{ state: 'frozen', ySplit: 1 }] });
+  wsTrace.properties.tabColor = { argb: pal.purple };
+  const traceCols = [
+    { header: 'Feature Name', key: 'featName', width: 32 },
+    { header: 'Domain', key: 'category', width: 20 },
+    { header: 'Screen Name', key: 'screen', width: 28 },
+    { header: 'Linked Task ID', key: 'taskId', width: 16 },
+    { header: 'Task Name', key: 'taskName', width: 35 },
+    { header: 'Assignee', key: 'assignee', width: 20 },
+    { header: 'Task Status', key: 'status', width: 16 }
+  ];
+  wsTrace.columns = traceCols;
+  for (let c = 1; c <= traceCols.length; c++) styleHeaderCell(wsTrace.getRow(1).getCell(c), pal.purple);
+
+  let traceRowIdx = 0;
+  (state.features || []).forEach(f => {
+    (f.screens || []).forEach(sc => {
+      const parentTask = state.tasks.find(t => (t.guiScreens || []).includes(sc) || (t.subtasks || []).some(st => st.name === sc));
+      const row = wsTrace.addRow({
+        featName: f.name,
+        category: f.category || 'General',
+        screen: sc,
+        taskId: parentTask?.id || '-',
+        taskName: parentTask?.name || 'Unassigned Task',
+        assignee: parentTask?.assignee || '-',
+        status: parentTask?.status || 'Not Started'
+      });
+      row.height = 20;
+      styleZebraRow(row, traceRowIdx++, traceCols.length);
+      if (parentTask) formatStatusCell(row.getCell('status'), parentTask.status, pal);
+    });
+  });
+
+  // 5. Executive Overview & SmartArt
+  const wsOverview = wb.addWorksheet('Executive Overview & SmartArt', { views: [{ showGridLines: false }] });
+  wsOverview.properties.tabColor = { argb: pal.navy };
+  wsOverview.columns = [{ width: 3 }, { width: 25 }, { width: 18 }, { width: 18 }, { width: 18 }, { width: 18 }];
+
+  wsOverview.mergeCells('B2:F3');
+  const ovTitle = wsOverview.getCell('B2');
+  ovTitle.value = `PROJECTPULSE ✦ FEATURE ARCHITECTURE & ROADMAP — ${S(state.name || 'Workspace').toUpperCase()}`;
+  ovTitle.font = { name: 'Segoe UI', size: 12, bold: true, color: { argb: 'FFFFFFFF' } };
+  ovTitle.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: pal.indigo } };
+  ovTitle.alignment = { vertical: 'middle', horizontal: 'center' };
+
+  drawTopKpiCard(wsOverview, 2, 5, 2, 3, 'Feature Portfolio', `${(state.features || []).length} Features`, 'Total Architecture', pal.indigo, { isDark: pal.isDark });
+  drawTopKpiCard(wsOverview, 4, 5, 2, 3, 'Target Milestones', `${(state.releases || []).length} Releases`, 'Target Delivery', pal.emerald, { isDark: pal.isDark });
+
+  return wb;
+}
+
+export async function exportFeatureMatrixExcel(state: ProjectState): Promise<string> {
+  const wb = buildFeatureMatrixWorkbook(state);
+  const buf = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  const filename = `ProjectPulse_FeatureMatrix_${(state.name || 'Project').replace(/[\/*?:"<>|\s]/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
+
+  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  return filename;
+}
+
+
+// ============================================================================
+// 2. MASTER EXCEL WORKBOOK EXPORTER (High-End HTML Parity)
+// ============================================================================
+
+export const exportProjectExcel = async (state: ProjectState): Promise<string> => {
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'ProjectPulse 2.0';
+  wb.lastModifiedBy = 'ProjectPulse 2.0';
+  wb.created = new Date();
+  wb.modified = new Date();
+
+  const palette = getThemePalette();
+
+  const totalTasks = state.tasks.length;
+  const doneTasks = state.tasks.filter(t => t.status === TaskStatus.COMPLETED).length;
+  const taskPct = totalTasks ? Math.round((doneTasks / totalTasks) * 100) : 0;
+  const totalDels = (state.deliveries || []).length;
+  const deployedDels = (state.deliveries || []).filter(d => d.status === 'Deployed').length;
+  const delPct = totalDels ? Math.round((deployedDels / totalDels) * 100) : 0;
+  const totalDefects = (state.defects || []).length;
+  const activeDefects = (state.defects || []).filter(d => d.status !== 'Closed' && d.status !== 'Fixed').length;
+  const critDefects = (state.defects || []).filter(d => d.severity?.includes('Blocker') || d.severity?.includes('S1')).length;
+  const totalRaids = (state.raids || []).length;
+  const critRaids = (state.raids || []).filter(r => r.impact === 'Critical' || r.impact === 'High').length;
+  const totalMembers = (state.members || []).length;
+  const activeDecisions = (state.decisions || []).filter(d => d.status === 'Approved').length;
+
   // ─────────────────────────────────────────────────────────────
-  // SHEET 2: TASKS MATRIX (With Cockpit Telemetry Banner & Formulas)
+  // SHEET 1: EXECUTIVE DASHBOARD (Full Cockpit & Governance)
+  // ─────────────────────────────────────────────────────────────
+  buildExecutiveDashboardSheet(wb, state, palette);
+
+  // ─────────────────────────────────────────────────────────────
+  // SHEET 2: UNIFIED TASKS & SUBTASKS (Hierarchical Outlines)
+  // ─────────────────────────────────────────────────────────────
+  buildUnifiedTasksSheet(wb, state, palette);
+
+  // ─────────────────────────────────────────────────────────────
+  // SHEET 3: UNIFIED FEATURE ROLLOUTS (Release Milestones & Links)
+  // ─────────────────────────────────────────────────────────────
+  buildFeatureRolloutsSheet(wb, state, palette);
+
+  // ─────────────────────────────────────────────────────────────
+  // SHEET 4: TASKS MATRIX (With Cockpit Telemetry Banner & Formulas)
   // ─────────────────────────────────────────────────────────────
   const ts = wb.addWorksheet('Tasks', {
     views: [{ state: 'frozen', ySplit: 7, xSplit: 3 }]

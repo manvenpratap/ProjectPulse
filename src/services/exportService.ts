@@ -8,7 +8,10 @@ import {
   formatStatusCell,
   formatPriorityCell,
   parseExcelDate,
-  styleHeaderCell
+  styleHeaderCell,
+  buildUnifiedTasksSheet,
+  buildFeatureRolloutsSheet,
+  buildFeatureMatrixWorkbook
 } from './excelService';
 import { getHealthScore } from '../utils/projectUtils';
 
@@ -106,6 +109,10 @@ export const exportViewToExcel = async (state: ProjectState, viewId: string): Pr
 
   switch (viewId) {
     case 'tasks': {
+      // 1. Unified Hierarchical Tasks & Subtasks Outline (Collapsible Outlines & Telemetry)
+      buildUnifiedTasksSheet(wb, state, palette);
+
+      // 2. Relational Flat Tasks Matrix
       const ws = wb.addWorksheet('Tasks Matrix', {
         views: [{ state: 'frozen', ySplit: 7, xSplit: 3 }]
       });
@@ -188,6 +195,38 @@ export const exportViewToExcel = async (state: ProjectState, viewId: string): Pr
         row.getCell('progress').numFmt = '0%';
         formatStatusCell(row.getCell('status'), t.status, palette);
         formatPriorityCell(row.getCell('priority'), t.priority, palette);
+      });
+
+      // 3. Flat Subtasks Matrix
+      const subs = wb.addWorksheet('Subtasks', { views: [{ state: 'frozen', ySplit: 1 }] });
+      subs.properties.tabColor = { argb: palette.blue };
+      const subCols = [
+        { header: 'Subtask ID', key: 'id', width: 15 },
+        { header: 'Parent Task ID', key: 'parentId', width: 16 },
+        { header: 'Subtask Name', key: 'name', width: 38 },
+        { header: 'Type', key: 'type', width: 14 },
+        { header: 'Status', key: 'status', width: 16 },
+        { header: 'Progress', key: 'progress', width: 12 },
+        { header: 'Effort (Days)', key: 'effort', width: 14 }
+      ];
+      subs.columns = subCols;
+      for (let c = 1; c <= subCols.length; c++) styleHeaderCell(subs.getRow(1).getCell(c), palette.blue);
+      let subRowIdx = 0;
+      state.tasks.forEach(t => {
+        (t.subtasks || []).forEach(s => {
+          const row = subs.addRow({
+            id: s.id,
+            parentId: t.id,
+            name: s.name,
+            type: s.type || 'Subtask',
+            status: s.status || (s.done ? 'Completed' : 'Not Started'),
+            progress: (s.progress !== undefined ? s.progress : (s.done ? 100 : 0)) / 100,
+            effort: s.effort || 0
+          });
+          row.height = 20;
+          styleZebraRow(row, subRowIdx++, palette, subCols.length);
+          formatStatusCell(row.getCell('status'), s.status || (s.done ? 'Completed' : 'Not Started'), palette);
+        });
       });
       break;
     }
@@ -345,38 +384,11 @@ export const exportViewToExcel = async (state: ProjectState, viewId: string): Pr
     }
 
     case 'features': {
-      const ws = wb.addWorksheet('Functional Matrix', {
-        views: [{ state: 'frozen', ySplit: 1 }]
-      });
-      ws.properties.tabColor = { argb: palette.teal };
-      const featCols = [
-        { header: 'Feature ID', key: 'id', width: 14 },
-        { header: 'Feature Name', key: 'name', width: 36 },
-        { header: 'Description', key: 'desc', width: 44 },
-        { header: 'Category', key: 'category', width: 20 },
-        { header: 'Release Version', key: 'release', width: 18 },
-        { header: 'Priority', key: 'priority', width: 14 },
-        { header: 'Linked Screens', key: 'screens', width: 28 },
-        { header: 'Linked Tasks', key: 'tasks', width: 28 }
-      ];
-      ws.columns = featCols.map(c => ({ key: c.key, width: c.width }));
-      for (let c = 1; c <= featCols.length; c++) styleHeaderCell(ws.getRow(1).getCell(c), palette.teal);
-
-      (state.features || []).forEach((f, i) => {
-        const row = ws.addRow({
-          id: f.id,
-          name: f.name,
-          desc: f.desc || '',
-          category: f.category || 'Strategic',
-          release: f.release || 'v1.0.0',
-          priority: f.priority || 'Medium',
-          screens: (f.screens || []).join(', '),
-          tasks: (f.tasks || []).join(', ')
-        });
-        row.height = 20;
-        styleZebraRow(row, i, palette, featCols.length);
-      });
-      break;
+      const featWb = buildFeatureMatrixWorkbook(state, palette);
+      const buf = await featWb.xlsx.writeBuffer();
+      const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      saveBlob(blob, filename);
+      return filename;
     }
 
     case 'risks': {
