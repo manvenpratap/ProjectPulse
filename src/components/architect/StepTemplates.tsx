@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { 
   BookOpen, 
@@ -23,16 +23,131 @@ import {
   X,
   PlusCircle,
   MinusCircle,
-  Sliders
+  Sliders,
+  Download,
+  Upload,
+  LayoutGrid,
+  List,
+  Database,
+  ExternalLink,
+  ShieldCheck,
+  Share2
 } from 'lucide-react';
 import Button from '../shared/Button';
 import clsx from 'clsx';
 import { StepTemplate, Task, Subtask, TaskStatus } from '../../types';
 import PageHeader from '../shared/PageHeader';
 import { motion, AnimatePresence } from 'motion/react';
+import { todayStr } from '../../utils/projectUtils';
 
 // ============================================================================
-// SMART WORKFLOW SYNCHRONIZATION ALGORITHM (Parity with Enterprise ALM)
+// STANDARD ALM INDUSTRY WORKFLOW BLUEPRINT PRESETS
+// ============================================================================
+export const STANDARD_BLUEPRINT_PRESETS: StepTemplate[] = [
+  {
+    name: 'Full-Stack Feature Pipeline',
+    category: 'Feature',
+    steps: [
+      { name: 'PRD & Technical Specification', effort: 1 },
+      { name: 'Data Model & API Contract', effort: 2 },
+      { name: 'Backend Business Logic', effort: 4 },
+      { name: 'Frontend Component Integration', effort: 3 },
+      { name: 'Integration & E2E Testing', effort: 2 },
+      { name: 'Security Review & Staging Deploy', effort: 1 }
+    ]
+  },
+  {
+    name: 'Server-Side Architecture Workflow',
+    category: 'Server Module',
+    steps: [
+      { name: 'Schema Migration & Indexing', effort: 2 },
+      { name: 'REST & gRPC Endpoint Definition', effort: 3 },
+      { name: 'Service Kernel & Transaction Logic', effort: 4 },
+      { name: 'Unit & Mock Integration Testing', effort: 2 },
+      { name: 'Load & Latency Benchmarking', effort: 1 },
+      { name: 'OpenAPI Spec & Observability Telemetry', effort: 1 }
+    ]
+  },
+  {
+    name: 'GUI Screen & Micro-Frontend Flow',
+    category: 'GUI Screen',
+    steps: [
+      { name: 'Figma Tokens & Design Alignment', effort: 1 },
+      { name: 'Component Shell & State Store', effort: 3 },
+      { name: 'API Client & Query Cache Sync', effort: 2 },
+      { name: 'Responsive Breakpoint & Mobile Tuning', effort: 1 },
+      { name: 'WCAG 2.2 AA Accessibility Audit', effort: 1 },
+      { name: 'Visual Regression & Cross-Browser QA', effort: 1 }
+    ]
+  },
+  {
+    name: 'Critical Defect & Hotfix Triage',
+    category: 'Bug',
+    steps: [
+      { name: 'Defect Reproduction & Diagnostic Log Dump', effort: 1 },
+      { name: 'Root Cause Isolation & Impact Scope', effort: 1 },
+      { name: 'Targeted Code Patch & Regression Test', effort: 2 },
+      { name: 'Non-Regression Test Suite Verification', effort: 1 },
+      { name: 'Emergency Hotfix Deploy & Smoke Verification', effort: 1 }
+    ]
+  },
+  {
+    name: 'DevOps & Cloud Infrastructure (IaC)',
+    category: 'DevOps',
+    steps: [
+      { name: 'Terraform / CloudFormation Architecture', effort: 2 },
+      { name: 'Secret & IAM RBAC Configuration', effort: 1 },
+      { name: 'CI/CD Pipeline & Health Check Hooks', effort: 3 },
+      { name: 'Staging Environment Dry Run', effort: 1 },
+      { name: 'Multi-AZ Production Cutover & Monitoring', effort: 1 }
+    ]
+  },
+  {
+    name: 'Security & Pen-Testing Governance',
+    category: 'Testing',
+    steps: [
+      { name: 'Threat Model & Attack Surface Map', effort: 2 },
+      { name: 'Static & Dynamic Code Analysis (SAST/DAST)', effort: 2 },
+      { name: 'Dependency Vulnerability Audit', effort: 1 },
+      { name: 'Penetration Testing & Exploit Verification', effort: 3 },
+      { name: 'Security Remediation & CXO Sign-Off', effort: 1 }
+    ]
+  }
+];
+
+export const getCategoryMeta = (cat: string) => {
+  switch (cat) {
+    case 'Server Module':
+      return { color: 'text-sky-500', bg: 'bg-sky-500/10', border: 'border-sky-500/20', icon: Database };
+    case 'GUI Screen':
+    case 'GUI Module':
+      return { color: 'text-purple-400', bg: 'bg-purple-500/10', border: 'border-purple-500/20', icon: Layers };
+    case 'Bug':
+      return { color: 'text-rose-500', bg: 'bg-rose-500/10', border: 'border-rose-500/20', icon: AlertTriangle };
+    case 'DevOps':
+      return { color: 'text-amber-500', bg: 'bg-amber-500/10', border: 'border-amber-500/20', icon: RefreshCw };
+    case 'Testing':
+      return { color: 'text-emerald-500', bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', icon: CheckCircle2 };
+    case 'Design':
+      return { color: 'text-pink-500', bg: 'bg-pink-500/10', border: 'border-pink-500/20', icon: Sparkles };
+    default:
+      return { color: 'text-[var(--color-primary-hex)]', bg: 'bg-[var(--color-primary-highlight-hex)]', border: 'border-[var(--color-primary-hex)]/20', icon: Zap };
+  }
+};
+
+const PHASE_COLORS = [
+  'bg-sky-500',
+  'bg-indigo-500',
+  'bg-purple-500',
+  'bg-teal-500',
+  'bg-emerald-500',
+  'bg-amber-500',
+  'bg-rose-500',
+  'bg-blue-400'
+];
+
+// ============================================================================
+// SMART WORKFLOW SYNCHRONIZATION ALGORITHM
 // ============================================================================
 export interface SyncStep {
   name: string;
@@ -124,7 +239,7 @@ export function smartSyncSubtasks(
 }
 
 // ============================================================================
-// MAIN COMPONENT: STEP TEMPLATES & LIVE BLUEPRINT IMPACT ARCHITECT
+// MAIN COMPONENT: ENHANCED STEP BLUEPRINTS ARCHITECT
 // ============================================================================
 const StepTemplates: React.FC = () => {
   const { state, updateProject } = useProject();
@@ -135,24 +250,73 @@ const StepTemplates: React.FC = () => {
   const [confirmPropagation, setConfirmPropagation] = useState<boolean>(false);
   const [taskSearch, setTaskSearch] = useState<string>('');
 
+  // Primary Page Controls: Filter, Search, and View Mode
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [isPresetsOpen, setIsPresetsOpen] = useState<boolean>(false);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const templates = state.stepTemplates || [];
   const categories = state.dropdowns?.category || [
     'Feature', 'Server Module', 'GUI Screen', 'GUI Module', 'DevOps', 'Testing', 'Research', 'Documentation'
   ];
 
+  // Distinct categories present in active templates
+  const presentCategories = useMemo(() => {
+    return Array.from(new Set(templates.map(t => t.category).filter(Boolean)));
+  }, [templates]);
+
+  // Filtered Templates
+  const filteredTemplates = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return templates.filter(t => {
+      const matchesSearch = !q || 
+        t.name.toLowerCase().includes(q) || 
+        t.category.toLowerCase().includes(q) ||
+        t.steps.some(s => s.name.toLowerCase().includes(q));
+      const matchesCategory = selectedCategory === 'all' || t.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [templates, searchQuery, selectedCategory]);
+
+  // Operational Telemetry Metrics
+  const totalSteps = useMemo(() => {
+    return templates.reduce((acc, t) => acc + (t.steps ? t.steps.length : 0), 0);
+  }, [templates]);
+
+  const totalEffortAcrossAll = useMemo(() => {
+    return templates.reduce((acc, t) => acc + t.steps.reduce((sum, s) => sum + (Number(s.effort) || 0), 0), 0);
+  }, [templates]);
+
+  const tasksLinkedCount = useMemo(() => {
+    return state.tasks.filter(task => {
+      return templates.some(tpl => {
+        if (tpl.category === 'GUI Screen') {
+          return task.category === 'GUI Screen' || 
+            (task.subtasks && task.subtasks.some(st => st.type === 'screen')) ||
+            (task.guiScreens && task.guiScreens.length > 0);
+        }
+        return task.category === tpl.category;
+      });
+    }).length;
+  }, [state.tasks, templates]);
+
+  // Blueprint Handlers
   const handleAddTemplate = () => {
     const defaultCat = categories[0] || 'Feature';
     const newTpl: StepTemplate = {
       name: 'New Technical Workflow',
       category: defaultCat,
       steps: [
-        { name: 'Initial Requirement', effort: 1 },
-        { name: 'Architecture & Design', effort: 2 },
-        { name: 'Core Implementation', effort: 4 },
-        { name: 'Quality Verification', effort: 2 }
+        { name: 'Initial Requirement Specification', effort: 1 },
+        { name: 'Architecture & Schema Blueprint', effort: 2 },
+        { name: 'Core Engine Implementation', effort: 4 },
+        { name: 'Automated Test & Verification', effort: 2 }
       ]
     };
-    setEditingIdx(null); // Indicates a brand new blueprint
+    setEditingIdx(null);
     setEditForm(JSON.parse(JSON.stringify(newTpl)));
     setQuickText(newTpl.steps.map(s => `${s.name}:${s.effort}`).join('\n'));
     setConfirmPropagation(false);
@@ -161,7 +325,7 @@ const StepTemplates: React.FC = () => {
 
   const removeTemplate = (idx: number) => {
     const target = templates[idx];
-    if (confirm(`Delete the "${target.name}" technical workflow blueprint?`)) {
+    if (window.confirm(`Delete the "${target.name}" technical workflow blueprint? This action cannot be undone.`)) {
       const updated = templates.filter((_, i) => i !== idx);
       updateProject({ stepTemplates: updated });
     }
@@ -185,15 +349,104 @@ const StepTemplates: React.FC = () => {
     setEditorMode('visual');
   };
 
+  const copyBlueprintMarkdown = (idx: number) => {
+    const tpl = templates[idx];
+    const totalEffort = tpl.steps.reduce((sum, s) => sum + (Number(s.effort) || 0), 0);
+    const md = [
+      `### ${tpl.name} (${tpl.category} Workflow)`,
+      `**Total Planned Effort:** ${totalEffort} days · **Phases:** ${tpl.steps.length}`,
+      '',
+      ...tpl.steps.map((s, si) => `- [ ] **Phase ${si + 1}:** ${s.name} (${s.effort}d)`)
+    ].join('\n');
+
+    navigator.clipboard.writeText(md);
+    setCopiedIndex(idx);
+    setTimeout(() => setCopiedIndex(null), 2000);
+  };
+
+  // Export / Import
+  const handleExportBlueprints = () => {
+    const payload = {
+      workspace: state.name || 'ProjectPulse 2.0',
+      exportedAt: new Date().toISOString(),
+      blueprintsCount: templates.length,
+      stepTemplates: templates
+    };
+    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(payload, null, 2));
+    const dl = document.createElement('a');
+    dl.setAttribute('href', dataUri);
+    dl.setAttribute('download', `ProjectPulse_Blueprints_${todayStr()}.json`);
+    document.body.appendChild(dl);
+    dl.click();
+    dl.remove();
+  };
+
+  const handleImportBlueprints = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      try {
+        const raw = evt.target?.result as string;
+        const parsed = JSON.parse(raw);
+        const importedTemplates: StepTemplate[] = parsed.stepTemplates || (Array.isArray(parsed) ? parsed : null);
+
+        if (!Array.isArray(importedTemplates) || importedTemplates.length === 0) {
+          alert('Invalid blueprint JSON format. Expected an array of step templates.');
+          return;
+        }
+
+        // Validate structure
+        const validated = importedTemplates.filter(t => t.name && Array.isArray(t.steps) && t.steps.length > 0);
+        if (validated.length === 0) {
+          alert('No valid blueprint definitions found in JSON file.');
+          return;
+        }
+
+        // Merge with existing by name
+        const existingNames = new Set(templates.map(t => t.name.toLowerCase()));
+        const merged = [...templates];
+        let addedCount = 0;
+
+        validated.forEach(v => {
+          if (!existingNames.has(v.name.toLowerCase())) {
+            merged.push(v);
+            existingNames.add(v.name.toLowerCase());
+            addedCount++;
+          }
+        });
+
+        updateProject({ stepTemplates: merged });
+        alert(`Successfully imported ${addedCount} new blueprint(s).`);
+      } catch (err: any) {
+        alert('Failed to parse blueprint JSON: ' + err.message);
+      } finally {
+        if (fileInputRef.current) fileInputRef.current.value = '';
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const handleImportPreset = (preset: StepTemplate) => {
+    const exists = templates.some(t => t.name.toLowerCase() === preset.name.toLowerCase());
+    if (exists) {
+      alert(`A blueprint named "${preset.name}" already exists.`);
+      return;
+    }
+    updateProject({ stepTemplates: [...templates, preset] });
+    setIsPresetsOpen(false);
+  };
+
   // Sync quick text when editForm.steps change in visual mode
   const syncToQuickText = (steps: { name: string; effort: number }[]) => {
     setQuickText(steps.map(s => `${s.name}:${s.effort}`).join('\n'));
   };
 
-  // Step item handlers
+  // Step item handlers inside editor
   const addStep = () => {
     if (!editForm) return;
-    const updated = [...editForm.steps, { name: 'New Phase', effort: 1 }];
+    const updated = [...editForm.steps, { name: 'New Operational Phase', effort: 1 }];
     setEditForm({ ...editForm, steps: updated });
     syncToQuickText(updated);
   };
@@ -238,7 +491,6 @@ const StepTemplates: React.FC = () => {
     syncToQuickText(updated);
   };
 
-  // Handle Quick Bulk Text change
   const handleQuickTextChange = (text: string) => {
     setQuickText(text);
     if (!editForm) return;
@@ -426,151 +678,588 @@ const StepTemplates: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)]">
+      {/* Hidden File Input for JSON Import */}
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        onChange={handleImportBlueprints} 
+        accept=".json" 
+        className="hidden" 
+      />
+
+      {/* ── 1. Page Header ── */}
       <PageHeader
         icon={BookOpen}
         title="Step Blueprints"
         subtitle={`${templates.length} Active Templates • Automated technical workflow sequences with real-time impact propagation`}
         actions={
-          <Button variant="primary" size="sm" onClick={handleAddTemplate} className="h-9 px-4 shadow-sm">
-            <Plus size={16} className="mr-1.5" /> New Blueprint
-          </Button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsPresetsOpen(true)}
+              title="Browse standard industry workflow presets"
+              className="h-9 px-3 text-xs font-semibold rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)] text-[var(--color-text)] flex items-center gap-1.5 transition-all shadow-2xs active:scale-95 cursor-pointer"
+            >
+              <Sparkles size={13} className="text-amber-500" />
+              <span className="hidden sm:inline">ALM Presets</span>
+            </button>
+
+            <button
+              onClick={handleExportBlueprints}
+              title="Export all blueprints to JSON"
+              className="h-9 px-2.5 sm:px-3 text-xs font-semibold rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)] text-[var(--color-text)] flex items-center gap-1.5 transition-all shadow-2xs active:scale-95 cursor-pointer"
+            >
+              <Download size={13} className="text-[var(--color-text-muted)]" />
+              <span className="hidden md:inline">Export</span>
+            </button>
+
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              title="Import blueprints from JSON"
+              className="h-9 px-2.5 sm:px-3 text-xs font-semibold rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)] text-[var(--color-text)] flex items-center gap-1.5 transition-all shadow-2xs active:scale-95 cursor-pointer"
+            >
+              <Upload size={13} className="text-[var(--color-text-muted)]" />
+              <span className="hidden md:inline">Import</span>
+            </button>
+
+            <Button variant="primary" size="sm" onClick={handleAddTemplate} className="h-9 px-3.5 shadow-sm font-bold active:scale-95">
+              <Plus size={15} className="mr-1" /> New Blueprint
+            </Button>
+          </div>
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <AnimatePresence mode="popLayout">
-            {templates.map((tpl, i) => {
-              const totalEffort = tpl.steps.reduce((s, st) => s + (Number(st.effort) || 0), 0);
-              const matchingTasks = state.tasks.filter(t => 
-                t.category === tpl.category || (tpl.category === 'GUI Screen' && ((t.subtasks && t.subtasks.some(st => st.type === 'screen')) || (t.guiScreens && t.guiScreens.length > 0)))
-              );
-              
-              return (
-                <motion.div 
-                  key={tpl.name || i} 
-                  layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.16, ease: [0.4, 0, 0.2, 1] }}
-                  onClick={() => startEdit(i)}
-                  className="card glass p-6 flex flex-col group hover:border-[var(--color-primary-hex)]/40 hover:shadow-lg transition-all duration-200 cursor-pointer rounded-2xl relative overflow-hidden"
-                >
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="w-11 h-11 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center shadow-xs">
-                      <Zap size={20} />
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)]" 
-                        title="Duplicate Blueprint"
-                        onClick={(e) => { e.stopPropagation(); duplicateTemplate(i); }}
-                      >
-                        <Copy size={13} />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)]" 
-                        title="Edit Blueprint"
-                        onClick={(e) => { e.stopPropagation(); startEdit(i); }}
-                      >
-                        <Edit2 size={13} />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 rounded-lg text-rose-500 hover:bg-rose-500/10" 
-                        title="Delete Blueprint"
-                        onClick={(e) => { e.stopPropagation(); removeTemplate(i); }}
-                      >
-                        <Trash2 size={13} />
-                      </Button>
-                    </div>
-                  </div>
-
-                  <div className="mb-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-bold text-lg text-[var(--color-text)] leading-tight truncate group-hover:text-[var(--color-primary-hex)] transition-colors">
-                        {tpl.name}
-                      </h3>
-                    </div>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)]">
-                        {tpl.category} mapping
-                      </span>
-                      <span className="text-[11px] font-medium text-[var(--color-text-faint)]">
-                        {totalEffort}d effort
-                      </span>
-                      <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded">
-                        {matchingTasks.length} tasks linked
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex-1 bg-[var(--color-surface-offset)]/40 rounded-xl p-3.5 border border-[var(--color-divider)] border-dashed">
-                    <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] mb-2.5 flex items-center justify-between">
-                      <span>Workflow Phases</span>
-                      <span>{tpl.steps.length} Steps</span>
-                    </div>
-                    <div className="space-y-2 max-h-40 overflow-y-auto custom-scroll pr-1">
-                      {(tpl.steps || []).map((st, si) => (
-                        <div key={si} className="flex items-center justify-between text-xs py-0.5 group/step">
-                          <div className="flex items-center gap-2 min-w-0">
-                            <span className="w-4 h-4 rounded-full bg-[var(--color-surface-2)] text-[9px] font-bold text-[var(--color-text-muted)] flex items-center justify-center shrink-0 border border-[var(--color-divider)]">
-                              {si + 1}
-                            </span>
-                            <span className="font-medium text-[var(--color-text-muted)] group-hover/step:text-[var(--color-text)] transition-colors truncate">
-                              {st.name}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1 shrink-0 text-[11px] font-mono font-semibold text-[var(--color-text-faint)]">
-                            <Clock size={10} />
-                            {st.effort}d
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="mt-4 pt-3 border-t border-[var(--color-divider)] flex items-center justify-between text-xs text-[var(--color-text-faint)]">
-                    <span className="flex items-center gap-1 font-medium">
-                      <Zap size={11} className="text-emerald-500" /> Auto-sync enabled
-                    </span>
-                    <span className="font-semibold text-[var(--color-primary-hex)] group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-0.5">
-                      Configure <ArrowRight size={12} />
-                    </span>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-
-          {templates.length === 0 && (
-            <div className="col-span-full py-28 bg-[var(--color-surface-offset)]/30 rounded-3xl border-2 border-dashed border-[var(--color-divider)] flex flex-col items-center justify-center text-[var(--color-text-faint)] text-center px-12">
-              <div className="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center mb-4">
-                <BookOpen size={32} strokeWidth={1.5} />
+      {/* ── 2. Telemetry KPI Strip ── */}
+      <div className="px-4 sm:px-6 lg:px-8 pt-4 pb-2">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
+                Workflow Blueprints
               </div>
-              <h3 className="text-xl font-bold text-[var(--color-text)]">No Technical Blueprints</h3>
-              <p className="text-xs max-w-sm mt-1.5 text-[var(--color-text-muted)] leading-relaxed">
-                Define standardized operational step templates for common tasks to automate checklist population and effort estimation.
-              </p>
-              <Button variant="primary" className="mt-6 rounded-xl font-bold px-6" onClick={handleAddTemplate}>
-                Create Initial Blueprint
-              </Button>
+              <div className="text-lg font-display font-black text-[var(--color-text)] mt-0.5">
+                {templates.length} <span className="text-xs font-medium text-[var(--color-text-muted)]">templates</span>
+              </div>
             </div>
-          )}
+            <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center shrink-0">
+              <BookOpen size={16} />
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
+                Standardized Phases
+              </div>
+              <div className="text-lg font-display font-black text-[var(--color-text)] mt-0.5">
+                {totalSteps} <span className="text-xs font-medium text-[var(--color-text-muted)]">steps</span>
+              </div>
+            </div>
+            <div className="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0">
+              <Layers size={16} />
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
+                Tasks Governed
+              </div>
+              <div className="text-lg font-display font-black text-emerald-500 mt-0.5 flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                {tasksLinkedCount} <span className="text-xs font-medium text-[var(--color-text-muted)]">tasks</span>
+              </div>
+            </div>
+            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+              <CheckCircle2 size={16} />
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
+                Workflow Scope
+              </div>
+              <div className="text-lg font-display font-black text-amber-500 mt-0.5">
+                {totalEffortAcrossAll}d <span className="text-xs font-medium text-[var(--color-text-muted)]">total effort</span>
+              </div>
+            </div>
+            <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
+              <Clock size={16} />
+            </div>
+          </div>
         </div>
       </div>
 
+      {/* ── 3. Operational Toolbar (Filter, Search & View Modes) ── */}
+      <div className="px-4 sm:px-6 lg:px-8 py-2">
+        <div className="p-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex flex-wrap items-center gap-2.5 flex-1 min-w-[260px]">
+            {/* Search Input */}
+            <div className="relative flex-1 max-w-sm">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search blueprints by name, category, or phase…"
+                className="w-full h-9 pl-9 pr-8 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs font-medium text-[var(--color-text)] outline-none focus:border-[var(--color-primary-hex)] transition-colors shadow-2xs"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
+                >
+                  <X size={13} />
+                </button>
+              )}
+            </div>
+
+            {/* Category Filter Pills */}
+            <div className="flex items-center gap-1 overflow-x-auto custom-scroll py-0.5 max-w-md">
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className={clsx(
+                  "px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer border",
+                  selectedCategory === 'all'
+                    ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border-[var(--color-primary-hex)]/30 shadow-2xs"
+                    : "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:text-[var(--color-text)]"
+                )}
+              >
+                All Categories ({templates.length})
+              </button>
+
+              {presentCategories.map(cat => {
+                const count = templates.filter(t => t.category === cat).length;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={clsx(
+                      "px-2.5 py-1 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer border",
+                      selectedCategory === cat
+                        ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border-[var(--color-primary-hex)]/30 shadow-2xs"
+                        : "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:text-[var(--color-text)]"
+                    )}
+                  >
+                    {cat} ({count})
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* View Mode Toggle & Match Count */}
+          <div className="flex items-center gap-3 shrink-0 ml-auto">
+            <span className="text-xs font-medium text-[var(--color-text-muted)]">
+              Showing <strong className="text-[var(--color-text)]">{filteredTemplates.length}</strong> of {templates.length}
+            </span>
+
+            <div className="flex items-center p-0.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={clsx(
+                  "p-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 font-semibold text-xs",
+                  viewMode === 'grid' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-2xs" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                )}
+                title="Visual Card Grid View"
+              >
+                <LayoutGrid size={14} />
+                <span className="hidden sm:inline">Grid</span>
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
+                className={clsx(
+                  "p-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 font-semibold text-xs",
+                  viewMode === 'table' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-2xs" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                )}
+                title="High-Density Table View"
+              >
+                <List size={14} />
+                <span className="hidden sm:inline">Table</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── 4. Main Blueprints Content Area ── */}
+      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 pt-2">
+        {filteredTemplates.length === 0 ? (
+          <div className="py-24 bg-[var(--color-surface)] rounded-3xl border-2 border-dashed border-[var(--color-divider)] flex flex-col items-center justify-center text-center px-12">
+            <div className="w-16 h-16 rounded-2xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center mb-4">
+              <BookOpen size={30} strokeWidth={1.75} />
+            </div>
+            <h3 className="text-lg font-bold text-[var(--color-text)]">No Matching Blueprints Found</h3>
+            <p className="text-xs max-w-sm mt-1 text-[var(--color-text-muted)] leading-relaxed">
+              {searchQuery || selectedCategory !== 'all' 
+                ? 'Try broadening your search query or reset the category filter.' 
+                : 'Define standardized operational step templates for common tasks to automate checklist population and effort estimation.'}
+            </p>
+            <div className="flex items-center gap-2 mt-5">
+              {(searchQuery || selectedCategory !== 'all') && (
+                <Button variant="outline" size="sm" onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}>
+                  Reset Filters
+                </Button>
+              )}
+              <Button variant="primary" size="sm" onClick={handleAddTemplate}>
+                <Plus size={14} className="mr-1" /> Create Blueprint
+              </Button>
+            </div>
+          </div>
+        ) : viewMode === 'grid' ? (
+          /* ── 4A. Visual Card Grid Mode ── */
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <AnimatePresence mode="popLayout">
+              {filteredTemplates.map((tpl) => {
+                const i = templates.findIndex(t => t.name === tpl.name);
+                const totalEffort = tpl.steps.reduce((s, st) => s + (Number(st.effort) || 0), 0);
+                const matchingTasks = state.tasks.filter(t => 
+                  t.category === tpl.category || (tpl.category === 'GUI Screen' && ((t.subtasks && t.subtasks.some(st => st.type === 'screen')) || (t.guiScreens && t.guiScreens.length > 0)))
+                );
+                const meta = getCategoryMeta(tpl.category);
+                const IconComponent = meta.icon;
+                const isCopied = copiedIndex === i;
+
+                return (
+                  <motion.div 
+                    key={tpl.name}
+                    layout
+                    initial={{ opacity: 0, scale: 0.96 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.96 }}
+                    transition={{ duration: 0.16 }}
+                    onClick={() => startEdit(i)}
+                    className="card glass p-5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 hover:shadow-lg transition-all duration-200 cursor-pointer flex flex-col group relative overflow-hidden"
+                  >
+                    {/* Top Row: Icon + Category + Action Bar */}
+                    <div className="flex items-start justify-between gap-3 mb-3.5">
+                      <div className="flex items-center gap-2.5">
+                        <div className={clsx("w-10 h-10 rounded-xl flex items-center justify-center border shadow-2xs shrink-0", meta.bg, meta.color, meta.border)}>
+                          <IconComponent size={18} />
+                        </div>
+                        <div>
+                          <span className={clsx("text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border", meta.bg, meta.color, meta.border)}>
+                            {tpl.category}
+                          </span>
+                          <div className="text-[11px] font-medium text-[var(--color-text-faint)] mt-1">
+                            {tpl.steps.length} {tpl.steps.length === 1 ? 'phase' : 'phases'} · {totalEffort}d total
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Card Action Buttons */}
+                      <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); copyBlueprintMarkdown(i); }}
+                          title="Copy workflow as Markdown checklist"
+                          className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors cursor-pointer"
+                        >
+                          {isCopied ? <Check size={14} className="text-emerald-500" /> : <Copy size={13} />}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); duplicateTemplate(i); }}
+                          title="Duplicate blueprint"
+                          className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors cursor-pointer"
+                        >
+                          <Copy size={13} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); startEdit(i); }}
+                          title="Edit blueprint"
+                          className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors cursor-pointer"
+                        >
+                          <Edit2 size={13} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); removeTemplate(i); }}
+                          title="Delete blueprint"
+                          className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer"
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Blueprint Title & Linked Task Badge */}
+                    <div className="mb-3">
+                      <h3 className="font-display font-black text-base text-[var(--color-text)] leading-snug group-hover:text-[var(--color-primary-hex)] transition-colors line-clamp-1">
+                        {tpl.name}
+                      </h3>
+                      <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                        <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md flex items-center gap-1">
+                          <CheckCircle2 size={11} />
+                          {matchingTasks.length} active {matchingTasks.length === 1 ? 'task' : 'tasks'} linked
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Proportional Segmented Progress Bar */}
+                    <div className="mb-3.5">
+                      <div className="w-full h-2 rounded-full overflow-hidden flex gap-0.5 bg-[var(--color-surface-2)] p-0.5 border border-[var(--color-divider)]">
+                        {tpl.steps.map((st, si) => {
+                          const pct = totalEffort > 0 ? (Number(st.effort) / totalEffort) * 100 : 100 / tpl.steps.length;
+                          return (
+                            <div 
+                              key={si}
+                              style={{ width: `${Math.max(4, pct)}%` }}
+                              className={clsx("h-full rounded-xs transition-all", PHASE_COLORS[si % PHASE_COLORS.length])}
+                              title={`${st.name}: ${st.effort}d (${Math.round(pct)}%)`}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Phase Sequence Preview Box */}
+                    <div className="flex-1 bg-[var(--color-surface-2)]/60 rounded-xl p-3 border border-[var(--color-divider)]/80">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] mb-2 flex items-center justify-between">
+                        <span>Workflow Pipeline</span>
+                        <span>Effort</span>
+                      </div>
+                      <div className="space-y-1.5 max-h-36 overflow-y-auto custom-scroll pr-1">
+                        {tpl.steps.map((st, si) => (
+                          <div key={si} className="flex items-center justify-between text-xs py-0.5 group/step">
+                            <div className="flex items-center gap-2 min-w-0 pr-2">
+                              <span className="w-4 h-4 rounded-full bg-[var(--color-surface)] text-[9px] font-bold text-[var(--color-text-muted)] flex items-center justify-center shrink-0 border border-[var(--color-divider)]">
+                                {si + 1}
+                              </span>
+                              <span className="font-medium text-[var(--color-text-muted)] group-hover/step:text-[var(--color-text)] transition-colors truncate">
+                                {st.name}
+                              </span>
+                            </div>
+                            <span className="font-mono text-[10px] font-bold text-[var(--color-text-faint)] shrink-0">
+                              {st.effort}d
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Card Footer: Auto-sync telemetry */}
+                    <div className="mt-3.5 pt-2.5 border-t border-[var(--color-divider)] flex items-center justify-between text-xs text-[var(--color-text-faint)]">
+                      <span className="flex items-center gap-1 font-medium text-[11px]">
+                        <Zap size={11} className="text-emerald-500" /> Real-time blast sync
+                      </span>
+                      <span className="font-bold text-[var(--color-primary-hex)] group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-0.5 text-[11px]">
+                        Configure <ArrowRight size={11} />
+                      </span>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
+          </div>
+        ) : (
+          /* ── 4B. High-Density Table View ── */
+          <div className="rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs overflow-hidden">
+            <table className="w-full text-left border-collapse text-xs">
+              <thead className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)]">
+                <tr>
+                  <th className="px-4 py-3 w-12 text-center font-mono">#</th>
+                  <th className="px-4 py-3">Blueprint Name</th>
+                  <th className="px-4 py-3">Category Mapping</th>
+                  <th className="px-4 py-3 text-center">Phases</th>
+                  <th className="px-4 py-3 text-center">Total Effort</th>
+                  <th className="px-4 py-3 text-center">Linked Tasks</th>
+                  <th className="px-4 py-3">Workflow Phases Sequence</th>
+                  <th className="px-4 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--color-divider)]/40">
+                {filteredTemplates.map((tpl, idx) => {
+                  const i = templates.findIndex(t => t.name === tpl.name);
+                  const totalEffort = tpl.steps.reduce((s, st) => s + (Number(st.effort) || 0), 0);
+                  const matchingTasks = state.tasks.filter(t => 
+                    t.category === tpl.category || (tpl.category === 'GUI Screen' && ((t.subtasks && t.subtasks.some(st => st.type === 'screen')) || (t.guiScreens && t.guiScreens.length > 0)))
+                  );
+                  const meta = getCategoryMeta(tpl.category);
+
+                  return (
+                    <tr 
+                      key={tpl.name}
+                      onClick={() => startEdit(i)}
+                      className="hover:bg-[var(--color-surface-2)]/60 transition-colors cursor-pointer group"
+                    >
+                      <td className="px-4 py-3 text-center font-mono text-[10px] text-[var(--color-text-faint)]">
+                        {String(idx + 1).padStart(2, '0')}
+                      </td>
+                      <td className="px-4 py-3 font-bold text-[var(--color-text)] group-hover:text-[var(--color-primary-hex)] transition-colors">
+                        {tpl.name}
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={clsx("text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border", meta.bg, meta.color, meta.border)}>
+                          {tpl.category}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center font-bold text-[var(--color-text)]">
+                        {tpl.steps.length}
+                      </td>
+                      <td className="px-4 py-3 text-center font-mono font-bold text-[var(--color-text)]">
+                        {totalEffort}d
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span className="font-semibold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full text-[11px]">
+                          {matchingTasks.length} tasks
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-1.5 flex-wrap max-w-md">
+                          {tpl.steps.slice(0, 3).map((s, si) => (
+                            <span key={si} className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)]">
+                              {s.name} ({s.effort}d)
+                            </span>
+                          ))}
+                          {tpl.steps.length > 3 && (
+                            <span className="text-[10px] font-bold text-[var(--color-primary-hex)]">
+                              +{tpl.steps.length - 3} more
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => copyBlueprintMarkdown(i)}
+                            title="Copy Markdown"
+                            className="p-1 rounded text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
+                          >
+                            <Copy size={13} />
+                          </button>
+                          <button
+                            onClick={() => duplicateTemplate(i)}
+                            title="Duplicate"
+                            className="p-1 rounded text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
+                          >
+                            <Copy size={13} />
+                          </button>
+                          <button
+                            onClick={() => startEdit(i)}
+                            title="Edit"
+                            className="p-1 rounded text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)]"
+                          >
+                            <Edit2 size={13} />
+                          </button>
+                          <button
+                            onClick={() => removeTemplate(i)}
+                            title="Delete"
+                            className="p-1 rounded text-rose-500 hover:bg-rose-500/10"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
       {/* ===================================================================== */}
-      {/* HIGH-END EDIT BLUEPRINT MODAL WITH AUTO-COMPUTED LIVE IMPACT ANALYSIS */}
+      {/* 5. ALM WORKFLOW PRESETS LIBRARY DRAWER / MODAL                        */}
+      {/* ===================================================================== */}
+      {isPresetsOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="w-full max-w-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-2xl flex flex-col overflow-hidden max-h-[85vh]">
+            <div className="px-6 py-4.5 border-b border-[var(--color-divider)] flex items-center justify-between bg-[var(--color-surface-2)]">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20">
+                  <Sparkles size={18} />
+                </div>
+                <div>
+                  <h3 className="text-sm sm:text-base font-bold text-[var(--color-text)]">
+                    Standard ALM Industry Workflow Presets
+                  </h3>
+                  <p className="text-[11px] text-[var(--color-text-muted)]">
+                    Bootstrap enterprise delivery workflows with pre-configured operational sequences.
+                  </p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setIsPresetsOpen(false)}
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-[var(--color-text-muted)] hover:bg-[var(--color-surface-offset)] hover:text-[var(--color-text)] transition-colors cursor-pointer"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="p-6 overflow-y-auto custom-scroll space-y-3">
+              {STANDARD_BLUEPRINT_PRESETS.map((preset, idx) => {
+                const totalEffort = preset.steps.reduce((s, st) => s + st.effort, 0);
+                const isAlreadyPresent = templates.some(t => t.name.toLowerCase() === preset.name.toLowerCase());
+                const meta = getCategoryMeta(preset.category);
+
+                return (
+                  <div
+                    key={idx}
+                    className="p-4 rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface-2)]/50 hover:border-[var(--color-primary-hex)]/40 transition-colors flex items-center justify-between gap-4"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="font-bold text-sm text-[var(--color-text)]">
+                          {preset.name}
+                        </span>
+                        <span className={clsx("text-[10px] font-bold uppercase tracking-wider px-2 py-0.2 rounded-full border", meta.bg, meta.color, meta.border)}>
+                          {preset.category}
+                        </span>
+                      </div>
+                      <div className="text-[11px] text-[var(--color-text-muted)] mb-2">
+                        {preset.steps.length} sequential phases · {totalEffort} days total estimation
+                      </div>
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        {preset.steps.map((st, si) => (
+                          <span key={si} className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-[var(--color-surface)] text-[var(--color-text-muted)] border border-[var(--color-divider)]">
+                            {st.name} ({st.effort}d)
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <button
+                      disabled={isAlreadyPresent}
+                      onClick={() => handleImportPreset(preset)}
+                      className={clsx(
+                        "px-3.5 py-2 rounded-xl text-xs font-bold shrink-0 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-95",
+                        isAlreadyPresent
+                          ? "bg-[var(--color-surface-offset)] text-[var(--color-text-faint)] cursor-not-allowed border border-[var(--color-divider)]"
+                          : "bg-[var(--color-primary-hex)] text-white hover:opacity-95"
+                      )}
+                    >
+                      {isAlreadyPresent ? (
+                        <>
+                          <Check size={13} /> Installed
+                        </>
+                      ) : (
+                        <>
+                          <Plus size={13} /> Import Blueprint
+                        </>
+                      )}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="px-6 py-3.5 border-t border-[var(--color-divider)] bg-[var(--color-surface-2)] flex items-center justify-end">
+              <Button variant="ghost" size="sm" onClick={() => setIsPresetsOpen(false)}>
+                Close
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ===================================================================== */}
+      {/* 6. HIGH-END EDIT BLUEPRINT MODAL WITH AUTO-COMPUTED LIVE IMPACT       */}
       {/* ===================================================================== */}
       {editForm && impact && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/50 backdrop-blur-md overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-md overflow-y-auto">
           <motion.div 
             initial={{ opacity: 0, scale: 0.96, y: 14 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -607,7 +1296,7 @@ const StepTemplates: React.FC = () => {
                 </div>
                 <button 
                   onClick={() => { setEditForm(null); setConfirmPropagation(false); }}
-                  className="p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-lg transition-colors"
+                  className="p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-lg transition-colors cursor-pointer"
                 >
                   <X size={18} />
                 </button>
@@ -680,7 +1369,7 @@ const StepTemplates: React.FC = () => {
                           type="button"
                           onClick={() => setEditorMode('visual')}
                           className={clsx(
-                            "px-2.5 py-1 rounded-md transition-all flex items-center gap-1",
+                            "px-2.5 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer",
                             editorMode === 'visual'
                               ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-2xs"
                               : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
@@ -692,7 +1381,7 @@ const StepTemplates: React.FC = () => {
                           type="button"
                           onClick={() => setEditorMode('quickText')}
                           className={clsx(
-                            "px-2.5 py-1 rounded-md transition-all flex items-center gap-1",
+                            "px-2.5 py-1 rounded-md transition-all flex items-center gap-1 cursor-pointer",
                             editorMode === 'quickText'
                               ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-2xs"
                               : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
@@ -747,7 +1436,7 @@ const StepTemplates: React.FC = () => {
                                   disabled={si === 0}
                                   onClick={() => moveStep(si, 'up')}
                                   title="Move up"
-                                  className="p-1 rounded text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)] disabled:opacity-30 disabled:pointer-events-none"
+                                  className="p-1 rounded text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
                                 >
                                   <ChevronUp size={14} />
                                 </button>
@@ -756,7 +1445,7 @@ const StepTemplates: React.FC = () => {
                                   disabled={si === editForm.steps.length - 1}
                                   onClick={() => moveStep(si, 'down')}
                                   title="Move down"
-                                  className="p-1 rounded text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)] disabled:opacity-30 disabled:pointer-events-none"
+                                  className="p-1 rounded text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)] disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
                                 >
                                   <ChevronDown size={14} />
                                 </button>
@@ -764,7 +1453,7 @@ const StepTemplates: React.FC = () => {
                                   type="button"
                                   onClick={() => cloneStep(si)}
                                   title="Duplicate phase"
-                                  className="p-1 rounded text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)]"
+                                  className="p-1 rounded text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)] cursor-pointer"
                                 >
                                   <Copy size={13} />
                                 </button>
@@ -772,7 +1461,7 @@ const StepTemplates: React.FC = () => {
                                   type="button"
                                   onClick={() => removeStep(si)}
                                   title="Delete phase"
-                                  className="p-1 rounded text-rose-500 hover:bg-rose-500/10 ml-0.5"
+                                  className="p-1 rounded text-rose-500 hover:bg-rose-500/10 ml-0.5 cursor-pointer"
                                 >
                                   <Trash2 size={13} />
                                 </button>
@@ -786,7 +1475,7 @@ const StepTemplates: React.FC = () => {
                           variant="ghost" 
                           size="sm" 
                           onClick={addStep} 
-                          className="w-full h-9 border border-dashed border-[var(--color-divider)] rounded-xl text-xs font-bold text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)]"
+                          className="w-full h-9 border border-dashed border-[var(--color-divider)] rounded-xl text-xs font-bold text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] cursor-pointer"
                         >
                           <Plus size={14} className="mr-1" /> Add Workflow Phase
                         </Button>
@@ -983,7 +1672,7 @@ const StepTemplates: React.FC = () => {
                       variant="ghost" 
                       size="sm" 
                       onClick={() => setConfirmPropagation(false)}
-                      className="text-xs"
+                      className="text-xs cursor-pointer"
                     >
                       Back
                     </Button>
@@ -991,7 +1680,7 @@ const StepTemplates: React.FC = () => {
                       variant="secondary" 
                       size="sm" 
                       onClick={() => handleFinalize(false)}
-                      className="text-xs"
+                      className="text-xs cursor-pointer"
                       title="Update template definition without touching existing tasks"
                     >
                       Save Blueprint Only
@@ -1000,7 +1689,7 @@ const StepTemplates: React.FC = () => {
                       variant="primary" 
                       size="sm" 
                       onClick={() => handleFinalize(true)}
-                      className="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 border-emerald-600 text-white shadow-sm flex items-center gap-1.5"
+                      className="text-xs font-bold bg-emerald-600 hover:bg-emerald-700 border-emerald-600 text-white shadow-sm flex items-center gap-1.5 cursor-pointer"
                     >
                       <Zap size={13} /> Propagate to {impact.taskCount} Tasks
                     </Button>
@@ -1022,7 +1711,7 @@ const StepTemplates: React.FC = () => {
                     <Button 
                       variant="ghost" 
                       onClick={() => { setEditForm(null); setConfirmPropagation(false); }}
-                      className="h-10 px-4 text-xs font-semibold"
+                      className="h-10 px-4 text-xs font-semibold cursor-pointer"
                     >
                       Cancel
                     </Button>
@@ -1031,7 +1720,7 @@ const StepTemplates: React.FC = () => {
                       <Button 
                         variant="primary" 
                         onClick={() => setConfirmPropagation(true)}
-                        className="h-10 px-5 text-xs font-bold bg-[var(--color-primary-hex)] text-white shadow-sm flex items-center gap-1.5"
+                        className="h-10 px-5 text-xs font-bold bg-[var(--color-primary-hex)] text-white shadow-sm flex items-center gap-1.5 cursor-pointer"
                       >
                         <Zap size={14} /> Review & Save Blueprint
                       </Button>
@@ -1039,7 +1728,7 @@ const StepTemplates: React.FC = () => {
                       <Button 
                         variant="primary" 
                         onClick={() => handleFinalize(false)}
-                        className="h-10 px-5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 border-emerald-600 text-white shadow-sm flex items-center gap-1.5"
+                        className="h-10 px-5 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 border-emerald-600 text-white shadow-sm flex items-center gap-1.5 cursor-pointer"
                       >
                         <Check size={14} /> Save Blueprint
                       </Button>
