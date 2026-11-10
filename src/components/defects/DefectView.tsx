@@ -37,8 +37,10 @@ const DEF_ST_MAP: Record<string, string> = {
   [DefectStatus.ASSIGNED]: 'under-review',
   [DefectStatus.IN_PROGRESS]: 'in-progress',
   [DefectStatus.FIXED]: 'fixed',
+  [DefectStatus.RETEST]: 'under-review',
   [DefectStatus.CLOSED]: 'closed',
   [DefectStatus.REJECTED]: 'rejected',
+  [DefectStatus.DEFERRED]: 'on-hold',
 };
 
 const DefectView: React.FC = () => {

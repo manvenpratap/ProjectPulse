@@ -22,6 +22,7 @@ export enum TaskPriority {
 export enum DefectStatus {
   NEW = 'New',
   ASSIGNED = 'Assigned',
+  IN_PROGRESS = 'In Progress',
   FIXED = 'Fixed',
   RETEST = 'Retest',
   CLOSED = 'Closed',

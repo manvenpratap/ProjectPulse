@@ -83,7 +83,7 @@ export const getDefaultState = (): ProjectState => ({
     version: ['v1.0.0', 'v1.1.0', 'v2.0-Beta', 'v2.0.0-Beta', 'v2.1.0', 'Next Major'],
     role: ['Engineering Manager', 'Lead Architect', 'Lead Frontend', 'Lead Design', 'Jr Lead UX', 'Jr Lead Research', 'Developer', 'Designer', 'QA', 'PM', 'DevOps', 'Analyst'],
     memberStatus: ['Active', 'Other Assignment', 'On Leave', 'Serving Notice Period', 'Departed'],
-    defectStatus: ['New', 'Assigned', 'Fixed', 'Retest', 'Closed', 'Rejected', 'Deferred'],
+    defectStatus: ['New', 'Assigned', 'In Progress', 'Fixed', 'Retest', 'Closed', 'Rejected', 'Deferred'],
     defectPriority: ['Critical', 'High', 'Medium', 'Low'],
     defectSeverity: ['S1 - Blocker', 'S2 - High', 'S3 - Medium', 'S4 - Low'],
     defectType: ['Functional Bug', 'UI/UX Issue', 'Performance', 'Security', 'Data Issue', 'Suggestion'],
