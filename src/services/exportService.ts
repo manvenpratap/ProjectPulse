@@ -537,7 +537,7 @@ export const exportViewToCSV = (state: ProjectState, viewId: string): string => 
       const headers = ['RAID ID', 'Type', 'Title', 'Impact', 'Probability', 'Severity', 'Owner', 'Status', 'Target Date', 'Mitigation'];
       const rows = (state.raids || []).map(r => [
         r.id, r.type, r.title, r.impact, r.probability, r.severity || '',
-        r.owner, r.status, r.targetDate || '', r.mitigation
+        r.owner, r.status, r.targetDate || r.dueDate || '', r.mitigation
       ]);
       csvContent = [headers.map(escapeCSV).join(','), ...rows.map(r => r.map(escapeCSV).join(','))].join('\n');
       break;
@@ -547,7 +547,7 @@ export const exportViewToCSV = (state: ProjectState, viewId: string): string => 
       const headers = ['Member ID', 'Name', 'Role', 'Email', 'Status', 'Reports To', 'Skills'];
       const rows = (state.members || []).map(m => [
         m.id, m.name, m.role, m.email || '', m.status || 'Active', m.reportsTo || '',
-        (m.skills || []).join(';')
+        (Array.isArray(m.skills) ? m.skills : (typeof m.skills === 'string' ? (m.skills as string).split(',').map(s => s.trim()) : [])).join(';')
       ]);
       csvContent = [headers.map(escapeCSV).join(','), ...rows.map(r => r.map(escapeCSV).join(','))].join('\n');
       break;

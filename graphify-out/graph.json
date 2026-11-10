@@ -241,7 +241,7 @@
       "label": "RaidItem",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L272",
+      "source_location": "L275",
       "id": "types_index_raiditem",
       "community": 2,
       "norm_label": "raiditem"
@@ -250,7 +250,7 @@
       "label": "Decision",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L290",
+      "source_location": "L294",
       "id": "types_index_decision",
       "community": 2,
       "norm_label": "decision"
@@ -259,7 +259,7 @@
       "label": "Baseline",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L307",
+      "source_location": "L311",
       "id": "types_index_baseline",
       "community": 0,
       "norm_label": "baseline"
@@ -268,7 +268,7 @@
       "label": "Release",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L324",
+      "source_location": "L328",
       "id": "types_index_release",
       "community": 0,
       "norm_label": "release"
@@ -277,7 +277,7 @@
       "label": "RetroItem",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L335",
+      "source_location": "L339",
       "id": "types_index_retroitem",
       "community": 4,
       "norm_label": "retroitem"
@@ -286,7 +286,7 @@
       "label": "ProjectSettings",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L348",
+      "source_location": "L352",
       "id": "types_index_projectsettings",
       "community": 0,
       "norm_label": "projectsettings"
@@ -295,7 +295,7 @@
       "label": "UserRole",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L375",
+      "source_location": "L379",
       "id": "types_index_userrole",
       "community": 1,
       "norm_label": "userrole"
@@ -304,7 +304,7 @@
       "label": "RolePermissions",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L377",
+      "source_location": "L381",
       "id": "types_index_rolepermissions",
       "community": 1,
       "norm_label": "rolepermissions"
@@ -313,7 +313,7 @@
       "label": "UserAccount",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L392",
+      "source_location": "L396",
       "id": "types_index_useraccount",
       "community": 1,
       "norm_label": "useraccount"
@@ -15324,5 +15324,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "98896a5c9e972b0731bdff5f9574ba339274f92a"
+  "built_at_commit": "8dd6750dee2eb8feb013d7e6a1eab18fc24e7ab4"
 }

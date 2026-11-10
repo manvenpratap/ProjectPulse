@@ -261,12 +261,15 @@ export interface LogEntry {
 }
 
 export interface Feature {
+  id?: string;
   name: string;
   desc: string;
   screens: string[];
   release?: string;
   category?: string;
   status?: string;
+  priority?: string;
+  tasks?: string[];
 }
 
 export interface RaidItem {
@@ -279,6 +282,7 @@ export interface RaidItem {
   probability?: 'High' | 'Medium' | 'Low' | null;
   severity: string;
   dueDate: string;
+  targetDate?: string;
   status: string;
   mitigation: string;
   linkedTasks?: string[];
