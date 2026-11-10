@@ -24,7 +24,8 @@ import {
   X,
   User,
   Calendar,
-  Layers2
+  Layers2,
+  Plus
 } from 'lucide-react';
 import Button from '../shared/Button';
 import { motion, AnimatePresence } from 'motion/react';
@@ -55,7 +56,7 @@ const PRI_MAP: Record<string, string> = {
 };
 
 const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask, onNewTask }) => {
-  const { state, searchTerm, updateTask, deleteTask } = useProject();
+  const { state, searchTerm, setSearchTerm, updateTask, deleteTask } = useProject();
   const [selectedModule, setSelectedModule] = useState<string>('all');
   const [selectedRelease, setSelectedRelease] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
@@ -282,7 +283,11 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask, onNewTask }) => {
         const blocked = isBlocked(task, state.tasks);
         return (
           <div className="flex items-center gap-1.5 font-mono font-bold text-[11px] text-[var(--color-primary-hex)] whitespace-nowrap">
-            {blocked && <Lock size={11} className="text-amber-500 shrink-0" title="Blocked by dependency" />}
+            {blocked && (
+              <span title="Blocked by dependency" className="inline-flex items-center shrink-0">
+                <Lock size={11} className="text-amber-500" />
+              </span>
+            )}
             <span className="hover:underline">{task.id}</span>
           </div>
         );

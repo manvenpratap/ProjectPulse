@@ -39,6 +39,8 @@ export interface Subtask {
   effort: number;
   progress: number;
   type: 'step' | 'screen';
+  assignee?: string;
+  estDays?: number;
   actDays?: number;
   actCompletionDate?: string;
   startDate?: string;
