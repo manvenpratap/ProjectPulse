@@ -204,15 +204,96 @@ def test_consolidations_verification():
         assert page.locator("button:has-text('Swimlanes')").is_visible(), "Timeline view mode failed to activate from sidebar shortcut"
         print("✓ Sidebar Project Timeline shortcut smoothly opens Tasks in Timeline mode")
 
+        # -------------------------------------------------------------
+        # TEST 8: Unified ThemeGrid (ThemeFlyout & SettingsView)
+        # -------------------------------------------------------------
+        print("\n--- TEST 8: Unified ThemeGrid (ThemeFlyout & SettingsView) ---")
+        # 1. Open ThemeFlyout from Topbar
+        theme_btn = page.locator('button[aria-label="Appearance and Theme Settings"]')
+        assert theme_btn.is_visible(), "Topbar theme button not found"
+        theme_btn.click()
+        page.wait_for_timeout(500)
+
+        # Verify ThemeGrid rendered inside flyout
+        assert page.locator("text=Featured Design Systems").is_visible(), "ThemeFlyout failed to render ThemeGrid Featured section"
+        assert page.locator("text=Curated Swiss Palettes").is_visible(), "ThemeFlyout failed to render ThemeGrid Curated section"
+
+        # Select "Nova" theme
+        nova_btn = page.locator('div[role="button"]:has-text("Nova")').first
+        nova_btn.click()
+        page.wait_for_timeout(400)
+        print("✓ Selected Nova theme via ThemeFlyout")
+
+        # Close ThemeFlyout
+        page.locator('button[aria-label="Close theme studio"]').click()
+        page.wait_for_timeout(400)
+
+        # 2. Open SettingsView and check Theme & Styling tab
+        page.locator('aside button:has-text("Settings"), aside button:has-text("System Config")').first.click()
+        page.wait_for_timeout(800)
+
+        theme_tab_btn = page.locator('button:has-text("Theme & Styling"), button:has-text("Theme &")')
+        assert theme_tab_btn.is_visible(), "Theme & Styling tab not found in SettingsView"
+        theme_tab_btn.click()
+        page.wait_for_timeout(500)
+
+        # Verify ThemeGrid in Settings
+        assert page.locator("text=Theme Studio & Design System Chooser").is_visible(), "Theme Studio card not rendered in Settings"
+        assert page.locator('input[placeholder*="Search 26 themes"]').is_visible(), "Theme search bar not rendered in Settings ThemeGrid"
+        
+        # Test selecting a theme directly inside Settings
+        origin_card = page.locator('div[role="button"]:has-text("Origin")').first
+        origin_card.click()
+        page.wait_for_timeout(400)
+        print("✓ Selected Origin theme directly from Settings ThemeGrid")
+
+        theme_screenshot = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/consolidated_theme_grid_settings.png"
+        page.screenshot(path=theme_screenshot, full_page=True)
+        print(f"✓ Saved screenshot to {theme_screenshot}")
+
+        # -------------------------------------------------------------
+        # TEST 9: Dynamic Field Schemas in HelpModal
+        # -------------------------------------------------------------
+        print("\n--- TEST 9: Dynamic Field Schemas in HelpModal ---")
+        # Open HelpModal from Topbar
+        topbar_help_btn = page.locator('button[title*="Help & Screen Guide"]')
+        assert topbar_help_btn.is_visible(), "Topbar help button not found"
+        topbar_help_btn.click()
+        page.wait_for_timeout(500)
+
+        # Click Fields & Metrics tab
+        fields_tab_btn = page.locator('button:has-text("Fields & Metrics")')
+        assert fields_tab_btn.is_visible(), "Fields & Metrics tab in HelpModal not found"
+        fields_tab_btn.click()
+        page.wait_for_timeout(400)
+
+        # Verify dynamic dictionary content & filter pills inside modal
+        assert page.locator("text=Standard data dictionary describing core task and delivery attributes").is_visible()
+        assert page.get_by_role("button", name="All Attributes", exact=True).is_visible(), "All Attributes filter pill not found"
+        assert page.get_by_role("button", name="Tasks", exact=True).is_visible(), "Tasks filter pill not found"
+        assert page.get_by_role("button", name="Defects", exact=True).is_visible(), "Defects filter pill not found"
+        assert page.get_by_role("button", name="Deliveries", exact=True).is_visible(), "Deliveries filter pill not found"
+        assert page.locator('button:has-text("Customize in Field Architect")').is_visible(), "Customize in Field Architect link missing"
+
+        help_screenshot = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/consolidated_dynamic_field_help.png"
+        page.screenshot(path=help_screenshot, full_page=True)
+        print(f"✓ Saved screenshot to {help_screenshot}")
+
+        # Click "Customize in Field Architect" link to verify seamless navigation
+        page.locator('button:has-text("Customize in Field Architect")').click()
+        page.wait_for_timeout(800)
+        assert page.locator("h1:has-text('Field Architect')").first.is_visible(), "Failed to navigate to Field Architect from HelpModal"
+        print("✓ 'Customize in Field Architect' link smoothly navigates to Field Architect")
+
         # Ensure no uncaught page errors
         real_errors = [e for e in errors if "favicon" not in e.lower()]
         assert len(real_errors) == 0, f"Encountered unexpected browser errors: {real_errors}"
         print("✓ Zero browser console/page errors detected during test run")
 
         browser.close()
-        print("\n=======================================================")
-        print("🎉 ALL 7 CONSOLIDATION & TIMELINE PLAYWRIGHT TESTS PASSED (0 DEFECTS)!")
-        print("=======================================================")
+        print("\n==========================================================================")
+        print("🎉 ALL 9 CONSOLIDATION (THEMES & FIELD SCHEMAS) PLAYWRIGHT TESTS PASSED!")
+        print("==========================================================================")
 
 if __name__ == "__main__":
     test_consolidations_verification()

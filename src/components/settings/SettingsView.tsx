@@ -20,7 +20,8 @@ import {
   FileSpreadsheet,
   Download,
   UploadCloud,
-  Loader2
+  Loader2,
+  Palette
 } from 'lucide-react';
 import Button from '../shared/Button';
 import BaselineManager from './BaselineManager';
@@ -28,11 +29,12 @@ import AccessManagerModal from '../auth/AccessManagerModal';
 import { exportProjectExcel, importProjectExcel } from '../../services/excelService';
 import clsx from 'clsx';
 import PageHeader from '../shared/PageHeader';
+import ThemeGrid from '../shared/ThemeGrid';
 
 const SettingsView: React.FC = () => {
   const { state, updateSettings, updateProject, loadSample, clearAllData } = useProject();
   const { users, currentUser, rolePermissions, isAdmin, switchUser } = useAuth();
-  const [activeTab, setActiveTab] = useState<'parameters' | 'baselines' | 'access'>('parameters');
+  const [activeTab, setActiveTab] = useState<'parameters' | 'theme' | 'baselines' | 'access'>('parameters');
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -103,6 +105,17 @@ const SettingsView: React.FC = () => {
               <Sliders size={13} /> <span className="hidden md:inline">System </span>Params
             </button>
             <button
+              onClick={() => setActiveTab('theme')}
+              className={clsx(
+                "px-2 sm:px-3 py-1.5 min-h-[34px] rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 flex items-center justify-center gap-1 shrink-0",
+                activeTab === 'theme' 
+                  ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" 
+                  : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+              )}
+            >
+              <Palette size={13} /> <span className="hidden md:inline">Theme & </span>Styling
+            </button>
+            <button
               onClick={() => setActiveTab('baselines')}
               className={clsx(
                 "px-2 sm:px-3 py-1.5 min-h-[34px] rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-95 flex items-center justify-center gap-1 shrink-0",
@@ -132,6 +145,26 @@ const SettingsView: React.FC = () => {
 
         {activeTab === 'baselines' ? (
           <BaselineManager />
+        ) : activeTab === 'theme' ? (
+          <div className="space-y-6 animate-in fade-in duration-200">
+            <div className="card p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl space-y-5">
+              <div className="flex items-center justify-between pb-4 border-b border-[var(--color-divider)]">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center">
+                    <Palette size={20} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-[var(--color-text)]">Theme Studio & Design System Chooser</h3>
+                    <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
+                      Select your operational visual aesthetic from 26 Swiss design systems. Changes apply instantly across all matrices and views.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <ThemeGrid showSearch={true} showCategories={true} />
+            </div>
+          </div>
         ) : activeTab === 'access' ? (
           <div className="space-y-6">
             {/* Header info card */}
@@ -318,6 +351,30 @@ const SettingsView: React.FC = () => {
                   ))}
                 </div>
               </div>
+            </div>
+
+            {/* Visual Theme & Design Systems */}
+            <div className="card p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center shrink-0">
+                  <Palette size={20} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-[var(--color-text)]">Active Design System: <span className="text-[var(--color-primary-hex)] capitalize">{state.theme}</span></h3>
+                  <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
+                    Customize typography, colors, and layout aesthetics across 26 curated themes.
+                  </p>
+                </div>
+              </div>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => setActiveTab('theme')}
+                className="font-bold text-xs shrink-0 cursor-pointer"
+              >
+                <Palette size={13} className="mr-1.5 text-[var(--color-primary-hex)]" />
+                Open Theme Studio
+              </Button>
             </div>
 
             {/* Excel Portability & Database */}

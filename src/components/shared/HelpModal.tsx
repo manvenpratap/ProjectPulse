@@ -21,7 +21,9 @@ import {
   VIEW_HELP_DATA, 
   STANDARD_FIELD_GUIDE, 
   GLOBAL_SHORTCUTS, 
-  ViewHelpItem 
+  ViewHelpItem,
+  getMergedFieldGuide,
+  StandardFieldItem 
 } from '../../config/viewHelpData';
 import { NAV_HUBS } from '../../config/navigation';
 import clsx from 'clsx';
@@ -37,6 +39,7 @@ const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, targetView }) =>
   const [activeTab, setActiveTab] = useState<'screen' | 'fields' | 'shortcuts'>('screen');
   const [selectedViewId, setSelectedViewId] = useState<string>(targetView || state.view || 'overview');
   const [searchQuery, setSearchQuery] = useState('');
+  const [fieldDomain, setFieldDomain] = useState<'all' | 'tasks' | 'defects' | 'deliveries' | 'custom'>('all');
 
   // Keep selected view synchronized when opened with active view or targetView prop
   useEffect(() => {
@@ -68,16 +71,29 @@ const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, targetView }) =>
     })));
   }, []);
 
-  // Filtered views when searching
+  // Dynamically pull and merge field definitions from state (FieldArchitect) with fallback to STANDARD_FIELD_GUIDE
+  const allFieldItems = useMemo(() => {
+    return getMergedFieldGuide(state, fieldDomain);
+  }, [state, fieldDomain]);
+
+  const customFieldCount = useMemo(() => {
+    return (
+      (state.customFields?.length || 0) +
+      (state.defCustomFields?.length || 0) +
+      (state.delCustomFields?.length || 0)
+    );
+  }, [state.customFields, state.defCustomFields, state.delCustomFields]);
+
+  // Filtered fields when searching
   const filteredFields = useMemo(() => {
-    if (!searchQuery.trim()) return STANDARD_FIELD_GUIDE;
+    if (!searchQuery.trim()) return allFieldItems;
     const q = searchQuery.toLowerCase();
-    return STANDARD_FIELD_GUIDE.filter(f => 
+    return allFieldItems.filter(f => 
       f.name.toLowerCase().includes(q) || 
       f.desc.toLowerCase().includes(q) || 
       f.badge.toLowerCase().includes(q)
     );
-  }, [searchQuery]);
+  }, [allFieldItems, searchQuery]);
 
   const filteredShortcuts = useMemo(() => {
     if (!searchQuery.trim()) return GLOBAL_SHORTCUTS;
@@ -285,19 +301,75 @@ const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, targetView }) =>
           </div>
         )}
 
-        {/* ── TAB 2: STANDARD FIELDS REFERENCE ── */}
+        {/* ── TAB 2: STANDARD & DYNAMIC CUSTOM FIELDS REFERENCE ── */}
         {activeTab === 'fields' && (
           <div className="flex-1 overflow-y-auto pr-1 space-y-4 custom-scroll">
-            <div className="p-3 rounded-xl bg-[var(--color-surface-2)]/70 border border-[var(--color-divider)] text-xs text-[var(--color-text-muted)]">
-              Standard data dictionary describing core task and delivery attributes across all matrices.
+            <div className="p-3 rounded-xl bg-[var(--color-surface-2)]/70 border border-[var(--color-divider)] text-xs text-[var(--color-text-muted)] flex flex-wrap items-center justify-between gap-2">
+              <div>
+                Standard data dictionary describing core task and delivery attributes across all matrices.
+                {customFieldCount > 0 && (
+                  <span className="ml-1 font-semibold text-[var(--color-primary-hex)]">
+                    • {customFieldCount} dynamic custom schema attribute{customFieldCount > 1 ? 's' : ''} synchronized from Field Architect.
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={() => {
+                  setView('fields');
+                  onClose();
+                }}
+                className="text-xs font-semibold text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer shrink-0"
+              >
+                <span>Customize in Field Architect</span>
+                <ExternalLink size={12} />
+              </button>
+            </div>
+
+            {/* Domain Filter Pills */}
+            <div className="flex items-center gap-1 overflow-x-auto pb-1 text-xs no-scrollbar">
+              {[
+                { id: 'all', label: 'All Attributes' },
+                { id: 'tasks', label: 'Tasks' },
+                { id: 'defects', label: 'Defects' },
+                { id: 'deliveries', label: 'Deliveries' },
+                { id: 'custom', label: `Custom Fields (${customFieldCount})` }
+              ].map(d => (
+                <button
+                  key={d.id}
+                  onClick={() => setFieldDomain(d.id as any)}
+                  className={clsx(
+                    "px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer shrink-0 text-xs",
+                    fieldDomain === d.id
+                      ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-2xs"
+                      : "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] border border-[var(--color-divider)]"
+                  )}
+                >
+                  {d.label}
+                </button>
+              ))}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {filteredFields.map((field, idx) => (
-                <div key={idx} className="p-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs space-y-1.5">
+                <div 
+                  key={idx} 
+                  className={clsx(
+                    "p-3 rounded-xl bg-[var(--color-surface)] border shadow-2xs space-y-1.5 transition-colors",
+                    field.isCustom 
+                      ? "border-[var(--color-primary-hex)]/40 bg-[var(--color-primary-highlight-hex)]/20"
+                      : "border-[var(--color-divider)]"
+                  )}
+                >
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-[var(--color-text)]">{field.name}</span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[var(--color-surface-2)] text-[var(--color-text-faint)] border border-[var(--color-divider)] font-semibold">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className="text-xs font-bold text-[var(--color-text)] truncate">{field.name}</span>
+                      {field.isCustom && (
+                        <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-md bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] font-bold shrink-0">
+                          CUSTOM
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-[var(--color-surface-2)] text-[var(--color-text-faint)] border border-[var(--color-divider)] font-semibold shrink-0">
                       {field.badge}
                     </span>
                   </div>
@@ -312,7 +384,7 @@ const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, targetView }) =>
             </div>
 
             {filteredFields.length === 0 && (
-              <div className="p-8 text-center text-xs text-[var(--color-text-faint)]">
+              <div className="p-8 text-center text-xs text-[var(--color-text-faint)] border border-dashed border-[var(--color-divider)] rounded-xl">
                 No fields found matching "{searchQuery}".
               </div>
             )}

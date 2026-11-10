@@ -21,6 +21,8 @@ export interface StandardFieldItem {
   badge: string;
   desc: string;
   example: string;
+  domain?: 'Tasks' | 'Defects' | 'Deliveries' | 'Custom';
+  isCustom?: boolean;
 }
 
 export interface ShortcutItem {
@@ -919,4 +921,129 @@ export const GLOBAL_SHORTCUTS: ShortcutItem[] = [
   { keys: 'G T', action: 'Jump directly to Tasks Matrix', category: 'Navigation' },
   { keys: 'Double-Click Cell', action: 'Quick inline edit on supported spreadsheet table cells', category: 'Actions' }
 ];
+
+export function getMergedFieldGuide(
+  state?: any,
+  filterDomain?: 'all' | 'tasks' | 'defects' | 'deliveries' | 'custom'
+): StandardFieldItem[] {
+  const guideMap = new Map<string, StandardFieldItem>();
+
+  // 1. Seed baseline standard field guide (Tasks)
+  STANDARD_FIELD_GUIDE.forEach(f => {
+    guideMap.set(f.name.toLowerCase(), {
+      ...f,
+      domain: 'Tasks',
+      isCustom: false
+    });
+  });
+
+  if (!state) {
+    return Array.from(guideMap.values());
+  }
+
+  // 2. Dynamic state.fieldDefinitions overrides
+  if (state.fieldDefinitions && typeof state.fieldDefinitions === 'object') {
+    Object.entries(state.fieldDefinitions).forEach(([key, def]: [string, any]) => {
+      if (def && typeof def === 'object') {
+        const item: StandardFieldItem = {
+          name: def.name || def.label || key,
+          badge: def.badge || (def.isCustom ? 'Custom Schema' : 'Standard Field'),
+          desc: def.desc || def.description || `Configured attribute: ${key}`,
+          example: def.example || 'Configured value',
+          domain: def.domain || 'Custom',
+          isCustom: !!def.isCustom
+        };
+        guideMap.set((def.name || key).toLowerCase(), item);
+      }
+    });
+  }
+
+  // 3. Sync standard column overrides from state.cols, state.defCols, state.delCols
+  if (Array.isArray(state.cols)) {
+    state.cols.forEach((c: any) => {
+      if (!c) return;
+      const keyName = (c.label || c.key || '').toLowerCase();
+      const existing = guideMap.get(keyName);
+      if (existing) {
+        if (c.label) existing.name = c.label;
+        if (c.description) existing.desc = c.description;
+      }
+    });
+  }
+
+  // 4. Ingest task custom fields from FieldArchitect (state.customFields)
+  if (Array.isArray(state.customFields)) {
+    state.customFields.forEach((cf: any) => {
+      if (!cf?.name) return;
+      const typeLabel = cf.type ? cf.type.toUpperCase() : 'TEXT';
+      const optsStr = Array.isArray(cf.options) && cf.options.length > 0 ? ` Options: ${cf.options.join(', ')}.` : '';
+      const reqStr = cf.required ? ' (Required field)' : '';
+      const exampleStr = Array.isArray(cf.options) && cf.options.length > 0 
+        ? cf.options[0] 
+        : (cf.type === 'number' ? '42' : cf.type === 'date' ? '2026-12-01' : cf.type === 'checkbox' ? 'true' : 'Custom value');
+
+      guideMap.set(cf.name.toLowerCase(), {
+        name: cf.name,
+        badge: `Custom (Tasks) • ${typeLabel}`,
+        desc: `User-defined ${cf.type} field configured via Field Architect.${optsStr}${reqStr}`,
+        example: exampleStr,
+        domain: 'Tasks',
+        isCustom: true
+      });
+    });
+  }
+
+  // 5. Ingest defect custom fields (state.defCustomFields)
+  if (Array.isArray(state.defCustomFields)) {
+    state.defCustomFields.forEach((cf: any) => {
+      if (!cf?.name) return;
+      const typeLabel = cf.type ? cf.type.toUpperCase() : 'TEXT';
+      const optsStr = Array.isArray(cf.options) && cf.options.length > 0 ? ` Options: ${cf.options.join(', ')}.` : '';
+      const exampleStr = Array.isArray(cf.options) && cf.options.length > 0 ? cf.options[0] : 'Defect attribute';
+
+      guideMap.set(`defect_${cf.name.toLowerCase()}`, {
+        name: `${cf.name} (Defects)`,
+        badge: `Custom (Defects) • ${typeLabel}`,
+        desc: `User-defined defect attribute configured via Field Architect.${optsStr}`,
+        example: exampleStr,
+        domain: 'Defects',
+        isCustom: true
+      });
+    });
+  }
+
+  // 6. Ingest delivery custom fields (state.delCustomFields)
+  if (Array.isArray(state.delCustomFields)) {
+    state.delCustomFields.forEach((cf: any) => {
+      if (!cf?.name) return;
+      const typeLabel = cf.type ? cf.type.toUpperCase() : 'TEXT';
+      const optsStr = Array.isArray(cf.options) && cf.options.length > 0 ? ` Options: ${cf.options.join(', ')}.` : '';
+      const exampleStr = Array.isArray(cf.options) && cf.options.length > 0 ? cf.options[0] : 'Delivery attribute';
+
+      guideMap.set(`delivery_${cf.name.toLowerCase()}`, {
+        name: `${cf.name} (Deliveries)`,
+        badge: `Custom (Deliveries) • ${typeLabel}`,
+        desc: `User-defined delivery attribute configured via Field Architect.${optsStr}`,
+        example: exampleStr,
+        domain: 'Deliveries',
+        isCustom: true
+      });
+    });
+  }
+
+  let results = Array.from(guideMap.values());
+  if (filterDomain && filterDomain !== 'all') {
+    if (filterDomain === 'custom') {
+      results = results.filter(r => r.isCustom);
+    } else if (filterDomain === 'tasks') {
+      results = results.filter(r => r.domain === 'Tasks');
+    } else if (filterDomain === 'defects') {
+      results = results.filter(r => r.domain === 'Defects');
+    } else if (filterDomain === 'deliveries') {
+      results = results.filter(r => r.domain === 'Deliveries');
+    }
+  }
+
+  return results;
+}
 
