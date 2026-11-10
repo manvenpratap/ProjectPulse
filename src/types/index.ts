@@ -255,6 +255,9 @@ export interface LogEntry {
   comment?: string;
   module: string;
   assignee: string;
+  timestamp?: string;
+  user?: string;
+  by?: string;
 }
 
 export interface Feature {

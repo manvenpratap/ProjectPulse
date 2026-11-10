@@ -23,7 +23,7 @@ export interface ColumnDef<T> {
 export interface DataTableProps<T> {
   data: T[];
   columns: ColumnDef<T>[];
-  keyField: keyof T | ((item: T) => string);
+  keyField?: keyof T | ((item: T) => string);
   density?: DensityMode;
   showInlineFilters?: boolean;
 

@@ -198,12 +198,12 @@ const TeamView: React.FC = () => {
     const actByMember: Record<string, number> = {};
 
     log.forEach(l => {
-      const logTime = new Date(l.timestamp || now);
+      const logTime = new Date(l.ts || l.timestamp || now);
       const hoursAgo = (now.getTime() - logTime.getTime()) / (1000 * 60 * 60);
       if (hoursAgo >= 0 && hoursAgo < 168) {
         const bucket = 13 - Math.floor(hoursAgo / 12);
         if (bucket >= 0 && bucket < 14) activityData[bucket]++;
-        const who = l.user || l.by || l.assignee || '';
+        const who = l.assignee || l.user || l.by || '';
         if (who) actByMember[who] = (actByMember[who] || 0) + 1;
       }
     });
@@ -1294,11 +1294,18 @@ const TeamView: React.FC = () => {
                   efficiency = Math.max(0, Math.round(doneRatio * (1 - overduePenalty) * 100));
                 }
 
-                let skills = member.skills || [];
-                if (typeof skills === 'string') {
-                  try { skills = JSON.parse(skills); } catch { skills = skills.split(',').map(s => s.trim()).filter(Boolean); }
+                const rawSkills = member.skills;
+                let skills: string[] = [];
+                if (Array.isArray(rawSkills)) {
+                  skills = rawSkills;
+                } else if (typeof rawSkills === 'string') {
+                  try {
+                    const parsed = JSON.parse(rawSkills);
+                    skills = Array.isArray(parsed) ? parsed : [String(parsed)];
+                  } catch {
+                    skills = rawSkills.split(',').map(s => s.trim()).filter(Boolean);
+                  }
                 }
-                if (!Array.isArray(skills)) skills = [];
 
                 const isContactExpanded = expandedContactIds.has(member.id);
 
