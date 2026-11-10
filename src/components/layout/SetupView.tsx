@@ -3,7 +3,7 @@ import { useProject } from '../../store/ProjectContext';
 import { importProjectExcel } from '../../services/excelService';
 import Button from '../shared/Button';
 import { Activity, UploadCloud, FileSpreadsheet, ArrowRight, Loader2, Database } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion, type Variants } from 'motion/react';
 
 const SetupView: React.FC = () => {
   const { resetProject, updateProject, loadSample } = useProject();
@@ -45,7 +45,7 @@ const SetupView: React.FC = () => {
     }
   };
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
@@ -56,14 +56,14 @@ const SetupView: React.FC = () => {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 12 },
     visible: {
       opacity: 1,
       y: 0,
       transition: {
         duration: 0.3,
-        ease: [0.23, 1, 0.32, 1]
+        ease: [0.23, 1, 0.32, 1] as const
       }
     }
   };

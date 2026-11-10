@@ -240,7 +240,7 @@ const SettingsView: React.FC = () => {
                       <div>
                         <span className="text-[var(--color-text-faint)] block text-[10px] font-medium">WRITE CAPABILITIES</span>
                         <span className="font-semibold text-[var(--color-text)]">
-                          {perms?.canCreate ? 'Create' : ''}{perms?.canEdit ? ' • Edit' : ''}{perms?.canDelete ? ' • Delete' : ''}{!perms?.canCreate && !perms?.canEdit ? 'Read-only' : ''}
+                          {perms?.canCreateTask ? 'Create' : ''}{perms?.canEditTask ? ' • Edit' : ''}{perms?.canDeleteTask ? ' • Delete' : ''}{!perms?.canCreateTask && !perms?.canEditTask ? 'Read-only' : ''}
                         </span>
                       </div>
                     </div>

@@ -16,8 +16,8 @@
     "hash": "2b36426d5ad7e08ef79746aa524f4fb7"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/types/index.ts": {
-    "mtime": 1794273018.6362784,
-    "hash": "34462b20826dc84f8f55063af98f7e55"
+    "mtime": 1794273186.009004,
+    "hash": "838ed03489e4d5685908b41e7aaefd52"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/config/navigation.ts": {
     "mtime": 1794251528.1022718,
@@ -36,8 +36,8 @@
     "hash": "0e4642885b744f6601600c0bc0eb6c2b"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/settings/SettingsView.tsx": {
-    "mtime": 1794127342.948818,
-    "hash": "e62305bc90fabb5b130f5caa5c858221"
+    "mtime": 1794273277.0966818,
+    "hash": "5a7c8d658729a9305456fd842b134e7e"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/tasks/BoardView.tsx": {
     "mtime": 1794078523.999543,
@@ -100,8 +100,8 @@
     "hash": "ee8873f5cec7ee835676127102a6eee7"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/SetupView.tsx": {
-    "mtime": 1794127847.8086398,
-    "hash": "defc80b807468f5560ef3942921cad55"
+    "mtime": 1794273254.005975,
+    "hash": "03b5fa55cab11c062fcfca6167685387"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/scheduler/SchedulerView.tsx": {
     "mtime": 1794116629.631888,
@@ -232,8 +232,8 @@
     "hash": "f90050ab85bd4bc5e62a97c4c69be2bf"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/deliveries/DeliveriesView.tsx": {
-    "mtime": 1794272459.4269216,
-    "hash": "cb37bd15eefd76da1a5e9a511fed9910"
+    "mtime": 1794273224.51066,
+    "hash": "86993b2d89c0fb89c80bb5e7d6d66d67"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/services/exportService.ts": {
     "mtime": 1794253530.0716212,
@@ -256,7 +256,7 @@
     "hash": "26cdbc0e935ffa1b3e63866960b0cd1c"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/store/defaultState.ts": {
-    "mtime": 1794273031.51725,
+    "mtime": 1794273088.6442587,
     "hash": "3ff2e18daf57958c059e1e5eebdb33d8"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/PROJECT_CONTEXT.md": {

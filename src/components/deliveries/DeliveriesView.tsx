@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { Delivery, TaskStatus } from '../../types';
 import { fmtDate, todayStr, daysDiff } from '../../utils/projectUtils';
@@ -818,9 +818,12 @@ export const DeliveriesView: React.FC = () => {
           >
             <option key="all" value="all">All Releases</option>
             {state.releases && state.releases.length > 0 ? (
-              state.releases.map((r, idx) => (
-                <option key={`rel-${r.version || idx}`} value={r.version}>{r.version} ({r.title || r.status})</option>
-              ))
+              state.releases.map((r, idx) => {
+                const relVal = r.name || r.version || `rel-${idx}`;
+                return (
+                  <option key={`rel-${relVal}`} value={relVal}>{relVal} ({r.title || r.status})</option>
+                );
+              })
             ) : (
               ['v1.0.0', 'v1.1.0', 'v2.0.0-Beta', 'v2.1.0'].map((v, idx) => (
                 <option key={`rel-fallback-${v}-${idx}`} value={v}>{v}</option>
@@ -943,7 +946,7 @@ export const DeliveriesView: React.FC = () => {
             data={filteredDeliveries}
             columns={columns}
             keyField="id"
-            density={autofitStrategy}
+            density={autofitStrategy === 'compact' ? 'compact' : 'comfortable'}
             showInlineFilters={showInlineFilters}
             sortField={sortBy}
             sortAsc={sortAsc}
@@ -1482,9 +1485,12 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
                 className="w-full mt-1 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg px-2.5 py-1.5 text-xs text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary-hex)]"
               >
                 {state.releases && state.releases.length > 0 ? (
-                  state.releases.map(r => (
-                    <option key={r.version} value={r.version}>{r.version} - {r.title}</option>
-                  ))
+                  state.releases.map((r, idx) => {
+                    const relVal = r.name || r.version || `rel-${idx}`;
+                    return (
+                      <option key={relVal} value={relVal}>{relVal} - {r.title || r.status}</option>
+                    );
+                  })
                 ) : (
                   ['v1.0.0', 'v1.1.0', 'v2.0.0-Beta', 'v2.1.0'].map(v => (
                     <option key={v} value={v}>{v}</option>

@@ -322,6 +322,9 @@ export interface Release {
   startDate?: string;
   date: string;
   status: 'Planned' | 'Active' | 'Released';
+  version?: string;
+  title?: string;
+  targetDate?: string;
 }
 
 export interface RetroItem {
