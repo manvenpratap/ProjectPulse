@@ -16,8 +16,8 @@
     "hash": "2b36426d5ad7e08ef79746aa524f4fb7"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/types/index.ts": {
-    "mtime": 1794275426.1775877,
-    "hash": "45ccc44182dd992ad1eedaa2776692f4"
+    "mtime": 1794276281.8651965,
+    "hash": "48b9683711b26e59c37ba052061a61bb"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/config/navigation.ts": {
     "mtime": 1794251528.1022718,
@@ -236,7 +236,7 @@
     "hash": "86993b2d89c0fb89c80bb5e7d6d66d67"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/services/exportService.ts": {
-    "mtime": 1794275444.5764084,
+    "mtime": 1794275623.2783241,
     "hash": "30f2069000b6b57e997dd0a01633ebb4"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/services/aiService.ts": {
@@ -244,8 +244,8 @@
     "hash": "3831d10f9898767fec9bb04dcdd905fb"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/services/excelService.ts": {
-    "mtime": 1794272458.6457274,
-    "hash": "eb7a6e990427d34438b347cc4e29eb7b"
+    "mtime": 1794276348.4141247,
+    "hash": "2da84e9bc381cdbac278c9f7aad80948"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/store/ProjectContext.tsx": {
     "mtime": 1794250336.6840944,

@@ -295,7 +295,7 @@
       "label": "UserRole",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L379",
+      "source_location": "L381",
       "id": "types_index_userrole",
       "community": 1,
       "norm_label": "userrole"
@@ -304,7 +304,7 @@
       "label": "RolePermissions",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L381",
+      "source_location": "L383",
       "id": "types_index_rolepermissions",
       "community": 1,
       "norm_label": "rolepermissions"
@@ -313,7 +313,7 @@
       "label": "UserAccount",
       "file_type": "code",
       "source_file": "src/types/index.ts",
-      "source_location": "L396",
+      "source_location": "L398",
       "id": "types_index_useraccount",
       "community": 1,
       "norm_label": "useraccount"
@@ -2518,7 +2518,7 @@
       "label": "buildFeatureRolloutsSheet()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L2125",
+      "source_location": "L2126",
       "id": "services_excelservice_buildfeaturerolloutssheet",
       "community": 2,
       "norm_label": "buildfeaturerolloutssheet()"
@@ -2527,7 +2527,7 @@
       "label": "buildFeatureMatrixWorkbook()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L2384",
+      "source_location": "L2386",
       "id": "services_excelservice_buildfeaturematrixworkbook",
       "community": 2,
       "norm_label": "buildfeaturematrixworkbook()"
@@ -2536,7 +2536,7 @@
       "label": "exportFeatureMatrixExcel()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L2528",
+      "source_location": "L2530",
       "id": "services_excelservice_exportfeaturematrixexcel",
       "community": 2,
       "norm_label": "exportfeaturematrixexcel()"
@@ -2545,7 +2545,7 @@
       "label": "classifyComponent()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L2551",
+      "source_location": "L2553",
       "id": "services_excelservice_classifycomponent",
       "community": 2,
       "norm_label": "classifycomponent()"
@@ -2554,7 +2554,7 @@
       "label": "styleHierarchyRow()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L2569",
+      "source_location": "L2571",
       "id": "services_excelservice_stylehierarchyrow",
       "community": 2,
       "norm_label": "stylehierarchyrow()"
@@ -2563,7 +2563,7 @@
       "label": "styleFeatureCompletionCell()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L2642",
+      "source_location": "L2644",
       "id": "services_excelservice_stylefeaturecompletioncell",
       "community": 2,
       "norm_label": "stylefeaturecompletioncell()"
@@ -2572,7 +2572,7 @@
       "label": "TraceFeatureEntry",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L2666",
+      "source_location": "L2668",
       "id": "services_excelservice_tracefeatureentry",
       "community": 2,
       "norm_label": "tracefeatureentry"
@@ -2581,7 +2581,7 @@
       "label": "isDeliveredStatus()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L2685",
+      "source_location": "L2687",
       "id": "services_excelservice_isdeliveredstatus",
       "community": 2,
       "norm_label": "isdeliveredstatus()"
@@ -2590,7 +2590,7 @@
       "label": "resolveComponentScreenPair()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L2690",
+      "source_location": "L2692",
       "id": "services_excelservice_resolvecomponentscreenpair",
       "community": 2,
       "norm_label": "resolvecomponentscreenpair()"
@@ -2599,7 +2599,7 @@
       "label": "buildDeliveriesSheet()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L2771",
+      "source_location": "L2773",
       "id": "services_excelservice_builddeliveriessheet",
       "community": 2,
       "norm_label": "builddeliveriessheet()"
@@ -2608,7 +2608,7 @@
       "label": "buildFeatureScreenTraceabilitySheet()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L3188",
+      "source_location": "L3190",
       "id": "services_excelservice_buildfeaturescreentraceabilitysheet",
       "community": 2,
       "norm_label": "buildfeaturescreentraceabilitysheet()"
@@ -2617,7 +2617,7 @@
       "label": "buildDeliveriesWorkbook()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L3669",
+      "source_location": "L3671",
       "id": "services_excelservice_builddeliveriesworkbook",
       "community": 2,
       "norm_label": "builddeliveriesworkbook()"
@@ -2626,7 +2626,7 @@
       "label": "exportDeliveriesExcel()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L3694",
+      "source_location": "L3696",
       "id": "services_excelservice_exportdeliveriesexcel",
       "community": 2,
       "norm_label": "exportdeliveriesexcel()"
@@ -2635,7 +2635,7 @@
       "label": "exportProjectExcel()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L3717",
+      "source_location": "L3719",
       "id": "services_excelservice_exportprojectexcel",
       "community": 2,
       "norm_label": "exportprojectexcel()"
@@ -2644,7 +2644,7 @@
       "label": "parseCsvIntoWorksheet()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L4216",
+      "source_location": "L4218",
       "id": "services_excelservice_parsecsvintoworksheet",
       "community": 1,
       "norm_label": "parsecsvintoworksheet()"
@@ -2653,7 +2653,7 @@
       "label": "importProjectExcel()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L4268",
+      "source_location": "L4270",
       "id": "services_excelservice_importprojectexcel",
       "community": 1,
       "norm_label": "importprojectexcel()"
@@ -2662,7 +2662,7 @@
       "label": "importDeliveriesFromExcel()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L4786",
+      "source_location": "L4791",
       "id": "services_excelservice_importdeliveriesfromexcel",
       "community": 3,
       "norm_label": "importdeliveriesfromexcel()"
@@ -2671,7 +2671,7 @@
       "label": "downloadDeliveryTemplate()",
       "file_type": "code",
       "source_file": "src/services/excelService.ts",
-      "source_location": "L4830",
+      "source_location": "L4835",
       "id": "services_excelservice_downloaddeliverytemplate",
       "community": 2,
       "norm_label": "downloaddeliverytemplate()"
@@ -15324,5 +15324,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "8dd6750dee2eb8feb013d7e6a1eab18fc24e7ab4"
+  "built_at_commit": "5aadfb02619ba06ba9679fa3b876fd5ad95713eb"
 }

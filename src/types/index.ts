@@ -83,7 +83,7 @@ export interface Member {
   name: string;
   role: string;
   status: string;
-  reportsTo: string;
+  reportsTo?: string;
   email: string;
   phone: string;
   birthday: string;
@@ -300,9 +300,9 @@ export interface Decision {
   approver: string;
   proposedBy: string;
   rationale: string;
-  alternatives: string;
-  linkedTask: string;
-  linkedMilestone: string;
+  alternatives?: string;
+  linkedTask?: string;
+  linkedMilestone?: string;
   dueDate: string;
   createdAt: string;
   updatedAt: string;
@@ -355,6 +355,8 @@ export interface ProjectSettings {
   effortUnit?: string;
   hoursPerDay?: number;
   hoursPerWeek?: number;
+  currentBaseline?: string;
+  blendedRate?: number;
   roadmapModulesSelected?: string[];
   roadmapModuleTypesSelected?: string[];
   roadmapViewMode?: 'unified' | 'swimlane';

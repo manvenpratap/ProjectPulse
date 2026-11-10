@@ -1926,7 +1926,8 @@ export function buildUnifiedTasksSheet(
   });
   ws.properties.tabColor = { argb: palette.indigo };
   ws.properties.outlineProperties = {
-    summaryBelow: false
+    summaryBelow: false,
+    summaryRight: false
   };
 
   const cols = [
@@ -2132,7 +2133,8 @@ export function buildFeatureRolloutsSheet(
   });
   ws.properties.tabColor = { argb: palette.indigo || 'FF6366F1' };
   ws.properties.outlineProperties = {
-    summaryBelow: false
+    summaryBelow: false,
+    summaryRight: false
   };
 
   const cols = [
@@ -2502,7 +2504,7 @@ export function buildFeatureMatrixWorkbook(
         status: parentTask?.status || 'Not Started'
       });
       row.height = 20;
-      styleZebraRow(row, traceRowIdx++, traceCols.length);
+      styleZebraRow(row, traceRowIdx++, pal, traceCols.length);
       if (parentTask) formatStatusCell(row.getCell('status'), parentTask.status, pal);
     });
   });
@@ -3733,7 +3735,7 @@ export const exportProjectExcel = async (state: ProjectState): Promise<string> =
   const activeDefects = (state.defects || []).filter(d => d.status !== 'Closed' && d.status !== 'Fixed').length;
   const critDefects = (state.defects || []).filter(d => d.severity?.includes('Blocker') || d.severity?.includes('S1')).length;
   const totalRaids = (state.raids || []).length;
-  const critRaids = (state.raids || []).filter(r => r.impact === 'Critical' || r.impact === 'High').length;
+  const critRaids = (state.raids || []).filter(r => (r.impact as string) === 'Critical' || r.impact === 'High').length;
   const totalMembers = (state.members || []).length;
   const activeDecisions = (state.decisions || []).filter(d => d.status === 'Approved').length;
 
@@ -4639,6 +4641,8 @@ export const importProjectExcel = async (
     approver: d.approver || 'Lead Architect',
     proposedBy: d.proposedBy || 'Engineering Team',
     rationale: d.rationale || '',
+    alternatives: d.alternatives || '',
+    linkedTask: d.linkedTask || '',
     dueDate: parseExcelDate(d.dueDate) || new Date().toISOString().split('T')[0],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
@@ -4686,6 +4690,7 @@ export const importProjectExcel = async (
       role: m.role || 'Software Engineer',
       empId,
       status: (m.status as any) || 'Active',
+      reportsTo: m.reportsTo || '',
       email: m.email || '',
       phone: '',
       birthday: '',
