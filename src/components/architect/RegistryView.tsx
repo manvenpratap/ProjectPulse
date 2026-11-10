@@ -569,7 +569,9 @@ const RegistryView: React.FC = () => {
                             {formatLibraryName(k)}
                           </span>
                           {def && (
-                            <Star size={11} className="text-amber-500 fill-amber-500 shrink-0" title={`Default: ${def}`} />
+                            <span title={`Default: ${def}`} className="inline-flex items-center shrink-0">
+                              <Star size={11} className="text-amber-500 fill-amber-500" />
+                            </span>
                           )}
                         </div>
                         <div className="flex items-center gap-1.5 mt-0.5">
