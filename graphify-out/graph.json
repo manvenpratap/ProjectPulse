@@ -682,7 +682,7 @@
       "label": "DensityMode",
       "file_type": "code",
       "source_file": "src/components/tasks/TaskGrid.tsx",
-      "source_location": "L40",
+      "source_location": "L49",
       "id": "tasks_taskgrid_densitymode",
       "community": 0,
       "norm_label": "densitymode"
@@ -691,7 +691,7 @@
       "label": "ST_MAP",
       "file_type": "code",
       "source_file": "src/components/tasks/TaskGrid.tsx",
-      "source_location": "L42",
+      "source_location": "L51",
       "id": "tasks_taskgrid_st_map",
       "community": 0,
       "norm_label": "st_map"
@@ -700,7 +700,7 @@
       "label": "PRI_MAP",
       "file_type": "code",
       "source_file": "src/components/tasks/TaskGrid.tsx",
-      "source_location": "L51",
+      "source_location": "L60",
       "id": "tasks_taskgrid_pri_map",
       "community": 0,
       "norm_label": "pri_map"
@@ -709,7 +709,7 @@
       "label": "TaskGrid()",
       "file_type": "code",
       "source_file": "src/components/tasks/TaskGrid.tsx",
-      "source_location": "L58",
+      "source_location": "L67",
       "id": "tasks_taskgrid_taskgrid",
       "community": 4,
       "norm_label": "taskgrid()"
@@ -1204,7 +1204,7 @@
       "label": "PageHeaderProps",
       "file_type": "code",
       "source_file": "src/components/shared/PageHeader.tsx",
-      "source_location": "L9",
+      "source_location": "L7",
       "id": "shared_pageheader_pageheaderprops",
       "community": 2,
       "norm_label": "pageheaderprops"
@@ -1213,7 +1213,7 @@
       "label": "PageHeader()",
       "file_type": "code",
       "source_file": "src/components/shared/PageHeader.tsx",
-      "source_location": "L19",
+      "source_location": "L18",
       "id": "shared_pageheader_pageheader",
       "community": 2,
       "norm_label": "pageheader()"
@@ -6552,9 +6552,9 @@
       "source_file": "src/config/viewHelpData.ts",
       "source_location": "L925",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_config_viewhelpdata_ts",
-      "target": "config_viewhelpdata_getmergedfieldguide",
-      "confidence_score": 1.0
+      "target": "config_viewhelpdata_getmergedfieldguide"
     },
     {
       "relation": "imports_from",
@@ -6585,9 +6585,9 @@
       "source_file": "src/components/shared/HelpModal.tsx",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_shared_helpmodal_tsx",
-      "target": "config_viewhelpdata_standardfielditem",
-      "confidence_score": 1.0
+      "target": "config_viewhelpdata_standardfielditem"
     },
     {
       "relation": "imports",
@@ -6629,9 +6629,9 @@
       "source_file": "src/components/shared/HelpModal.tsx",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_shared_helpmodal_tsx",
-      "target": "config_viewhelpdata_getmergedfieldguide",
-      "confidence_score": 1.0
+      "target": "config_viewhelpdata_getmergedfieldguide"
     },
     {
       "relation": "contains",
@@ -8657,9 +8657,9 @@
       "source_file": "src/components/settings/SettingsView.tsx",
       "source_location": "L32",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_settings_settingsview_tsx",
-      "target": "src_components_shared_themegrid_tsx",
-      "confidence_score": 1.0
+      "target": "src_components_shared_themegrid_tsx"
     },
     {
       "relation": "contains",
@@ -9399,9 +9399,9 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_layout_themeflyout_tsx",
-      "target": "src_components_shared_themegrid_tsx",
-      "confidence_score": 1.0
+      "target": "src_components_shared_themegrid_tsx"
     },
     {
       "relation": "imports",
@@ -9410,9 +9410,9 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_layout_themeflyout_tsx",
-      "target": "shared_themegrid_themes",
-      "confidence_score": 1.0
+      "target": "shared_themegrid_themes"
     },
     {
       "relation": "imports",
@@ -9421,9 +9421,9 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_layout_themeflyout_tsx",
-      "target": "shared_themegrid_themedef",
-      "confidence_score": 1.0
+      "target": "shared_themegrid_themedef"
     },
     {
       "relation": "imports",
@@ -9432,9 +9432,9 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_layout_themeflyout_tsx",
-      "target": "shared_themegrid_dark_map",
-      "confidence_score": 1.0
+      "target": "shared_themegrid_dark_map"
     },
     {
       "relation": "imports",
@@ -9443,9 +9443,9 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_layout_themeflyout_tsx",
-      "target": "shared_themegrid_light_map",
-      "confidence_score": 1.0
+      "target": "shared_themegrid_light_map"
     },
     {
       "relation": "imports",
@@ -9454,9 +9454,9 @@
       "source_file": "src/components/layout/ThemeFlyout.tsx",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_layout_themeflyout_tsx",
-      "target": "shared_themegrid_themegrid",
-      "confidence_score": 1.0
+      "target": "shared_themegrid_themegrid"
     },
     {
       "relation": "contains",
@@ -10334,9 +10334,9 @@
       "source_file": "src/components/shared/ThemeGrid.tsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_shared_themegrid_tsx",
-      "target": "src_store_projectcontext_tsx",
-      "confidence_score": 1.0
+      "target": "src_store_projectcontext_tsx"
     },
     {
       "relation": "imports",
@@ -10345,9 +10345,9 @@
       "source_file": "src/components/shared/ThemeGrid.tsx",
       "source_location": "L2",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_shared_themegrid_tsx",
-      "target": "store_projectcontext_useproject",
-      "confidence_score": 1.0
+      "target": "store_projectcontext_useproject"
     },
     {
       "relation": "contains",
@@ -10355,9 +10355,9 @@
       "source_file": "src/components/shared/ThemeGrid.tsx",
       "source_location": "L6",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_shared_themegrid_tsx",
-      "target": "shared_themegrid_themedef",
-      "confidence_score": 1.0
+      "target": "shared_themegrid_themedef"
     },
     {
       "relation": "contains",
@@ -10365,9 +10365,9 @@
       "source_file": "src/components/shared/ThemeGrid.tsx",
       "source_location": "L20",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_shared_themegrid_tsx",
-      "target": "shared_themegrid_themes",
-      "confidence_score": 1.0
+      "target": "shared_themegrid_themes"
     },
     {
       "relation": "contains",
@@ -10375,9 +10375,9 @@
       "source_file": "src/components/shared/ThemeGrid.tsx",
       "source_location": "L539",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_shared_themegrid_tsx",
-      "target": "shared_themegrid_dark_map",
-      "confidence_score": 1.0
+      "target": "shared_themegrid_dark_map"
     },
     {
       "relation": "contains",
@@ -10385,9 +10385,9 @@
       "source_file": "src/components/shared/ThemeGrid.tsx",
       "source_location": "L554",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_shared_themegrid_tsx",
-      "target": "shared_themegrid_light_map",
-      "confidence_score": 1.0
+      "target": "shared_themegrid_light_map"
     },
     {
       "relation": "contains",
@@ -10395,9 +10395,9 @@
       "source_file": "src/components/shared/ThemeGrid.tsx",
       "source_location": "L569",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_shared_themegrid_tsx",
-      "target": "shared_themegrid_themefiltercategory",
-      "confidence_score": 1.0
+      "target": "shared_themegrid_themefiltercategory"
     },
     {
       "relation": "contains",
@@ -10405,9 +10405,9 @@
       "source_file": "src/components/shared/ThemeGrid.tsx",
       "source_location": "L571",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_shared_themegrid_tsx",
-      "target": "shared_themegrid_themegridprops",
-      "confidence_score": 1.0
+      "target": "shared_themegrid_themegridprops"
     },
     {
       "relation": "contains",
@@ -10415,9 +10415,9 @@
       "source_file": "src/components/shared/ThemeGrid.tsx",
       "source_location": "L581",
       "weight": 1.0,
+      "confidence_score": 1.0,
       "source": "src_components_shared_themegrid_tsx",
-      "target": "shared_themegrid_themegrid",
-      "confidence_score": 1.0
+      "target": "shared_themegrid_themegrid"
     },
     {
       "relation": "calls",
@@ -10684,28 +10684,6 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "src/components/shared/PageHeader.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_components_shared_pageheader_tsx",
-      "target": "src_store_authcontext_tsx"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/shared/PageHeader.tsx",
-      "source_location": "L4",
-      "weight": 1.0,
-      "confidence_score": 1.0,
-      "source": "src_components_shared_pageheader_tsx",
-      "target": "store_authcontext_useauth"
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "src/components/shared/PageHeader.tsx",
       "source_location": "L6",
       "weight": 1.0,
       "confidence_score": 1.0,
@@ -10929,6 +10907,28 @@
       "confidence_score": 1.0,
       "source": "src_components_deliveries_deliveriesview_tsx",
       "target": "src_components_shared_pageheader_tsx"
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/shared/PageHeader.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_shared_pageheader_tsx",
+      "target": "src_store_authcontext_tsx"
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "src/components/shared/PageHeader.tsx",
+      "source_location": "L4",
+      "weight": 1.0,
+      "confidence_score": 1.0,
+      "source": "src_components_shared_pageheader_tsx",
+      "target": "store_authcontext_useauth"
     },
     {
       "relation": "calls",
@@ -16260,5 +16260,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "c08f7e70ec6e34dbf75c441f7f71f78eaecc7684"
+  "built_at_commit": "7818d3e77d09f0e557b2ff0a66e3587db27953fc"
 }

@@ -95,8 +95,11 @@ def test_unified_excel_cockpit():
         page.goto("http://localhost:3000/#/tasks")
         page.wait_for_timeout(800)
 
+        page.locator('button[aria-label="Share and export data"]').first.click()
+        page.wait_for_timeout(400)
+
         with page.expect_download() as dl_tasks_info:
-            page.locator("button:has-text('Export Tasks')").first.click()
+            page.locator("text=Export Tasks (.xlsx)").first.click()
         dl_tasks = dl_tasks_info.value
         tasks_path = os.path.join(downloads_path, dl_tasks.suggested_filename)
         dl_tasks.save_as(tasks_path)
@@ -115,8 +118,11 @@ def test_unified_excel_cockpit():
         page.goto("http://localhost:3000/#/features")
         page.wait_for_timeout(800)
 
+        page.locator('button[aria-label="Share and export data"]').first.click()
+        page.wait_for_timeout(400)
+
         with page.expect_download() as dl_feat_info:
-            page.locator("button:has-text('Export Matrix')").first.click()
+            page.locator("text=Export Features (.xlsx)").first.click()
         dl_feat = dl_feat_info.value
         feat_path = os.path.join(downloads_path, dl_feat.suggested_filename)
         dl_feat.save_as(feat_path)

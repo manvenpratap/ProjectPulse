@@ -438,9 +438,85 @@ const DefectView: React.FC = () => {
       <PageHeader
         icon={Bug}
         title="Defect Workshop & Quality Matrix"
-        subtitle={`${state.defects.length} Total Quality Issues • ${state.defects.filter(d => d.status === DefectStatus.NEW).length} Unaddressed • ${state.defects.filter(d => d.severity?.startsWith('S1')).length} Critical (S1)`}
+        subtitle={`${state.defects.length} Total Issues • ${state.defects.filter(d => d.status === DefectStatus.NEW).length} Unaddressed • ${state.defects.filter(d => d.severity?.startsWith('S1')).length} Critical (S1)`}
         actions={
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0 max-w-full">
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Quick Filters */}
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {/* Quick Status */}
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-xs">
+                <span className="text-[var(--color-text-faint)] font-bold text-[11px]">Status:</span>
+                <select
+                  value={filterStatus}
+                  onChange={e => setFilterStatus(e.target.value)}
+                  className="bg-transparent font-bold text-xs text-[var(--color-text)] outline-none cursor-pointer max-w-[120px] truncate"
+                  aria-label="Filter by status"
+                >
+                  <option value="all">All Statuses</option>
+                  {Object.values(DefectStatus).map(s => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Quick Severity */}
+              <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-xs">
+                <AlertCircle size={12} className="text-red-500 shrink-0" />
+                <select
+                  value={filterSeverity}
+                  onChange={e => setFilterSeverity(e.target.value)}
+                  className="bg-transparent font-bold text-xs text-[var(--color-text)] outline-none cursor-pointer max-w-[120px] truncate"
+                  aria-label="Filter by severity"
+                >
+                  <option value="all">All Severities</option>
+                  {severities.map(s => (
+                    <option key={s} value={s}>{s}</option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Toggle Inline Filters */}
+              {viewMode === 'table' && (
+                <button
+                  onClick={() => setShowInlineFilters(!showInlineFilters)}
+                  className={clsx(
+                    "px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all cursor-pointer min-h-[34px]",
+                    showInlineFilters 
+                      ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border-[var(--color-primary-hex)]/30"
+                      : "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:text-[var(--color-text)]"
+                  )}
+                  title="Toggle column header filter row"
+                >
+                  <Filter size={13} />
+                  <span className="hidden md:inline">{showInlineFilters ? 'Filters Visible' : 'Show Filters'}</span>
+                </button>
+              )}
+
+              {/* Density Toggle (for table) */}
+              {viewMode === 'table' && (
+                <div className="hidden xl:flex items-center p-0.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                  <button
+                    onClick={() => setDensity('compact')}
+                    className={clsx(
+                      "px-2 py-1 min-h-[28px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                      density === 'compact' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)]"
+                    )}
+                  >
+                    Compact
+                  </button>
+                  <button
+                    onClick={() => setDensity('comfortable')}
+                    className={clsx(
+                      "px-2 py-1 min-h-[28px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                      density === 'comfortable' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)]"
+                    )}
+                  >
+                    Comfortable
+                  </button>
+                </div>
+              )}
+            </div>
+
             {/* View Switcher: Table Matrix vs Cards */}
             <div className="flex items-center p-0.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl mr-0.5">
               <button
@@ -471,7 +547,7 @@ const DefectView: React.FC = () => {
             <div className="relative">
               <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
               <input 
-                className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl pl-7 pr-2 py-1.5 text-xs outline-none focus:border-[var(--color-primary-hex)] w-20 sm:w-[200px] text-[var(--color-text)]"
+                className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl pl-7 pr-2 py-1.5 text-xs outline-none focus:border-[var(--color-primary-hex)] w-20 sm:w-[140px] md:w-[170px] text-[var(--color-text)]"
                 placeholder="Search..."
                 value={search}
                 onChange={e => setSearch(e.target.value)}
@@ -487,7 +563,7 @@ const DefectView: React.FC = () => {
               )}
             </div>
 
-            <Button variant="primary" size="sm" onClick={() => handleEdit(null)} className="h-9 px-2 sm:px-4 active:scale-95 shrink-0 font-bold">
+            <Button variant="primary" size="sm" onClick={() => handleEdit(null)} className="h-9 px-2.5 sm:px-4 active:scale-95 shrink-0 font-bold">
               <Plus size={15} className="sm:mr-1.5" />
               <span className="hidden sm:inline">Log Defect</span>
               <span className="sm:hidden">Log</span>
@@ -498,86 +574,6 @@ const DefectView: React.FC = () => {
 
       {/* Main Workspace */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scroll p-4 sm:p-6 lg:p-8 space-y-3.5 max-w-full">
-        {/* ── 1. Operational Toolbar ── */}
-        <div className="p-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex flex-wrap items-center gap-2">
-            {/* Quick Status */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-              <span className="text-[var(--color-text-faint)] font-bold">Status:</span>
-              <select
-                value={filterStatus}
-                onChange={e => setFilterStatus(e.target.value)}
-                className="bg-transparent font-bold text-xs text-[var(--color-text)] outline-none cursor-pointer"
-              >
-                <option value="all">All Statuses</option>
-                {Object.values(DefectStatus).map(s => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Quick Severity */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-              <AlertCircle size={13} className="text-red-500" />
-              <select
-                value={filterSeverity}
-                onChange={e => setFilterSeverity(e.target.value)}
-                className="bg-transparent font-bold text-xs text-[var(--color-text)] outline-none cursor-pointer"
-              >
-                <option value="all">All Severities</option>
-                {severities.map(s => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Toggle Inline Filters */}
-            {viewMode === 'table' && (
-              <button
-                onClick={() => setShowInlineFilters(!showInlineFilters)}
-                className={clsx(
-                  "px-2.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 border transition-all cursor-pointer",
-                  showInlineFilters 
-                    ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border-[var(--color-primary-hex)]/30"
-                    : "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:text-[var(--color-text)]"
-                )}
-                title="Toggle column header filter row"
-              >
-                <Filter size={13} />
-                <span>{showInlineFilters ? 'Filters Visible' : 'Show Filters'}</span>
-              </button>
-            )}
-          </div>
-
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold text-[var(--color-text-muted)]">
-              <strong className="text-[var(--color-text)]">{filteredDefects.length}</strong> / {state.defects.length} defects
-            </span>
-
-            {viewMode === 'table' && (
-              <div className="flex items-center p-0.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-                <button
-                  onClick={() => setDensity('compact')}
-                  className={clsx(
-                    "px-2.5 py-1 min-h-[30px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
-                    density === 'compact' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)]"
-                  )}
-                >
-                  Compact
-                </button>
-                <button
-                  onClick={() => setDensity('comfortable')}
-                  className={clsx(
-                    "px-2.5 py-1 min-h-[30px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
-                    density === 'comfortable' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)]"
-                  )}
-                >
-                  Comfortable
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
 
         {/* ── 2. Floating Bulk Actions Bar ── */}
         <AnimatePresence>

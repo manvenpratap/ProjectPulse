@@ -35,6 +35,15 @@ import DataTable, { ColumnDef } from '../shared/DataTable';
 interface TaskGridProps {
   onEditTask: (id: string) => void;
   onNewTask?: () => void;
+  selectedModule?: string;
+  setSelectedModule?: (mod: string) => void;
+  selectedRelease?: string;
+  setSelectedRelease?: (rel: string) => void;
+  showInlineFilters?: boolean;
+  setShowInlineFilters?: (show: boolean) => void;
+  density?: DensityMode;
+  setDensity?: (density: DensityMode) => void;
+  hideToolbar?: boolean;
 }
 
 type DensityMode = 'comfortable' | 'compact';
@@ -55,15 +64,39 @@ const PRI_MAP: Record<string, string> = {
   [TaskPriority.LOW]: 'low',
 };
 
-const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask, onNewTask }) => {
+const TaskGrid: React.FC<TaskGridProps> = ({ 
+  onEditTask, 
+  onNewTask,
+  selectedModule: propSelectedModule,
+  setSelectedModule: propSetSelectedModule,
+  selectedRelease: propSelectedRelease,
+  setSelectedRelease: propSetSelectedRelease,
+  showInlineFilters: propShowInlineFilters,
+  setShowInlineFilters: propSetShowInlineFilters,
+  density: propDensity,
+  setDensity: propSetDensity,
+  hideToolbar = false
+}) => {
   const { state, searchTerm, setSearchTerm, updateTask, deleteTask } = useProject();
-  const [selectedModule, setSelectedModule] = useState<string>('all');
-  const [selectedRelease, setSelectedRelease] = useState<string>('all');
+  const [internalSelectedModule, setInternalSelectedModule] = useState<string>('all');
+  const selectedModule = propSelectedModule !== undefined ? propSelectedModule : internalSelectedModule;
+  const setSelectedModule = propSetSelectedModule || setInternalSelectedModule;
+
+  const [internalSelectedRelease, setInternalSelectedRelease] = useState<string>('all');
+  const selectedRelease = propSelectedRelease !== undefined ? propSelectedRelease : internalSelectedRelease;
+  const setSelectedRelease = propSetSelectedRelease || setInternalSelectedRelease;
+
+  const [internalShowInlineFilters, setInternalShowInlineFilters] = useState<boolean>(true);
+  const showInlineFilters = propShowInlineFilters !== undefined ? propShowInlineFilters : internalShowInlineFilters;
+  const setShowInlineFilters = propSetShowInlineFilters || setInternalShowInlineFilters;
+
+  const [internalDensity, setInternalDensity] = useState<DensityMode>('comfortable');
+  const density = propDensity !== undefined ? propDensity : internalDensity;
+  const setDensity = propSetDensity || setInternalDensity;
+
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   const [selectedAssignee, setSelectedAssignee] = useState<string>('all');
   const [selectedPriority, setSelectedPriority] = useState<string>('all');
-  const [showInlineFilters, setShowInlineFilters] = useState<boolean>(true);
-  const [density, setDensity] = useState<DensityMode>('comfortable');
   const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<'id' | 'name' | 'module' | 'status' | 'priority' | 'assignee' | 'dueDate' | 'progress'>('id');
   const [sortAsc, setSortAsc] = useState<boolean>(true);
@@ -560,83 +593,85 @@ const TaskGrid: React.FC<TaskGridProps> = ({ onEditTask, onNewTask }) => {
 
   return (
     <div className="space-y-3.5">
-      {/* ── 1. Table Toolbar & Operational Controls ── */}
-      <div className="p-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Quick Module Filter */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-            <Layers size={13} className="text-[var(--color-text-faint)]" />
-            <select
-              value={selectedModule}
-              onChange={e => setSelectedModule(e.target.value)}
-              className="bg-transparent font-bold text-xs text-[var(--color-text)] outline-none cursor-pointer"
-            >
-              <option value="all">All Modules ({modules.length})</option>
-              {modules.map(m => (
-                <option key={m} value={m}>{m}</option>
-              ))}
-            </select>
-          </div>
+      {/* ── 1. Table Toolbar & Operational Controls (Rendered when not merged into Tier 2 header) ── */}
+      {!hideToolbar && (
+        <div className="p-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Quick Module Filter */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+              <Layers size={13} className="text-[var(--color-text-faint)]" />
+              <select
+                value={selectedModule}
+                onChange={e => setSelectedModule(e.target.value)}
+                className="bg-transparent font-bold text-xs text-[var(--color-text)] outline-none cursor-pointer"
+              >
+                <option value="all">All Modules ({modules.length})</option>
+                {modules.map(m => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            </div>
 
-          {/* Quick Release Filter */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-            <Flag size={13} className="text-[var(--color-text-faint)]" />
-            <select
-              value={selectedRelease}
-              onChange={e => setSelectedRelease(e.target.value)}
-              className="bg-transparent font-bold text-xs text-[var(--color-text)] outline-none cursor-pointer"
-            >
-              <option value="all">All Releases</option>
-              {releases.map(r => (
-                <option key={r} value={r}>{r}</option>
-              ))}
-            </select>
-          </div>
+            {/* Quick Release Filter */}
+            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+              <Flag size={13} className="text-[var(--color-text-faint)]" />
+              <select
+                value={selectedRelease}
+                onChange={e => setSelectedRelease(e.target.value)}
+                className="bg-transparent font-bold text-xs text-[var(--color-text)] outline-none cursor-pointer"
+              >
+                <option value="all">All Releases</option>
+                {releases.map(r => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </select>
+            </div>
 
-          {/* Toggle Inline Filters */}
-          <button
-            onClick={() => setShowInlineFilters(!showInlineFilters)}
-            className={clsx(
-              "px-2.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 border transition-all cursor-pointer",
-              showInlineFilters 
-                ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border-[var(--color-primary-hex)]/30"
-                : "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:text-[var(--color-text)]"
-            )}
-            title="Toggle column header filter row"
-          >
-            <Filter size={13} />
-            <span>{showInlineFilters ? 'Filters Visible' : 'Show Filters'}</span>
-          </button>
-        </div>
-
-        {/* View Density & Filter Count */}
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-semibold text-[var(--color-text-muted)]">
-            <strong className="text-[var(--color-text)]">{filteredTasks.length}</strong> / {state.tasks.length} tasks
-          </span>
-
-          <div className="flex items-center p-0.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+            {/* Toggle Inline Filters */}
             <button
-              onClick={() => setDensity('compact')}
+              onClick={() => setShowInlineFilters(!showInlineFilters)}
               className={clsx(
-                "px-2.5 py-1 min-h-[30px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
-                density === 'compact' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)]"
+                "px-2.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 border transition-all cursor-pointer",
+                showInlineFilters 
+                  ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border-[var(--color-primary-hex)]/30"
+                  : "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:text-[var(--color-text)]"
               )}
+              title="Toggle column header filter row"
             >
-              Compact
-            </button>
-            <button
-              onClick={() => setDensity('comfortable')}
-              className={clsx(
-                "px-2.5 py-1 min-h-[30px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
-                density === 'comfortable' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)]"
-              )}
-            >
-              Comfortable
+              <Filter size={13} />
+              <span>{showInlineFilters ? 'Filters Visible' : 'Show Filters'}</span>
             </button>
           </div>
+
+          {/* View Density & Filter Count */}
+          <div className="flex items-center gap-3">
+            <span className="text-xs font-semibold text-[var(--color-text-muted)]">
+              <strong className="text-[var(--color-text)]">{filteredTasks.length}</strong> / {state.tasks.length} tasks
+            </span>
+
+            <div className="flex items-center p-0.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+              <button
+                onClick={() => setDensity('compact')}
+                className={clsx(
+                  "px-2.5 py-1 min-h-[30px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                  density === 'compact' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)]"
+                )}
+              >
+                Compact
+              </button>
+              <button
+                onClick={() => setDensity('comfortable')}
+                className={clsx(
+                  "px-2.5 py-1 min-h-[30px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                  density === 'comfortable' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)]"
+                )}
+              >
+                Comfortable
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── 2. Floating / Docked Bulk Actions Bar ── */}
       <AnimatePresence>

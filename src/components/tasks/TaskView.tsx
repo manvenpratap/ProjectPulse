@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import TaskGrid from './TaskGrid';
 import BoardView from './BoardView';
 import TaskModal from './TaskModal';
 import TimelineView from '../timeline/TimelineView';
-import { ListTodo, Plus, LayoutGrid, Kanban, GanttChart } from 'lucide-react';
+import { ListTodo, Plus, LayoutGrid, Kanban, GanttChart, Layers, Flag, Filter } from 'lucide-react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
 import clsx from 'clsx';
@@ -17,6 +17,15 @@ const TaskView: React.FC<TaskViewProps> = ({ initialMode }) => {
   const { state, setView } = useProject();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+
+  // Operational Filters & Density lifted for unified Tier 2 Command Bar
+  const [selectedModule, setSelectedModule] = useState<string>('all');
+  const [selectedRelease, setSelectedRelease] = useState<string>('all');
+  const [showInlineFilters, setShowInlineFilters] = useState<boolean>(true);
+  const [density, setDensity] = useState<'comfortable' | 'compact'>('comfortable');
+
+  const modules = useMemo(() => Array.from(new Set(state.tasks.map(t => t.module).filter(Boolean))), [state.tasks]);
+  const releases = useMemo(() => Array.from(new Set(state.tasks.map(t => t.release).filter(Boolean))), [state.tasks]);
 
   const [viewMode, setViewMode] = useState<'grid' | 'board' | 'timeline'>(() => {
     if (initialMode) return initialMode;
@@ -60,13 +69,89 @@ const TaskView: React.FC<TaskViewProps> = ({ initialMode }) => {
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-hidden">
+      {/* Unified Tier 2 Command Bar: Title + Filters + View Modes + Actions */}
       <PageHeader
         icon={ListTodo}
         title="Project Tasks Matrix"
         subtitle={`${state.tasks.length} Total Tasks • ${state.tasks.filter(t => t.status === 'Completed').length} Done`}
         actions={
-          <div className="flex items-center gap-2">
-            <div className="inline-flex items-center p-1 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl mr-1 gap-1">
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Quick Filters (Active in Grid mode) */}
+            {viewMode === 'grid' && (
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {/* Module Filter */}
+                <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-xs">
+                  <Layers size={13} className="text-[var(--color-text-faint)]" />
+                  <select
+                    value={selectedModule}
+                    onChange={e => setSelectedModule(e.target.value)}
+                    className="bg-transparent font-semibold text-xs text-[var(--color-text)] outline-none cursor-pointer max-w-[130px] truncate"
+                    aria-label="Filter by module"
+                  >
+                    <option value="all">All Modules ({modules.length})</option>
+                    {modules.map(m => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Release Filter */}
+                <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-xs">
+                  <Flag size={13} className="text-[var(--color-text-faint)]" />
+                  <select
+                    value={selectedRelease}
+                    onChange={e => setSelectedRelease(e.target.value)}
+                    className="bg-transparent font-semibold text-xs text-[var(--color-text)] outline-none cursor-pointer max-w-[120px] truncate"
+                    aria-label="Filter by release"
+                  >
+                    <option value="all">All Releases</option>
+                    {releases.map(r => (
+                      <option key={r} value={r}>{r}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Toggle Inline Filters */}
+                <button
+                  onClick={() => setShowInlineFilters(!showInlineFilters)}
+                  className={clsx(
+                    "px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all cursor-pointer min-h-[34px]",
+                    showInlineFilters 
+                      ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border-[var(--color-primary-hex)]/30"
+                      : "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:text-[var(--color-text)]"
+                  )}
+                  title="Toggle column header filter row"
+                >
+                  <Filter size={13} />
+                  <span className="hidden md:inline">{showInlineFilters ? 'Filters Visible' : 'Show Filters'}</span>
+                </button>
+
+                {/* Density Toggle */}
+                <div className="hidden xl:flex items-center p-0.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                  <button
+                    onClick={() => setDensity('compact')}
+                    className={clsx(
+                      "px-2 py-1 min-h-[28px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                      density === 'compact' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)]"
+                    )}
+                  >
+                    Compact
+                  </button>
+                  <button
+                    onClick={() => setDensity('comfortable')}
+                    className={clsx(
+                      "px-2 py-1 min-h-[28px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                      density === 'comfortable' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)]"
+                    )}
+                  >
+                    Comfortable
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* View Mode Toggle: Grid | Board | Timeline */}
+            <div className="inline-flex items-center p-1 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl gap-1">
               <button 
                 onClick={() => handleSetViewMode('grid')}
                 className={clsx(
@@ -110,6 +195,8 @@ const TaskView: React.FC<TaskViewProps> = ({ initialMode }) => {
                 <span className="hidden sm:inline">Timeline</span>
               </button>
             </div>
+
+            {/* Primary Action Button */}
             <Button variant="primary" size="sm" onClick={handleAddNewTask} className="h-9 font-bold active:scale-95 px-2.5 sm:px-3">
               <Plus size={15} className="sm:mr-1" />
               <span className="hidden sm:inline">New Task</span>
@@ -119,7 +206,7 @@ const TaskView: React.FC<TaskViewProps> = ({ initialMode }) => {
         }
       />
 
-      {/* Task Content */}
+      {/* Task Content: Table starts immediately */}
       <div className={clsx(
         "flex-1 min-h-0",
         viewMode === 'timeline' 
@@ -127,7 +214,19 @@ const TaskView: React.FC<TaskViewProps> = ({ initialMode }) => {
           : "overflow-auto custom-scroll p-4 sm:p-6 lg:p-8"
       )}>
         {viewMode === 'grid' && (
-           <TaskGrid onEditTask={handleEditTask} onNewTask={handleAddNewTask} />
+           <TaskGrid 
+             onEditTask={handleEditTask} 
+             onNewTask={handleAddNewTask}
+             selectedModule={selectedModule}
+             setSelectedModule={setSelectedModule}
+             selectedRelease={selectedRelease}
+             setSelectedRelease={setSelectedRelease}
+             showInlineFilters={showInlineFilters}
+             setShowInlineFilters={setShowInlineFilters}
+             density={density}
+             setDensity={setDensity}
+             hideToolbar={true}
+           />
         )}
         {viewMode === 'board' && (
            <BoardView onEditTask={handleEditTask} />

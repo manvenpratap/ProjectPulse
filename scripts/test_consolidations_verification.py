@@ -285,6 +285,64 @@ def test_consolidations_verification():
         assert page.locator("h1:has-text('Field Architect')").first.is_visible(), "Failed to navigate to Field Architect from HelpModal"
         print("✓ 'Customize in Field Architect' link smoothly navigates to Field Architect")
 
+        # -------------------------------------------------------------
+        # TEST 10: Option A Unified Tier 2 Command Bar & Level 3 Removal
+        # -------------------------------------------------------------
+        print("\n--- TEST 10: Option A Unified Tier 2 Command Bar & Level 3 Removal ---")
+        
+        # 1. Verify Tasks Matrix
+        page.goto("http://localhost:3000/#/tasks")
+        page.wait_for_timeout(700)
+        
+        # Verify Breadcrumb
+        assert page.locator("text=WORK EXECUTION").first.is_visible(), "Breadcrumb WORK EXECUTION not visible"
+        assert page.locator("h1:has-text('Project Tasks Matrix')").is_visible(), "Tasks title not visible"
+        
+        # Verify Level 3 Hub Tab row is ELIMINATED (no 'WORK EXECUTION:' label followed by duplicate pills)
+        assert page.locator("text=WORK EXECUTION:").count() == 0, "Level 3 Hub tab row label WORK EXECUTION: should be eliminated"
+        
+        # Verify View Modes & Filters merged into Tier 2 header
+        assert page.locator('button[aria-label="Grid Matrix View"]').is_visible(), "Grid toggle not in Tier 2"
+        assert page.locator('button[aria-label="Kanban Board View"]').is_visible(), "Board toggle not in Tier 2"
+        assert page.locator('button[aria-label="Timeline Gantt View"]').is_visible(), "Timeline toggle not in Tier 2"
+        assert page.locator("select[aria-label='Filter by module']").is_visible(), "Module filter not in Tier 2"
+        assert page.locator("select[aria-label='Filter by release']").is_visible(), "Release filter not in Tier 2"
+        assert page.locator("button:has-text('Filters Visible'), button:has-text('Show Filters')").first.is_visible(), "Filter toggle button not in Tier 2"
+        print("✓ Tasks Matrix: Unified Tier 2 bar verified with zero redundant Level 3 tabs")
+        
+        tasks_tier2_screenshot = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/tasks_tier2_compact_header.png"
+        page.screenshot(path=tasks_tier2_screenshot, full_page=False)
+        print(f"✓ Saved screenshot to {tasks_tier2_screenshot}")
+
+        # 2. Verify Defect Workshop
+        page.goto("http://localhost:3000/#/defects")
+        page.wait_for_timeout(700)
+        assert page.locator("text=QUALITY & GOVERNANCE").first.is_visible(), "Breadcrumb QUALITY & GOVERNANCE not visible"
+        assert page.locator("h1:has-text('Defect Workshop & Quality Matrix')").is_visible()
+        assert page.locator("text=QUALITY & GOVERNANCE:").count() == 0, "Level 3 Hub tab row for QUALITY & GOVERNANCE should be eliminated"
+        assert page.locator("select[aria-label='Filter by status']").is_visible(), "Defect status filter not in Tier 2"
+        assert page.locator("select[aria-label='Filter by severity']").is_visible(), "Defect severity filter not in Tier 2"
+        assert page.locator('button[aria-label="Table View"]').is_visible(), "Matrix toggle not in Tier 2"
+        assert page.locator('button[aria-label="Cards View"]').is_visible(), "Cards toggle not in Tier 2"
+        print("✓ Defect Workshop: Unified Tier 2 bar verified with zero redundant Level 3 tabs")
+        
+        defects_tier2_screenshot = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/defects_tier2_compact_header.png"
+        page.screenshot(path=defects_tier2_screenshot, full_page=False)
+        print(f"✓ Saved screenshot to {defects_tier2_screenshot}")
+
+        # 3. Verify Pulse Reports
+        page.goto("http://localhost:3000/#/reports")
+        page.wait_for_timeout(700)
+        assert page.locator("text=PULSE & ANALYTICS").first.is_visible(), "Breadcrumb PULSE & ANALYTICS not visible"
+        assert page.locator("text=PULSE & ANALYTICS:").count() == 0, "Level 3 Hub tab row for PULSE & ANALYTICS should be eliminated"
+        assert page.locator("button:has-text('Status Summary')").is_visible(), "Report subtab Status Summary visible"
+        assert page.locator("button:has-text('CXO Email Briefing')").is_visible(), "Report subtab CXO Email Briefing visible"
+        print("✓ Pulse Reports: Clean header verified without stacked Level 3 hub row")
+        
+        reports_tier2_screenshot = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/reports_tier2_compact_header.png"
+        page.screenshot(path=reports_tier2_screenshot, full_page=False)
+        print(f"✓ Saved screenshot to {reports_tier2_screenshot}")
+
         # Ensure no uncaught page errors
         real_errors = [e for e in errors if "favicon" not in e.lower()]
         assert len(real_errors) == 0, f"Encountered unexpected browser errors: {real_errors}"
@@ -292,7 +350,7 @@ def test_consolidations_verification():
 
         browser.close()
         print("\n==========================================================================")
-        print("🎉 ALL 9 CONSOLIDATION (THEMES & FIELD SCHEMAS) PLAYWRIGHT TESTS PASSED!")
+        print("🎉 ALL 10 CONSOLIDATION & OPTION A TIER 2 PLAYWRIGHT TESTS PASSED!")
         print("==========================================================================")
 
 if __name__ == "__main__":

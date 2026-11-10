@@ -1,17 +1,16 @@
-import React, { useMemo } from 'react';
-import { LucideIcon, HelpCircle } from 'lucide-react';
+import React from 'react';
+import { LucideIcon, HelpCircle, ChevronRight } from 'lucide-react';
 import { useProject } from '../../store/ProjectContext';
-import { useAuth } from '../../store/AuthContext';
 import { getHubForView } from '../../config/navigation';
 import { ShareExportMenu } from './ShareExportMenu';
-import clsx from 'clsx';
 
 interface PageHeaderProps {
   icon: LucideIcon;
   title: string;
   subtitle?: React.ReactNode;
   actions?: React.ReactNode;
-  showHubTabs?: boolean;
+  toolbar?: React.ReactNode;
+  showHubTabs?: boolean; // Deprecated in Option A: redundant Hub Sub-Navigation row eliminated across all screens
   showShareExport?: boolean;
   className?: string;
 }
@@ -21,30 +20,28 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   title,
   subtitle,
   actions,
-  showHubTabs = true,
+  toolbar,
   showShareExport = true,
   className = '',
 }) => {
-  const { state, setView } = useProject();
-  const { hasViewAccess } = useAuth();
+  const { state } = useProject();
   const currentHub = getHubForView(state.view);
-
-  // Filter sub-navigation tabs strictly based on user role access
-  const accessibleHubItems = useMemo(() => {
-    return currentHub?.items?.filter(item => hasViewAccess(item.id)) || [];
-  }, [currentHub, hasViewAccess]);
-
-  const showTabs = showHubTabs && accessibleHubItems.length > 1;
 
   return (
     <header className={`border-b border-[var(--color-divider)] bg-[var(--color-surface)]/85 backdrop-blur-xl saturate-180 sticky top-0 z-30 shrink-0 shadow-2xs ${className}`}>
-      {/* Primary Header Row */}
-      <div className="min-h-[56px] sm:min-h-[60px] py-2 px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-2">
+      {/* Primary Unified Header Row */}
+      <div className="min-h-[52px] sm:min-h-[56px] py-2 px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-2.5">
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
           <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-highlight-hex)] border border-[var(--color-primary-hex)]/15 text-[var(--color-primary-hex)] flex items-center justify-center shrink-0 shadow-2xs">
             <Icon size={17} strokeWidth={2.2} />
           </div>
           <div className="min-w-0 max-w-4xl">
+            {currentHub?.label && (
+              <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider leading-none mb-0.5 truncate">
+                <span>{currentHub.label}</span>
+                <ChevronRight size={10} className="text-[var(--color-text-faint)]/70 shrink-0" />
+              </div>
+            )}
             <div className="flex items-center gap-1.5 sm:gap-2">
               <h1 className="text-sm sm:text-base md:text-lg font-display font-black text-[var(--color-text)] tracking-tight leading-snug truncate">
                 {title}
@@ -59,49 +56,25 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
               </button>
             </div>
             {subtitle && (
-              <p className="text-[11px] sm:text-xs text-[var(--color-text-muted)] font-medium mt-0.5 truncate max-w-3xl">
+              <div className="text-[11px] sm:text-xs text-[var(--color-text-muted)] font-medium mt-0.5 truncate max-w-3xl">
                 {subtitle}
-              </p>
+              </div>
             )}
           </div>
         </div>
 
         {(actions || showShareExport) && (
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 max-w-[60vw] sm:max-w-none">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-wrap justify-end">
             {actions}
             {showShareExport && <ShareExportMenu />}
           </div>
         )}
       </div>
 
-      {/* Hub Sub-Navigation Tab Bar */}
-      {showTabs && (
-        <div className="px-4 sm:px-6 lg:px-8 bg-[var(--color-surface-2)]/50 border-t border-[var(--color-divider)] flex items-center gap-1.5 overflow-x-auto custom-scroll py-1.5 max-w-full">
-          <span className="text-[10px] font-semibold text-[var(--color-text-faint)] uppercase tracking-wider mr-1.5 shrink-0 hidden md:inline">
-            {currentHub.label}:
-          </span>
-          <div className="inline-flex items-center bg-[var(--color-surface-2)] p-1 rounded-xl border border-[var(--color-divider)] gap-1">
-            {accessibleHubItems.map((item) => {
-              const isActive = state.view === item.id;
-              const ItemIcon = item.icon;
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => setView(item.id)}
-                  className={clsx(
-                    "px-3 py-1.5 min-h-[36px] rounded-lg text-xs font-semibold whitespace-nowrap flex items-center gap-1.5 transition-all duration-150 cursor-pointer active:scale-96 shrink-0",
-                    isActive
-                      ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm border border-[var(--color-divider)]"
-                      : "text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)]/50"
-                  )}
-                  aria-label={item.label}
-                >
-                  <ItemIcon size={13} strokeWidth={isActive ? 2.2 : 1.8} />
-                  <span>{item.shortLabel || item.label}</span>
-                </button>
-              );
-            })}
-          </div>
+      {/* Integrated Tier 2 Operational Toolbar (when provided) */}
+      {toolbar && (
+        <div className="px-4 sm:px-6 lg:px-8 py-2 bg-[var(--color-surface-2)]/30 border-t border-[var(--color-divider)] flex flex-wrap items-center justify-between gap-2.5 text-xs">
+          {toolbar}
         </div>
       )}
     </header>

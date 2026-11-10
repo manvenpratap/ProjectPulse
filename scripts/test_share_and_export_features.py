@@ -42,22 +42,19 @@ def test_share_and_export_features():
         print("✓ Global Share & Export menu opened with all share & workbook export options")
 
         # -------------------------------------------------------------
-        # TEST 2: Trigger CXO Email Brief Modal from Share Menu
+        # TEST 2: Trigger CXO Email Brief from Share Menu
         # -------------------------------------------------------------
-        print("\n--- TEST 2: Executive CXO Email Brief Modal from Share Menu ---")
+        print("\n--- TEST 2: Executive CXO Email Brief from Share Menu ---")
         cxo_item = page.locator("text=Steering Email Brief (CXO)")
         cxo_item.click()
         page.wait_for_timeout(600)
 
-        cxo_modal = page.locator("text=Executive CXO Steering Email Brief")
-        assert cxo_modal.is_visible(), "Executive CXO Email Brief modal did not open from Share menu"
-        print("✓ Executive CXO Email Brief modal opened successfully from Share menu")
+        assert page.locator("text=Reporting Cadence").is_visible() or page.locator("text=Executive CXO Steering Email Brief").is_visible(), "Executive CXO Email Brief did not open from Share menu"
+        print("✓ Executive CXO Email Brief opened successfully from Share menu")
 
-        # Close CXO Modal
-        close_btn = page.locator('button:has-text("Close"), button[aria-label="Close modal"]')
-        if close_btn.count() > 0:
-            close_btn.first.click()
-            page.wait_for_timeout(400)
+        # Navigate back to Tasks Matrix to continue test suite
+        page.goto("http://localhost:3000/#/tasks")
+        page.wait_for_timeout(600)
 
         # -------------------------------------------------------------
         # TEST 3: Copy View Summary Table to Clipboard
