@@ -1625,7 +1625,7 @@ const StepTemplates: React.FC = () => {
                                   "text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0",
                                   t.status === TaskStatus.COMPLETED ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" :
                                   t.status === TaskStatus.IN_PROGRESS ? "bg-blue-500/10 text-blue-600 dark:text-blue-400" :
-                                  t.status === TaskStatus.BLOCKED ? "bg-rose-500/10 text-rose-500" : "bg-slate-500/10 text-[var(--color-text-muted)]"
+                                  (t.status === TaskStatus.BLOCKED || t.status === TaskStatus.ON_HOLD) ? "bg-rose-500/10 text-rose-500" : "bg-slate-500/10 text-[var(--color-text-muted)]"
                                 )}>
                                   {t.status}
                                 </span>
@@ -1678,7 +1678,7 @@ const StepTemplates: React.FC = () => {
                       Back
                     </Button>
                     <Button 
-                      variant="secondary" 
+                      variant="outline" 
                       size="sm" 
                       onClick={() => handleFinalize(false)}
                       className="text-xs cursor-pointer"

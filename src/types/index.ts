@@ -6,6 +6,7 @@ export enum TaskStatus {
   NOT_STARTED = 'Not Started',
   IN_PROGRESS = 'In Progress',
   ON_HOLD = 'On Hold',
+  BLOCKED = 'Blocked',
   UNDER_REVIEW = 'Under Review',
   COMPLETED = 'Completed',
   CANCELLED = 'Cancelled',
