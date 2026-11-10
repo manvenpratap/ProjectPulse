@@ -26,7 +26,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
-  const { state, updateProject, resetProject } = useProject();
+  const { state, updateProject, resetProject, setView } = useProject();
   const { hasViewAccess, canPerform, isAdmin } = useAuth();
   const [isCxoEmailOpen, setIsCxoEmailOpen] = useState(false);
   const [processingLatency, setProcessingLatency] = useState<string | null>(null);
@@ -263,7 +263,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
                       {/* Pulse & Analytics: Executive CXO Brief Action */}
                       {hub.id === 'analytics' && (hasViewAccess('reports') || isAdmin) && (
                         <button
-                          onClick={() => setIsCxoEmailOpen(true)}
+                          onClick={() => {
+                            if (typeof window !== 'undefined') {
+                              window.sessionStorage.setItem('pp-report-subtab', 'cxo');
+                            }
+                            setView('reports');
+                            window.dispatchEvent(new CustomEvent('switch-report-tab', { detail: 'cxo' }));
+                          }}
                           className="w-full flex items-center justify-between px-2.5 py-1.5 min-h-[34px] rounded-lg text-xs font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)] transition-colors duration-150 active:scale-[0.98] cursor-pointer group text-left"
                           title="Generate executive steering email brief"
                         >

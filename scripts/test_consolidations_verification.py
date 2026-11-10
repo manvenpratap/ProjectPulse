@@ -95,6 +95,63 @@ def test_consolidations_verification():
         assert download.suggested_filename.endswith(".xlsx"), f"Expected .xlsx, got {download.suggested_filename}"
         print(f"✓ Consolidated saveBlob successfully downloaded: {download.suggested_filename}")
 
+        # -------------------------------------------------------------
+        # TEST 5: Unified CXO Email Briefing Inside Pulse Reports
+        # -------------------------------------------------------------
+        print("\n--- TEST 5: Unified CXO Email Briefing Inside Pulse Reports ---")
+        # Navigate to Pulse Reports
+        reports_nav = page.locator('button:has-text("Pulse Reports"), aside button:has-text("Reports")')
+        assert reports_nav.count() > 0, "Pulse Reports nav item not found"
+        reports_nav.first.click()
+        page.wait_for_timeout(1000)
+
+        # Click CXO Email Briefing tab
+        cxo_tab = page.locator('button:has-text("CXO Email Briefing")')
+        assert cxo_tab.count() > 0, "CXO Email Briefing tab missing in Reports"
+        cxo_tab.first.click()
+        page.wait_for_timeout(600)
+
+        # Verify full suite is embedded in-page
+        assert page.locator("text=Reporting Cadence").is_visible(), "Reporting Cadence controls missing in-page"
+        assert page.locator("text=Executive Steering Note").is_visible(), "Executive Steering Note missing in-page"
+        assert page.locator("button:has-text('Fortnightly (14d)')").is_visible(), "Fortnightly button missing in-page"
+        assert page.locator("button:has-text('Copy Rich Email')").is_visible(), "Copy Rich Email button missing in-page"
+        assert page.locator("button:has-text('Copy Markdown')").is_visible(), "Copy Markdown button missing in-page"
+        print("✓ Full Executive CXO Briefing Suite successfully embedded in Pulse Reports")
+
+        # Test changing cadence
+        page.locator("button:has-text('Fortnightly (14d)')").click()
+        page.wait_for_timeout(300)
+
+        # Test switching preview to Markdown
+        page.get_by_role("button", name="Markdown", exact=True).click()
+        page.wait_for_timeout(300)
+        assert page.locator("pre:has-text('Fortnightly Executive Brief')").is_visible(), "Markdown preview did not update"
+        print("✓ Live preview reactivity and Markdown mode verified")
+
+        # Capture screenshot for artifact
+        screenshot_path = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/unified_cxo_briefing_reports.png"
+        page.screenshot(path=screenshot_path)
+        print(f"✓ Saved screenshot to {screenshot_path}")
+
+        # -------------------------------------------------------------
+        # TEST 6: Unified Navigation (Sidebar & Share Menu)
+        # -------------------------------------------------------------
+        print("\n--- TEST 6: Unified Navigation from Sidebar & Share Menu ---")
+        # Navigate away to Tasks Matrix
+        page.locator('button:has-text("Tasks Matrix")').first.click()
+        page.wait_for_timeout(1000)
+
+        # Click "Executive CXO Email Brief" from sidebar
+        sidebar_cxo_btn = page.locator("aside button:has-text('Executive CXO Email Brief')")
+        assert sidebar_cxo_btn.count() > 0, "Sidebar Executive CXO Email Brief button missing"
+        sidebar_cxo_btn.first.click()
+        page.wait_for_timeout(1000)
+
+        # Verify it navigated to Pulse Reports and CXO tab is active
+        assert page.locator("text=Reporting Cadence").is_visible(), "Sidebar button failed to navigate to CXO Briefing tab"
+        print("✓ Sidebar Executive CXO Email Brief routes directly to unified CXO Briefing")
+
         # Ensure no uncaught page errors
         real_errors = [e for e in errors if "favicon" not in e.lower()]
         assert len(real_errors) == 0, f"Encountered unexpected browser errors: {real_errors}"

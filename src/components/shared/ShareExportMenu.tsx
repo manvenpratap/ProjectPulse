@@ -42,7 +42,7 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
   variant = 'outline',
   compact = false,
 }) => {
-  const { state } = useProject();
+  const { state, setView } = useProject();
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [exporting, setExporting] = useState<string | null>(null);
@@ -133,7 +133,11 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
   };
 
   const handleOpenCxoModal = () => {
-    window.dispatchEvent(new CustomEvent('open-cxo-email'));
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem('pp-report-subtab', 'cxo');
+    }
+    setView('reports');
+    window.dispatchEvent(new CustomEvent('switch-report-tab', { detail: 'cxo' }));
     setIsOpen(false);
   };
 

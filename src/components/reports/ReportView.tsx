@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useProject } from '../../store/ProjectContext';
+import CxoEmailBriefing from './CxoEmailBriefing';
 import { 
   FileText, 
   Download, 
@@ -44,8 +45,31 @@ type ReportType = 'status' | 'cxo' | 'milestones' | 'workload' | 'architecture';
 
 const ReportView: React.FC = () => {
   const { state } = useProject();
-  const [reportType, setReportType] = useState<ReportType>('status');
-  const [copiedEmail, setCopiedEmail] = useState(false);
+  const [reportType, setReportType] = useState<ReportType>(() => {
+    if (typeof window !== 'undefined') {
+      const stored = window.sessionStorage.getItem('pp-report-subtab') as ReportType | null;
+      if (stored) {
+        window.sessionStorage.removeItem('pp-report-subtab');
+        return stored;
+      }
+    }
+    return 'status';
+  });
+
+  useEffect(() => {
+    const handleSwitchTab = (e: CustomEvent<ReportType>) => {
+      if (e.detail) setReportType(e.detail);
+    };
+    window.addEventListener('switch-report-tab', handleSwitchTab as EventListener);
+    if (typeof window !== 'undefined') {
+      const stored = window.sessionStorage.getItem('pp-report-subtab') as ReportType | null;
+      if (stored) {
+        window.sessionStorage.removeItem('pp-report-subtab');
+        setReportType(stored);
+      }
+    }
+    return () => window.removeEventListener('switch-report-tab', handleSwitchTab as EventListener);
+  }, []);
 
   const completedTasks = state.tasks.filter(t => t.status === TaskStatus.COMPLETED);
   const totalTasks = state.tasks.length;
@@ -61,53 +85,6 @@ const ReportView: React.FC = () => {
 
   const handlePrint = () => {
     window.print();
-  };
-
-  // Generate CXO Executive Briefing Email text
-  const generateCxoEmailText = () => {
-    const today = new Date().toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' });
-    const activeDeliveries = (state.deliveries || []).filter(d => d.status === 'Deployed' || d.status === 'Ready for Deployment');
-    const upcomingRelease = (state.releases || []).find(r => r.status === 'Active') || state.releases?.[0];
-
-    return `Subject: [EXECUTIVE BRIEFING] ${state.name} — Weekly Governance Pulse (${today})
-
-Executive Leadership Team,
-
-Below is the weekly delivery status and strategic health summary for ${state.name}.
-
-═════════════════════════════════════════════════════════
-1. EXECUTIVE STATUS & CONFIDENCE
-═════════════════════════════════════════════════════════
-• Overall Health Index: ${health}% (${health > 80 ? 'ON TRACK' : health > 50 ? 'AT RISK' : 'CRITICAL'})
-• Scope Completed: ${progress}% (${completedTasks.length} of ${totalTasks} tasks delivered)
-• Active Target Release: ${upcomingRelease ? `${upcomingRelease.name} (Target: ${fmtDate(upcomingRelease.date || '')})` : 'In Flight'}
-• Overdue Action Items: ${overdueTasks.length} items requiring steering escalation
-
-═════════════════════════════════════════════════════════
-2. RECENT HIGHLIGHTS & KEY DELIVERIES
-═════════════════════════════════════════════════════════
-${activeDeliveries.slice(0, 3).map(d => `• [${d.almId || d.id}] ${d.name} (${d.category || 'Release'} — ${d.status})`).join('\n') || '• Key architecture components and foundational modules progressed.'}
-
-═════════════════════════════════════════════════════════
-3. RISK REGISTER & RED FLAGS (EWS)
-═════════════════════════════════════════════════════════
-${activeRaids.slice(0, 3).map(r => `• [${r.type.toUpperCase()}] ${r.title} (Owner: ${r.owner}, Impact: ${r.impact})`).join('\n') || '• No critical unmitigated high-impact risks logged.'}
-
-═════════════════════════════════════════════════════════
-4. DECISIONS NEEDED FROM STEERING COMMITTEE
-═════════════════════════════════════════════════════════
-${pendingDecisions.slice(0, 3).map(d => `• ${d.title} (Proposed by: ${d.proposedBy}, Approver: ${d.approver})`).join('\n') || '• No urgent sign-offs pending from leadership.'}
-
-Full telemetry and interactive reports are available at ProjectPulse.
-
-Best regards,
-Project Management Office (PMO)`;
-  };
-
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText(generateCxoEmailText());
-    setCopiedEmail(true);
-    setTimeout(() => setCopiedEmail(false), 2500);
   };
 
   return (
@@ -252,28 +229,10 @@ Project Management Office (PMO)`;
               </div>
             )}
 
-            {/* TAB 2: CXO EMAIL BRIEFING */}
+            {/* TAB 2: CXO EMAIL BRIEFING (Unified Executive Steering Brief) */}
             {reportType === 'cxo' && (
-              <div className="space-y-6 animate-in fade-in duration-300">
-                <div className="flex items-center justify-between p-4 bg-[var(--color-surface-2)] rounded-2xl border border-[var(--color-divider)]">
-                  <div>
-                    <h3 className="font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
-                      <Mail size={16} className="text-indigo-600" />
-                      One-Click CXO Briefing Email
-                    </h3>
-                    <p className="text-xs text-[var(--color-text-muted)]">
-                      Pre-formatted bulleted update ready to copy and send to stakeholders.
-                    </p>
-                  </div>
-                  <Button variant="primary" size="sm" onClick={handleCopyEmail} className="font-bold">
-                    {copiedEmail ? <Check size={14} className="mr-1.5 text-emerald-300" /> : <Copy size={14} className="mr-1.5" />}
-                    {copiedEmail ? 'Copied to Clipboard!' : 'Copy Email Text'}
-                  </Button>
-                </div>
-
-                <div className="p-6 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] font-mono text-xs text-[var(--color-text)] whitespace-pre-wrap leading-relaxed shadow-inner overflow-x-auto">
-                  {generateCxoEmailText()}
-                </div>
+              <div className="space-y-4 animate-in fade-in duration-300">
+                <CxoEmailBriefing embedded={true} />
               </div>
             )}
 
