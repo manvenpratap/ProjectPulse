@@ -46,7 +46,11 @@ interface HitArea {
   y2: number;
 }
 
-export const TimelineView: React.FC = () => {
+export interface TimelineViewProps {
+  embedded?: boolean;
+}
+
+export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) => {
   const { state } = useProject();
 
   // Control states
@@ -836,82 +840,150 @@ export const TimelineView: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)]" ref={containerRef}>
-      {/* 1. Page Header */}
-      <PageHeader
-        icon={GanttIcon}
-        title="Project Timeline & Gantt"
-        subtitle={`${filteredTasks.length} Scheduled Tasks • Swimlanes & Predictive Forecast`}
-        actions={
-          <div className="flex items-center gap-2 flex-wrap">
-            {/* View Mode Toggle */}
-            <div className="flex bg-[var(--color-surface-2)] p-1 rounded-xl border border-[var(--color-divider)]">
-              <button
-                onClick={() => setViewMode('swimlane')}
-                className={clsx(
-                  "px-2.5 py-1.5 min-h-[36px] min-w-[36px] text-xs font-semibold rounded-lg transition-colors duration-150 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95",
-                  viewMode === 'swimlane'
-                    ? "bg-[var(--color-surface)] shadow-sm text-[var(--color-primary-hex)]"
-                    : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-                )}
-                title="Group into Module Swimlanes"
-                aria-label="Group into Module Swimlanes"
-              >
-                <Layers size={14} />
-                <span className="hidden sm:inline">Swimlanes</span>
-              </button>
-              <button
-                onClick={() => setViewMode('flat')}
-                className={clsx(
-                  "px-2.5 py-1.5 min-h-[36px] min-w-[36px] text-xs font-semibold rounded-lg transition-colors duration-150 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95",
-                  viewMode === 'flat'
-                    ? "bg-[var(--color-surface)] shadow-sm text-[var(--color-primary-hex)]"
-                    : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-                )}
-                title="Show flat chronological matrix"
-                aria-label="Show flat chronological matrix"
-              >
-                <Filter size={14} />
-                <span className="hidden sm:inline">Flat</span>
-              </button>
-            </div>
-
-            {/* Resolution Zoom Selector */}
-            <div className="flex bg-[var(--color-surface-2)] p-1 rounded-xl border border-[var(--color-divider)]">
-              {(['day', 'week', 'month'] as const).map(z => (
+      {/* 1. Page Header (hidden when embedded in TaskView) */}
+      {!embedded && (
+        <PageHeader
+          icon={GanttIcon}
+          title="Project Timeline & Gantt"
+          subtitle={`${filteredTasks.length} Scheduled Tasks • Swimlanes & Predictive Forecast`}
+          actions={
+            <div className="flex items-center gap-2 flex-wrap">
+              {/* View Mode Toggle */}
+              <div className="flex bg-[var(--color-surface-2)] p-1 rounded-xl border border-[var(--color-divider)]">
                 <button
-                  key={z}
-                  onClick={() => setZoom(z)}
+                  onClick={() => setViewMode('swimlane')}
                   className={clsx(
-                    "px-2.5 py-1.5 min-h-[36px] text-xs font-semibold rounded-lg transition-colors duration-150 capitalize cursor-pointer active:scale-95 flex items-center justify-center",
-                    zoom === z 
-                      ? "bg-[var(--color-surface)] shadow-sm text-[var(--color-primary-hex)]" 
+                    "px-2.5 py-1.5 min-h-[36px] min-w-[36px] text-xs font-semibold rounded-lg transition-colors duration-150 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95",
+                    viewMode === 'swimlane'
+                      ? "bg-[var(--color-surface)] shadow-sm text-[var(--color-primary-hex)]"
                       : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                   )}
-                  aria-label={`Zoom ${z}`}
+                  title="Group into Module Swimlanes"
+                  aria-label="Group into Module Swimlanes"
                 >
-                  {z}
+                  <Layers size={14} />
+                  <span className="hidden sm:inline">Swimlanes</span>
                 </button>
-              ))}
-            </div>
+                <button
+                  onClick={() => setViewMode('flat')}
+                  className={clsx(
+                    "px-2.5 py-1.5 min-h-[36px] min-w-[36px] text-xs font-semibold rounded-lg transition-colors duration-150 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95",
+                    viewMode === 'flat'
+                      ? "bg-[var(--color-surface)] shadow-sm text-[var(--color-primary-hex)]"
+                      : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  )}
+                  title="Show flat chronological matrix"
+                  aria-label="Show flat chronological matrix"
+                >
+                  <Filter size={14} />
+                  <span className="hidden sm:inline">Flat</span>
+                </button>
+              </div>
 
-            {/* Jump to Today Button */}
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={jumpToToday}
-              className="text-xs font-semibold h-9 min-h-[36px] active:scale-95"
-              title="Center timeline on today"
-            >
-              Today
-            </Button>
-          </div>
-        }
-      />
+              {/* Resolution Zoom Selector */}
+              <div className="flex bg-[var(--color-surface-2)] p-1 rounded-xl border border-[var(--color-divider)]">
+                {(['day', 'week', 'month'] as const).map(z => (
+                  <button
+                    key={z}
+                    onClick={() => setZoom(z)}
+                    className={clsx(
+                      "px-2.5 py-1.5 min-h-[36px] text-xs font-semibold rounded-lg transition-colors duration-150 capitalize cursor-pointer active:scale-95 flex items-center justify-center",
+                      zoom === z 
+                        ? "bg-[var(--color-surface)] shadow-sm text-[var(--color-primary-hex)]" 
+                        : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                    )}
+                    aria-label={`Zoom ${z}`}
+                  >
+                    {z}
+                  </button>
+                ))}
+              </div>
+
+              {/* Jump to Today Button */}
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={jumpToToday}
+                className="text-xs font-semibold h-9 min-h-[36px] active:scale-95"
+                title="Center timeline on today"
+              >
+                Today
+              </Button>
+            </div>
+          }
+        />
+      )}
 
       {/* 2. Operational Filter Toolbar */}
       <div className="px-4 sm:px-6 lg:px-8 py-2.5 bg-[var(--color-surface)] border-b border-[var(--color-divider)] flex flex-wrap items-center justify-between gap-3 shrink-0">
-        <div className="flex items-center gap-2 flex-1 min-w-[240px] max-w-[360px]">
-          <div className="relative w-full">
+        <div className="flex items-center gap-2 flex-wrap">
+          {embedded && (
+            <>
+              {/* Embedded View Mode Toggle */}
+              <div className="flex bg-[var(--color-surface-2)] p-1 rounded-xl border border-[var(--color-divider)]">
+                <button
+                  onClick={() => setViewMode('swimlane')}
+                  className={clsx(
+                    "px-2.5 py-1 min-h-[32px] text-xs font-semibold rounded-lg transition-colors duration-150 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95",
+                    viewMode === 'swimlane'
+                      ? "bg-[var(--color-surface)] shadow-xs text-[var(--color-primary-hex)]"
+                      : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  )}
+                  title="Group into Module Swimlanes"
+                  aria-label="Group into Module Swimlanes"
+                >
+                  <Layers size={13} />
+                  <span className="hidden md:inline">Swimlanes</span>
+                </button>
+                <button
+                  onClick={() => setViewMode('flat')}
+                  className={clsx(
+                    "px-2.5 py-1 min-h-[32px] text-xs font-semibold rounded-lg transition-colors duration-150 flex items-center justify-center gap-1.5 cursor-pointer active:scale-95",
+                    viewMode === 'flat'
+                      ? "bg-[var(--color-surface)] shadow-xs text-[var(--color-primary-hex)]"
+                      : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  )}
+                  title="Show flat chronological matrix"
+                  aria-label="Show flat chronological matrix"
+                >
+                  <Filter size={13} />
+                  <span className="hidden md:inline">Flat</span>
+                </button>
+              </div>
+
+              {/* Embedded Resolution Zoom Selector */}
+              <div className="flex bg-[var(--color-surface-2)] p-1 rounded-xl border border-[var(--color-divider)]">
+                {(['day', 'week', 'month'] as const).map(z => (
+                  <button
+                    key={z}
+                    onClick={() => setZoom(z)}
+                    className={clsx(
+                      "px-2.5 py-1 min-h-[32px] text-xs font-semibold rounded-lg transition-colors duration-150 capitalize cursor-pointer active:scale-95 flex items-center justify-center",
+                      zoom === z 
+                        ? "bg-[var(--color-surface)] shadow-xs text-[var(--color-primary-hex)]" 
+                        : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                    )}
+                    aria-label={`Zoom ${z}`}
+                  >
+                    {z}
+                  </button>
+                ))}
+              </div>
+
+              {/* Embedded Jump to Today Button */}
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={jumpToToday}
+                className="text-xs font-semibold h-8 min-h-[32px] px-2.5 active:scale-95"
+                title="Center timeline on today"
+              >
+                Today
+              </Button>
+            </>
+          )}
+
+          <div className="relative min-w-[180px] max-w-[280px]">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
             <input 
               type="text"

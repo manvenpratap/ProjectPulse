@@ -152,6 +152,58 @@ def test_consolidations_verification():
         assert page.locator("text=Reporting Cadence").is_visible(), "Sidebar button failed to navigate to CXO Briefing tab"
         print("✓ Sidebar Executive CXO Email Brief routes directly to unified CXO Briefing")
 
+        # -------------------------------------------------------------
+        # TEST 7: Timeline View Mode inside Tasks Matrix
+        # -------------------------------------------------------------
+        print("\n--- TEST 7: Timeline View Mode under Tasks Matrix ---")
+        # Navigate to Tasks Matrix
+        page.locator('aside button:has-text("Tasks Matrix")').first.click()
+        page.wait_for_timeout(1000)
+
+        # Check that Grid, Board, and Timeline toggles are present
+        grid_btn = page.locator('button[aria-label="Grid Matrix View"]')
+        board_btn = page.locator('button[aria-label="Kanban Board View"]')
+        timeline_btn = page.locator('button[aria-label="Timeline Gantt View"]')
+
+        assert grid_btn.is_visible(), "Grid toggle button not found"
+        assert board_btn.is_visible(), "Board toggle button not found"
+        assert timeline_btn.is_visible(), "Timeline toggle button not found alongside Grid and Board"
+        print("✓ Grid, Board, and Timeline toggles exist alongside each other")
+
+        # Click Board toggle
+        board_btn.click()
+        page.wait_for_timeout(500)
+        assert page.locator("text=Backlog").first.is_visible() or page.locator("text=In Progress").first.is_visible(), "Kanban Board failed to render"
+        print("✓ Successfully switched to Kanban Board mode")
+
+        # Click Timeline toggle
+        timeline_btn.click()
+        page.wait_for_timeout(1000)
+
+        # Verify embedded Timeline rendered
+        assert page.locator("button:has-text('Swimlanes')").is_visible(), "Embedded Timeline swimlanes button not found"
+        assert page.locator("button:has-text('Deps')").is_visible(), "Embedded Timeline Deps toggle not found"
+        assert page.locator("canvas").count() >= 2, "Gantt timeline canvases not rendered"
+        print("✓ Successfully switched to Timeline Gantt mode within Tasks")
+
+        # Save screenshot
+        timeline_screenshot = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/tasks_timeline_view_mode.png"
+        page.screenshot(path=timeline_screenshot, full_page=True)
+        print(f"✓ Saved screenshot to {timeline_screenshot}")
+
+        # Click Grid toggle to verify roundtrip switching
+        grid_btn.click()
+        page.wait_for_timeout(500)
+        assert page.locator("table").count() > 0 or page.locator("text=Task Name").count() > 0 or page.locator("text=ID").count() > 0, "Grid failed to restore"
+        print("✓ Successfully switched back to Grid mode")
+
+        # Verify sidebar "Project Timeline" shortcut
+        page.locator('aside button:has-text("Project Timeline")').first.click()
+        page.wait_for_timeout(1000)
+        assert timeline_btn.is_visible(), "Timeline button in Tasks header not visible after sidebar navigation"
+        assert page.locator("button:has-text('Swimlanes')").is_visible(), "Timeline view mode failed to activate from sidebar shortcut"
+        print("✓ Sidebar Project Timeline shortcut smoothly opens Tasks in Timeline mode")
+
         # Ensure no uncaught page errors
         real_errors = [e for e in errors if "favicon" not in e.lower()]
         assert len(real_errors) == 0, f"Encountered unexpected browser errors: {real_errors}"
@@ -159,7 +211,7 @@ def test_consolidations_verification():
 
         browser.close()
         print("\n=======================================================")
-        print("🎉 CONSOLIDATION PLAYWRIGHT VERIFICATION PASSED (0 DEFECTS)!")
+        print("🎉 ALL 7 CONSOLIDATION & TIMELINE PLAYWRIGHT TESTS PASSED (0 DEFECTS)!")
         print("=======================================================")
 
 if __name__ == "__main__":

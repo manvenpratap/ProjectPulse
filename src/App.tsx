@@ -10,7 +10,6 @@ import LoginView from './components/auth/LoginView';
 import AccessDenied from './components/auth/AccessDenied';
 import AccessManagerModal from './components/auth/AccessManagerModal';
 import TaskView from './components/tasks/TaskView';
-import TimelineView from './components/timeline/TimelineView';
 import DashboardView from './components/dashboard/DashboardView';
 import TeamView from './components/team/TeamView';
 import LogView from './components/log/LogView';
@@ -82,7 +81,7 @@ const MainApp: React.FC = () => {
       case 'deliveries': return <DeliveriesView />;
       case 'releases': return <ReleaseRoadmap />;
       case 'tasks': return <TaskView />;
-      case 'timeline': return <TimelineView />;
+      case 'timeline': return <TaskView initialMode="timeline" />;
       case 'dash': return <DashboardView />;
       case 'team': return <TeamView />;
       case 'features': return <FunctionalMatrix />;
