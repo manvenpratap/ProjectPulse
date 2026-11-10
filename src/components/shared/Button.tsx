@@ -8,7 +8,7 @@ function cn(...inputs: ClassValue[]) {
 }
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'outline' | 'ghost' | 'danger';
+  variant?: 'primary' | 'outline' | 'ghost' | 'danger' | 'secondary';
   size?: 'sm' | 'md' | 'lg' | 'icon';
   isLoading?: boolean;
 }
@@ -27,6 +27,7 @@ const Button: React.FC<ButtonProps> = ({
   const variants = {
     primary: "bg-[var(--color-primary-hex)] text-[var(--color-primary-text,white)] hover:opacity-95 shadow-sm active:shadow-none border border-black/5 dark:border-white/10",
     outline: "bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text)] hover:bg-[var(--color-surface-2)] shadow-2xs active:bg-[var(--color-surface-offset)]",
+    secondary: "bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text)] hover:bg-[var(--color-surface-offset)] shadow-2xs active:bg-[var(--color-surface-2)]/80",
     ghost: "bg-transparent text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)]",
     danger: "bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 active:bg-rose-500/25",
   };
