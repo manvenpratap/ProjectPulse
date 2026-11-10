@@ -17,20 +17,8 @@ import {
   buildDeliveriesWorkbook,
   exportDeliveriesExcel
 } from './excelService';
-import { getHealthScore } from '../utils/projectUtils';
-
-// Helper to trigger browser file download from Blob
-export const saveBlob = (blob: Blob, filename: string) => {
-  if (typeof window === 'undefined') return;
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-};
+import { getHealthScore, saveBlob, normalizeSkills } from '../utils/projectUtils';
+export { saveBlob };
 
 // Returns total records for a view
 export const getViewItemCount = (state: ProjectState, viewId: string): number => {
@@ -547,7 +535,7 @@ export const exportViewToCSV = (state: ProjectState, viewId: string): string => 
       const headers = ['Member ID', 'Name', 'Role', 'Email', 'Status', 'Reports To', 'Skills'];
       const rows = (state.members || []).map(m => [
         m.id, m.name, m.role, m.email || '', m.status || 'Active', m.reportsTo || '',
-        (Array.isArray(m.skills) ? m.skills : (typeof m.skills === 'string' ? (m.skills as string).split(',').map(s => s.trim()) : [])).join(';')
+        normalizeSkills(m.skills).join(';')
       ]);
       csvContent = [headers.map(escapeCSV).join(','), ...rows.map(r => r.map(escapeCSV).join(','))].join('\n');
       break;

@@ -65,6 +65,14 @@ export const isBlocked = (task: Task, tasks: Task[]): boolean => {
   });
 };
 
+export const isOverdue = (task: Task): boolean => {
+  if (!task.dueDate || task.status === TaskStatus.COMPLETED || task.status === TaskStatus.CANCELLED) {
+    return false;
+  }
+  const diff = daysDiff(task.dueDate);
+  return diff !== null && diff < 0;
+};
+
 export const getHealthScore = (tasks: Task[]): number => {
   if (!tasks || !tasks.length) return 100;
   const active = tasks.filter(t => t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED);
@@ -110,4 +118,32 @@ export const getStartOfWeek = (d: Date): Date => {
   monday.setDate(d.getDate() - day + 1);
   monday.setHours(0, 0, 0, 0);
   return monday;
+};
+
+export const saveBlob = (blob: Blob, filename: string): void => {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 100);
+};
+
+export const normalizeSkills = (skills: string[] | string | undefined | null): string[] => {
+  if (!skills) return [];
+  if (Array.isArray(skills)) return skills;
+  if (typeof skills === 'string') {
+    const trimmed = skills.trim();
+    if (trimmed.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) return parsed.map(s => String(s).trim()).filter(Boolean);
+      } catch {}
+    }
+    return trimmed.split(',').map(s => s.trim()).filter(Boolean);
+  }
+  return [];
 };

@@ -41,7 +41,7 @@ import clsx from 'clsx';
 import MemberHierarchy from './MemberHierarchy';
 import PageHeader from '../shared/PageHeader';
 import { motion, AnimatePresence } from 'motion/react';
-import { getWeekNumber } from '../../utils/projectUtils';
+import { getWeekNumber, normalizeSkills } from '../../utils/projectUtils';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef } from '../shared/DataTable';
 
@@ -648,11 +648,7 @@ const TeamView: React.FC = () => {
       headerTitle: 'Core engineering competencies and skill tags',
       width: 'min-w-[180px]',
       cell: (m) => {
-        let skills = m.skills || [];
-        if (typeof skills === 'string') {
-          try { skills = JSON.parse(skills); } catch { skills = (skills as string).split(',').map(s => s.trim()).filter(Boolean); }
-        }
-        if (!Array.isArray(skills)) skills = [];
+        const skills = normalizeSkills(m.skills);
         return (
           <div className="flex items-center gap-1 max-w-[200px] overflow-hidden whitespace-nowrap">
             {skills.slice(0, 2).map((sk, idx) => (
@@ -1294,18 +1290,7 @@ const TeamView: React.FC = () => {
                   efficiency = Math.max(0, Math.round(doneRatio * (1 - overduePenalty) * 100));
                 }
 
-                const rawSkills = member.skills;
-                let skills: string[] = [];
-                if (Array.isArray(rawSkills)) {
-                  skills = rawSkills;
-                } else if (typeof rawSkills === 'string') {
-                  try {
-                    const parsed = JSON.parse(rawSkills);
-                    skills = Array.isArray(parsed) ? parsed : [String(parsed)];
-                  } catch {
-                    skills = rawSkills.split(',').map(s => s.trim()).filter(Boolean);
-                  }
-                }
+                const skills = normalizeSkills(member.skills);
 
                 const isContactExpanded = expandedContactIds.has(member.id);
 

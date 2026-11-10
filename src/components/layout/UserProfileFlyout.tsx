@@ -1,4 +1,5 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
+import { useClickOutside } from '../../hooks/useClickOutside';
 import { useAuth } from '../../store/AuthContext';
 import { 
   User, 
@@ -27,17 +28,7 @@ export const UserProfileFlyout: React.FC<UserProfileFlyoutProps> = ({
   const { currentUser, users, switchUser, logout, isAdmin } = useAuth();
   const flyoutRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleOutsideClick = (e: MouseEvent) => {
-      if (flyoutRef.current && !flyoutRef.current.contains(e.target as Node)) {
-        onClose();
-      }
-    };
-    if (isOpen) {
-      document.addEventListener('mousedown', handleOutsideClick);
-    }
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
-  }, [isOpen, onClose]);
+  useClickOutside(flyoutRef, onClose, isOpen);
 
   if (!isOpen || !currentUser) return null;
 

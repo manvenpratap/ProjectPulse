@@ -14,6 +14,15 @@ import {
   LogEntry, 
   Baseline
 } from '../types';
+import { 
+  getHealthScore, 
+  getWeekNumber, 
+  saveBlob, 
+  normalizeSkills, 
+  isOverdue 
+} from '../utils/projectUtils';
+
+export { getHealthScore, getWeekNumber };
 
 // ============================================================================
 // 1. HIGH-END THEME PALETTE & VISUAL STYLING ENGINE
@@ -442,24 +451,6 @@ export function getThemeTint(argb: string, factor: number, palette: ExcelThemePa
   g = Math.round(g * factor + bgG * (1 - factor));
   b = Math.round(b * factor + bgB * (1 - factor));
   return 'FF' + r.toString(16).padStart(2, '0').toUpperCase() + g.toString(16).padStart(2, '0').toUpperCase() + b.toString(16).padStart(2, '0').toUpperCase();
-}
-
-export function getWeekNumber(d: Date): number {
-  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  const dayNum = date.getUTCDay() || 7;
-  date.setUTCDate(date.getUTCDate() + 4 - dayNum);
-  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-  return Math.ceil((((date.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
-}
-
-export function getHealthScore(tasks: Task[]): number {
-  if (!tasks || !tasks.length) return 100;
-  const now = Date.now();
-  const overdue = tasks.filter(t => t.dueDate && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED && new Date(t.dueDate).getTime() < now).length;
-  const blocked = tasks.filter(t => t.status === TaskStatus.BLOCKED).length;
-  const critOverdue = tasks.filter(t => t.priority === TaskPriority.CRITICAL && t.dueDate && t.status !== TaskStatus.COMPLETED && new Date(t.dueDate).getTime() < now).length;
-  const deduction = (overdue * 3) + (blocked * 5) + (critOverdue * 8);
-  return Math.max(10, Math.min(100, 100 - deduction));
 }
 
 const S = (val: any): string => {
@@ -1268,8 +1259,7 @@ export function buildExecutiveDashboardSheet(
   const totalTasks = state.tasks.length;
   const doneTasks = state.tasks.filter(t => t.status === TaskStatus.COMPLETED).length;
   const taskPct = totalTasks ? Math.round((doneTasks / totalTasks) * 100) : 0;
-  const now = Date.now();
-  const overdueTasks = state.tasks.filter(t => t.dueDate && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED && new Date(t.dueDate).getTime() < now).length;
+  const overdueTasks = state.tasks.filter(isOverdue).length;
   const blockedTasks = state.tasks.filter(t => t.status === TaskStatus.BLOCKED).length;
   const critTasks = state.tasks.filter(t => t.priority === TaskPriority.CRITICAL && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED).length;
   const healthScore = getHealthScore(state.tasks);
@@ -1457,7 +1447,7 @@ export function buildExecutiveDashboardSheet(
     const mt = state.tasks.filter(t => t.module === m);
     const mAvg = mt.length ? Math.round(mt.reduce((s, t) => s + (Number(t.progress) || 0), 0) / mt.length) : 0;
     const hasBlocked = mt.some(t => t.status === TaskStatus.BLOCKED || t.status === TaskStatus.ON_HOLD);
-    const hasOverdue = mt.some(t => t.status !== TaskStatus.COMPLETED && t.dueDate && new Date(t.dueDate).getTime() < now);
+    const hasOverdue = mt.some(isOverdue);
     if (mAvg === 100) modCompleted++;
     else if (hasBlocked) modBlocked++;
     else if (hasOverdue) modOverdue++;
@@ -1759,7 +1749,7 @@ export function buildExecutiveDashboardSheet(
       const m = modSet[i];
       const mt = state.tasks.filter(t => t.module === m);
       const mDone = mt.filter(t => t.status === TaskStatus.COMPLETED).length;
-      const mOver = mt.filter(t => t.dueDate && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED && new Date(t.dueDate).getTime() < now).length;
+      const mOver = mt.filter(isOverdue).length;
       const mAvg = mt.length ? Math.round(mt.reduce((s, t) => s + (Number(t.progress) || 0), 0) / mt.length) : 0;
       ds.getCell(rIdx, 2).value = m;
       ds.getCell(rIdx, 6).value = mt.length;
@@ -1963,8 +1953,7 @@ export function buildUnifiedTasksSheet(
   const progress = total ? Math.round((done / total) * 100) : 0;
   const estEff = tasks.reduce((sum, t) => sum + (Number(t.estDays) || 0), 0);
   const actEff = tasks.reduce((sum, t) => sum + (Number(t.actDays) || 0), 0);
-  const now = Date.now();
-  const overdue = tasks.filter(t => t.dueDate && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED && new Date(t.dueDate).getTime() < now).length;
+  const overdue = tasks.filter(isOverdue).length;
   const blocked = tasks.filter(t => t.status === TaskStatus.BLOCKED).length;
 
   ws.getRow(1).height = 10;
@@ -2533,14 +2522,7 @@ export async function exportFeatureMatrixExcel(state: ProjectState): Promise<str
   const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   const filename = `ProjectPulse_FeatureMatrix_${(state.name || 'Project').replace(/[\/*?:"<>|\s]/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
 
-  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+  saveBlob(blob, filename);
 
   return filename;
 }
@@ -3699,14 +3681,7 @@ export async function exportDeliveriesExcel(state: ProjectState): Promise<string
   const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   const filename = `ProjectPulse_Deliveries_${(state.name || 'Project').replace(/[\/*?:"<>|\s]/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
 
-  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+  saveBlob(blob, filename);
 
   return filename;
 }
@@ -3819,7 +3794,7 @@ export const exportProjectExcel = async (state: ProjectState): Promise<string> =
   // Task Data Rows
   state.tasks.forEach((t, i) => {
     const rowIdx = i + 8;
-    const isOverdue = t.dueDate && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED && new Date(t.dueDate).getTime() < Date.now();
+    const taskIsOverdue = isOverdue(t);
     const row = ts.addRow({
       id: t.id,
       name: t.name,
@@ -3851,7 +3826,7 @@ export const exportProjectExcel = async (state: ProjectState): Promise<string> =
     formatStatusCell(row.getCell('status'), t.status, palette);
     formatPriorityCell(row.getCell('priority'), t.priority, palette);
 
-    if (isOverdue) {
+    if (taskIsOverdue) {
       const delayCell = row.getCell('delay');
       delayCell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: palette.isDark ? 'FF7F1D1D' : 'FFFEE2E2' } };
       delayCell.font = { name: 'Segoe UI', size: 9.5, bold: true, color: { argb: 'FFDC2626' } };
@@ -4202,14 +4177,7 @@ export const exportProjectExcel = async (state: ProjectState): Promise<string> =
   const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   const filename = `ProjectPulse_${(state.name || 'Project').replace(/[\\\/*?:"<>|\s]/g, '_')}_${new Date().toISOString().split('T')[0]}.xlsx`;
 
-  if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
+  saveBlob(blob, filename);
 
   return filename;
 };
@@ -4673,16 +4641,7 @@ export const importProjectExcel = async (
       if (!empId) empId = match[2].trim();
     }
 
-    let skills: string[] = [];
-    if (Array.isArray(m.skills)) skills = m.skills;
-    else if (typeof m.skills === 'string') {
-      try {
-        if (m.skills.trim().startsWith('[')) skills = JSON.parse(m.skills);
-        else skills = m.skills.split(',').map((s: string) => s.trim()).filter(Boolean);
-      } catch {
-        skills = m.skills.split(',').map((s: string) => s.trim()).filter(Boolean);
-      }
-    }
+    const skills = normalizeSkills(m.skills);
 
     return {
       id: m.id || `MEM-${String(idx + 1).padStart(3, '0')}`,
@@ -4883,10 +4842,5 @@ export const downloadDeliveryTemplate = async (stateOrTheme?: ProjectState | str
 
   const buf = await wb.xlsx.writeBuffer();
   const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `ProjectPulse_Deliveries_Template_12Cols.xlsx`;
-  a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  saveBlob(blob, `ProjectPulse_Deliveries_Template_12Cols.xlsx`);
 };
