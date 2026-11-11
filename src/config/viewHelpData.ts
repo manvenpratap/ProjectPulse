@@ -37,7 +37,7 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
     title: 'Executive Overview & Steering Guide',
     shortLabel: 'Overview',
     badge: 'Strategic Telemetry',
-    description: 'A strategic steering cockpit providing aggregate health indicators, early warning anomalies (EWS), milestone feasibility tracking, and high-priority governance items requiring executive direction.',
+    description: 'A visual-only strategic steering cockpit providing high-level health dials, milestone release radar, early warning signals, and architecture module gravity. Detailed metrics and scenario modelers are accessible in the Intelligence Cockpit.',
     keyMetricsAndFields: [
       {
         name: 'Health Index',
@@ -45,40 +45,35 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
         formula: '100 - (OverdueTasks × 50% + BlockedTasks × 30% + OnHoldTasks × 20%) / TotalActiveTasks × 100'
       },
       {
-        name: 'Delivery Confidence',
-        desc: 'Pacing feasibility assessment calculated by projecting remaining active backlog against the team\'s trailing 4-week moving average completion velocity.',
-        formula: 'Pacing deficit degrades baseline 100% confidence down to a minimum floor of 30%'
+        name: 'Milestone Delivery Radar',
+        desc: 'Visual roadmap tracking major release gates, target completion dates, and phase progress arcs.'
       },
       {
         name: 'Early Warning System (EWS)',
-        desc: 'Automated continuous telemetry scan detecting critical anomalies: overdue deliverables, high-threat RAID items, pending steering decisions, and member overload (>4 active tasks).'
+        desc: 'Automated continuous telemetry scan detecting critical anomalies: overdue deliverables, high-threat RAID items, and pending steering decisions.'
       },
       {
-        name: 'Critical Milestones',
-        desc: 'Visual roadmap tracking high-level delivery milestones, target dates, completion status, and risk flags.'
-      },
-      {
-        name: 'Key Decisions & Blockers',
-        desc: 'Consolidated steering ledger documenting major architectural, scope, or commercial decisions awaiting stakeholder sign-off.'
+        name: 'Strategic Deliverables & Module Gravity',
+        desc: 'Visual package completion tracks and architectural distribution of scope across core system domains.'
       }
     ],
     capabilities: [
       {
-        title: 'Interactive What-If Simulation Sandbox',
-        desc: 'Test schedule adjustments, descope non-critical backlog, or add consulting engineers to dynamically recalculate projected health before committing to the live database.'
+        title: 'Visual At-A-Glance Status',
+        desc: 'Zero tabular clutter: pure spatial telemetry dials and milestone progress bars tailored for CXO and Steerco presentations.'
       },
       {
-        title: 'Anomaly Breakdown Tracing',
-        desc: 'Click on any EWS anomaly card to immediately inspect the specific tasks, assignees, or blockers generating the alert.'
+        title: 'One-Click Deep-Dive to Intelligence',
+        desc: 'Press "G D" or click "Intelligence Cockpit" to immediately transition to granular Monte Carlo simulations, What-If Sandboxes, and EVM cost metrics.'
       },
       {
-        title: 'One-Click Executive Briefing',
-        desc: 'Quickly export the project status to Excel or open the Executive CXO Email Brief modal for formatted leadership distribution.'
+        title: 'Executive Briefing & Distribution',
+        desc: 'Share view summaries or generate Executive CXO Email Briefings directly from the PageHeader menu.'
       }
     ],
     proTips: [
       'Hover over the Composite Health gauge to view the exact penalty deductions impacting your score.',
-      'Use the What-If Sandbox during sprint reviews to model trade-offs with stakeholders in real-time.',
+      'Use the Executive Overview for leadership alignment, and the Intelligence Cockpit for forensic analysis.',
       'Press "G D" at any time to jump directly from Overview into the Advanced Intelligence Dashboard.'
     ]
   },
@@ -88,7 +83,7 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
     title: 'Intelligence Dashboard & Analytics Guide',
     shortLabel: 'Intelligence',
     badge: 'Advanced Telemetry',
-    description: 'Real-time project intelligence suite featuring 18 modular analytical widgets, Monte Carlo completion probability simulations, Cumulative Flow Diagrams (CFD), and defect burn metrics.',
+    description: 'Comprehensive project intelligence suite featuring granular predictive telemetry, What-If simulation sandboxes, resource utilization matrices, statistical velocity bands, EVM cost metrics, steering logs, and transactional audit ledgers.',
     keyMetricsAndFields: [
       {
         name: 'Weekly Delivery Velocity Band & Benchmark',

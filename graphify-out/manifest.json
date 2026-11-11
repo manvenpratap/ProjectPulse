@@ -24,8 +24,8 @@
     "hash": "accb51a93698ff169dd1e80d9215f10f"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/config/viewHelpData.ts": {
-    "mtime": 1794363306.321078,
-    "hash": "4fcbdd876391a051d5a3a0337cdd77ef"
+    "mtime": 1794363990.6888928,
+    "hash": "73a5343a3e7ae89bc3cb771a75820d96"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/utils/projectUtils.ts": {
     "mtime": 1794279271.1101165,
@@ -152,23 +152,31 @@
     "hash": "f94f30a4ef7e87450e5f27991727f1e4"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/OverviewView.tsx": {
-    "mtime": 1794272459.2401772,
-    "hash": "e66f03a9a9e5179fced07eead371d8aa"
+    "mtime": 1794363805.8084478,
+    "hash": "7023bcf4a72f38a432f0ebe9fb5cc070"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/WhatIfSandbox.tsx": {
+    "mtime": 1794363627.493633,
+    "hash": "49f41422edcc0542da672f9a5d5054e1"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/ResourceUtilizationMatrix.tsx": {
+    "mtime": 1794363577.0051172,
+    "hash": "7193caaaa34359a44fb822e56b6b2f40"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/ModuleDeliveryMatrix.tsx": {
     "mtime": 1794077295.3085635,
     "hash": "3e00af8857c5de705c3c1faffd7f4510"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/DashboardView.tsx": {
-    "mtime": 1794363051.4795415,
-    "hash": "eac77953490e803ce900651d2d5ff729"
+    "mtime": 1794363706.5728536,
+    "hash": "272bb18c63954134091cacd18f0ef74f"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/PredictiveIntelligence.tsx": {
     "mtime": 1794077295.3588836,
     "hash": "ba69b32c7978e72028e4487b88e34856"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/VelocityBandChart.tsx": {
-    "mtime": 1794363207.2176087,
+    "mtime": 1794363486.8619819,
     "hash": "3b7181cd12c073cbf7fdc4e3d2f04dea"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/team/MemberHierarchy.tsx": {

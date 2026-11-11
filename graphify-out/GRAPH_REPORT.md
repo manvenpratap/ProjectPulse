@@ -1,16 +1,16 @@
 # Graph Report - ProjectPulse 2.0  (2026-11-11)
 
 ## Corpus Check
-- 75 files · ~179,875 words
+- 77 files · ~180,940 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 410 nodes · 1189 edges · 19 communities (18 shown, 1 thin omitted)
+- 414 nodes · 1214 edges · 19 communities (18 shown, 1 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ad72582a`
+- Built from commit: `dd9a992a`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -33,16 +33,16 @@
 - [[_COMMUNITY_Community 15|Community 15]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `useProject()` - 98 edges
-2. `TaskStatus` - 34 edges
-3. `useAuth()` - 29 edges
+1. `useProject()` - 102 edges
+2. `TaskStatus` - 36 edges
+3. `useAuth()` - 33 edges
 4. `daysDiff()` - 21 edges
-5. `fmtDate()` - 20 edges
-6. `exportProjectExcel()` - 20 edges
-7. `todayStr()` - 19 edges
-8. `getHealthScore()` - 19 edges
-9. `Task` - 16 edges
-10. `TaskPriority` - 15 edges
+5. `getHealthScore()` - 21 edges
+6. `fmtDate()` - 20 edges
+7. `exportProjectExcel()` - 20 edges
+8. `todayStr()` - 19 edges
+9. `TaskPriority` - 16 edges
+10. `Task` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `TaskView()` --calls--> `useProject()`  [EXTRACTED]
@@ -60,35 +60,35 @@
 
 ### Community 0 - "Community 0"
 Cohesion: 0.07
-Nodes (62): ComplexityFilter, FunctionalMatrix(), ViewMode, ReleaseRoadmap(), BurndownChart(), DashboardView(), SEVERITY_COLORS, STATUS_COLORS (+54 more)
+Nodes (56): ComplexityFilter, FunctionalMatrix(), ViewMode, ReleaseRoadmap(), ScaffolderView(), ScaffoldModule, BurndownChart(), DashboardView() (+48 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.09
-Nodes (48): blendColors(), buildDeliveriesSheet(), buildDeliveriesWorkbook(), buildExecutiveDashboardSheet(), buildFeatureMatrixWorkbook(), buildFeatureRolloutsSheet(), buildFeatureScreenTraceabilitySheet(), buildUnifiedTasksSheet() (+40 more)
+Cohesion: 0.08
+Nodes (52): SetupView(), blendColors(), buildDeliveriesSheet(), buildDeliveriesWorkbook(), buildExecutiveDashboardSheet(), buildFeatureMatrixWorkbook(), buildFeatureRolloutsSheet(), buildFeatureScreenTraceabilitySheet() (+44 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.07
-Nodes (38): AccessDenied(), AccessDeniedProps, AccessManagerModal(), LoginView(), getAllNavItems(), getHubForView(), NAV_HUBS, NavHub (+30 more)
+Nodes (40): AccessDenied(), AccessDeniedProps, AccessManagerModal(), AccessManagerModalProps, LoginView(), getAllNavItems(), getHubForView(), NAV_HUBS (+32 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.07
-Nodes (40): DomainTab, FieldArchitect(), ScaffolderView(), ScaffoldModule, AccessManagerModalProps, AIPulseAnalysis(), LogView(), CATEGORIES (+32 more)
+Cohesion: 0.08
+Nodes (25): DefectModal(), DefectModalProps, DEF_ST_MAP, DensityMode, ViewMode, ALM_ST_MAP, AutofitStrategy, DEL_ST_MAP (+17 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.08
-Nodes (23): PHASE_COLORS, STANDARD_BLUEPRINT_PRESETS, StepTemplates(), SyncStep, getMergedFieldGuide(), GLOBAL_SHORTCUTS, ShortcutItem, STANDARD_FIELD_GUIDE (+15 more)
+Cohesion: 0.11
+Nodes (23): DomainTab, FieldArchitect(), AIPulseAnalysis(), analyzeProject(), getWebSample(), DEFAULT_DEFECT_COLS, DEFAULT_DELIVERY_COLS, DEFAULT_TASK_COLS (+15 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.1
-Nodes (16): ALM_ST_MAP, AutofitStrategy, DEL_ST_MAP, DeliveryModal(), DeliveryModalProps, HeatmapPerspective, ViewMode, DataTableProps (+8 more)
+Cohesion: 0.08
+Nodes (22): PHASE_COLORS, STANDARD_BLUEPRINT_PRESETS, StepTemplates(), SyncStep, Button(), ButtonProps, cn(), ModalProps (+14 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.12
-Nodes (16): 🏛️ 1. System Architecture, 🔄 2. Project Governance & Delivery Workflow, ⚡ 3. Bi-directional Excel Sync Sequence, 🌊 4. Project Data Flow Pipeline, ⏱️ 5. Workstation Session Lifecycle, Architectural Breakdown & Component Responsibilities, code:mermaid (flowchart TD), code:mermaid (flowchart LR) (+8 more)
+Cohesion: 0.09
+Nodes (23): useClickOutside(), computeAlerts(), SmartAlert, SmartAlertsCenter(), SmartAlertsCenterProps, DARK_MAP, FilterCategory, LIGHT_MAP (+15 more)
 
 ### Community 7 - "Community 7"
-Cohesion: 0.17
-Nodes (14): DARK_MAP, FilterCategory, LIGHT_MAP, ThemeDef, ThemeFlyout(), ThemeFlyoutProps, THEMES, DARK_MAP (+6 more)
+Cohesion: 0.12
+Nodes (16): 🏛️ 1. System Architecture, 🔄 2. Project Governance & Delivery Workflow, ⚡ 3. Bi-directional Excel Sync Sequence, 🌊 4. Project Data Flow Pipeline, ⏱️ 5. Workstation Session Lifecycle, Architectural Breakdown & Component Responsibilities, code:mermaid (flowchart TD), code:mermaid (flowchart LR) (+8 more)
 
 ### Community 8 - "Community 8"
 Cohesion: 0.15
@@ -99,12 +99,12 @@ Cohesion: 0.17
 Nodes (11): ⚡ Bi-directional Excel Sync Sequence, code:mermaid (flowchart TD), code:mermaid (flowchart LR), code:mermaid (sequenceDiagram), code:mermaid (flowchart LR), code:mermaid (stateDiagram-v2), 🌊 Project Data Flow Pipeline, 🔄 Project Governance & Delivery Workflow (+3 more)
 
 ### Community 10 - "Community 10"
-Cohesion: 0.18
-Nodes (10): 1.1 Brand Identity & Voice, 1.2 Design Tokens & System Replacements, 1. Executive Summary & Design Direction, 2. Actionable Task Checklist, 3. Verification & Acceptance Criteria, Anti-AI-Slop Implementation Plan: ProjectPulse 2.0, Batch 1: Token Discipline & Background De-Slopping (Priority 1), Batch 2: Icon & Copy De-Slopping (Priority 1) (+2 more)
+Cohesion: 0.29
+Nodes (9): getMergedFieldGuide(), GLOBAL_SHORTCUTS, ShortcutItem, STANDARD_FIELD_GUIDE, StandardFieldItem, VIEW_HELP_DATA, ViewHelpItem, HelpModal() (+1 more)
 
 ### Community 11 - "Community 11"
-Cohesion: 0.28
-Nodes (7): DefectModal(), DefectModalProps, DEF_ST_MAP, DensityMode, ViewMode, Defect, getTeamNames()
+Cohesion: 0.18
+Nodes (10): 1.1 Brand Identity & Voice, 1.2 Design Tokens & System Replacements, 1. Executive Summary & Design Direction, 2. Actionable Task Checklist, 3. Verification & Acceptance Criteria, Anti-AI-Slop Implementation Plan: ProjectPulse 2.0, Batch 1: Token Discipline & Background De-Slopping (Priority 1), Batch 2: Icon & Copy De-Slopping (Priority 1) (+2 more)
 
 ### Community 12 - "Community 12"
 Cohesion: 0.4
@@ -126,17 +126,17 @@ Nodes (3): 📚 Core Documentation, ⚡ Key Highlights, Welcome to the ProjectPu
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `useProject()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 7`, `Community 11`, `Community 12`?**
-  _High betweenness centrality (0.177) - this node is a cross-community bridge._
-- **Why does `useAuth()` connect `Community 2` to `Community 0`, `Community 3`?**
-  _High betweenness centrality (0.014) - this node is a cross-community bridge._
-- **Why does `TaskStatus` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`?**
+- **Why does `useProject()` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 10`, `Community 12`?**
+  _High betweenness centrality (0.181) - this node is a cross-community bridge._
+- **Why does `useAuth()` connect `Community 2` to `Community 0`, `Community 6`?**
+  _High betweenness centrality (0.015) - this node is a cross-community bridge._
+- **Why does `TaskStatus` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`?**
   _High betweenness centrality (0.012) - this node is a cross-community bridge._
 - **What connects `env`, `WidgetLayout`, `ProjectSettings` to the rest of the system?**
   _123 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.07 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.09 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
   _Cohesion score 0.07 - nodes in this community are weakly interconnected._

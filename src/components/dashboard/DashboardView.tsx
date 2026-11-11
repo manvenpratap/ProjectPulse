@@ -39,6 +39,8 @@ import { TaskStatus, TaskPriority, DefectStatus, Task } from '../../types';
 import ModuleDeliveryMatrix from './ModuleDeliveryMatrix';
 import BurndownChart from './BurndownChart';
 import VelocityBandChart from './VelocityBandChart';
+import ResourceUtilizationMatrix from './ResourceUtilizationMatrix';
+import WhatIfSandbox from './WhatIfSandbox';
 import AIPulseAnalysis from './AIPulseAnalysis';
 import PageHeader from '../shared/PageHeader';
 import DataTable, { ColumnDef } from '../shared/DataTable';
@@ -638,6 +640,12 @@ export const DashboardView: React.FC = () => {
               </div>
             </div>
 
+            {/* Strategic What-If Sandbox (Moved from Overview) */}
+            <WhatIfSandbox />
+
+            {/* Detailed Resource Utilization Matrix (Moved from Overview) */}
+            <ResourceUtilizationMatrix />
+
             {/* Middle Row: Task Aging Curve & Stale List + Bottlenecks */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
               {/* Task Aging Histogram & Stale Tasks (HTML dash-aging parity) */}
@@ -1176,6 +1184,107 @@ export const DashboardView: React.FC = () => {
                       <div className="py-8 text-center text-xs text-[var(--color-text-faint)]">No active RAID risks logged.</div>
                     )}
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Split Grid: Steering Decisions Log & Project History Change Delta (Moved from Overview) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+              {/* Steering Decisions Log */}
+              <div className="lg:col-span-6 card p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-sm flex flex-col justify-between space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                      <FileText size={16} />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-sm text-[var(--color-text)]">Steering Decisions Log</h3>
+                      <p className="text-[11px] text-[var(--color-text-muted)]">Executive approvals and strategic sign-offs</p>
+                    </div>
+                  </div>
+                  <span className="text-xs font-mono font-bold text-[var(--color-text-faint)]">
+                    {decisions.length} Documented
+                  </span>
+                </div>
+
+                <div className="space-y-3 max-h-72 overflow-y-auto custom-scroll pr-1 my-2">
+                  {decisions.map(d => (
+                    <div key={d.id} className="p-3.5 rounded-2xl bg-[var(--color-surface-2)]/60 border border-[var(--color-divider)] space-y-1.5">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="font-bold text-[var(--color-text)] truncate">{d.title}</span>
+                        <span className={clsx(
+                          "text-[10px] font-bold px-2 py-0.5 rounded-full",
+                          d.status === 'Approved' ? "bg-emerald-500/10 text-emerald-600" :
+                          d.status === 'Rejected' ? "bg-rose-500/10 text-rose-600" :
+                          "bg-amber-500/10 text-amber-600"
+                        )}>
+                          {d.status}
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center text-[11px] text-[var(--color-text-muted)]">
+                        <span>Approver: {d.approver || 'Steering Committee'}</span>
+                        <span className="text-[10px] font-mono text-[var(--color-text-faint)]">Proposed: {d.proposedBy || 'PMO'}</span>
+                      </div>
+                      {d.rationale && (
+                        <p className="text-[11px] text-[var(--color-text-muted)] italic">
+                          “{d.rationale}”
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                  {decisions.length === 0 && (
+                    <div className="py-12 text-center text-xs text-[var(--color-text-faint)]">
+                      No steering decisions recorded yet.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Project History Change Delta */}
+              <div className="lg:col-span-6 card p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-sm flex flex-col justify-between space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                      <Activity size={16} />
+                    </div>
+                    <div>
+                      <h3 className="font-bold text-sm text-[var(--color-text)]">Project History Change Delta</h3>
+                      <p className="text-[11px] text-[var(--color-text-muted)]">Transactional event stream and audit modifications</p>
+                    </div>
+                  </div>
+                  <span className="text-xs font-mono font-bold text-[var(--color-text-faint)]">
+                    {log.length} Events
+                  </span>
+                </div>
+
+                <div className="space-y-2 max-h-72 overflow-y-auto custom-scroll pr-1 my-2">
+                  {log.slice(-10).reverse().map((l, idx) => (
+                    <div key={idx} className="p-3 rounded-xl bg-[var(--color-surface-2)]/60 border border-[var(--color-divider)] flex flex-wrap items-center justify-between gap-2 text-xs">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0" />
+                        <span className="font-mono text-[10px] text-[var(--color-text-faint)] shrink-0">
+                          {l.timestamp ? new Date(l.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recent'}
+                        </span>
+                        <span className="font-semibold text-[var(--color-text)]">{l.user || 'System'}</span>
+                        <span className="text-[var(--color-text-muted)] truncate">{l.action}</span>
+                        {l.taskId && (
+                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text-faint)] shrink-0">
+                            {l.taskId}
+                          </span>
+                        )}
+                      </div>
+                      {l.field && (
+                        <span className="text-[11px] font-mono text-[var(--color-text-muted)] shrink-0">
+                          {l.field}: {String(l.oldVal)} → <strong className="text-[var(--color-text)]">{String(l.newVal)}</strong>
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                  {log.length === 0 && (
+                    <div className="py-12 text-center text-xs text-[var(--color-text-faint)]">
+                      No state delta events logged in this session.
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
