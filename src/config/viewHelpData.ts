@@ -91,6 +91,10 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
     description: 'Real-time project intelligence suite featuring 18 modular analytical widgets, Monte Carlo completion probability simulations, Cumulative Flow Diagrams (CFD), and defect burn metrics.',
     keyMetricsAndFields: [
       {
+        name: 'Weekly Delivery Velocity Band & Benchmark',
+        desc: 'Evaluates rolling delivered output against team average velocity benchmarks, deadline burn-rate targets, and statistical control limits (±1.25σ Shewhart corridor) with interactive sprint task inspection.'
+      },
+      {
         name: 'Monte Carlo Simulation',
         desc: 'Runs 1,000 statistical iterations across remaining scope using historical velocity variance to forecast P50 (expected), P80 (conservative), and P95 (high confidence) delivery dates.'
       },

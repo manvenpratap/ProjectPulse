@@ -13,11 +13,16 @@ def test_intelligence_dashboard():
 
         print("1. Loading ProjectPulse at localhost:3000...")
         page.goto("http://localhost:3000")
-        page.wait_for_timeout(2000)
+        page.wait_for_timeout(1500)
+
+        # Load demo database if empty
+        demo_btn = page.locator('button:has-text("Load Demo Database"), button:has-text("Load Sample: Web")')
+        if demo_btn.count() > 0 and demo_btn.first.is_visible():
+            demo_btn.first.click()
+            page.wait_for_timeout(1500)
 
         print("2. Navigating to Intelligence tab...")
-        intel_btn = page.locator("button:has-text('Intelligence')").first
-        intel_btn.click()
+        page.goto("http://localhost:3000/#/dash")
         page.wait_for_timeout(1000)
 
         # Verify PageHeader title

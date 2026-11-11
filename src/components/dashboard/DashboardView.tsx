@@ -38,6 +38,7 @@ import clsx from 'clsx';
 import { TaskStatus, TaskPriority, DefectStatus, Task } from '../../types';
 import ModuleDeliveryMatrix from './ModuleDeliveryMatrix';
 import BurndownChart from './BurndownChart';
+import VelocityBandChart from './VelocityBandChart';
 import AIPulseAnalysis from './AIPulseAnalysis';
 import PageHeader from '../shared/PageHeader';
 import DataTable, { ColumnDef } from '../shared/DataTable';
@@ -330,23 +331,6 @@ export const DashboardView: React.FC = () => {
 
     return { BAC, PV, EV, AC, SPI, CPI, EAC, VAC, quadrantTitle, quadrantColor, quadrantBg };
   }, [totalEffortDays, blendedRate, daysElapsed, totalProjectDays, completedEffortDays]);
-
-  // Rolling 6-week velocity band
-  const rollingVelocityBand = useMemo(() => {
-    const data = [];
-    const baseVel = rollingWeeklyVelocity;
-    const factors = [0.85, 1.1, 0.95, 1.2, 1.05, 1.15];
-    for (let i = 5; i >= 0; i--) {
-      const wkLabel = `Wk -${i}`;
-      const actual = Math.max(1, parseFloat((baseVel * (factors[i % factors.length])).toFixed(1)));
-      data.push({
-        week: i === 0 ? 'Current' : wkLabel,
-        velocity: actual,
-        benchmark: baseVel
-      });
-    }
-    return data;
-  }, [rollingWeeklyVelocity]);
 
   // Quality Analytics calculations
   const qualityScore = Math.max(0, 100 - (defects.filter(d => d.severity.includes('S1') || d.severity.includes('S2')).length * 15) - (defects.filter(d => d.severity.includes('S3')).length * 5));
@@ -827,38 +811,7 @@ export const DashboardView: React.FC = () => {
             <BurndownChart />
 
             {/* Weekly Velocity Band & Trend (HTML dash-analytics-velocity parity) */}
-            <div className="card p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-sm space-y-5">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                <div>
-                  <h3 className="font-bold text-base text-[var(--color-text)] flex items-center gap-2">
-                    <BarChart3 size={18} className="text-indigo-600" />
-                    Weekly Delivery Velocity Band & Benchmark
-                  </h3>
-                  <p className="text-xs text-[var(--color-text-muted)]">Rolling effort delivered per week against team average velocity benchmark line</p>
-                </div>
-                <div className="flex items-center gap-3 text-xs font-semibold">
-                  <span className="flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400">
-                    <span className="w-2.5 h-2.5 rounded bg-indigo-600" /> Output (pd/wk)
-                  </span>
-                  <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-                    <span className="w-2.5 h-0.5 bg-emerald-500" /> Benchmark ({rollingWeeklyVelocity} pd)
-                  </span>
-                </div>
-              </div>
-
-              <div className="h-56 w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <ComposedChart data={rollingVelocityBand} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-divider)" opacity={0.6} />
-                    <XAxis dataKey="week" tick={{ fontSize: 11, fontWeight: 'bold', fill: 'var(--color-text-muted)' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 11, fill: 'var(--color-text-muted)' }} axisLine={false} tickLine={false} />
-                    <ChartTooltip contentStyle={{ background: 'var(--color-surface)', border: '1px solid var(--color-divider)', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold' }} />
-                    <Bar dataKey="velocity" fill="#4f46e5" radius={[6, 6, 0, 0]} />
-                    <Line type="monotone" dataKey="benchmark" stroke="#10b981" strokeWidth={2.5} dot={false} strokeDasharray="4 4" />
-                  </ComposedChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
+            <VelocityBandChart />
 
             {/* Strategic Module Delivery Matrix */}
             <ModuleDeliveryMatrix />

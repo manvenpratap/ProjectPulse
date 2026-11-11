@@ -24,8 +24,8 @@
     "hash": "accb51a93698ff169dd1e80d9215f10f"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/config/viewHelpData.ts": {
-    "mtime": 1794283866.7591572,
-    "hash": "f25c7aa5134de7f7ca9fb97b0ca63ea0"
+    "mtime": 1794363306.321078,
+    "hash": "4fcbdd876391a051d5a3a0337cdd77ef"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/utils/projectUtils.ts": {
     "mtime": 1794279271.1101165,
@@ -116,7 +116,7 @@
     "hash": "4df26370746591388a74f6b1977b1458"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/shared/ShareExportMenu.tsx": {
-    "mtime": 1794297347.8711095,
+    "mtime": 1794362536.3158135,
     "hash": "53b49a3ac0b03ca0c8800aeb7a23ccbe"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/shared/DataTable.tsx": {
@@ -160,12 +160,16 @@
     "hash": "3e00af8857c5de705c3c1faffd7f4510"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/DashboardView.tsx": {
-    "mtime": 1794244472.2665458,
-    "hash": "89a64a72aa551d82e6f0c51803150587"
+    "mtime": 1794363051.4795415,
+    "hash": "eac77953490e803ce900651d2d5ff729"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/PredictiveIntelligence.tsx": {
     "mtime": 1794077295.3588836,
     "hash": "ba69b32c7978e72028e4487b88e34856"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/VelocityBandChart.tsx": {
+    "mtime": 1794363207.2176087,
+    "hash": "3b7181cd12c073cbf7fdc4e3d2f04dea"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/team/MemberHierarchy.tsx": {
     "mtime": 1794073085.727919,
@@ -192,11 +196,11 @@
     "hash": "88e0e6deca26b9c0ccc82159b8a7fe28"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/RegistryView.tsx": {
-    "mtime": 1794297383.136588,
+    "mtime": 1794362536.1716769,
     "hash": "bea68649c3c2b25157f902675e12886b"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/StepTemplates.tsx": {
-    "mtime": 1794297455.5867682,
+    "mtime": 1794362536.262351,
     "hash": "a6b2844666023469d2bf4297e5efeba5"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/FieldArchitect.tsx": {
