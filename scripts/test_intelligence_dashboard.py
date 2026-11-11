@@ -77,8 +77,74 @@ def test_intelligence_dashboard():
 
         assert page.locator("text=Quality Reliability Index").is_visible(), "Quality Reliability donut not visible"
         assert page.locator("text=Defect Pipeline Progression").is_visible(), "Defect Pipeline bar chart not visible"
+        assert page.locator("text=Analytics Data Integrity").is_visible(), "Analytics Data Integrity card not visible"
+        assert page.locator("text=Release Sign-Off & Smoke Quality Gate").is_visible(), "Release Quality Gate not visible"
         assert page.locator("text=RAID Governance Threat Heatmap").is_visible(), "RAID threat heatmap not visible"
-        print("   - Verified Quality Donut, Defect Progression Funnel, and 3x3 Threat Heatmap.")
+        assert page.locator("text=Steering Decisions Log").is_visible(), "Steering Decisions Log not visible"
+        assert page.locator("text=Project History Change Delta").is_visible(), "Project History Change Delta not visible"
+
+        # Verify Quality Reliability is computed on open defects (>0%, specifically 72% for demo dataset)
+        assert page.locator("text=72%").first.is_visible(), "Quality Reliability should be 72% (open defect calculation)"
+        page.locator("button:has-text('All (12)')").click()
+        page.wait_for_timeout(200)
+        page.locator("button:has-text('Active (6)')").click()
+        page.wait_for_timeout(200)
+
+        # Verify Root Cause -> Module Hotspots lens switch
+        page.locator("button:has-text('Module')").first.click()
+        assert page.locator("text=Module Defect Hotspots").is_visible(), "Module Defect Hotspots view failed to toggle"
+        page.locator("button:has-text('Cause')").first.click()
+        assert page.locator("text=Defect Root Cause").is_visible(), "Defect Root Cause view failed to toggle"
+
+        # Verify RAID heatmap cells are populated (not 0 across all 9 cells) and clickable
+        active_raid_cells = page.locator("button[title*='Impact ×']:not([disabled])")
+        assert active_raid_cells.count() >= 5, f"Expected populated RAID cells, got {active_raid_cells.count()}"
+        active_raid_cells.first.click()
+        page.wait_for_timeout(250)
+        assert page.locator("text=Filtered:").is_visible(), "Clicking RAID cell should filter threat list"
+        page.locator("button:has-text('Impact ×')").click()
+        page.wait_for_timeout(200)
+
+        # Verify Decisions filter
+        page.locator("button:has-text('Pending (1)')").click()
+        assert page.locator("text=ADR-007").is_visible(), "Pending decisions filter should display ADR-007"
+        page.locator("button:has-text('All (8)')").click()
+
+        print("   - Verified Quality Reliability (72%), Defect Pipeline, Root Cause/Modules, Data Integrity, Release Gate, RAID 3x3 Matrix, Decisions & Audit Delta.")
+
+        # Capture visual verification screenshots (Dark top + bottom, Light, and clean Mobile)
+        out_dir = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/scratch"
+        page.locator("text=Quality Reliability").first.scroll_into_view_if_needed()
+        page.wait_for_timeout(200)
+        page.screenshot(path=f"{out_dir}/qg_final_top.png")
+        page.locator("text=Steering Decisions Log").scroll_into_view_if_needed()
+        page.wait_for_timeout(200)
+        page.screenshot(path=f"{out_dir}/qg_final_bottom.png")
+
+        # Light theme check (Nexus)
+        page.evaluate("document.documentElement.setAttribute('data-theme', 'nexus')")
+        page.locator("text=Quality Reliability").first.scroll_into_view_if_needed()
+        page.wait_for_timeout(300)
+        page.screenshot(path=f"{out_dir}/qg_final_light.png")
+
+        # Clean Mobile context check (375x812, no horizontal overflow)
+        m_ctx = browser.new_context(viewport={"width": 375, "height": 812})
+        m_page = m_ctx.new_page()
+        m_page.on("pageerror", lambda err: errors.append(f"MOBILE PAGE ERROR: {err}"))
+        m_page.goto("http://localhost:3000")
+        m_page.wait_for_timeout(1200)
+        m_demo = m_page.locator('button:has-text("Load Demo Database")')
+        if m_demo.count() > 0 and m_demo.first.is_visible():
+            m_demo.first.click()
+            m_page.wait_for_timeout(1200)
+        m_page.goto("http://localhost:3000/#/dash")
+        m_page.wait_for_timeout(800)
+        m_page.get_by_role("main").get_by_role("button", name="Quality & Governance", exact=True).click()
+        m_page.wait_for_timeout(500)
+        overflow = m_page.evaluate("document.documentElement.scrollWidth > window.innerWidth + 2")
+        assert not overflow, "Mobile layout produced horizontal overflow on Quality & Governance tab"
+        m_page.screenshot(path=f"{out_dir}/qg_final_mobile.png")
+        m_ctx.close()
 
         # Check console errors
         real_errors = [e for e in errors if "favicon" not in e and "404" not in e]

@@ -2,31 +2,17 @@ import React, { useState, useMemo } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { useAuth } from '../../store/AuthContext';
 import { getHealthScore, daysDiff } from '../../utils/projectUtils';
-import { 
-  Zap, 
-  Target, 
-  AlertCircle, 
-  CheckCircle2, 
-  TrendingUp, 
-  Clock,
-  Layers,
-  Users,
+import {
+  Target,
+  CheckCircle2,
+  TrendingUp,
   BarChart3,
-  Search,
-  Plus,
   ShieldAlert,
-  Sliders,
-  ChevronRight,
   Database,
-  Monitor,
-  Bug,
-  HelpCircle,
-  FileText,
   Calendar,
   Lock,
   Flame,
   Activity,
-  ArrowRight,
   ShieldCheck,
   DollarSign,
   Compass,
@@ -43,51 +29,28 @@ import VelocityBandChart from './VelocityBandChart';
 import ResourceUtilizationMatrix from './ResourceUtilizationMatrix';
 import WhatIfSandbox from './WhatIfSandbox';
 import AIPulseAnalysis from './AIPulseAnalysis';
+import QualityGovernanceTab from './QualityGovernanceTab';
 import PageHeader from '../shared/PageHeader';
 import Button from '../shared/Button';
 import DataTable, { ColumnDef } from '../shared/DataTable';
 import { 
   ResponsiveContainer, 
-  PieChart, 
-  Pie, 
   Cell, 
   BarChart, 
   Bar, 
   XAxis, 
   YAxis, 
   Tooltip as ChartTooltip,
-  Legend,
-  ComposedChart,
-  Line,
-  Area,
-  CartesianGrid,
-  ReferenceLine
+  CartesianGrid
 } from 'recharts';
-
-const SEVERITY_COLORS: Record<string, string> = {
-  'S1 - Blocker': '#ef4444',
-  'S2 - High': '#f97316',
-  'S3 - Medium': '#eab308',
-  'S4 - Low': '#3b82f6',
-};
-
-const STATUS_COLORS: Record<string, string> = {
-  'New': '#3b82f6',
-  'Assigned': '#a855f7',
-  'Fixed': '#10b981',
-  'Retest': '#eab308',
-  'Closed': '#64748b',
-  'Deferred': '#94a3b8',
-};
 
 export const DashboardView: React.FC = () => {
   const { state, setView, loadSample } = useProject();
   const { hasViewAccess } = useAuth();
-  const { tasks = [], defects = [], raids = [], members = [], decisions = [], log = [] } = state;
+  const { tasks = [], defects = [], raids = [], members = [], decisions = [], deliveries = [], log = [] } = state;
 
   // Active Intelligence Mode
   const [activeTab, setActiveTab] = useState<'predictive' | 'flow' | 'evm' | 'quality'>('predictive');
-  const [selectedRiskCell, setSelectedRiskCell] = useState<{ prob: string; imp: string } | null>(null);
   
   // Financial Simulation State
   const [blendedRate, setBlendedRate] = useState<number>(800);
@@ -344,63 +307,6 @@ export const DashboardView: React.FC = () => {
     return { BAC, PV, EV, AC, SPI, CPI, EAC, VAC, quadrantTitle, quadrantColor, quadrantBg };
   }, [totalEffortDays, blendedRate, daysElapsed, totalProjectDays, completedEffortDays]);
 
-  // Quality Analytics calculations
-  const qualityScore = Math.max(0, 100 - (defects.filter(d => d.severity.includes('S1') || d.severity.includes('S2')).length * 15) - (defects.filter(d => d.severity.includes('S3')).length * 5));
-  
-  const defectSeverityCounts = defects.reduce((acc, d) => {
-    const sev = d.severity || 'S4 - Low';
-    acc[sev] = (acc[sev] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const severityChartData = Object.entries(defectSeverityCounts).map(([name, value]) => ({
-    name,
-    value,
-    color: SEVERITY_COLORS[name] || '#3b82f6'
-  }));
-
-  const defectStatusCounts = defects.reduce((acc, d) => {
-    const st = d.status || 'New';
-    acc[st] = (acc[st] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-
-  const statusChartData = Object.entries(defectStatusCounts).map(([name, count]) => ({
-    name,
-    count,
-  }));
-
-  // RAID Risk matrix (Probability vs Impact)
-  const probLevels = ['High', 'Medium', 'Low'];
-  const impLevels = ['High', 'Medium', 'Low'];
-
-  const getRaidCellCount = (prob: string, imp: string) => {
-    return raids.filter(r => {
-      const rProb = r.probability || 'Medium';
-      const rImp = r.impact || 'Medium';
-      return rProb.toLowerCase() === prob.toLowerCase() && rImp.toLowerCase() === imp.toLowerCase() && r.status === 'Open';
-    }).length;
-  };
-
-  const getRaidCellItems = (prob: string, imp: string) => {
-    return raids.filter(r => {
-      const rProb = r.probability || 'Medium';
-      const rImp = r.impact || 'Medium';
-      return rProb.toLowerCase() === prob.toLowerCase() && rImp.toLowerCase() === imp.toLowerCase() && r.status === 'Open';
-    });
-  };
-
-  const getMatrixCellBg = (prob: string, imp: string, count: number) => {
-    if (count === 0) return 'bg-[var(--color-surface-2)]/60 text-[var(--color-text-faint)] border-[var(--color-divider)]';
-    if ((prob === 'High' && imp === 'High') || (prob === 'High' && imp === 'Medium') || (prob === 'Medium' && imp === 'High')) {
-      return 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/30 font-bold';
-    }
-    if ((prob === 'Low' && imp === 'High') || (prob === 'Medium' && imp === 'Medium') || (prob === 'High' && imp === 'Low')) {
-      return 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30 font-bold';
-    }
-    return 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30 font-bold';
-  };
-
   // Cost Allocation across major modules
   const moduleCosts = Array.from(new Set(tasks.map(t => t.module).filter(Boolean))).map(modName => {
     const modTasks = tasks.filter(t => t.module === modName);
@@ -455,8 +361,9 @@ export const DashboardView: React.FC = () => {
         subtitle="Predictive delivery forecasting, Monte Carlo simulations, EVM analytics & quality dynamics"
         actions={
           <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2.5 px-3 py-1.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs font-semibold">
-              <span className="text-[var(--color-text-muted)]">AI Confidence:</span>
+            <div className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs font-semibold">
+              <span className="hidden sm:inline text-[var(--color-text-muted)]">AI Confidence:</span>
+              <span className="sm:hidden text-[var(--color-text-muted)]">Conf:</span>
               <span className={clsx("font-bold font-mono", confidenceBadge.color)}>{confidenceScore}%</span>
               <div className="w-px h-3 bg-[var(--color-divider)]" />
               <span className="text-[var(--color-text-muted)]">SPI:</span>
@@ -471,11 +378,12 @@ export const DashboardView: React.FC = () => {
             variant="primary"
             size="sm"
             onClick={handleRecompute}
-            className="h-9 px-3.5 rounded-xl font-bold flex items-center gap-1.5 active:scale-95 shadow-xs"
+            className="h-9 px-2.5 sm:px-3.5 rounded-xl font-bold flex items-center gap-1.5 active:scale-95 shadow-xs shrink-0"
             title="Recompute Monte Carlo forecasts, EVM cost baselines, and quality dynamics"
           >
             <RefreshCw size={14} className={isSimulating ? "animate-spin" : ""} />
-            <span>Recompute Forecast</span>
+            <span className="hidden sm:inline">Recompute Forecast</span>
+            <span className="sm:hidden">Sync</span>
           </Button>
         }
       />
@@ -1031,288 +939,17 @@ export const DashboardView: React.FC = () => {
         {/* TAB 4: QUALITY & GOVERNANCE                                             */}
         {/* ═══════════════════════════════════════════════════════════════════════ */}
         {activeTab === 'quality' && (
-          <div className="space-y-6 motion-safe:animate-in motion-safe:fade-in duration-200">
-            {/* Top Row: Defect Donut + Status Funnel */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-              {/* Defect Severity Donut & Quality Reliability Index */}
-              <div className="lg:col-span-5 card p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-sm flex flex-col justify-between space-y-5">
-                <div>
-                  <h3 className="font-bold text-base text-[var(--color-text)]">Quality Reliability Index</h3>
-                  <p className="text-xs text-[var(--color-text-muted)]">Defect triage and resolution confidence</p>
-                </div>
-
-                <div className="flex flex-col items-center justify-center py-2">
-                  <div className="relative w-40 h-40 flex items-center justify-center">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={severityChartData.length > 0 ? severityChartData : [{ name: 'Stable', value: 1, color: '#10b981' }]}
-                          innerRadius={50}
-                          outerRadius={70}
-                          paddingAngle={3}
-                          dataKey="value"
-                        >
-                          {severityChartData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                          {severityChartData.length === 0 && <Cell fill="#10b981" />}
-                        </Pie>
-                      </PieChart>
-                    </ResponsiveContainer>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center">
-                      <span className="text-3xl font-display font-black tracking-tight text-[var(--color-text)]">{qualityScore}%</span>
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">Reliability</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-1.5 border-t border-[var(--color-divider)] pt-3 text-xs">
-                  {severityChartData.map((item, idx) => (
-                    <div key={idx} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                        <span className="font-semibold text-[var(--color-text)]">{item.name}</span>
-                      </div>
-                      <span className="font-mono font-bold text-[var(--color-text-muted)]">{item.value} Bug{item.value > 1 ? 's' : ''}</span>
-                    </div>
-                  ))}
-                  {severityChartData.length === 0 && (
-                    <div className="text-xs font-bold text-emerald-600 text-center py-1">Zero active defects reported</div>
-                  )}
-                </div>
-              </div>
-
-              {/* Bug Status Funnel Bar Chart */}
-              <div className="lg:col-span-7 card p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-sm flex flex-col justify-between space-y-4">
-                <div>
-                  <h3 className="font-bold text-base text-[var(--color-text)]">Defect Pipeline Progression</h3>
-                  <p className="text-xs text-[var(--color-text-muted)]">Bug triage through lifecycle stages</p>
-                </div>
-
-                <div className="h-44 w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={statusChartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-divider)" opacity={0.6} />
-                      <XAxis dataKey="name" tick={{ fontSize: 11, fontWeight: 'bold', fill: 'var(--color-text-muted)' }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 11, fill: 'var(--color-text-muted)' }} axisLine={false} tickLine={false} />
-                      <ChartTooltip contentStyle={{ background: 'var(--color-surface)', border: '1px solid var(--color-divider)', borderRadius: '12px', fontSize: '11px', fontWeight: 'bold' }} />
-                      <Bar dataKey="count" radius={[6, 6, 0, 0]}>
-                        {statusChartData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={STATUS_COLORS[entry.name] || '#6366f1'} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-
-                <div className="grid grid-cols-3 gap-2 border-t border-[var(--color-divider)] pt-3 text-center">
-                  <div>
-                    <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)] block">Total Reported</span>
-                    <span className="text-base font-black text-[var(--color-text)]">{defects.length}</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-bold text-[var(--color-primary-hex)] block">Active Backlog</span>
-                    <span className="text-base font-black text-[var(--color-primary-hex)]">{defects.filter(d => d.status !== DefectStatus.CLOSED).length}</span>
-                  </div>
-                  <div>
-                    <span className="text-[10px] uppercase font-bold text-emerald-500 block">Verified Fixed</span>
-                    <span className="text-base font-black text-emerald-600">{defects.filter(d => d.status === DefectStatus.CLOSED).length}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* RAID Risk 3x3 Heatmap Matrix */}
-            <div className="card p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-sm space-y-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-bold text-base text-[var(--color-text)]">RAID Governance Threat Heatmap</h3>
-                  <p className="text-xs text-[var(--color-text-muted)]">Probability vs impact distribution of active risks and blockers</p>
-                </div>
-                {selectedRiskCell && (
-                  <button 
-                    onClick={() => setSelectedRiskCell(null)}
-                    className="text-xs font-bold text-[var(--color-primary-hex)] hover:underline cursor-pointer"
-                  >
-                    Clear Filter
-                  </button>
-                )}
-              </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                {/* 3x3 Heatmap */}
-                <div className="lg:col-span-5 space-y-3">
-                  {probLevels.map(p => (
-                    <div key={p} className="flex items-center gap-2">
-                      <span className="w-16 text-xs font-bold text-[var(--color-text-muted)] text-right pr-2">{p}</span>
-                      <div className="flex-1 grid grid-cols-3 gap-2">
-                        {impLevels.map(i => {
-                          const count = getRaidCellCount(p, i);
-                          const isSelected = selectedRiskCell?.prob === p && selectedRiskCell?.imp === i;
-                          return (
-                            <button
-                              key={i}
-                              onClick={() => count > 0 && setSelectedRiskCell(isSelected ? null : { prob: p, imp: i })}
-                              disabled={count === 0}
-                              className={clsx(
-                                "h-14 rounded-2xl border flex flex-col items-center justify-center transition-all cursor-pointer",
-                                getMatrixCellBg(p, i, count),
-                                isSelected && "ring-2 ring-[var(--color-primary-hex)] shadow-md scale-102"
-                              )}
-                            >
-                              <span className="text-base font-black font-display leading-none">{count}</span>
-                              <span className="text-[9px] uppercase font-bold opacity-75 mt-0.5">RAID</span>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                  <div className="flex items-center gap-2 pt-1">
-                    <div className="w-16 shrink-0" />
-                    <div className="flex-1 grid grid-cols-3 gap-2 text-center text-[10px] font-bold uppercase text-[var(--color-text-faint)]">
-                      {impLevels.map(i => <span key={i}>{i} Impact</span>)}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Filtered RAID Items List */}
-                <div className="lg:col-span-7 space-y-3">
-                  <div className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
-                    {selectedRiskCell ? `Filtered: ${selectedRiskCell.prob} Probability / ${selectedRiskCell.imp} Impact` : 'High Priority RAID Items'}
-                  </div>
-                  <div className="space-y-2.5 max-h-56 overflow-y-auto custom-scroll pr-1">
-                    {(selectedRiskCell 
-                      ? getRaidCellItems(selectedRiskCell.prob, selectedRiskCell.imp)
-                      : raids.filter(r => r.status === 'Open').slice(0, 4)
-                    ).map(item => (
-                      <div key={item.id} className="p-3.5 rounded-2xl bg-[var(--color-surface-2)]/60 border border-[var(--color-divider)] space-y-1.5">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] font-mono font-bold text-[var(--color-text-faint)]">{item.id}</span>
-                            <span className={clsx("text-[10px] px-2 py-0.5 rounded-full font-bold", item.type === 'Risk' ? "bg-rose-500/10 text-rose-600" : "bg-amber-500/10 text-amber-600")}>
-                              {item.type}
-                            </span>
-                            <span className="text-xs font-bold text-[var(--color-text)] truncate">{item.title}</span>
-                          </div>
-                          <span className="text-[11px] font-semibold text-[var(--color-text-muted)]">{item.owner || 'Unassigned'}</span>
-                        </div>
-                        {item.mitigation && (
-                          <p className="text-[11px] text-[var(--color-text-muted)] italic">
-                            Mitigation: “{item.mitigation}”
-                          </p>
-                        )}
-                      </div>
-                    ))}
-                    {raids.length === 0 && (
-                      <div className="py-8 text-center text-xs text-[var(--color-text-faint)]">No active RAID risks logged.</div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Split Grid: Steering Decisions Log & Project History Change Delta (Moved from Overview) */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-              {/* Steering Decisions Log */}
-              <div className="lg:col-span-6 card p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-sm flex flex-col justify-between space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                      <FileText size={16} />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-sm text-[var(--color-text)]">Steering Decisions Log</h3>
-                      <p className="text-[11px] text-[var(--color-text-muted)]">Executive approvals and strategic sign-offs</p>
-                    </div>
-                  </div>
-                  <span className="text-xs font-mono font-bold text-[var(--color-text-faint)]">
-                    {decisions.length} Documented
-                  </span>
-                </div>
-
-                <div className="space-y-3 max-h-72 overflow-y-auto custom-scroll pr-1 my-2">
-                  {decisions.map(d => (
-                    <div key={d.id} className="p-3.5 rounded-2xl bg-[var(--color-surface-2)]/60 border border-[var(--color-divider)] space-y-1.5">
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="font-bold text-[var(--color-text)] truncate">{d.title}</span>
-                        <span className={clsx(
-                          "text-[10px] font-bold px-2 py-0.5 rounded-full",
-                          d.status === 'Approved' ? "bg-emerald-500/10 text-emerald-600" :
-                          d.status === 'Rejected' ? "bg-rose-500/10 text-rose-600" :
-                          "bg-amber-500/10 text-amber-600"
-                        )}>
-                          {d.status}
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center text-[11px] text-[var(--color-text-muted)]">
-                        <span>Approver: {d.approver || 'Steering Committee'}</span>
-                        <span className="text-[10px] font-mono text-[var(--color-text-faint)]">Proposed: {d.proposedBy || 'PMO'}</span>
-                      </div>
-                      {d.rationale && (
-                        <p className="text-[11px] text-[var(--color-text-muted)] italic">
-                          “{d.rationale}”
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                  {decisions.length === 0 && (
-                    <div className="py-12 text-center text-xs text-[var(--color-text-faint)]">
-                      No steering decisions recorded yet.
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {/* Project History Change Delta */}
-              <div className="lg:col-span-6 card p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-sm flex flex-col justify-between space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center border border-[var(--color-primary-hex)]/20">
-                      <Activity size={16} />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-sm text-[var(--color-text)]">Project History Change Delta</h3>
-                      <p className="text-[11px] text-[var(--color-text-muted)]">Transactional event stream and audit modifications</p>
-                    </div>
-                  </div>
-                  <span className="text-xs font-mono font-bold text-[var(--color-text-faint)]">
-                    {log.length} Events
-                  </span>
-                </div>
-
-                <div className="space-y-2 max-h-72 overflow-y-auto custom-scroll pr-1 my-2">
-                  {log.slice(-10).reverse().map((l, idx) => (
-                    <div key={idx} className="p-3 rounded-xl bg-[var(--color-surface-2)]/60 border border-[var(--color-divider)] flex flex-wrap items-center justify-between gap-2 text-xs">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary-hex)] shrink-0" />
-                        <span className="font-mono text-[10px] text-[var(--color-text-faint)] shrink-0">
-                          {l.timestamp ? new Date(l.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recent'}
-                        </span>
-                        <span className="font-semibold text-[var(--color-text)]">{l.user || 'System'}</span>
-                        <span className="text-[var(--color-text-muted)] truncate">{l.action}</span>
-                        {l.taskId && (
-                          <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text-faint)] shrink-0">
-                            {l.taskId}
-                          </span>
-                        )}
-                      </div>
-                      {l.field && (
-                        <span className="text-[11px] font-mono text-[var(--color-text-muted)] shrink-0">
-                          {l.field}: {String(l.oldVal)} → <strong className="text-[var(--color-text)]">{String(l.newVal)}</strong>
-                        </span>
-                      )}
-                    </div>
-                  ))}
-                  {log.length === 0 && (
-                    <div className="py-12 text-center text-xs text-[var(--color-text-faint)]">
-                      No state delta events logged in this session.
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
+          <QualityGovernanceTab
+            tasks={tasks}
+            defects={defects}
+            raids={raids}
+            decisions={decisions}
+            deliveries={deliveries}
+            log={log}
+            onNavigate={(viewId) => {
+              if (hasViewAccess(viewId)) setView(viewId);
+            }}
+          />
         )}
       </div>
     </div>

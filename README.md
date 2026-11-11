@@ -50,7 +50,7 @@ npm start
 ## 🛠️ Key Capabilities & Operational Modules
 
 1. **Executive Overview Dashboard**: Health Index dial, Delivery Confidence meter, active RAID count, Early Warning System (EWS), and What-If Predictive Simulation Sandbox.
-2. **Live Velocity & Predictive Intelligence**: 4-week moving average completion velocity, Earned Value Management (EVM), Burndown / Burnup trajectories, and Cumulative Flow Diagrams (CFD).
+2. **Live Velocity, Predictive & Quality Intelligence (`Project Intelligence Cockpit`)**: 4-week moving average completion velocity, Earned Value Management (EVM), Burndown / Burnup trajectories, Cumulative Flow Diagrams (CFD), and the **Quality & Governance** tab (Quality Reliability Index, Defect Pipeline Progression, Root Cause & Module Hotspots, Analytics Data Integrity, Release Sign-Off & Smoke Gate, interactive 3×3 RAID Threat Heatmap, and Steering Decisions Log).
 3. **Software Deliveries & Deployment Schedule**: Dedicated ALM / PDN release workstation, multi-entity linkage to parent tasks and screen specs, cycle lead time & variance metrics, smoke test sign-offs, and 3 Delivery Heatmap perspectives (`feat_screens`, `env_pipeline`, `del_impact`).
 4. **Release Roadmap & Version Governance**: Milestone version lifecycle (`Planned`, `Active`, `Released`), cycle start and target date synchronization, and mapped assets intelligence.
 5. **Hierarchical Tasks Matrix & Spreadsheet Grid**: Multi-tier WBS hierarchy, quick inline status cycling, subtask checklist expansion, column sorting, density adjustments (`compact` / `comfortable`), and module/release filters.
@@ -79,7 +79,7 @@ ProjectPulse 2.0/
 │   ├── components/
 │   │   ├── architect/           # ReleaseRoadmap, Scaffolder, Matrix, StepTemplates
 │   │   ├── auth/                # LoginView, AccessDenied guard, AccessManagerModal
-│   │   ├── dashboard/           # OverviewView, Burndown, Velocity, Predictive, Heatmap
+│   │   ├── dashboard/           # OverviewView, DashboardView, QualityGovernanceTab, Burndown, Velocity, Heatmap
 │   │   ├── defects/             # Defect tracking & triage modal
 │   │   ├── deliveries/          # ALM / PDN Deliveries workstation & heatmap
 │   │   ├── layout/              # Sidebar, Topbar, UserProfileFlyout, ThemeFlyout

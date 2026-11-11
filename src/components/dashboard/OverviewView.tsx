@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { useAuth } from '../../store/AuthContext';
 import { TaskStatus, TaskPriority, DefectStatus } from '../../types';
-import { getHealthScore } from '../../utils/projectUtils';
+import { getHealthScore, normRaidImpact, getRaidEffectiveProb, isRaidActive, isDefectResolved, isDecisionPending } from '../../utils/projectUtils';
 import { 
   Presentation, 
   ShieldAlert, 
@@ -86,14 +86,14 @@ export const OverviewView: React.FC = () => {
   const remainingEffort = Math.max(0, totalEffort - doneEffort);
   const effortPct = totalEffort > 0 ? Math.round((doneEffort / totalEffort) * 100) : 0;
 
-  // Active Risks (High Impact)
-  const activeHighRaids = raids.filter(r => (r.status === 'Open' || r.status === 'Active') && r.impact === 'High');
+  // Active Risks (High / Critical Impact)
+  const activeHighRaids = raids.filter(r => isRaidActive(r.status) && normRaidImpact(r.impact) === 'High');
 
   // Pending Decisions
-  const pendingDecisions = decisions.filter(d => d.status === 'Pending Sign-off');
+  const pendingDecisions = decisions.filter(d => isDecisionPending(d.status));
 
-  // Critical Defects
-  const criticalDefects = defects.filter(d => d.severity?.startsWith('S1') && d.status !== DefectStatus.CLOSED);
+  // Active Critical Defects
+  const criticalDefects = defects.filter(d => d.severity?.startsWith('S1') && !isDefectResolved(d.status));
 
   // Overdue tasks
   const todayStr = new Date().toISOString().split('T')[0];
@@ -306,17 +306,17 @@ export const OverviewView: React.FC = () => {
     };
 
     raids.forEach(r => {
-      if (r.status === 'Closed' || r.status === 'Mitigated') return;
-      const imp = r.impact === 'High' ? 'High' : (r.impact === 'Low' ? 'Low' : 'Medium');
-      const prob = (r as any).probability === 'High' ? 'High' : ((r as any).probability === 'Low' ? 'Low' : 'Medium');
+      if (!isRaidActive(r.status)) return;
+      const imp = normRaidImpact(r.impact);
+      const prob = getRaidEffectiveProb(r);
       const key = `${imp}-${prob}`;
       if (grid[key] !== undefined) {
         grid[key]++;
       }
     });
 
-    const totalActiveRisks = raids.filter(r => r.status !== 'Closed' && r.status !== 'Mitigated').length;
-    const totalMitigated = raids.filter(r => r.status === 'Closed' || r.status === 'Mitigated').length;
+    const totalActiveRisks = raids.filter(r => isRaidActive(r.status)).length;
+    const totalMitigated = raids.length - totalActiveRisks;
 
     return { grid, totalActiveRisks, totalMitigated };
   }, [raids]);
@@ -1049,7 +1049,7 @@ export const OverviewView: React.FC = () => {
               <div>
                 <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)] block">Active RAID</span>
                 <span className="text-sm font-bold font-mono text-[var(--color-primary-hex)]">
-                  {raids.filter(r => r.status === 'Open' || r.status === 'Active').length}
+                  {raids.filter(r => isRaidActive(r.status)).length}
                 </span>
               </div>
             </div>

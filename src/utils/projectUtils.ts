@@ -1,5 +1,5 @@
 import { format, differenceInCalendarDays, addDays, isWeekend, parseISO } from 'date-fns';
-import { Task, TaskStatus } from '../types';
+import { Task, TaskStatus, DefectStatus } from '../types';
 
 export const nowISO = () => new Date().toISOString();
 export const todayStr = () => new Date().toISOString().split('T')[0];
@@ -146,4 +146,52 @@ export const normalizeSkills = (skills: string[] | string | undefined | null): s
     return trimmed.split(',').map(s => s.trim()).filter(Boolean);
   }
   return [];
+};
+
+export type RaidLevel = 'High' | 'Medium' | 'Low';
+
+/** Normalize RAID impact values (handles Critical/S1/S2 -> High, Med/Moderate -> Medium). */
+export const normRaidImpact = (val?: string | null): RaidLevel => {
+  const s = String(val || '').trim().toLowerCase();
+  if (['high', 'critical', 's1', 's2', 's1 - critical', 's2 - major', 's1 - blocker'].includes(s)) return 'High';
+  if (['low', 'minor', 's4', 's4 - minor', 's4 - low'].includes(s)) return 'Low';
+  return 'Medium';
+};
+
+/** Normalize RAID probability values (handles Med/Moderate -> Medium). */
+export const normRaidProb = (val?: string | null): RaidLevel => {
+  const s = String(val || '').trim().toLowerCase();
+  if (['high', 'critical', 's1', 's2'].includes(s)) return 'High';
+  if (['low', 'minor', 's4'].includes(s)) return 'Low';
+  return 'Medium';
+};
+
+/** Resolve effective probability with Issue/Dependency default fallback matching RAIDView. */
+export const getRaidEffectiveProb = (item: { probability?: string | null; type?: string }): RaidLevel => {
+  if (!item.probability) {
+    return item.type === 'Issue' || item.type === 'Dependency' ? 'High' : 'Medium';
+  }
+  return normRaidProb(item.probability);
+};
+
+/** Return true for active/open RAID items across all non-terminal lifecycle labels. */
+export const isRaidActive = (status?: string | null): boolean => {
+  const s = String(status || '').trim().toLowerCase();
+  return !['closed', 'resolved', 'mitigated', 'retired', 'cancelled'].includes(s);
+};
+
+/** Return true if a defect status represents resolved/closed terminal state. */
+export const isDefectResolved = (status?: string | null): boolean => {
+  const s = String(status || '').trim().toLowerCase();
+  return s === DefectStatus.CLOSED.toLowerCase() ||
+    s === DefectStatus.FIXED.toLowerCase() ||
+    s === DefectStatus.REJECTED.toLowerCase() ||
+    s === DefectStatus.DEFERRED.toLowerCase() ||
+    s === 'resolved';
+};
+
+/** Return true if a steering decision still awaits approval or sign-off review. */
+export const isDecisionPending = (status?: string | null): boolean => {
+  const s = String(status || '').trim().toLowerCase();
+  return s.includes('pending') || s.includes('review') || s.includes('appeal');
 };

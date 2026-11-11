@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { RaidItem, Decision } from '../../types';
+import { normRaidImpact, getRaidEffectiveProb, isRaidActive } from '../../utils/projectUtils';
 import { 
   ShieldAlert, 
   HelpCircle, 
@@ -51,34 +52,12 @@ const RAIDView: React.FC = () => {
 
   const getTeamNames = () => members.filter(m => m.status === 'Active').map(m => m.name);
 
-  // Normalization Helpers
-  const normImpact = (val: string) => {
-    const s = String(val || '').trim().toLowerCase();
-    if (s === 'high' || s === 'critical' || s === 's1' || s === 's2' || s === 's1 - critical' || s === 's2 - major') return 'High';
-    if (s === 'med' || s === 'medium' || s === 'moderate' || s === 's3' || s === 's3 - moderate') return 'Medium';
-    if (s === 'low' || s === 'minor' || s === 's4' || s === 's4 - minor') return 'Low';
-    return 'Medium';
-  };
-
-  const normProb = (val: string) => {
-    const s = String(val || '').trim().toLowerCase();
-    if (s === 'high' || s === 's1' || s === 's2') return 'High';
-    if (s === 'med' || s === 'medium' || s === 'moderate' || s === 's3') return 'Medium';
-    if (s === 'low' || s === 'minor' || s === 's4') return 'Low';
-    return 'Medium';
-  };
-
   const getCellCount = (imp: string, prb: string) => {
-    return raids.filter(r => {
-      const rImp = normImpact(r.impact);
-      let rProb = r.probability;
-      if (!rProb) {
-        rProb = (r.type === 'Issue' || r.type === 'Dependency') ? 'High' : 'Medium';
-      } else {
-        rProb = normProb(rProb);
-      }
-      return rImp === imp && rProb === prb && (r.status === 'Active' || r.status === 'Identified');
-    }).length;
+    return raids.filter(r =>
+      isRaidActive(r.status) &&
+      normRaidImpact(r.impact) === imp &&
+      getRaidEffectiveProb(r) === prb
+    ).length;
   };
 
   const selectMatrixCell = (imp: string, prb: string) => {
@@ -114,16 +93,10 @@ const RAIDView: React.FC = () => {
     }
 
     if (matrixFilter) {
-      list = list.filter(r => {
-        const rImp = normImpact(r.impact);
-        let rProb = r.probability;
-        if (!rProb) {
-          rProb = (r.type === 'Issue' || r.type === 'Dependency') ? 'High' : 'Medium';
-        } else {
-          rProb = normProb(rProb);
-        }
-        return rImp === matrixFilter.impact && rProb === matrixFilter.prob;
-      });
+      list = list.filter(r =>
+        normRaidImpact(r.impact) === matrixFilter.impact &&
+        getRaidEffectiveProb(r) === matrixFilter.prob
+      );
     }
 
     // Sorting
