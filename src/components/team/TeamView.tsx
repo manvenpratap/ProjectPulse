@@ -852,6 +852,17 @@ const TeamView: React.FC = () => {
         icon={Users}
         title="Team Hub"
         subtitle={`${members.length} Active Engineers • Strategic Capacity & Skills Matrix`}
+        actions={
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setView('capacity')} 
+            className="h-9 px-3 rounded-xl flex items-center gap-1.5 font-semibold text-xs cursor-pointer active:scale-95 shadow-2xs"
+          >
+            <BarChart2 size={14} />
+            <span>Capacity</span>
+          </Button>
+        }
         primaryAction={
           <Button 
             variant="primary" 

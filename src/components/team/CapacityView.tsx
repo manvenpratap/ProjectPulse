@@ -53,6 +53,12 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
     memberName: string;
     weekIdx: number;
   } | null>(null);
+  const [showAdvisoryPanel, setShowAdvisoryPanel] = useState<boolean>(false);
+
+  const handleCloseAdvisory = () => {
+    setSelectedCoords(null);
+    setShowAdvisoryPanel(false);
+  };
 
   // ══════ OPERATIONAL SCHEDULER ENGINE (Merged from Scheduler) ══════
   const [scheduleDate, setScheduleDate] = useState<Date>(new Date());
@@ -579,6 +585,110 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
     );
   };
 
+  // Reusable General Advisory Panel for desktop docked sidebar & mobile inspection
+  const renderGeneralAdvisoryPanel = () => {
+    return (
+      <div className="h-full flex flex-col justify-between space-y-4">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between pb-2.5 border-b border-[var(--color-divider)]">
+            <div>
+              <h2 className="font-bold text-[var(--color-text)] text-sm sm:text-base">Allocation Advisory</h2>
+              <p className="text-[11px] text-[var(--color-text-muted)]">Workload and reserve telemetry</p>
+            </div>
+            <button 
+              type="button"
+              onClick={handleCloseAdvisory}
+              aria-label="Close allocation details"
+              className="p-1 hover:bg-[var(--color-surface-2)] rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors cursor-pointer"
+            >
+              <X size={15} />
+            </button>
+          </div>
+
+          <div className="bg-[var(--color-surface-2)] p-3 rounded-xl border border-[var(--color-divider)] space-y-1 text-center shadow-2xs">
+            <div className="w-7 h-7 rounded-lg bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center mx-auto mb-1">
+              <Info size={15} />
+            </div>
+            <h3 className="font-bold text-xs text-[var(--color-text)]">Interactive Grid Mode</h3>
+            <p className="text-[11px] text-[var(--color-text-muted)] leading-relaxed">
+              Click any cell in the capacity matrix to inspect task intersections, daily burn, and leveling alternatives.
+            </p>
+          </div>
+
+          {/* Overload Alerts */}
+          <div className="space-y-2">
+            <h3 className="text-xs font-bold text-[var(--color-text)] flex items-center gap-1.5">
+              <AlertTriangle size={13} className="text-rose-500" />
+              Overload Alerts ({memberLoad.filter(m => m.utilization > 100).length})
+            </h3>
+
+            {memberLoad.filter(m => m.utilization > 100).length > 0 ? (
+              <div className="space-y-1.5">
+                {memberLoad.filter(m => m.utilization > 100).slice(0, 4).map((member, idx) => {
+                  const peakIdx = getPeakWeekIndex(member);
+                  return (
+                    <div key={idx} className="bg-[var(--color-surface-2)] p-2.5 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 text-xs">
+                      <div className="min-w-0">
+                        <div className="font-bold text-[var(--color-text)] truncate">{member.name}</div>
+                        <div className="text-[10px] text-[var(--color-text-muted)] truncate">{member.role}</div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedCoords({ memberName: member.name, weekIdx: peakIdx });
+                          setShowAdvisoryPanel(true);
+                        }}
+                        className="px-2 py-1 bg-rose-500/10 text-rose-500 border border-rose-500/20 text-[10px] font-bold rounded-lg flex items-center gap-1 transition-colors cursor-pointer shrink-0"
+                      >
+                        Peak Wk {peakIdx + 1} <ChevronRight size={10} />
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="bg-[var(--color-surface-2)] p-3 rounded-xl border border-[var(--color-divider)] text-center text-[var(--color-text-muted)] text-[11px]">
+                All resources operating under safe capacity thresholds.
+              </div>
+            )}
+          </div>
+
+          {/* Available Reserves */}
+          <div className="space-y-2">
+            <h3 className="text-xs font-bold text-[var(--color-text)] flex items-center gap-1.5">
+              <CheckCircle2 size={13} className="text-emerald-500" />
+              Available Reserves ({memberLoad.filter(m => m.utilization < 40).length})
+            </h3>
+
+            {memberLoad.filter(m => m.utilization < 40).length > 0 ? (
+              <div className="space-y-1.5">
+                {memberLoad.filter(m => m.utilization < 40).slice(0, 4).map((member, idx) => (
+                  <div key={idx} className="bg-[var(--color-surface-2)] p-2.5 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 text-xs">
+                    <div className="min-w-0">
+                      <div className="font-bold text-[var(--color-text)] truncate">{member.name}</div>
+                      <div className="text-[10px] text-[var(--color-text-muted)] truncate">{member.role}</div>
+                    </div>
+                    <span className="px-2 py-0.5 bg-sky-500/10 text-sky-500 border border-sky-500/20 text-[10px] font-bold font-mono rounded-md shrink-0">
+                      {member.utilization}% Avg
+                    </span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-[var(--color-surface-2)] p-3 rounded-xl border border-[var(--color-divider)] text-center text-[var(--color-text-muted)] text-[11px]">
+                All resources are heavily utilized.
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="text-[10px] text-[var(--color-text-faint)] text-center p-2 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)]">
+          Advisory updates live with task timeline and capacity settings.
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-hidden">
       <PageHeader
@@ -656,176 +766,171 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
         }
       />
 
-      <div className="flex-1 overflow-hidden flex flex-col lg:flex-row min-w-0 max-w-full">
-        {/* Main interactive grid column */}
-        <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 space-y-5 sm:space-y-6 min-w-0 max-w-full">
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* 1. ULTRA-COMPACT TELEMETRY STATS RIBBON (Saves ~85px of vertical space) */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 px-4 sm:px-6 pt-3 shrink-0">
+        <div className="bg-[var(--color-surface)] p-2.5 sm:px-3.5 sm:py-2 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 shadow-2xs">
+          <div className="min-w-0">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] truncate block">Resources</span>
+            <span className="text-sm sm:text-base font-bold font-mono text-[var(--color-text)] truncate block">{filteredMembers.length} Members</span>
+          </div>
+          <div className="w-7 h-7 rounded-lg bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center shrink-0">
+            <Users size={14} />
+          </div>
+        </div>
+
+        <div className="bg-[var(--color-surface)] p-2.5 sm:px-3.5 sm:py-2 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 shadow-2xs">
+          <div className="min-w-0">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] truncate block">Avg Utilization</span>
+            <span className="text-sm sm:text-base font-bold font-mono text-[var(--color-text)] truncate block">
+              {Math.round(memberLoad.reduce((acc, m) => acc + m.utilization, 0) / (memberLoad.length || 1))}%
+            </span>
+          </div>
+          <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+            <TrendingUp size={14} />
+          </div>
+        </div>
+
+        <div className={clsx(
+          "p-2.5 sm:px-3.5 sm:py-2 rounded-xl border flex items-center justify-between gap-2 shadow-2xs transition-colors",
+          memberLoad.filter(m => m.utilization > 100).length > 0 
+            ? "bg-rose-500/10 border-rose-500/30 text-rose-500" 
+            : "bg-[var(--color-surface)] border-[var(--color-divider)]"
+        )}>
+          <div className="min-w-0">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] truncate block">Overload Alert</span>
+            <span className={clsx("text-sm sm:text-base font-bold font-mono truncate block", memberLoad.filter(m => m.utilization > 100).length > 0 ? "text-rose-500" : "text-emerald-500")}>
+              {memberLoad.filter(m => m.utilization > 100).length} Overloaded
+            </span>
+          </div>
+          <div className={clsx("w-7 h-7 rounded-lg flex items-center justify-center shrink-0", memberLoad.filter(m => m.utilization > 100).length > 0 ? "bg-rose-500/20 text-rose-500" : "bg-emerald-500/10 text-emerald-500")}>
+            <AlertTriangle size={14} />
+          </div>
+        </div>
+
+        <div className="bg-[var(--color-surface)] p-2.5 sm:px-3.5 sm:py-2 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 shadow-2xs">
+          <div className="min-w-0">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] truncate block">Available Reserves</span>
+            <span className="text-sm sm:text-base font-bold font-mono text-sky-500 truncate block">
+              {memberLoad.filter(m => m.utilization < 30).length} Idle
+            </span>
+          </div>
+          <div className="w-7 h-7 rounded-lg bg-sky-500/10 text-sky-500 flex items-center justify-center shrink-0">
+            <CheckCircle2 size={14} />
+          </div>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* 2. CONSOLIDATED COMMAND & CONTROL TOOLBAR (Single Row, Height ~44px)     */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="px-4 sm:px-6 py-2.5 shrink-0 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5">
+        
+        {/* Left: View Mode Segmented Switch */}
+        <div className="flex items-center gap-1 bg-[var(--color-surface-2)] p-1 rounded-xl shrink-0 overflow-x-auto no-scrollbar border border-[var(--color-divider)]">
+          <button
+            type="button"
+            onClick={() => setViewMode('heatmap')}
+            className={clsx(
+              "px-3 py-1.5 min-h-[32px] rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shrink-0",
+              viewMode === 'heatmap' 
+                ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-xs" 
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+            )}
+          >
+            <Layers size={13} />
+            <span>Heatmap Grid</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('schedule')}
+            className={clsx(
+              "px-3 py-1.5 min-h-[32px] flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer active:scale-95 shrink-0 relative",
+              viewMode === 'schedule' 
+                ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-xs" 
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+            )}
+          >
+            <Calendar size={13} />
+            <span>Daily Scheduler</span>
+            {conflicts.length > 0 && (
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse ml-0.5" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('cards')}
+            className={clsx(
+              "px-3 py-1.5 min-h-[32px] flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer active:scale-95 shrink-0",
+              viewMode === 'cards' 
+                ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-xs" 
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+            )}
+          >
+            <LayoutGrid size={13} />
+            <span>Member Cards</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => setViewMode('classic')}
+            className={clsx(
+              "px-3 py-1.5 min-h-[32px] flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer active:scale-95 shrink-0",
+              viewMode === 'classic' 
+                ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-xs" 
+                : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+            )}
+          >
+            <TableIcon size={13} />
+            <span>Classic</span>
+          </button>
+        </div>
+
+        {/* Center / Right Dynamic Controls */}
+        <div className="flex items-center gap-2 flex-wrap md:flex-nowrap justify-between md:justify-end">
           
-          {/* Active Summary Stats: 2x2 grid on mobile, 4-col on desktop */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
-            <div className="bg-[var(--color-surface)] p-3.5 sm:p-4 rounded-2xl border border-[var(--color-divider)] shadow-xs">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[11px] sm:text-xs font-semibold text-[var(--color-text-muted)] truncate">Resources</span>
-                <Users size={15} className="text-[var(--color-primary-hex)] shrink-0" />
-              </div>
-              <div className="text-xl sm:text-2xl font-bold font-mono text-[var(--color-text)]">{filteredMembers.length} Members</div>
-              <div className="mt-0.5 text-[10px] sm:text-xs text-[var(--color-text-faint)] truncate">Active search scope</div>
-            </div>
-
-            <div className="bg-[var(--color-surface)] p-3.5 sm:p-4 rounded-2xl border border-[var(--color-divider)] shadow-xs">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[11px] sm:text-xs font-semibold text-[var(--color-text-muted)] truncate">Avg Utilization</span>
-                <TrendingUp size={15} className="text-emerald-500 shrink-0" />
-              </div>
-              <div className="text-xl sm:text-2xl font-bold font-mono text-[var(--color-text)]">
-                {Math.round(memberLoad.reduce((acc, m) => acc + m.utilization, 0) / (memberLoad.length || 1))}%
-              </div>
-              <div className="mt-0.5 text-[10px] sm:text-xs text-[var(--color-text-faint)] truncate">Team average load</div>
-            </div>
-
-            <div className="bg-[var(--color-surface)] p-3.5 sm:p-4 rounded-2xl border border-[var(--color-divider)] shadow-xs border-l-4 border-l-rose-500">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[11px] sm:text-xs font-semibold text-[var(--color-text-muted)] truncate">Overload Alert</span>
-                <AlertTriangle size={15} className="text-rose-500 shrink-0" />
-              </div>
-              <div className="text-xl sm:text-2xl font-bold font-mono text-rose-500">
-                {memberLoad.filter(m => m.utilization > 100).length} Overloaded
-              </div>
-              <div className="mt-0.5 text-[10px] sm:text-xs text-[var(--color-text-faint)] truncate">Exceeding 100% capacity</div>
-            </div>
-
-            <div className="bg-[var(--color-surface)] p-3.5 sm:p-4 rounded-2xl border border-[var(--color-divider)] shadow-xs border-l-4 border-l-emerald-500">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-[11px] sm:text-xs font-semibold text-[var(--color-text-muted)] truncate">Available Reserves</span>
-                <CheckCircle2 size={15} className="text-emerald-500 shrink-0" />
-              </div>
-              <div className="text-xl sm:text-2xl font-bold font-mono text-[var(--color-text)]">
-                {memberLoad.filter(m => m.utilization < 30).length} Idle
-              </div>
-              <div className="mt-0.5 text-[10px] sm:text-xs text-[var(--color-text-faint)] truncate">Under 30% weekly load</div>
-            </div>
-          </div>
-
-          {/* Controls Bar: Mode Toggles, Filter Pills, Search */}
-          <div className="bg-[var(--color-surface)] p-3 sm:p-4 rounded-2xl border border-[var(--color-divider)] shadow-xs space-y-3 lg:space-y-0 lg:flex lg:items-center lg:justify-between lg:gap-4">
-            
-            {/* View Mode Tabs: Cards vs Heatmap vs Daily Scheduler vs Classic */}
-            <div className="flex items-center gap-1 bg-[var(--color-surface-2)] p-1 rounded-xl shrink-0 max-w-full overflow-x-auto no-scrollbar">
-              <button
-                type="button"
-                onClick={() => setViewMode('cards')}
-                className={clsx(
-                  "px-3 py-1.5 min-h-[36px] flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer active:scale-95 shrink-0",
-                  viewMode === 'cards' 
-                    ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-sm" 
-                    : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-                )}
+          {/* Mode-Specific Inline Controls */}
+          {viewMode === 'schedule' ? (
+            /* Inline Week Navigator for Scheduler (Saves 80px separate card) */
+            <div className="flex items-center gap-1 bg-[var(--color-surface)] p-1 rounded-xl border border-[var(--color-divider)]">
+              <button 
+                onClick={handlePrevScheduleWeek}
+                className="w-7 h-7 hover:bg-[var(--color-surface-2)] rounded-lg flex items-center justify-center transition-colors cursor-pointer text-[var(--color-text)]"
+                aria-label="Previous week"
               >
-                <LayoutGrid size={13} />
-                <span>Member Cards</span>
+                <ChevronLeft size={14} />
               </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('heatmap')}
-                className={clsx(
-                  "px-3 py-1.5 min-h-[36px] rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shrink-0",
-                  viewMode === 'heatmap' 
-                    ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-sm" 
-                    : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-                )}
+              <span className="font-mono text-xs font-bold px-2 text-[var(--color-text)] whitespace-nowrap">
+                {scheduleWeekDays[0]?.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} – {scheduleWeekDays[4]?.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+              </span>
+              <button 
+                onClick={handleNextScheduleWeek}
+                className="w-7 h-7 hover:bg-[var(--color-surface-2)] rounded-lg flex items-center justify-center transition-colors cursor-pointer text-[var(--color-text)]"
+                aria-label="Next week"
               >
-                <Layers size={13} />
-                <span>Heatmap Grid</span>
+                <ChevronRight size={14} />
               </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('schedule')}
-                className={clsx(
-                  "px-3 py-1.5 min-h-[36px] flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer active:scale-95 shrink-0 relative",
-                  viewMode === 'schedule' 
-                    ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-sm" 
-                    : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-                )}
+              <button 
+                onClick={handleTodayScheduleWeek}
+                className="px-2 py-1 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-[var(--color-text)] rounded-lg text-[11px] font-semibold transition-colors cursor-pointer ml-1"
               >
-                <Calendar size={13} />
-                <span>Daily Scheduler</span>
-                {conflicts.length > 0 && (
-                  <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse ml-0.5" />
-                )}
-              </button>
-              <button
-                type="button"
-                onClick={() => setViewMode('classic')}
-                className={clsx(
-                  "px-3 py-1.5 min-h-[36px] flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer active:scale-95 shrink-0",
-                  viewMode === 'classic' 
-                    ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-sm" 
-                    : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-                )}
-              >
-                <TableIcon size={13} />
-                <span>Classic</span>
+                Today
               </button>
             </div>
-
-            {/* Filter Pills (Smooth scroll container on mobile) */}
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 max-w-full">
-              {roles.map(role => (
-                <button
-                  key={role}
-                  type="button"
-                  onClick={() => setRoleFilter(role)}
-                  className={clsx(
-                    "px-3 py-1.5 min-h-[34px] rounded-lg text-xs font-semibold transition-colors border cursor-pointer shrink-0 whitespace-nowrap active:scale-95",
-                    roleFilter === role 
-                      ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] border-[var(--color-primary-hex)] shadow-sm" 
-                      : "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:border-[var(--color-border)]"
-                  )}
-                >
-                  {role === 'all' ? 'All Roles' : role}
-                </button>
-              ))}
-            </div>
-
-            {/* Search Input */}
-            <div className="relative w-full lg:w-56 shrink-0">
-              <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search resources..."
-                aria-label="Search resources"
-                className="w-full h-10 pl-9 pr-8 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary-hex)]"
-              />
-              {searchQuery && (
-                <button 
-                  onClick={() => setSearchQuery('')}
-                  aria-label="Clear search"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] hover:text-[var(--color-text)] min-h-[28px] min-w-[28px] flex items-center justify-center cursor-pointer"
-                >
-                  <X size={12} />
-                </button>
-              )}
-            </div>
-
-          </div>
-
-          {/* Interactive Heatmap Controls (Shown when viewing grid or adjusting threshold) */}
-          {(viewMode === 'heatmap' || viewMode === 'classic') && (
-            <div className="bg-[var(--color-surface-2)] p-3.5 sm:p-4 rounded-2xl border border-[var(--color-divider)] space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between sm:gap-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-primary-hex)] rounded-xl shrink-0">
-                  <Sliders size={15} />
-                </div>
-                <div>
-                  <h3 className="text-xs font-bold text-[var(--color-text)]">Spotlight Threshold</h3>
-                  <p className="text-[11px] text-[var(--color-text-muted)]">Highlight high allocation cells</p>
-                </div>
-              </div>
-
-              {/* Slider & Metric Selectors */}
-              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-                <div className="flex items-center gap-2 flex-1 min-w-[140px]">
+          ) : (
+            /* Heatmap / Classic Spotlight & Metric Controls (Inline, Compact) */
+            <div className="flex items-center gap-2 bg-[var(--color-surface)] p-1 px-2 rounded-xl border border-[var(--color-divider)]">
+              <label className="flex items-center gap-1.5 cursor-pointer select-none text-xs text-[var(--color-text-muted)]">
+                <input
+                  type="checkbox"
+                  checked={enableSpotlight}
+                  onChange={(e) => setEnableSpotlight(e.target.checked)}
+                  className="rounded text-[var(--color-primary-hex)] focus:ring-[var(--color-primary-hex)] h-3.5 w-3.5"
+                />
+                <span className="font-semibold text-[11px]">Spotlight</span>
+              </label>
+              {enableSpotlight && (
+                <div className="flex items-center gap-1.5 pl-1.5 border-l border-[var(--color-divider)]">
                   <input
                     type="range"
                     min="50"
@@ -833,245 +938,243 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                     step="10"
                     value={spotlightThreshold}
                     onChange={(e) => setSpotlightThreshold(parseInt(e.target.value))}
-                    disabled={!enableSpotlight}
                     aria-label="Spotlight allocation threshold percentage"
-                    className={clsx(
-                      "w-full h-1.5 rounded-lg appearance-none cursor-pointer accent-[var(--color-primary-hex)] bg-[var(--color-surface)] border border-[var(--color-divider)]",
-                      !enableSpotlight && "opacity-40 cursor-not-allowed"
-                    )}
+                    className="w-16 h-1.5 rounded-lg appearance-none cursor-pointer accent-[var(--color-primary-hex)] bg-[var(--color-surface-2)]"
                   />
-                  <span className={clsx(
-                    "font-mono text-xs font-bold px-2 py-0.5 rounded-md shrink-0",
-                    enableSpotlight ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20" : "bg-[var(--color-surface)] text-[var(--color-text-muted)]"
-                  )}>
+                  <span className="font-mono text-[10px] font-bold text-[var(--color-primary-hex)] w-7 text-right">
                     {spotlightThreshold}%
                   </span>
                 </div>
-
-                <div className="flex items-center gap-3 shrink-0">
-                  <label className="flex items-center gap-1.5 cursor-pointer select-none">
-                    <input
-                      type="checkbox"
-                      checked={enableSpotlight}
-                      onChange={(e) => setEnableSpotlight(e.target.checked)}
-                      className="rounded text-[var(--color-primary-hex)] focus:ring-[var(--color-primary-hex)] h-3.5 w-3.5"
-                    />
-                    <span className="text-xs font-semibold text-[var(--color-text-muted)]">Spotlight</span>
-                  </label>
-
-                  <div className="flex items-center gap-1 border-l border-[var(--color-divider)] pl-3">
-                    <span className="text-xs font-semibold text-[var(--color-text-muted)]">Metric:</span>
-                    <select
-                      value={heatmapMetric}
-                      onChange={(e: any) => setHeatmapMetric(e.target.value)}
-                      aria-label="Heatmap metric display"
-                      className="bg-transparent text-xs font-bold text-[var(--color-text)] focus:outline-none cursor-pointer"
-                    >
-                      <option value="days">Days</option>
-                      <option value="percent">% Util</option>
-                      <option value="none">Blank</option>
-                    </select>
-                  </div>
-                </div>
+              )}
+              <div className="flex items-center gap-1 pl-1.5 border-l border-[var(--color-divider)] text-xs text-[var(--color-text-muted)]">
+                <span className="text-[11px]">Metric:</span>
+                <select
+                  value={heatmapMetric}
+                  onChange={(e: any) => setHeatmapMetric(e.target.value)}
+                  aria-label="Heatmap metric display"
+                  className="bg-transparent text-xs font-bold text-[var(--color-text)] focus:outline-none cursor-pointer"
+                >
+                  <option value="days">Days</option>
+                  <option value="percent">% Util</option>
+                  <option value="none">Blank</option>
+                </select>
               </div>
             </div>
           )}
 
-          {/* VIEW MODE: DAILY SCHEDULER vs MEMBER CARDS vs HEATMAP/CLASSIC GRID */}
+          {/* Role Filter Dropdown */}
+          <div className="relative">
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value)}
+              aria-label="Filter members by role"
+              className="h-9 px-2.5 pr-7 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs font-semibold text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary-hex)] cursor-pointer appearance-none shadow-2xs"
+            >
+              <option value="all">All Roles</option>
+              {roles.filter(r => r !== 'all').map(r => (
+                <option key={r} value={r}>{r}</option>
+              ))}
+            </select>
+            <ChevronRight size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 rotate-90 text-[var(--color-text-muted)] pointer-events-none" />
+          </div>
+
+          {/* Search Input */}
+          <div className="relative w-40 lg:w-48 shrink-0">
+            <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search resources..."
+              aria-label="Search resources"
+              className="w-full h-9 pl-8 pr-7 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary-hex)] shadow-2xs"
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery('')}
+                aria-label="Clear search"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] hover:text-[var(--color-text)] w-5 h-5 flex items-center justify-center cursor-pointer"
+              >
+                <X size={11} />
+              </button>
+            )}
+          </div>
+
+          {/* Advisory Dock Toggle (Desktop) */}
+          <button
+            type="button"
+            onClick={() => setShowAdvisoryPanel(!showAdvisoryPanel)}
+            className={clsx(
+              "hidden lg:flex h-9 px-2.5 rounded-xl border text-xs font-semibold items-center gap-1.5 transition-colors cursor-pointer shrink-0 shadow-2xs active:scale-95",
+              showAdvisoryPanel 
+                ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border-[var(--color-primary-hex)]/30"
+                : "bg-[var(--color-surface)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:text-[var(--color-text)]"
+            )}
+            title="Toggle Allocation Advisory Dock"
+          >
+            <Cpu size={13} />
+            <span>Advisory</span>
+            {conflicts.length > 0 && (
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* 3. FULL-HEIGHT WORKSPACE CONTAINER (Zero Page Vertical Scrolling)       */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="flex-1 min-h-0 overflow-y-auto lg:overflow-hidden flex flex-col lg:flex-row px-3 sm:px-6 pb-4 gap-3 sm:gap-4">
+        
+        {/* Main Workstation (Expands to 100% when advisory panel is closed) */}
+        <div className="flex-1 min-h-0 min-w-0 flex flex-col overflow-y-auto lg:overflow-hidden">
+          
+          {/* VIEW MODE 1: DAILY SCHEDULER */}
           {viewMode === 'schedule' ? (
-            <div className="space-y-6">
-              {/* Date Selector & Weekly Navigator */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 flex items-center justify-center shrink-0">
-                    <Calendar size={18} />
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 flex-1 min-h-0 overflow-y-auto custom-scroll pr-1">
+              
+              {/* Daily Allocation Table (8 Cols) */}
+              <div className="xl:col-span-8 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs flex flex-col overflow-hidden">
+                <div className="p-3 sm:px-4 border-b border-[var(--color-divider)] flex justify-between items-center bg-[var(--color-surface-2)]">
+                  <div className="flex items-center gap-2">
+                    <Users size={15} className="text-[var(--color-primary-hex)]" />
+                    <h2 className="font-bold text-xs sm:text-sm text-[var(--color-text)]">Team Daily Allocation Grid</h2>
                   </div>
-                  <div>
-                    <div className="text-xs font-semibold text-[var(--color-text-muted)]">Active Planning Week</div>
-                    <div className="text-sm font-bold text-[var(--color-text)]">
-                      {scheduleWeekDays[0]?.toISOString().split('T')[0]} <span className="text-[var(--color-text-faint)] font-normal text-xs">to</span> {scheduleWeekDays[4]?.toISOString().split('T')[0]}
-                    </div>
-                  </div>
+                  <span className="text-[11px] text-[var(--color-text-muted)] font-mono">1.0 = 100% capacity (8h/day)</span>
                 </div>
 
-                <div className="flex items-center gap-2 self-end sm:self-auto">
-                  <button 
-                    onClick={handleTodayScheduleWeek}
-                    className="h-9 px-3 border border-[var(--color-divider)] bg-[var(--color-surface-2)] hover:border-[var(--color-border)] text-[var(--color-text)] rounded-xl text-xs font-semibold transition-colors cursor-pointer active:scale-95"
-                  >
-                    Current Week
-                  </button>
-                  <button 
-                    onClick={handlePrevScheduleWeek}
-                    className="w-9 h-9 border border-[var(--color-divider)] bg-[var(--color-surface-2)] hover:border-[var(--color-border)] rounded-xl flex items-center justify-center transition-colors cursor-pointer active:scale-95 text-[var(--color-text)]"
-                    aria-label="Previous week"
-                  >
-                    <ChevronLeft size={16} />
-                  </button>
-                  <button 
-                    onClick={handleNextScheduleWeek}
-                    className="w-9 h-9 border border-[var(--color-divider)] bg-[var(--color-surface-2)] hover:border-[var(--color-border)] rounded-xl flex items-center justify-center transition-colors cursor-pointer active:scale-95 text-[var(--color-text)]"
-                    aria-label="Next week"
-                  >
-                    <ChevronRight size={16} />
-                  </button>
+                <div className="divide-y divide-[var(--color-divider)] overflow-y-auto custom-scroll flex-1">
+                  {activeMembers.map(m => (
+                    <div key={m.id} className="p-3 sm:px-4 flex flex-col sm:flex-row gap-3 sm:items-center hover:bg-[var(--color-surface-2)]/40 transition-colors">
+                      <div className="w-36 shrink-0">
+                        <div className="font-bold text-xs text-[var(--color-text)] truncate">{m.name}</div>
+                        <div className="text-[11px] text-[var(--color-primary-hex)] mt-0.5 truncate">{m.role}</div>
+                      </div>
+
+                      <div className="flex-1 grid grid-cols-5 gap-2">
+                        {scheduleWeekDays.map(day => {
+                          const dStr = day.toISOString().split('T')[0];
+                          const sched = dailySchedule[m.name]?.[dStr] || { effort: 0, tasks: [] };
+                          const effortPct = Math.min(Math.round(sched.effort * 100), 100);
+                          const isConflict = sched.effort > 1.0;
+
+                          return (
+                            <div 
+                              key={dStr} 
+                              className={clsx(
+                                "p-2 rounded-xl border text-center transition-colors group relative min-h-[58px] flex flex-col justify-between select-none",
+                                isConflict 
+                                  ? "bg-rose-500/10 border-rose-500/30 text-rose-500" 
+                                  : sched.effort > 0.01 
+                                    ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500" 
+                                    : "bg-[var(--color-surface-2)] border-[var(--color-divider)] text-[var(--color-text-faint)]"
+                              )}
+                            >
+                              <div>
+                                <div className="text-[10px] font-semibold">
+                                  {day.toLocaleDateString('en-US', { weekday: 'short' })}
+                                </div>
+                                <div className="font-mono text-xs font-bold">
+                                  {sched.effort > 0 ? `${sched.effort.toFixed(1)}d` : '-'}
+                                </div>
+                              </div>
+
+                              {sched.effort > 0 && (
+                                <div className="w-full bg-[var(--color-surface-offset)] h-1 rounded-full overflow-hidden mt-1">
+                                  <div 
+                                    className={clsx("h-full rounded-full transition-transform duration-300", isConflict ? "bg-rose-500" : "bg-emerald-500")}
+                                    style={{ width: `${effortPct}%` }}
+                                  />
+                                </div>
+                              )}
+
+                              {/* Tooltip on Hover showing tasks details */}
+                              {sched.tasks.length > 0 && (
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-52 bg-zinc-950 text-zinc-100 text-xs p-2.5 rounded-xl shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-20 space-y-1 border border-zinc-800">
+                                  <div className="font-bold border-b border-zinc-800 pb-1 mb-1 text-zinc-400">Assigned tasks:</div>
+                                  {sched.tasks.map(t => (
+                                    <div key={t.id} className="truncate text-[11px] text-zinc-200">• {t.id}: {t.name} ({t.estDays}d)</div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              {/* Workspace Scheduler Layout */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-                
-                {/* Calendar Grid (2 Cols) */}
-                <div className="lg:col-span-2 space-y-4">
-                  <div className="overflow-hidden bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs">
-                    <div className="p-4 md:p-5 border-b border-[var(--color-divider)] flex flex-wrap justify-between items-center gap-2 bg-[var(--color-surface-2)]">
-                      <div className="flex items-center gap-2">
-                        <Users size={16} className="text-[var(--color-primary-hex)]" />
-                        <h2 className="font-bold text-sm text-[var(--color-text)]">Team Allocation Grid</h2>
+              {/* Diagnostics & Leveling Side Deck (4 Cols) */}
+              <div className="xl:col-span-4 space-y-4">
+                <div className="p-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs space-y-3">
+                  <h2 className="font-bold text-xs sm:text-sm flex items-center gap-2 text-[var(--color-text)]">
+                    <AlertTriangle className={clsx(conflicts.length > 0 ? "text-amber-500" : "text-emerald-500")} size={15} />
+                    Conflict Diagnostic Sweep
+                  </h2>
+
+                  {conflicts.length > 0 ? (
+                    <div className="space-y-2.5">
+                      <div className="p-2.5 bg-rose-500/10 border border-rose-500/25 rounded-xl text-xs text-rose-500 font-semibold flex items-center gap-2">
+                        <AlertCircle size={14} className="shrink-0" />
+                        <span>{conflicts.length} workload conflicts identified this week.</span>
                       </div>
-                      <span className="text-xs text-[var(--color-text-muted)] font-mono">1.0 = 100% capacity (8h/day)</span>
-                    </div>
-
-                    <div className="divide-y divide-[var(--color-divider)]">
-                      {activeMembers.map(m => {
-                        return (
-                          <div key={m.id} className="p-4 md:p-5 flex flex-col md:flex-row gap-4 md:items-center">
-                            <div className="w-44 shrink-0">
-                              <div className="font-bold text-xs text-[var(--color-text)] truncate">{m.name}</div>
-                              <div className="text-xs text-[var(--color-primary-hex)] mt-0.5 truncate">{m.role}</div>
-                            </div>
-
-                            <div className="flex-1 grid grid-cols-5 gap-2">
-                              {scheduleWeekDays.map(day => {
-                                const dStr = day.toISOString().split('T')[0];
-                                const sched = dailySchedule[m.name]?.[dStr] || { effort: 0, tasks: [] };
-                                const effortPct = Math.min(Math.round(sched.effort * 100), 100);
-                                const isConflict = sched.effort > 1.0;
-
-                                return (
-                                  <div 
-                                    key={dStr} 
-                                    className={clsx(
-                                      "p-2.5 rounded-xl border text-center transition-colors group relative min-h-[85px] flex flex-col justify-between select-none",
-                                      isConflict 
-                                        ? "bg-rose-500/10 border-rose-500/30 text-rose-500" 
-                                        : sched.effort > 0.01 
-                                          ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-500" 
-                                          : "bg-[var(--color-surface-2)] border-[var(--color-divider)] text-[var(--color-text-faint)]"
-                                    )}
-                                  >
-                                    <div>
-                                      <div className="text-[11px] font-semibold mb-1">
-                                        {day.toLocaleDateString('en-US', { weekday: 'short' })}
-                                      </div>
-                                      <div className="font-mono text-xs font-bold">
-                                        {sched.effort > 0 ? `${sched.effort.toFixed(1)}d` : '-'}
-                                      </div>
-                                    </div>
-
-                                    {sched.effort > 0 && (
-                                      <div className="w-full bg-[var(--color-surface-offset)] h-1.5 rounded-full overflow-hidden mt-1.5">
-                                        <div 
-                                          className={clsx("h-full rounded-full motion-safe:transition-transform duration-300", isConflict ? "bg-rose-500" : "bg-emerald-500")}
-                                          style={{ width: `${effortPct}%` }}
-                                        />
-                                      </div>
-                                    )}
-
-                                    {/* Tooltip on Hover showing tasks details */}
-                                    {sched.tasks.length > 0 && (
-                                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-52 bg-zinc-950 text-zinc-100 text-xs p-2.5 rounded-xl shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-20 space-y-1 border border-zinc-800">
-                                        <div className="font-bold border-b border-zinc-800 pb-1 mb-1 text-zinc-400">Assigned tasks:</div>
-                                        {sched.tasks.map(t => (
-                                          <div key={t.id} className="truncate text-[11px] text-zinc-200">• {t.id}: {t.name} ({t.estDays}d)</div>
-                                        ))}
-                                      </div>
-                                    )}
-                                  </div>
-                                );
-                              })}
+                      <div className="space-y-2 max-h-[220px] overflow-y-auto custom-scroll pr-1">
+                        {conflicts.map((c, i) => (
+                          <div key={i} className="p-2.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs space-y-1">
+                            <div className="font-bold text-[var(--color-text)]">{c.member}</div>
+                            <div className="text-[11px] text-[var(--color-text-muted)]">Overloaded on {c.date} (Allocation: {c.effort}d)</div>
+                            <div className="pt-1.5 border-t border-[var(--color-divider)] mt-1.5 space-y-1">
+                              {c.tasks.map(t => (
+                                <div key={t.id} className="text-[11px] text-[var(--color-text)] flex items-center justify-between font-medium">
+                                  <span className="truncate max-w-[150px]">{t.id}: {t.name}</span>
+                                  <span className="font-mono text-[var(--color-primary-hex)] shrink-0">{t.estDays}d</span>
+                                </div>
+                              ))}
                             </div>
                           </div>
-                        );
-                      })}
+                        ))}
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="p-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-center space-y-1.5">
+                      <div className="w-8 h-8 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 mx-auto">
+                        <CheckCircle2 size={18} />
+                      </div>
+                      <h3 className="font-bold text-xs text-[var(--color-text)]">Timeline Balanced</h3>
+                      <p className="text-[11px] text-[var(--color-text-muted)] leading-relaxed">
+                        No day-level conflicts detected for this period.
+                      </p>
+                    </div>
+                  )}
                 </div>
 
-                {/* Diagnostics Panel (1 Col) */}
-                <div className="space-y-6">
-                  <div className="p-5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs">
-                    <h2 className="font-bold text-sm flex items-center gap-2 mb-3 text-[var(--color-text)]">
-                      <AlertTriangle className={clsx(conflicts.length > 0 ? "text-amber-500" : "text-emerald-500")} size={16} />
-                      Conflict Diagnostic Sweep
-                    </h2>
-
-                    {conflicts.length > 0 ? (
-                      <div className="space-y-3">
-                        <div className="p-3 bg-rose-500/10 border border-rose-500/25 rounded-xl text-xs text-rose-500 font-semibold flex items-center gap-2">
-                          <AlertCircle size={14} className="shrink-0" />
-                          <span>{conflicts.length} workload conflicts identified this week.</span>
-                        </div>
-                        <div className="space-y-2.5 max-h-[280px] overflow-y-auto custom-scroll pr-1">
-                          {conflicts.map((c, i) => (
-                            <div key={i} className="p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs space-y-1">
-                              <div className="font-bold text-[var(--color-text)]">{c.member}</div>
-                              <div className="text-[11px] text-[var(--color-text-muted)]">Overloaded on {c.date} (Allocation: {c.effort}d)</div>
-                              <div className="pt-2 border-t border-[var(--color-divider)] mt-2 space-y-1">
-                                {c.tasks.map(t => (
-                                  <div key={t.id} className="text-xs text-[var(--color-text)] flex items-center justify-between font-medium">
-                                    <span className="truncate max-w-[170px]">{t.id}: {t.name}</span>
-                                    <span className="font-mono text-[var(--color-primary-hex)] shrink-0">{t.estDays}d</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
+                <div className="p-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs space-y-3">
+                  <h2 className="font-bold text-xs sm:text-sm flex items-center gap-2 text-[var(--color-text)]">
+                    <Cpu className="text-[var(--color-primary-hex)]" size={15} />
+                    Leveling Heuristics
+                  </h2>
+                  <div className="space-y-2">
+                    {recommendations.map((rec, i) => (
+                      <div key={i} className="flex gap-2 items-start p-2.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs text-[var(--color-text)] leading-relaxed">
+                        <ArrowRight size={13} className="text-[var(--color-primary-hex)] shrink-0 mt-0.5" />
+                        <span>{rec}</span>
                       </div>
-                    ) : (
-                      <div className="p-6 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-center space-y-2">
-                        <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-500 mx-auto">
-                          <CheckCircle2 size={20} />
-                        </div>
-                        <h3 className="font-bold text-xs text-[var(--color-text)]">Weekly Timeline Optimised</h3>
-                        <p className="text-xs text-[var(--color-text-muted)] max-w-[220px] mx-auto leading-relaxed">
-                          No calendar bottlenecks or day-level conflicts detected.
-                        </p>
-                      </div>
-                    )}
+                    ))}
                   </div>
-
-                  {/* Smart Suggestions & Copilot */}
-                  <div className="p-5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs space-y-3">
-                    <h2 className="font-bold text-sm flex items-center gap-2 text-[var(--color-text)]">
-                      <Cpu className="text-[var(--color-primary-hex)]" size={16} />
-                      Leveling Heuristic Recommendations
-                    </h2>
-
-                    <div className="space-y-2.5">
-                      {recommendations.map((rec, i) => (
-                        <div key={i} className="flex gap-2 items-start p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs text-[var(--color-text)] leading-relaxed">
-                          <ArrowRight size={13} className="text-[var(--color-primary-hex)] shrink-0 mt-0.5" />
-                          <span>{rec}</span>
-                        </div>
-                      ))}
-                    </div>
-
-                    <button 
-                      onClick={handleAutoBalance}
-                      className="w-full mt-2 h-9 px-3.5 bg-[var(--color-primary-hex)] hover:opacity-95 text-[var(--color-primary-text)] rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-opacity shadow-sm cursor-pointer active:scale-95"
-                    >
-                      <Cpu size={14} /> Balance Workload (Heuristic)
-                    </button>
-                  </div>
-
+                  <button 
+                    onClick={handleAutoBalance}
+                    className="w-full h-9 px-3.5 bg-[var(--color-primary-hex)] hover:opacity-95 text-[var(--color-primary-text)] rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-opacity shadow-sm cursor-pointer active:scale-95"
+                  >
+                    <Cpu size={14} /> Balance Workload
+                  </button>
                 </div>
-
               </div>
             </div>
           ) : viewMode === 'cards' ? (
-            <div className="space-y-3.5">
+            /* VIEW MODE 2: RESPONSIVE BENTO GRID (Cuts vertical scrolling by 66%) */
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3.5 flex-1 min-h-0 overflow-y-auto custom-scroll pr-1">
               {memberLoad.length > 0 ? (
                 memberLoad.map((member, mIdx) => {
                   const peakIdx = getPeakWeekIndex(member);
@@ -1081,116 +1184,112 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                   return (
                     <div 
                       key={mIdx} 
-                      className="card p-4 sm:p-5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs space-y-3.5 hover:border-[var(--color-border)] transition-colors"
+                      className="p-4 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs space-y-3 hover:border-[var(--color-border)] transition-colors flex flex-col justify-between"
                     >
-                      {/* Card Header: Avatar, Name, Role, Status Badge */}
-                      <div className="flex items-start justify-between gap-2">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-10 h-10 rounded-2xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 flex items-center justify-center font-bold text-sm shrink-0 shadow-2xs">
-                            {member.name.charAt(0)}
+                      <div className="space-y-3">
+                        {/* Header: Avatar, Name, Role, Badge */}
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="w-9 h-9 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
+                              {member.name.charAt(0)}
+                            </div>
+                            <div className="min-w-0">
+                              <h4 className="font-bold text-xs text-[var(--color-text)] truncate">{member.name}</h4>
+                              <p className="text-[11px] text-[var(--color-text-muted)] truncate">{member.role || 'Member'}</p>
+                            </div>
                           </div>
-                          <div className="min-w-0">
-                            <h4 className="font-bold text-sm text-[var(--color-text)] truncate">{member.name}</h4>
-                            <p className="text-xs text-[var(--color-text-muted)] truncate">{member.role || 'Unspecified Role'}</p>
-                          </div>
-                        </div>
 
-                        {/* Status badge */}
-                        <div className="shrink-0">
-                          {isOverloaded ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
-                              <AlertTriangle size={12} /> {member.utilization}% Overload
-                            </span>
-                          ) : member.utilization > 80 ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                              {member.utilization}% Near Cap
-                            </span>
-                          ) : member.utilization >= 20 ? (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                              <CheckCircle2 size={12} /> {member.utilization}% Healthy
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
-                              {member.utilization}% Idle
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Overall workload summary bar */}
-                      <div className="space-y-1.5">
-                        <div className="flex items-center justify-between text-xs text-[var(--color-text-muted)] font-medium">
-                          <span>Weekly Avg: <strong className="font-mono text-[var(--color-text)]">{member.avgLoad}d</strong>/wk</span>
-                          <span>Total: <strong className="font-mono text-[var(--color-text)]">{member.totalLoad.toFixed(1)}d</strong> ({weeks.length}w)</span>
-                        </div>
-                        <div className="h-1.5 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
-                          <div 
-                            className={clsx(
-                              "h-full rounded-full transition-all duration-300",
-                              isOverloaded ? "bg-rose-500" : "bg-[var(--color-primary-hex)]"
+                          <div className="shrink-0">
+                            {isOverloaded ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                                <AlertTriangle size={11} /> {member.utilization}% Overload
+                              </span>
+                            ) : member.utilization > 80 ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                                {member.utilization}% Near Cap
+                              </span>
+                            ) : member.utilization >= 20 ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                                <CheckCircle2 size={11} /> {member.utilization}% Healthy
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
+                                {member.utilization}% Idle
+                              </span>
                             )}
-                            style={{ width: `${Math.min(member.utilization, 100)}%` }}
-                          />
-                        </div>
-                      </div>
-
-                      {/* 8-Week Touch Strip */}
-                      <div className="space-y-1.5 pt-1">
-                        <div className="flex items-center justify-between text-[11px] font-semibold text-[var(--color-text-muted)]">
-                          <span>8-Week Timeline Allocation:</span>
-                          <span className="text-[10px] text-[var(--color-text-faint)]">Tap week to inspect</span>
+                          </div>
                         </div>
 
-                        <div className="grid grid-cols-4 sm:grid-cols-8 gap-1.5">
-                          {member.weeklyEffort.map((effort, wIdx) => {
-                            const days = effort.days;
-                            const util = effort.utilization;
-                            const isSelected = selectedCoords?.memberName === member.name && selectedCoords?.weekIdx === wIdx;
-                            const isSpotlighted = enableSpotlight && util >= spotlightThreshold;
-                            const weekDate = weeks[wIdx];
+                        {/* Overall Workload Bar */}
+                        <div className="space-y-1">
+                          <div className="flex items-center justify-between text-[11px] text-[var(--color-text-muted)]">
+                            <span>Weekly: <strong className="font-mono text-[var(--color-text)]">{member.avgLoad}d</strong></span>
+                            <span>Total: <strong className="font-mono text-[var(--color-text)]">{member.totalLoad.toFixed(1)}d</strong></span>
+                          </div>
+                          <div className="h-1.5 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
+                            <div 
+                              className={clsx(
+                                "h-full rounded-full transition-all duration-300",
+                                isOverloaded ? "bg-rose-500" : "bg-[var(--color-primary-hex)]"
+                              )}
+                              style={{ width: `${Math.min(member.utilization, 100)}%` }}
+                            />
+                          </div>
+                        </div>
 
-                            return (
-                              <button
-                                key={wIdx}
-                                type="button"
-                                onClick={() => setSelectedCoords({ memberName: member.name, weekIdx: wIdx })}
-                                className={clsx(
-                                  "p-2 rounded-xl border flex flex-col items-center justify-center transition-all cursor-pointer min-h-[52px] relative active:scale-95 group select-none",
-                                  getCellColor(days, 'heatmap'),
-                                  isSelected 
-                                    ? "ring-2 ring-[var(--color-primary-hex)] ring-offset-2 z-10" 
-                                    : "border-[var(--color-divider)]",
-                                  isSpotlighted && !isSelected && "ring-2 ring-rose-400 ring-offset-1"
-                                )}
-                                aria-label={`${member.name} Week ${wIdx + 1}: ${days} days, ${util}% utilization, ${effort.tasks.length} tasks`}
-                              >
-                                <span className="text-[10px] font-semibold opacity-80 leading-none">W{wIdx + 1}</span>
-                                <span className="text-xs font-bold font-mono mt-0.5 leading-none">{days}d</span>
-                                <div className="flex items-center gap-0.5 mt-1 text-[9px] opacity-75 font-mono leading-none">
-                                  <span>{util}%</span>
-                                  {effort.tasks.length > 0 && (
-                                    <span className="font-bold">({effort.tasks.length})</span>
+                        {/* 8-Week Touch Strip */}
+                        <div className="space-y-1">
+                          <div className="grid grid-cols-4 sm:grid-cols-8 gap-1">
+                            {member.weeklyEffort.map((effort, wIdx) => {
+                              const days = effort.days;
+                              const util = effort.utilization;
+                              const isSelected = selectedCoords?.memberName === member.name && selectedCoords?.weekIdx === wIdx;
+                              const isSpotlighted = enableSpotlight && util >= spotlightThreshold;
+
+                              return (
+                                <button
+                                  key={wIdx}
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedCoords({ memberName: member.name, weekIdx: wIdx });
+                                    setShowAdvisoryPanel(true);
+                                  }}
+                                  className={clsx(
+                                    "p-1 rounded-lg border flex flex-col items-center justify-center transition-all cursor-pointer min-h-[46px] select-none active:scale-95",
+                                    getCellColor(days, 'heatmap'),
+                                    isSelected 
+                                      ? "ring-2 ring-[var(--color-primary-hex)] ring-offset-1 z-10" 
+                                      : "border-[var(--color-divider)]",
+                                    isSpotlighted && !isSelected && "ring-2 ring-rose-400 ring-offset-1"
                                   )}
-                                </div>
-                              </button>
-                            );
-                          })}
+                                  aria-label={`${member.name} Week ${wIdx + 1}: ${days} days, ${util}% utilization, ${effort.tasks.length} tasks`}
+                                >
+                                  <span className="text-[9px] font-semibold opacity-80 leading-none">W{wIdx + 1}</span>
+                                  <span className="text-[11px] font-bold font-mono mt-0.5 leading-none">{days}d</span>
+                                  <span className="text-[8px] opacity-75 font-mono leading-none mt-0.5">{util}%</span>
+                                </button>
+                              );
+                            })}
+                          </div>
                         </div>
                       </div>
 
-                      {/* Quick Peak Week Action if overloaded */}
+                      {/* Quick Peak Week Action */}
                       {isOverloaded && (
-                        <div className="pt-1 flex items-center justify-between bg-rose-500/5 border border-rose-500/15 rounded-xl px-3 py-2 text-xs">
-                          <span className="text-rose-600 dark:text-rose-400 text-[11px] font-medium flex items-center gap-1.5 truncate">
-                            <AlertTriangle size={12} className="shrink-0" />
-                            Peak: Wk {peakIdx + 1} ({peakEffort.days}d / {peakEffort.utilization}%)
+                        <div className="pt-2 flex items-center justify-between bg-rose-500/5 border border-rose-500/15 rounded-xl px-2.5 py-1.5 text-xs">
+                          <span className="text-rose-600 dark:text-rose-400 text-[10px] font-medium flex items-center gap-1 truncate">
+                            <AlertTriangle size={11} className="shrink-0" />
+                            Peak: Wk {peakIdx + 1} ({peakEffort.days}d)
                           </span>
                           <button
                             type="button"
-                            onClick={() => setSelectedCoords({ memberName: member.name, weekIdx: peakIdx })}
-                            className="px-2.5 py-1 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 rounded-lg text-[11px] font-bold transition-colors cursor-pointer flex items-center gap-1 shrink-0 ml-2"
+                            onClick={() => {
+                              setSelectedCoords({ memberName: member.name, weekIdx: peakIdx });
+                              setShowAdvisoryPanel(true);
+                            }}
+                            className="px-2 py-0.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 rounded-md text-[10px] font-bold transition-colors cursor-pointer flex items-center gap-0.5 shrink-0"
                           >
-                            Inspect <ChevronRight size={11} />
+                            Inspect <ChevronRight size={10} />
                           </button>
                         </div>
                       )}
@@ -1198,7 +1297,7 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                   );
                 })
               ) : (
-                <div className="card p-12 text-center text-[var(--color-text-muted)]">
+                <div className="col-span-full p-12 text-center text-[var(--color-text-muted)] bg-[var(--color-surface)] rounded-2xl border border-[var(--color-divider)]">
                   <Users size={32} className="mx-auto text-[var(--color-text-faint)] mb-2" />
                   <p className="font-bold text-sm text-[var(--color-text)]">No resources found</p>
                   <p className="text-xs text-[var(--color-text-muted)] mt-1">Try adjusting your search query or role filter.</p>
@@ -1212,43 +1311,43 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
               )}
             </div>
           ) : (
-            /* VIEW MODE 2 & 3: CAPACITY GRID TABLE (HEATMAP OR CLASSIC) */
-            <div className="bg-[var(--color-surface)] rounded-2xl border border-[var(--color-divider)] shadow-xs overflow-hidden">
-              <div className="overflow-x-auto custom-scroll">
+            /* VIEW MODE 3 & 4: HEATMAP GRID & CLASSIC TABLE (Full-Height Responsive Table Card) */
+            <div className="flex-1 min-h-[380px] lg:min-h-0 bg-[var(--color-surface)] rounded-2xl border border-[var(--color-divider)] shadow-xs flex flex-col overflow-hidden">
+              <div className="flex-1 overflow-auto custom-scroll relative min-h-[260px]">
                 <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-divider)]">
-                      <th className="p-3.5 font-bold text-xs text-[var(--color-text-muted)] sticky left-0 bg-[var(--color-surface-2)] z-10 min-w-[130px] sm:w-64 border-r border-[var(--color-divider)]" title="Resource name, role, and weekly capacity">
+                  <thead className="lg:sticky lg:top-0 bg-[var(--color-surface-2)] z-20 border-b border-[var(--color-divider)] shadow-2xs">
+                    <tr>
+                      <th className="p-3 font-bold text-xs text-[var(--color-text-muted)] lg:sticky lg:left-0 bg-[var(--color-surface-2)] z-30 min-w-[170px] sm:w-60 border-r border-[var(--color-divider)]">
                         Team Member
                       </th>
                       {weeks.map((week, idx) => (
-                        <th key={idx} className="p-3 font-bold text-xs text-[var(--color-text-muted)] min-w-[90px] border-r border-[var(--color-divider)] text-center" title={`Week ${idx + 1} starting ${week.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}. Green: <80%, Amber: 80-100%, Red: >100% overload.`}>
+                        <th key={idx} className="p-2.5 font-bold text-xs text-[var(--color-text-muted)] min-w-[85px] border-r border-[var(--color-divider)] text-center">
                           <div className="flex flex-col items-center">
                             <span className="text-[var(--color-text)]">Week {idx + 1}</span>
-                            <span className="text-[10px] sm:text-xs text-[var(--color-text-faint)] font-mono">
+                            <span className="text-[10px] text-[var(--color-text-faint)] font-mono">
                               {week.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                             </span>
                           </div>
                         </th>
                       ))}
-                      <th className="p-3.5 font-bold text-xs text-[var(--color-text-muted)] min-w-[110px] w-36" title="Average forward capacity utilization across the 12-week planning horizon">
+                      <th className="p-3 font-bold text-xs text-[var(--color-text-muted)] min-w-[110px] w-36 text-center">
                         Average Load
                       </th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-[var(--color-divider)]">
                     {memberLoad.length > 0 ? (
                       memberLoad.map((member, mIdx) => (
-                        <tr key={mIdx} className="border-b border-[var(--color-divider)] hover:bg-[var(--color-surface-2)]/60 transition-colors">
+                        <tr key={mIdx} className="hover:bg-[var(--color-surface-2)]/60 transition-colors group">
                           {/* Member Avatar / Meta details */}
-                          <td className="p-3.5 sticky left-0 bg-[var(--color-surface)] z-10 border-r border-[var(--color-divider)]">
+                          <td className="p-2.5 sm:px-3.5 lg:sticky lg:left-0 bg-[var(--color-surface)] group-hover:bg-[var(--color-surface-2)] z-10 border-r border-[var(--color-divider)] transition-colors">
                             <div className="flex items-center gap-2.5">
-                              <div className="w-8 h-8 rounded-lg bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 flex items-center justify-center font-bold text-xs shrink-0">
+                              <div className="w-7 h-7 rounded-lg bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 flex items-center justify-center font-bold text-xs shrink-0">
                                 {member.name.charAt(0)}
                               </div>
-                              <div className="min-w-0">
+                              <div className="min-w-0 flex-1">
                                 <p className="text-xs font-bold text-[var(--color-text)] truncate">{member.name}</p>
-                                <p className="text-[11px] text-[var(--color-text-muted)] truncate">{member.role || 'Unspecified Role'}</p>
+                                <p className="text-[10px] text-[var(--color-text-muted)] truncate">{member.role || 'Member'}</p>
                               </div>
                             </div>
                           </td>
@@ -1263,19 +1362,22 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                             return (
                               <td 
                                 key={wIdx} 
-                                onClick={() => setSelectedCoords({ memberName: member.name, weekIdx: wIdx })}
-                                className="p-1.5 border-r border-[var(--color-divider)] cursor-pointer select-none"
+                                onClick={() => {
+                                  setSelectedCoords({ memberName: member.name, weekIdx: wIdx });
+                                  setShowAdvisoryPanel(true);
+                                }}
+                                className="p-1 border-r border-[var(--color-divider)] cursor-pointer select-none scroll-mt-14"
                               >
                                 <div className={clsx(
-                                  "h-12 w-full rounded-xl border flex flex-col items-center justify-center transition-all relative overflow-hidden active:scale-95",
+                                  "h-10 w-full rounded-lg border flex flex-col items-center justify-center transition-all relative overflow-hidden active:scale-95",
                                   getCellColor(days, viewMode),
                                   isSelected ? "ring-2 ring-[var(--color-primary-hex)] ring-offset-1 z-10" : "border-[var(--color-divider)]",
                                   isSpotlighted && !isSelected && "ring-2 ring-rose-400 ring-offset-1"
                                 )}>
                                   {viewMode === 'classic' ? (
                                     <>
-                                      <span className="text-xs font-semibold font-mono">{days}d</span>
-                                      <div className="w-8 h-1 bg-current opacity-25 rounded-full mt-1 overflow-hidden">
+                                      <span className="text-[11px] font-semibold font-mono">{days}d</span>
+                                      <div className="w-7 h-1 bg-current opacity-25 rounded-full mt-0.5 overflow-hidden">
                                         <div 
                                           className="h-full bg-current opacity-100" 
                                           style={{ width: `${Math.min(util, 100)}%` }} 
@@ -1285,14 +1387,16 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                                   ) : (
                                     <>
                                       {heatmapMetric === 'days' && (
-                                        <span className="text-xs font-bold font-mono">{days}d</span>
+                                        <span className="text-[11px] font-bold font-mono">{days}d</span>
                                       )}
                                       {heatmapMetric === 'percent' && (
-                                        <span className="text-xs font-bold font-mono">{util}%</span>
+                                        <span className="text-[11px] font-bold font-mono">{util}%</span>
                                       )}
-                                      <div className="absolute bottom-1 right-1.5 text-[9px] opacity-60 font-mono">
-                                        {effort.tasks.length > 0 && `${effort.tasks.length}t`}
-                                      </div>
+                                      {effort.tasks.length > 0 && (
+                                        <div className="absolute bottom-0.5 right-1 text-[8px] opacity-70 font-mono">
+                                          {effort.tasks.length}t
+                                        </div>
+                                      )}
                                     </>
                                   )}
                                 </div>
@@ -1301,19 +1405,20 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                           })}
 
                           {/* Average load score */}
-                          <td className="p-3.5">
-                            <div className="flex flex-col">
-                              <div className="flex items-center justify-between mb-1 text-xs">
+                          <td className="p-2 sm:px-3 text-center">
+                            <div className="flex flex-col items-center">
+                              <div className="flex items-center justify-between w-full mb-1 text-xs">
                                 <span className="font-bold font-mono text-[var(--color-text)]">{member.utilization}%</span>
-                                {member.utilization > 100 && (
-                                  <span className="text-[11px] font-bold text-rose-500 flex items-center gap-0.5">
-                                    <AlertTriangle size={11} /> Over
+                                {member.utilization > 100 ? (
+                                  <span className="text-[10px] font-bold text-rose-500 flex items-center gap-0.5">
+                                    <AlertTriangle size={10} /> Over
                                   </span>
-                                )}
-                                {member.utilization <= 100 && member.utilization > 0 && (
-                                  <span className="text-[11px] font-bold text-emerald-500 flex items-center gap-0.5">
-                                    <CheckCircle2 size={11} /> Ok
+                                ) : member.utilization > 0 ? (
+                                  <span className="text-[10px] font-bold text-emerald-500 flex items-center gap-0.5">
+                                    <CheckCircle2 size={10} /> Ok
                                   </span>
+                                ) : (
+                                  <span className="text-[10px] text-[var(--color-text-faint)]">Idle</span>
                                 )}
                               </div>
                               <div className="w-full h-1.5 bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
@@ -1346,231 +1451,65 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                   </tbody>
                 </table>
               </div>
-            </div>
-          )}
 
-          {/* Heatmap Legend */}
-          {viewMode !== 'schedule' && (
-            <div className="bg-[var(--color-surface)] p-3.5 sm:p-4 rounded-2xl border border-[var(--color-divider)] flex flex-wrap items-center justify-between gap-3 shadow-xs">
-              <div className="flex flex-wrap items-center gap-3 text-xs">
-                <span className="font-bold text-[var(--color-text)]">Workload Key:</span>
-                
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3.5 h-3.5 rounded bg-rose-600"></div>
-                  <span className="text-[var(--color-text-muted)] text-[11px]">Overloaded (&gt;100%)</span>
+              {/* Integrated Compact Table Footer Legend (Saves 70px) */}
+              <div className="p-2 px-4 bg-[var(--color-surface-2)] border-t border-[var(--color-divider)] flex flex-wrap items-center justify-between text-xs text-[var(--color-text-muted)] shrink-0 gap-2">
+                <div className="flex items-center gap-3 text-[11px]">
+                  <span className="font-bold text-[var(--color-text)]">Workload Key:</span>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded bg-rose-600" />
+                    <span>&gt;100%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded bg-amber-500" />
+                    <span>80–100%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded bg-emerald-500" />
+                    <span>20–80%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded bg-sky-500/40" />
+                    <span>&lt;20%</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2.5 h-2.5 rounded bg-[var(--color-surface)] border border-[var(--color-divider)]" />
+                    <span>0%</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3.5 h-3.5 rounded bg-amber-500"></div>
-                  <span className="text-[var(--color-text-muted)] text-[11px]">High (80-100%)</span>
+                <div className="text-[10px] text-[var(--color-text-faint)] hidden sm:block">
+                  Effort distributes linearly across working days • Click cell to inspect
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3.5 h-3.5 rounded bg-emerald-500"></div>
-                  <span className="text-[var(--color-text-muted)] text-[11px]">Healthy (20-80%)</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3.5 h-3.5 rounded bg-sky-500/30"></div>
-                  <span className="text-[var(--color-text-muted)] text-[11px]">Under-allocated (&lt;20%)</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="w-3.5 h-3.5 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)]"></div>
-                  <span className="text-[var(--color-text-muted)] text-[11px]">Zero Load (0%)</span>
-                </div>
-              </div>
-
-              <div className="text-[11px] text-[var(--color-text-faint)]">
-                Effort distributes linearly across working days.
               </div>
             </div>
           )}
+        </div>
 
-          {/* Mobile Overview & Advisory (Visible only on mobile below the deck) */}
-          <div className="lg:hidden space-y-4 pt-2">
-            <div className="border-b border-[var(--color-divider)] pb-2 flex items-center justify-between">
-              <h3 className="font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
-                <TrendingUp size={15} className="text-[var(--color-primary-hex)]" />
-                Capacity Alerts & Leveling Advisory
-              </h3>
-            </div>
-
-            {/* Overloaded Resource Spotlights */}
-            <div className="space-y-2">
-              <div className="text-xs font-semibold text-[var(--color-text-muted)]">
-                Overload Alerts ({memberLoad.filter(m => m.utilization > 100).length})
-              </div>
-
-              {memberLoad.filter(m => m.utilization > 100).length > 0 ? (
-                <div className="space-y-2">
-                  {memberLoad.filter(m => m.utilization > 100).map((member, idx) => {
-                    const peakIdx = getPeakWeekIndex(member);
-                    return (
-                      <div key={idx} className="bg-[var(--color-surface)] p-3 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-3">
-                        <div>
-                          <div className="text-xs font-bold text-[var(--color-text)]">{member.name}</div>
-                          <div className="text-[11px] text-[var(--color-text-muted)]">{member.role}</div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setSelectedCoords({ memberName: member.name, weekIdx: peakIdx })}
-                          className="px-2.5 py-1.5 bg-rose-500/10 text-rose-500 border border-rose-500/20 text-xs font-bold rounded-lg flex items-center gap-1 transition-colors cursor-pointer active:scale-95"
-                        >
-                          Peak Wk {peakIdx + 1} <ChevronRight size={12} />
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <div className="bg-[var(--color-surface)] p-3.5 rounded-xl border border-[var(--color-divider)] text-center text-[var(--color-text-muted)] text-xs">
-                  All resources operating within safe capacity limits.
-                </div>
-              )}
-            </div>
-
-            {/* Available Resource Reserves */}
-            <div className="space-y-2">
-              <div className="text-xs font-semibold text-[var(--color-text-muted)]">
-                Available Reserves ({memberLoad.filter(m => m.utilization < 40).length})
-              </div>
-
-              {memberLoad.filter(m => m.utilization < 40).length > 0 ? (
-                <div className="space-y-2">
-                  {memberLoad.filter(m => m.utilization < 40).map((member, idx) => (
-                    <div key={idx} className="bg-[var(--color-surface)] p-3 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-3">
-                      <div>
-                        <div className="text-xs font-bold text-[var(--color-text)]">{member.name}</div>
-                        <div className="text-[11px] text-[var(--color-text-muted)]">{member.role}</div>
-                      </div>
-                      <span className="px-2 py-0.5 bg-sky-500/10 text-sky-500 border border-sky-500/20 text-xs font-bold rounded-md">
-                        {member.utilization}% Avg
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="bg-[var(--color-surface)] p-3.5 rounded-xl border border-[var(--color-divider)] text-center text-[var(--color-text-muted)] text-xs">
-                  All resources are fully utilized.
-                </div>
-              )}
-            </div>
+        {/* Desktop Side Inspector Drawer / Advisory Dock */}
+        {showAdvisoryPanel && (
+          <div className="hidden lg:flex w-96 xl:w-[400px] border border-[var(--color-divider)] bg-[var(--color-surface)] rounded-2xl shadow-lg shrink-0 overflow-y-auto custom-scroll p-4 sm:p-5 flex-col justify-between animate-in fade-in slide-in-from-right-4 duration-200">
+            {selectedActiveCell ? (
+              renderAllocationDetailsContent(handleCloseAdvisory, false)
+            ) : (
+              renderGeneralAdvisoryPanel()
+            )}
           </div>
-
-        </div>
-
-        {/* Selected Cell details & Mitigation Engine Panel (Desktop Sidebar Only) */}
-        <div className="hidden lg:flex w-96 border-l border-[var(--color-divider)] bg-[var(--color-surface-2)] shrink-0 overflow-y-auto custom-scroll p-5 flex-col justify-between h-full">
-          {selectedActiveCell ? (
-            renderAllocationDetailsContent(() => setSelectedCoords(null), false)
-          ) : (
-            /* General Summary dashboard when no cell is selected on desktop */
-            <div className="h-full flex flex-col justify-between space-y-5">
-              <div className="space-y-5">
-                <div className="border-b border-[var(--color-divider)] pb-3">
-                  <h2 className="font-bold text-[var(--color-text)] text-base">Allocation Advisory</h2>
-                  <p className="text-xs text-[var(--color-text-muted)]">Workload and reserve metrics</p>
-                </div>
-
-                <div className="bg-[var(--color-surface)] p-4 rounded-xl border border-[var(--color-divider)] space-y-2 text-center shadow-sm">
-                  <div className="w-10 h-10 rounded-lg bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center mx-auto mb-1">
-                    <Info size={20} />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-xs text-[var(--color-text)]">Interactive Grid Mode</h3>
-                    <p className="text-xs text-[var(--color-text-muted)] mt-1 leading-relaxed">
-                      Select any weekly block inside the capacity matrix or heatmap overlay to inspect individual task intersections.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Overloaded Resource Spotlights */}
-                <div className="space-y-2.5">
-                  <h3 className="text-xs font-semibold text-[var(--color-text)] flex items-center gap-1.5">
-                    <AlertTriangle size={13} className="text-rose-500" />
-                    Overload Alerts ({memberLoad.filter(m => m.utilization > 100).length})
-                  </h3>
-
-                  {memberLoad.filter(m => m.utilization > 100).length > 0 ? (
-                    <div className="space-y-2">
-                      {memberLoad.filter(m => m.utilization > 100).slice(0, 3).map((member, idx) => {
-                        const peakIdx = getPeakWeekIndex(member);
-                        return (
-                          <div key={idx} className="bg-[var(--color-surface)] p-3 rounded-lg border border-[var(--color-divider)] flex items-center justify-between gap-3">
-                            <div>
-                              <div className="text-xs font-semibold text-[var(--color-text)]">{member.name}</div>
-                              <div className="text-xs text-[var(--color-text-muted)]">{member.role}</div>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => setSelectedCoords({ memberName: member.name, weekIdx: peakIdx })}
-                              className="px-2.5 py-1 bg-rose-500/10 text-rose-500 border border-rose-500/20 text-xs font-semibold rounded-md flex items-center gap-1 transition-colors cursor-pointer"
-                            >
-                              Peak Wk {peakIdx + 1} <ChevronRight size={11} />
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="bg-[var(--color-surface)] p-4 rounded-lg border border-[var(--color-divider)] text-center text-[var(--color-text-muted)] italic text-xs">
-                      All resources operating under safe capacity thresholds.
-                    </div>
-                  )}
-                </div>
-
-                {/* Underutilized Resource Spotlights */}
-                <div className="space-y-2.5">
-                  <h3 className="text-xs font-semibold text-[var(--color-text)] flex items-center gap-1.5">
-                    <CheckCircle2 size={13} className="text-emerald-500" />
-                    Available Reserves ({memberLoad.filter(m => m.utilization < 40).length})
-                  </h3>
-
-                  {memberLoad.filter(m => m.utilization < 40).length > 0 ? (
-                    <div className="space-y-2">
-                      {memberLoad.filter(m => m.utilization < 40).slice(0, 3).map((member, idx) => {
-                        return (
-                          <div key={idx} className="bg-[var(--color-surface)] p-3 rounded-lg border border-[var(--color-divider)] flex items-center justify-between gap-3">
-                            <div>
-                              <div className="text-xs font-semibold text-[var(--color-text)]">{member.name}</div>
-                              <div className="text-xs text-[var(--color-text-muted)]">{member.role}</div>
-                            </div>
-                            <span className="px-2 py-0.5 bg-sky-500/10 text-sky-500 border border-sky-500/20 text-xs font-semibold rounded-md">
-                              {member.utilization}% Avg
-                            </span>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="bg-[var(--color-surface)] p-4 rounded-lg border border-[var(--color-divider)] text-center text-[var(--color-text-muted)] italic text-xs">
-                      All resources are heavily utilized.
-                    </div>
-                  )}
-                </div>
-
-              </div>
-
-              <div className="text-xs text-[var(--color-text-muted)] text-center p-3 bg-[var(--color-surface)] rounded-lg border border-[var(--color-divider)]">
-                Recommendations update automatically as project settings and task assignments change.
-              </div>
-            </div>
-          )}
-        </div>
+        )}
       </div>
 
       {/* MOBILE ALLOCATION DETAILS BOTTOM SHEET DRAWER */}
       <AnimatePresence>
         {selectedActiveCell && (
           <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end">
-            {/* Backdrop */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
               className="fixed inset-0 bg-black/60 backdrop-blur-xs"
-              onClick={() => setSelectedCoords(null)}
+              onClick={handleCloseAdvisory}
             />
 
-            {/* Slide-up Sheet */}
             <motion.div
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
@@ -1578,14 +1517,12 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
               transition={{ type: 'spring', damping: 28, stiffness: 320 }}
               className="relative w-full max-h-[85vh] bg-[var(--color-surface)] border-t border-[var(--color-divider)] rounded-t-3xl shadow-2xl flex flex-col z-10 overflow-hidden"
             >
-              {/* Drag Pill Handle */}
               <div className="pt-3 pb-1 shrink-0 flex justify-center">
                 <div className="w-12 h-1.5 bg-[var(--color-divider)] rounded-full" />
               </div>
 
-              {/* Scrollable Content */}
               <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-5 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]">
-                {renderAllocationDetailsContent(() => setSelectedCoords(null), true)}
+                {renderAllocationDetailsContent(handleCloseAdvisory, true)}
               </div>
             </motion.div>
           </div>
