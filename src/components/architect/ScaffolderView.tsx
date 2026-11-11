@@ -183,21 +183,21 @@ const ScaffolderView: React.FC = () => {
   };
 
   const renderStepStepper = () => (
-    <div className="flex items-center gap-4 mb-12 max-w-2xl mx-auto">
-      <div className="flex items-center gap-3">
+    <div className="flex items-center gap-3 sm:gap-4 mb-6 sm:mb-10 max-w-2xl mx-auto px-1">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <div className={clsx(
-          "w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors duration-150",
+          "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-colors duration-150",
           step >= 1 ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-md" : "bg-[var(--color-surface-offset)] text-[var(--color-text-faint)]"
         )}>1</div>
-        <span className={clsx("text-sm font-semibold", step === 1 ? "text-[var(--color-primary-hex)]" : "text-[var(--color-text-faint)]")}>Blueprint</span>
+        <span className={clsx("text-xs sm:text-sm font-semibold", step === 1 ? "text-[var(--color-primary-hex)]" : "text-[var(--color-text-faint)]")}>Blueprint</span>
       </div>
       <div className="flex-1 h-px bg-[var(--color-divider)]" />
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <div className={clsx(
-          "w-10 h-10 rounded-full flex items-center justify-center font-bold transition-colors duration-150",
+          "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-colors duration-150",
           step >= 2 ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-md" : "bg-[var(--color-surface-offset)] text-[var(--color-text-faint)]"
         )}>2</div>
-        <span className={clsx("text-sm font-semibold", step === 2 ? "text-[var(--color-primary-hex)]" : "text-[var(--color-text-faint)]")}>Alignment</span>
+        <span className={clsx("text-xs sm:text-sm font-semibold", step === 2 ? "text-[var(--color-primary-hex)]" : "text-[var(--color-text-faint)]")}>Alignment</span>
       </div>
     </div>
   );
@@ -233,31 +233,31 @@ const ScaffolderView: React.FC = () => {
         {renderStepStepper()}
 
         {step === 1 && (
-          <div className="space-y-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 duration-500">
-            <div className="card p-8">
-              <div className="flex items-center justify-between mb-8 border-b border-[var(--color-divider)] pb-6">
+          <div className="space-y-6 sm:space-y-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 duration-500">
+            <div className="card p-4 sm:p-8">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 border-b border-[var(--color-divider)] pb-5 sm:pb-6">
                 <div>
-                  <h2 className="text-lg font-bold">Module Blueprint</h2>
+                  <h2 className="text-lg font-bold text-[var(--color-text)]">Module Blueprint</h2>
                   <p className="text-xs text-[var(--color-text-muted)] mt-0.5">Define core business domains and layers</p>
                 </div>
-                <div className="flex flex-wrap gap-2.5">
-                  <Button variant="outline" size="sm" onClick={() => setIsBulkOpen(true)} className="h-10 px-4 font-bold rounded-xl border-[var(--color-divider)] bg-white/50 active:scale-[0.98]">
-                    <Upload size={16} className="mr-2 text-[var(--color-primary-hex)]" /> Bulk Import & Presets
+                <div className="flex flex-wrap gap-2">
+                  <Button variant="outline" size="sm" onClick={() => setIsBulkOpen(true)} className="h-10 px-3.5 sm:px-4 font-bold rounded-xl border-[var(--color-divider)] bg-[var(--color-surface-2)] active:scale-[0.98]">
+                    <Upload size={15} className="mr-1.5 text-[var(--color-primary-hex)]" /> Bulk Import & Presets
                   </Button>
-                  <Button variant="outline" size="sm" onClick={addRow} className="h-10 px-5 font-bold rounded-xl border-[var(--color-divider)] bg-white/50 active:scale-[0.98]">
-                    <Plus size={16} className="mr-2" /> Add Module
+                  <Button variant="outline" size="sm" onClick={addRow} className="h-10 px-4 font-bold rounded-xl border-[var(--color-divider)] bg-[var(--color-surface-2)] active:scale-[0.98]">
+                    <Plus size={15} className="mr-1.5" /> Add Module
                   </Button>
-                  <Button variant="primary" size="sm" onClick={() => setStep(2)} className="h-10 px-7 font-black rounded-xl active:scale-[0.98]">
-                    Next Step <ArrowRight size={16} className="ml-2" />
+                  <Button variant="primary" size="sm" onClick={() => setStep(2)} className="h-10 px-5 sm:px-7 font-black rounded-xl active:scale-[0.98]">
+                    Next Step <ArrowRight size={15} className="ml-1.5" />
                   </Button>
                 </div>
               </div>
 
               <div className="overflow-x-auto rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface-offset)]/30 shadow-sm">
                 {/* Mobile Scaffolder Cards */}
-                <div className="lg:hidden p-4 space-y-4">
+                <div className="lg:hidden p-3 sm:p-4 space-y-3 sm:space-y-4">
                   {modules.map((m, i) => (
-                    <div key={i} className="bg-white p-4 rounded-xl border border-[var(--color-divider)] shadow-sm relative">
+                    <div key={i} className="bg-[var(--color-surface)] text-[var(--color-text)] p-4 rounded-xl border border-[var(--color-divider)] shadow-sm relative">
                       <div className="flex justify-between items-start mb-4">
                         <div className="min-w-0 flex-1">
                           <label className="text-xs font-medium text-[var(--color-primary-hex)] mb-1 block">Module Name</label>
@@ -342,7 +342,7 @@ const ScaffolderView: React.FC = () => {
                       <tr key={i} className="border-b border-[var(--color-divider)] last:border-0 hover:bg-[var(--color-surface)]/50 transition-colors">
                         <td className="p-2">
                           <input 
-                            className="w-full h-10 px-3 bg-transparent font-bold text-sm outline-none focus:bg-white rounded-lg transition-colors border border-transparent focus:border-[var(--color-primary-hex)]/20"
+                            className="w-full h-10 px-3 bg-transparent font-bold text-sm outline-none focus:bg-[var(--color-surface)] rounded-lg transition-colors border border-transparent focus:border-[var(--color-primary-hex)]/20"
                             placeholder="e.g. Identity Management"
                             value={m.name}
                             onChange={(e) => updateModule(i, 'name', e.target.value)}
@@ -350,7 +350,7 @@ const ScaffolderView: React.FC = () => {
                         </td>
                         <td className="p-2">
                           <select 
-                            className="w-full h-10 px-2 bg-transparent text-sm font-semibold outline-none focus:bg-white rounded-lg transition-colors border border-transparent focus:border-[var(--color-primary-hex)]/20"
+                            className="w-full h-10 px-2 bg-transparent text-sm font-semibold outline-none focus:bg-[var(--color-surface)] rounded-lg transition-colors border border-transparent focus:border-[var(--color-primary-hex)]/20"
                             value={m.type}
                             onChange={(e) => updateModule(i, 'type', e.target.value)}
                           >
@@ -362,7 +362,7 @@ const ScaffolderView: React.FC = () => {
                         </td>
                         <td className="p-2">
                           <select 
-                            className="w-full h-10 px-2 bg-transparent text-sm font-semibold outline-none focus:bg-white rounded-lg transition-colors border border-transparent focus:border-[var(--color-primary-hex)]/20"
+                            className="w-full h-10 px-2 bg-transparent text-sm font-semibold outline-none focus:bg-[var(--color-surface)] rounded-lg transition-colors border border-transparent focus:border-[var(--color-primary-hex)]/20"
                             value={m.assignee}
                             onChange={(e) => updateModule(i, 'assignee', e.target.value)}
                           >
@@ -372,7 +372,7 @@ const ScaffolderView: React.FC = () => {
                         </td>
                         <td className="p-2">
                           <select 
-                            className="w-full h-10 px-2 bg-transparent text-sm font-semibold outline-none focus:bg-white rounded-lg transition-colors border border-transparent focus:border-[var(--color-primary-hex)]/20"
+                            className="w-full h-10 px-2 bg-transparent text-sm font-semibold outline-none focus:bg-[var(--color-surface)] rounded-lg transition-colors border border-transparent focus:border-[var(--color-primary-hex)]/20"
                             value={m.priority}
                             onChange={(e) => updateModule(i, 'priority', e.target.value as any)}
                           >
@@ -381,7 +381,7 @@ const ScaffolderView: React.FC = () => {
                         </td>
                         <td className="p-2">
                           <input 
-                            className="w-full h-10 px-3 bg-transparent text-sm outline-none focus:bg-white rounded-lg transition-colors border border-transparent focus:border-[var(--color-primary-hex)]/20"
+                            className="w-full h-10 px-3 bg-transparent text-sm outline-none focus:bg-[var(--color-surface)] rounded-lg transition-colors border border-transparent focus:border-[var(--color-primary-hex)]/20"
                             placeholder="v1.0.0"
                             value={m.release}
                             onChange={(e) => updateModule(i, 'release', e.target.value)}
@@ -413,17 +413,17 @@ const ScaffolderView: React.FC = () => {
         )}
 
         {step === 2 && (
-          <div className="space-y-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-4 duration-500">
-             <div className="card p-8">
-                <div className="flex items-center justify-between mb-12 border-b border-[var(--color-divider)] pb-6">
+          <div className="space-y-6 sm:space-y-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-4 duration-500">
+             <div className="card p-4 sm:p-8">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-10 border-b border-[var(--color-divider)] pb-5 sm:pb-6">
                   <div>
-                    <h2 className="text-xl font-black">Interface Mapping</h2>
+                    <h2 className="text-xl font-black text-[var(--color-text)]">Interface Mapping</h2>
                     <p className="text-xs text-[var(--color-text-muted)] mt-0.5">Connect architectural layers to strategic goals</p>
                   </div>
-                  <div className="flex gap-4">
-                    <Button variant="ghost" className="font-bold active:scale-[0.98]" onClick={() => setStep(1)}><ArrowLeft size={18} className="mr-2" /> Back</Button>
-                    <Button variant="primary" className="h-12 px-10 font-black rounded-2xl shadow-xl shadow-xs active:scale-[0.98]" onClick={handleFinish}>
-                      <Zap size={18} className="mr-2" /> Generate Architecture
+                  <div className="flex flex-wrap gap-2.5 sm:gap-4">
+                    <Button variant="ghost" className="font-bold active:scale-[0.98]" onClick={() => setStep(1)}><ArrowLeft size={16} className="mr-1.5" /> Back</Button>
+                    <Button variant="primary" className="h-11 sm:h-12 px-6 sm:px-10 font-black rounded-2xl shadow-xl shadow-xs active:scale-[0.98]" onClick={handleFinish}>
+                      <Zap size={16} className="mr-1.5" /> Generate Architecture
                     </Button>
                   </div>
                 </div>
@@ -457,7 +457,7 @@ const ScaffolderView: React.FC = () => {
                          <div className="mt-6">
                             <label className="text-xs font-semibold text-[var(--color-primary-hex)] block mb-2">Screen Sitemap</label>
                             <textarea 
-                              className="w-full h-32 p-3 bg-[var(--color-surface-offset)]/50 rounded-xl text-xs font-semibold focus:bg-white border-2 border-transparent focus:border-[var(--color-primary-hex)]/20 transition-colors duration-150 custom-scroll focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
+                              className="w-full h-32 p-3 bg-[var(--color-surface-2)] text-[var(--color-text)] rounded-xl text-xs font-semibold focus:bg-[var(--color-surface)] border border-[var(--color-divider)] focus:border-[var(--color-primary-hex)]/40 transition-colors duration-150 custom-scroll focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
                               placeholder="Dashboard, AppShell, n&#10;Settings, Modal, y"
                               value={m.screens}
                               onChange={(e) => updateModule(i, 'screens', e.target.value)}

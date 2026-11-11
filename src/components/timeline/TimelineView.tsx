@@ -29,6 +29,7 @@ import PageHeader from '../shared/PageHeader';
 import TaskModal from '../tasks/TaskModal';
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'motion/react';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 
 type ZoomMode = 'day' | 'week' | 'month';
 type SortMode = 'date' | 'name-asc' | 'name-desc';
@@ -72,6 +73,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
   // Splitter state
   const [leftWidth, setLeftWidth] = useState(280);
   const [isResizing, setIsResizing] = useState(false);
+  const isMobileTimeline = useMediaQuery('(max-width: 639px)');
+  const [showMobileControls, setShowMobileControls] = useState(false);
+  const effectiveLeftWidth = isMobileTimeline ? Math.min(leftWidth, 144) : leftWidth;
 
   // Interaction & modal states
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
@@ -853,7 +857,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
           title="Project Timeline & Gantt"
           subtitle={`${filteredTasks.length} Scheduled Tasks • Swimlanes & Predictive Forecast`}
           actions={
-            <div className="flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-2 flex-nowrap md:flex-wrap">
               {/* View Mode Toggle */}
               <div className="flex bg-[var(--color-surface-2)] p-1 rounded-xl border border-[var(--color-divider)]">
                 <button
@@ -946,12 +950,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
       )}
 
       {/* 2. Operational Filter Toolbar */}
-      <div className="px-4 sm:px-6 lg:px-8 py-2.5 bg-[var(--color-surface)] border-b border-[var(--color-divider)] flex flex-wrap items-center justify-between gap-3 shrink-0">
-        <div className="flex items-center gap-2 flex-wrap">
+      <div className="px-3 sm:px-6 lg:px-8 py-2 bg-[var(--color-surface)] border-b border-[var(--color-divider)] flex flex-col sm:flex-row sm:flex-wrap sm:items-center justify-between gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap w-full sm:w-auto">
           {embedded && (
             <>
               {/* Embedded View Mode Toggle */}
-              <div className="flex bg-[var(--color-surface-2)] p-1 rounded-xl border border-[var(--color-divider)]">
+              <div className="flex bg-[var(--color-surface-2)] p-1 rounded-xl border border-[var(--color-divider)] shrink-0">
                 <button
                   onClick={() => setViewMode('swimlane')}
                   className={clsx(
@@ -983,13 +987,13 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
               </div>
 
               {/* Embedded Resolution Zoom Selector */}
-              <div className="flex bg-[var(--color-surface-2)] p-1 rounded-xl border border-[var(--color-divider)]">
+              <div className="flex bg-[var(--color-surface-2)] p-1 rounded-xl border border-[var(--color-divider)] shrink-0">
                 {(['day', 'week', 'month'] as const).map(z => (
                   <button
                     key={z}
                     onClick={() => setZoom(z)}
                     className={clsx(
-                      "px-2.5 py-1 min-h-[32px] text-xs font-semibold rounded-lg transition-colors duration-150 capitalize cursor-pointer active:scale-95 flex items-center justify-center",
+                      "px-2 sm:px-2.5 py-1 min-h-[32px] text-xs font-semibold rounded-lg transition-colors duration-150 capitalize cursor-pointer active:scale-95 flex items-center justify-center",
                       zoom === z 
                         ? "bg-[var(--color-surface)] shadow-xs text-[var(--color-primary-hex)]" 
                         : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
@@ -1006,7 +1010,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
                 variant="outline" 
                 size="sm" 
                 onClick={jumpToToday}
-                className="text-xs font-semibold h-8 min-h-[32px] px-2.5 active:scale-95"
+                className="text-xs font-semibold h-8 min-h-[32px] px-2.5 active:scale-95 shrink-0"
                 title="Center timeline on today"
               >
                 Today
@@ -1014,20 +1018,37 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
             </>
           )}
 
-          <div className="relative min-w-[180px] max-w-[280px]">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
-            <input 
-              type="text"
-              placeholder="Search task, module, assignee..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className="w-full bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg pl-9 pr-3 py-1.5 text-xs text-[var(--color-text)] placeholder-[var(--color-text-faint)] focus:outline-none focus:border-[var(--color-primary-hex)] transition-colors"
-            />
+          <div className="flex items-center gap-2 flex-1 min-w-[160px] sm:max-w-[280px] w-full sm:w-auto">
+            <div className="relative flex-1 min-w-0">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
+              <input 
+                type="text"
+                placeholder="Search task, module..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                className="w-full bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg pl-9 pr-3 py-1.5 text-xs text-[var(--color-text)] placeholder-[var(--color-text-faint)] focus:outline-none focus:border-[var(--color-primary-hex)] transition-colors"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowMobileControls(prev => !prev)}
+              className={clsx(
+                "sm:hidden h-8 px-2.5 rounded-lg border text-xs font-semibold flex items-center gap-1 shrink-0 cursor-pointer transition-colors",
+                showMobileControls
+                  ? "bg-[var(--color-primary-highlight-hex)] border-[var(--color-primary-hex)]/40 text-[var(--color-primary-hex)]"
+                  : "bg-[var(--color-surface-2)] border-[var(--color-divider)] text-[var(--color-text-muted)]"
+              )}
+              aria-expanded={showMobileControls}
+              aria-label="Toggle timeline overlay and sort controls"
+            >
+              <Filter size={12} />
+              <span>Overlays</span>
+            </button>
           </div>
         </div>
 
         {/* Feature Switches */}
-        <div className="flex items-center gap-2 flex-wrap text-xs">
+        <div className={clsx("items-center gap-2 flex-wrap text-xs", showMobileControls ? "flex pt-1" : "hidden sm:flex")}>
           {/* Dependencies Switch */}
           <button
             onClick={() => setShowDeps(!showDeps)}
@@ -1151,12 +1172,12 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
           <div className="flex h-[46px] border-b border-[var(--color-divider)] bg-[var(--color-surface-2)] shrink-0 select-none">
             {/* Left Header */}
             <div 
-              style={{ width: `${leftWidth}px` }} 
-              className="px-4 flex items-center justify-between border-r border-[var(--color-divider)] shrink-0 font-bold text-xs text-[var(--color-text)]"
+              style={{ width: `${effectiveLeftWidth}px` }} 
+              className="px-2.5 sm:px-4 flex items-center justify-between border-r border-[var(--color-divider)] shrink-0 font-bold text-xs text-[var(--color-text)]"
             >
-              <span>Task Hierarchy</span>
-              <span className="text-[10px] font-mono font-semibold text-[var(--color-text-muted)]">
-                {filteredTasks.length} items
+              <span className="truncate">{isMobileTimeline ? 'Tasks' : 'Task Hierarchy'}</span>
+              <span className="text-[10px] font-mono font-semibold text-[var(--color-text-muted)] shrink-0">
+                {filteredTasks.length}
               </span>
             </div>
 
@@ -1178,7 +1199,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
             <div 
               ref={leftBodyScrollRef}
               onScroll={handleLeftScroll}
-              style={{ width: `${leftWidth}px` }}
+              style={{ width: `${effectiveLeftWidth}px` }}
               className="h-full overflow-y-auto overflow-x-hidden border-r border-[var(--color-divider)] bg-[var(--color-surface)] shrink-0 custom-scroll select-none"
             >
               {viewMode === 'flat' ? (

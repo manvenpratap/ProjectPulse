@@ -403,7 +403,7 @@ export const DashboardView: React.FC = () => {
 
       <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full space-y-6 pb-20 max-w-full">
         {/* TOP TAB CONTROLS (4 High-Agency Modes) */}
-        <div className="flex border-b border-[var(--color-divider)] gap-4 sm:gap-8 overflow-x-auto custom-scroll pb-px">
+        <div className="flex border-b border-[var(--color-divider)] gap-4 sm:gap-8 overflow-x-auto no-scrollbar scroll-fade-x pb-px">
           {[
             { id: 'predictive', label: 'Monte Carlo & Predictive Telemetry', icon: TrendingUp },
             { id: 'flow', label: 'Delivery Flow & Velocity', icon: Flame },
@@ -415,7 +415,10 @@ export const DashboardView: React.FC = () => {
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                onClick={(e) => {
+                  setActiveTab(tab.id as any);
+                  e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                }}
                 className={clsx(
                   "pb-3.5 font-bold text-xs sm:text-sm tracking-tight border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer active:scale-97",
                   isActive 
@@ -490,12 +493,12 @@ export const DashboardView: React.FC = () => {
                   {/* P50 Expected vs P90 Conservative Target */}
                   <div className="sm:col-span-8 space-y-3">
                     <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] border-l-4 border-l-[var(--color-primary-hex)]">
-                      <div className="flex justify-between items-center mb-1">
+                      <div className="flex justify-between items-center flex-wrap gap-1.5 mb-1">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-1.5">
-                          <Calendar size={12} className="text-[var(--color-primary-hex)]" /> Forecasted Finish (P50 Likely)
+                          <Calendar size={12} className="text-[var(--color-primary-hex)] shrink-0" /> Forecasted Finish (P50 Likely)
                         </span>
                         <span className={clsx(
-                          "text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border",
+                          "text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border whitespace-nowrap shrink-0",
                           delayDays > 0 ? "bg-rose-500/10 text-rose-600 border-rose-500/20" : "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
                         )}>
                           {delayDays > 0 ? `+${delayDays}d delay` : delayDays < 0 ? `${Math.abs(delayDays)}d ahead` : 'On Target'}

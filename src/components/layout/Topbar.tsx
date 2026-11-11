@@ -473,12 +473,12 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
   return (
     <>
       <header className="h-[calc(54px+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] bg-[var(--color-surface)]/85 backdrop-blur-xl saturate-180 border-b border-[var(--color-divider)] flex items-center px-2.5 sm:px-4 gap-2 sm:gap-3 md:gap-4 shrink-0 z-40 shadow-2xs sticky top-0">
-        <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 min-w-0 shrink">
+        <div className="flex items-center gap-1 sm:gap-2 md:gap-3 min-w-0 shrink">
           <button
             type="button"
             onClick={toggleSidebar}
             aria-label="Toggle navigation menu"
-            className="min-h-[38px] min-w-[38px] flex items-center justify-center hover:bg-[var(--color-surface-2)] rounded-xl text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors active:scale-95 cursor-pointer shrink-0"
+            className="min-h-[44px] min-w-[44px] lg:min-h-[38px] lg:min-w-[38px] -ml-1 lg:ml-0 flex items-center justify-center hover:bg-[var(--color-surface-2)] rounded-xl text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors active:scale-95 cursor-pointer shrink-0"
           >
             <Menu size={18} />
           </button>
@@ -486,10 +486,10 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
           <button
             type="button"
             onClick={() => hasViewAccess('overview') && setView('overview')}
-            className="flex flex-col min-w-0 text-left hover:opacity-80 transition-opacity cursor-pointer"
+            className="touch-hit-expand min-h-[34px] flex items-center min-w-0 text-left hover:opacity-80 transition-opacity cursor-pointer"
             title={`${state.name} — Jump to Executive Overview`}
           >
-            <span className="font-semibold text-xs md:text-sm text-[var(--color-text)] tracking-tight truncate max-w-[100px] sm:max-w-[150px] md:max-w-[200px]">
+            <span className="font-semibold text-xs md:text-sm text-[var(--color-text)] tracking-tight truncate max-w-[96px] sm:max-w-[150px] md:max-w-[200px]">
               {state.name}
             </span>
           </button>
@@ -498,7 +498,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
         <button
           type="button"
           onClick={() => hasViewAccess('overview') && setView('overview')}
-          className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-2.5 py-1 rounded-full bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] shadow-2xs backdrop-blur-sm cursor-pointer hover:border-[var(--color-primary-hex)]/40 transition-colors select-none whitespace-nowrap shrink-0"
+          className="touch-hit-expand min-h-[34px] flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 rounded-full bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] shadow-2xs backdrop-blur-sm cursor-pointer hover:border-[var(--color-primary-hex)]/40 transition-colors select-none whitespace-nowrap shrink-0"
           title={`Project Health: ${health}% (${getHealthLabel(health)}) — Click to view Executive Overview`}
         >
           <div className={clsx('w-2 h-2 rounded-full motion-safe:animate-pulse bg-current shrink-0', getHealthColor(health))} />
@@ -560,7 +560,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
             size="icon"
             title="Search & Quick Jump (/)"
             aria-label="Search and Quick Jump"
-            className="lg:hidden rounded-xl min-h-[40px] min-w-[40px] sm:min-h-[36px] sm:min-w-[36px]"
+            className="lg:hidden rounded-xl min-h-[44px] min-w-[44px] lg:min-h-[36px] lg:min-w-[36px]"
             onClick={() => {
               setIsMobileSearchOpen(prev => !prev);
               setIsSearchOpen(true);
@@ -576,12 +576,12 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
               size="icon"
               title="Smart Alerts Center"
               aria-label="Smart Alerts Center"
-              className={clsx('rounded-xl min-h-[40px] min-w-[40px] sm:min-h-[36px] sm:min-w-[36px] relative', isNotifOpen && 'bg-[var(--color-surface-2)]')}
+              className={clsx('rounded-xl min-h-[44px] min-w-[44px] lg:min-h-[36px] lg:min-w-[36px] relative', isNotifOpen && 'bg-[var(--color-surface-2)]')}
               onClick={() => setIsNotifOpen(!isNotifOpen)}
             >
               <Bell size={18} />
               {smartAlerts.length > 0 && (
-                <span className="absolute top-1 right-1 min-w-[16px] h-4 px-1 bg-red-500 text-white rounded-full text-[9px] font-black flex items-center justify-center border-2 border-[var(--color-surface)] shadow-2xs">
+                <span className="absolute top-1.5 right-1.5 min-w-[16px] h-4 px-1 bg-red-500 text-white rounded-full text-[9px] font-black flex items-center justify-center border-2 border-[var(--color-surface)] shadow-2xs">
                   {smartAlerts.length > 9 ? '9+' : smartAlerts.length}
                 </span>
               )}
@@ -593,7 +593,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
             size="icon"
             title="Appearance Settings"
             aria-label="Appearance and Theme Settings"
-            className="rounded-xl min-h-[40px] min-w-[40px] sm:min-h-[36px] sm:min-w-[36px]"
+            className="rounded-xl min-h-[44px] min-w-[44px] lg:min-h-[36px] lg:min-w-[36px]"
             onClick={() => setIsThemeOpen(true)}
           >
             <Palette size={18} />
@@ -604,7 +604,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
             size="icon"
             title="Help & Screen Guide (F1 or ?)"
             aria-label="Help and Screen Guide"
-            className="rounded-xl min-h-[40px] min-w-[40px] sm:min-h-[36px] sm:min-w-[36px] hidden sm:flex"
+            className="rounded-xl min-h-[44px] min-w-[44px] lg:min-h-[36px] lg:min-w-[36px] hidden sm:flex"
             onClick={() => setIsHelpOpen(true)}
           >
             <HelpCircle size={18} />
@@ -618,7 +618,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
               <button
                 type="button"
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1 rounded-xl hover:bg-[var(--color-surface-2)] transition-all cursor-pointer border border-transparent hover:border-[var(--color-divider)] active:scale-95"
+                className="flex items-center justify-center gap-2 min-h-[44px] min-w-[44px] lg:min-h-0 lg:min-w-0 p-1 sm:px-2.5 sm:py-1 rounded-xl hover:bg-[var(--color-surface-2)] transition-all cursor-pointer border border-transparent hover:border-[var(--color-divider)] active:scale-95"
                 title={`${currentUser.name} (${currentUser.role}) - Account & Access`}
                 aria-label="User Account and Access Controls"
               >

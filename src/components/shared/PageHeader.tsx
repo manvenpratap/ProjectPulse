@@ -55,8 +55,8 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   return (
     <header className={`border-b border-[var(--color-divider)] bg-[var(--color-surface)]/85 backdrop-blur-xl saturate-180 sticky top-0 z-30 shrink-0 shadow-2xs ${className}`}>
       {/* Primary Unified Header Row */}
-      <div className="min-h-[52px] sm:min-h-[56px] py-2 px-4 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-2.5">
-        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+      <div className="min-h-[52px] sm:min-h-[56px] py-2 px-3 sm:px-6 lg:px-8 flex flex-wrap items-center justify-between gap-2 sm:gap-2.5">
+        <div className="order-1 flex-1 flex items-center gap-2.5 sm:gap-3 min-w-0">
           <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-highlight-hex)] border border-[var(--color-primary-hex)]/15 text-[var(--color-primary-hex)] flex items-center justify-center shrink-0 shadow-2xs">
             <Icon size={17} strokeWidth={2.2} />
           </div>
@@ -64,7 +64,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             {/* Accessible Interactive Hub Breadcrumb + Sibling Quick-Switcher */}
             {currentHub?.label && (
               <nav aria-label="Breadcrumb" className="mb-0.5">
-                <ol className="flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider leading-none">
+                <ol className="flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider leading-none whitespace-nowrap">
                   <li className="relative" ref={hubMenuRef}>
                     {siblingViews.length > 1 ? (
                       <>
@@ -74,11 +74,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                           aria-expanded={isHubMenuOpen}
                           aria-haspopup="true"
                           aria-controls="header-hub-siblings"
-                          className="inline-flex items-center gap-1 rounded px-1 py-0.5 -ml-1 hover:bg-[var(--color-surface-2)] hover:text-[var(--color-primary-hex)] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
+                          className="touch-hit-expand inline-flex items-center gap-1 rounded px-1 py-0.5 -ml-1 hover:bg-[var(--color-surface-2)] hover:text-[var(--color-primary-hex)] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] max-w-[145px] sm:max-w-none"
                           title={`Switch view within ${currentHub.label}`}
                         >
-                          <span>{currentHub.label}</span>
-                          <ChevronDown size={10} aria-hidden="true" className={clsx('transition-transform duration-150', isHubMenuOpen && 'rotate-180')} />
+                          <span className="truncate">{currentHub.label}</span>
+                          <ChevronDown size={10} aria-hidden="true" className={clsx('shrink-0 transition-transform duration-150', isHubMenuOpen && 'rotate-180')} />
                         </button>
                         {isHubMenuOpen && (
                           <div
@@ -102,7 +102,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                                       }}
                                       aria-current={isActive ? 'page' : undefined}
                                       className={clsx(
-                                        'w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-lg text-xs text-left transition-colors cursor-pointer',
+                                        'w-full flex items-center justify-between gap-2 px-2.5 py-2.5 sm:py-2 rounded-lg text-xs text-left transition-colors cursor-pointer',
                                         isActive
                                           ? 'bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold'
                                           : 'text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)] font-medium'
@@ -134,20 +134,20 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
                   <li aria-hidden="true" className="text-[var(--color-text-faint)]/70 flex items-center">
                     <ChevronRight size={10} />
                   </li>
-                  <li className="text-[var(--color-text-muted)] truncate max-w-[160px]" aria-current="page">
+                  <li className="text-[var(--color-text-muted)] truncate max-w-[140px] sm:max-w-[160px]" aria-current="page">
                     {currentNavItem?.shortLabel || title}
                   </li>
                 </ol>
               </nav>
             )}
             <div className="flex items-center gap-1.5 sm:gap-2">
-              <h1 className="text-sm sm:text-base md:text-lg font-display font-black text-[var(--color-text)] tracking-tight leading-snug truncate">
+              <h1 className="text-[13px] sm:text-base md:text-lg font-display font-black text-[var(--color-text)] tracking-tight leading-tight sm:leading-snug break-words sm:truncate">
                 {title}
               </h1>
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new CustomEvent('open-view-help', { detail: { view: state.view } }))}
-                className="text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] p-1 rounded-lg hover:bg-[var(--color-surface-2)] transition-colors cursor-pointer shrink-0"
+                className="touch-hit-expand min-h-[32px] min-w-[32px] sm:min-h-0 sm:min-w-0 flex items-center justify-center text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] p-1 rounded-lg hover:bg-[var(--color-surface-2)] transition-colors cursor-pointer shrink-0"
                 title={`Guide: How ${title} works (F1 or ?)`}
                 aria-label={`Guide: How ${title} works`}
               >
@@ -162,11 +162,16 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           </div>
         </div>
 
-        {(actions || showShareExport || primaryAction) && (
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-wrap justify-end">
-            {actions}
+        {(showShareExport || primaryAction) && (
+          <div className="order-2 md:order-3 flex items-center gap-1.5 sm:gap-2 shrink-0 justify-end">
             {showShareExport && <ShareExportMenu />}
             {primaryAction}
+          </div>
+        )}
+
+        {actions && (
+          <div className="order-3 md:order-2 w-full md:w-auto min-w-0 flex items-center gap-1.5 sm:gap-2 overflow-x-auto md:overflow-visible no-scrollbar max-md:pt-2 max-md:mt-0.5 max-md:border-t max-md:border-[var(--color-divider)]/60 md:flex-wrap md:justify-end">
+            {actions}
           </div>
         )}
       </div>

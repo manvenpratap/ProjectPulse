@@ -532,7 +532,7 @@ const RAIDView: React.FC = () => {
 
         {/* Categories Tab Bar & Search */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--color-divider)]">
-          <div className="flex bg-[var(--color-surface-2)] p-1 border border-[var(--color-divider)] rounded-xl overflow-x-auto custom-scroll max-w-full">
+          <div className="flex bg-[var(--color-surface-2)] p-1 border border-[var(--color-divider)] rounded-xl overflow-x-auto no-scrollbar scroll-fade-x max-w-full">
             {[
               { id: 'all', label: 'All RAID', count: raids.length },
               { id: 'risks', label: 'Risks', count: raids.filter(r => r.type === 'Risk').length },
@@ -543,7 +543,11 @@ const RAIDView: React.FC = () => {
             ].map(tab => (
               <button
                 key={tab.id}
-                onClick={() => { setActiveTab(tab.id as any); setMatrixFilter(null); }}
+                onClick={(e) => {
+                  setActiveTab(tab.id as any);
+                  setMatrixFilter(null);
+                  e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                }}
                 className={clsx(
                   "min-h-[36px] py-1.5 px-3 rounded-lg text-xs font-semibold transition-colors duration-150 active:scale-[0.98] whitespace-nowrap flex items-center gap-1.5 cursor-pointer",
                   activeTab === tab.id 

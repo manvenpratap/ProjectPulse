@@ -191,7 +191,7 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
         aria-haspopup="true"
         aria-expanded={isOpen}
         aria-label="Share and export data"
-        className={`h-9 px-2.5 sm:px-3 text-xs font-semibold rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer select-none active:scale-95 ${getButtonStyles()}`}
+        className={`h-9 px-2.5 sm:px-3 text-xs font-semibold rounded-xl border flex items-center gap-1.5 transition-all cursor-pointer select-none active:scale-95 touch-hit-expand ${getButtonStyles()}`}
         title="Share, distribute, or export view data"
       >
         <Share2 size={14} className="shrink-0 text-[var(--color-primary-hex)]" />
@@ -202,7 +202,7 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
       {/* Dropdown Menu */}
       {isOpen && (
         <div 
-          className="absolute right-0 mt-1.5 w-72 sm:w-84 max-h-[calc(100vh-120px)] overflow-y-auto custom-scroll rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xl z-[60] divide-y divide-[var(--color-divider)] animate-in fade-in zoom-in-95 duration-100"
+          className="fixed right-3 left-3 top-[62px] sm:top-full sm:left-auto sm:right-0 sm:absolute sm:w-84 sm:mt-1.5 max-h-[calc(100dvh-120px)] overflow-y-auto custom-scroll rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xl z-[60] divide-y divide-[var(--color-divider)] animate-in fade-in zoom-in-95 duration-100 overscroll-contain"
           role="menu"
           aria-orientation="vertical"
         >

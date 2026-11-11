@@ -790,7 +790,7 @@ const StepTemplates: React.FC = () => {
             </div>
 
             {/* Category Filter Pills */}
-            <div className="flex items-center gap-1 overflow-x-auto custom-scroll py-0.5 max-w-md">
+            <div className="flex items-center gap-1 overflow-x-auto no-scrollbar scroll-fade-x py-0.5 max-w-full sm:max-w-md">
               <button
                 onClick={() => setSelectedCategory('all')}
                 className={clsx(

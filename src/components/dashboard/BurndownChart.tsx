@@ -237,55 +237,55 @@ const BurndownChart: React.FC = () => {
     <div className="space-y-8">
       
       {/* 1. Dynamic Simulation Metrics Cards Row */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
         
         {/* Metric 1 */}
-        <div className="card p-6 bg-slate-50/50 hover:bg-white transition-colors duration-150 flex flex-col justify-between border border-slate-150">
+        <div className="card p-4 sm:p-6 bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)]/70 transition-colors duration-150 flex flex-col justify-between border border-[var(--color-divider)]">
           <div>
             <span className="text-xs font-medium text-[var(--color-text-muted)]">Baseline Effort Scope</span>
-            <div className="text-3xl font-display font-black text-slate-800 mt-1">
-              {summaryMetrics.totalScopeEffort} <span className="text-xs font-bold text-slate-400 font-sans">Days</span>
+            <div className="text-2xl sm:text-3xl font-display font-black text-[var(--color-text)] mt-1">
+              {summaryMetrics.totalScopeEffort} <span className="text-xs font-bold text-[var(--color-text-faint)] font-sans">Days</span>
             </div>
           </div>
-          <div className="text-[10px] text-slate-500 mt-3 flex items-center gap-1.5">
-            <Info size={12} className="text-[var(--color-primary-hex)]" />
+          <div className="text-[10px] text-[var(--color-text-muted)] mt-3 flex items-center gap-1.5">
+            <Info size={12} className="text-[var(--color-primary-hex)] shrink-0" />
             <span>Cumulative weight of tasks</span>
           </div>
         </div>
 
         {/* Metric 2 */}
-        <div className="card p-6 bg-slate-50/50 hover:bg-white transition-colors duration-150 flex flex-col justify-between border border-slate-150">
+        <div className="card p-4 sm:p-6 bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)]/70 transition-colors duration-150 flex flex-col justify-between border border-[var(--color-divider)]">
           <div>
             <span className="text-xs font-medium text-[var(--color-text-muted)]">Total Completed</span>
-            <div className="text-3xl font-display font-black text-emerald-600 mt-1">
-              {summaryMetrics.completedEffort} <span className="text-xs font-bold text-slate-400 font-sans">Days</span>
+            <div className="text-2xl sm:text-3xl font-display font-black text-emerald-500 mt-1">
+              {summaryMetrics.completedEffort} <span className="text-xs font-bold text-[var(--color-text-faint)] font-sans">Days</span>
             </div>
           </div>
-          <div className="text-[10px] text-emerald-600 mt-3 font-semibold flex items-center gap-1">
-            <CheckCircle2 size={12} />
+          <div className="text-[10px] text-emerald-500 mt-3 font-semibold flex items-center gap-1">
+            <CheckCircle2 size={12} className="shrink-0" />
             <span>{Math.round((summaryMetrics.completedEffort / (summaryMetrics.totalScopeEffort || 1)) * 100)}% Scope Burned</span>
           </div>
         </div>
 
         {/* Metric 3 */}
-        <div className="card p-6 bg-slate-50/50 hover:bg-white transition-colors duration-150 flex flex-col justify-between border border-slate-150">
+        <div className="card p-4 sm:p-6 bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)]/70 transition-colors duration-150 flex flex-col justify-between border border-[var(--color-divider)]">
           <div>
             <span className="text-xs font-medium text-[var(--color-text-muted)]">Active Backlog</span>
-            <div className="text-3xl font-display font-black text-[var(--color-primary-hex)] mt-1">
-              {summaryMetrics.baseRemaining} <span className="text-xs font-bold text-slate-400 font-sans">Days</span>
+            <div className="text-2xl sm:text-3xl font-display font-black text-[var(--color-primary-hex)] mt-1">
+              {summaryMetrics.baseRemaining} <span className="text-xs font-bold text-[var(--color-text-faint)] font-sans">Days</span>
             </div>
           </div>
-          <div className="text-[10px] text-slate-500 mt-3 flex items-center gap-1">
-            <Activity size={12} className="text-[var(--color-primary-hex)]" />
+          <div className="text-[10px] text-[var(--color-text-muted)] mt-3 flex items-center gap-1">
+            <Activity size={12} className="text-[var(--color-primary-hex)] shrink-0" />
             <span>Remaining effort pending delivery</span>
           </div>
         </div>
 
         {/* Metric 4 */}
-        <div className="card p-6 bg-slate-50/50 hover:bg-white transition-colors duration-150 flex flex-col justify-between border border-slate-150">
+        <div className="card p-4 sm:p-6 bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)]/70 transition-colors duration-150 flex flex-col justify-between border border-[var(--color-divider)]">
           <div>
             <span className="text-xs font-medium text-[var(--color-text-muted)]">Simulated Target Date</span>
-            <div className="text-xl font-display font-black text-slate-800 mt-2 truncate">
+            <div className="text-lg sm:text-xl font-display font-black text-[var(--color-text)] mt-2 truncate">
               {summaryMetrics.daysToFinish === Infinity ? 'Indefinite' : summaryMetrics.forecastedFinishDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
             </div>
           </div>
@@ -391,9 +391,9 @@ const BurndownChart: React.FC = () => {
                 </div>
               )}
 
-              <div className="flex gap-2 items-start p-3 bg-white border border-indigo-100 rounded-xl">
+              <div className="flex gap-2 items-start p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl">
                 <AlertTriangle size={14} className="text-amber-500 mt-0.5 shrink-0" />
-                <p className="text-[11px] text-slate-500 leading-normal">
+                <p className="text-[11px] text-[var(--color-text-muted)] leading-normal">
                   {velocityMultiplier < 1.0 
                     ? "Warning: Sluggish velocity triggers backlog stacking. We advise removing blocking architecture defects." 
                     : "High-velocity metrics confirm stable agile deployment flow. Ready for production release train."}
@@ -406,21 +406,21 @@ const BurndownChart: React.FC = () => {
 
         {/* Dynamic Composed Area/Line Chart Wrapper (Right Columns) */}
         <div className="lg:col-span-8 flex flex-col">
-          <div className="card p-6 md:p-8 flex-1 flex flex-col justify-between space-y-6">
+          <div className="card p-4 sm:p-6 md:p-8 flex-1 flex flex-col justify-between space-y-6">
             
             {/* Tab selection header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-100">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-[var(--color-divider)]">
               <div>
-                <h3 className="font-bold text-base text-slate-800 leading-tight">Advanced Analytics Composites</h3>
+                <h3 className="font-bold text-base text-[var(--color-text)] leading-tight">Advanced Analytics Composites</h3>
                 <p className="text-xs text-[var(--color-text-muted)] mt-0.5">Real-time projection &amp; process flow matrices</p>
               </div>
 
-              <div className="flex bg-slate-100 p-1 rounded-xl">
+              <div className="flex bg-[var(--color-surface-2)] border border-[var(--color-divider)] p-1 rounded-xl">
                 <button 
                   onClick={() => setViewTab('combined')}
                   className={clsx(
-                    "px-4 py-1.5 text-xs font-bold rounded-lg transition-colors duration-150 active:scale-[0.98] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50",
-                    viewTab === 'combined' ? "bg-white text-slate-800 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                    "px-3 sm:px-4 py-1.5 text-xs font-bold rounded-lg transition-colors duration-150 active:scale-[0.98] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50",
+                    viewTab === 'combined' ? "bg-[var(--color-surface)] text-[var(--color-text)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                   )}
                 >
                   Burnup / Burndown
@@ -428,8 +428,8 @@ const BurndownChart: React.FC = () => {
                 <button 
                   onClick={() => setViewTab('cfd')}
                   className={clsx(
-                    "px-4 py-1.5 text-xs font-bold rounded-lg transition-colors duration-150 active:scale-[0.98] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50",
-                    viewTab === 'cfd' ? "bg-white text-slate-800 shadow-sm" : "text-slate-400 hover:text-slate-600"
+                    "px-3 sm:px-4 py-1.5 text-xs font-bold rounded-lg transition-colors duration-150 active:scale-[0.98] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] disabled:opacity-50",
+                    viewTab === 'cfd' ? "bg-[var(--color-surface)] text-[var(--color-text)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                   )}
                 >
                   Cumulative Flow

@@ -1,16 +1,16 @@
 # Graph Report - ProjectPulse 2.0  (2026-11-11)
 
 ## Corpus Check
-- 79 files · ~215,558 words
+- 80 files · ~217,133 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 481 nodes · 1372 edges · 20 communities (19 shown, 1 thin omitted)
+- 483 nodes · 1386 edges · 20 communities (19 shown, 1 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `d536dcdf`
+- Built from commit: `fec904d8`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -60,44 +60,44 @@
 ## Communities (20 total, 1 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.06
-Nodes (50): AccessDenied(), AccessDeniedProps, AccessManagerModal(), AccessManagerModalProps, LoginView(), getAllNavItems(), getHubForView(), getNavItem() (+42 more)
+Cohesion: 0.08
+Nodes (59): blendColors(), buildDeliveriesSheet(), buildDeliveriesWorkbook(), buildExecutiveDashboardSheet(), buildFeatureMatrixWorkbook(), buildFeatureRolloutsSheet(), buildFeatureScreenTraceabilitySheet(), buildUnifiedTasksSheet() (+51 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.08
-Nodes (55): blendColors(), buildDeliveriesSheet(), buildDeliveriesWorkbook(), buildExecutiveDashboardSheet(), buildFeatureMatrixWorkbook(), buildFeatureRolloutsSheet(), buildFeatureScreenTraceabilitySheet(), buildUnifiedTasksSheet() (+47 more)
+Nodes (31): COCKPIT_EASE, DetailCardType, OverviewView(), CATEGORY_PALETTE, IMPACT_ROWS, PIPELINE_STAGES, PROB_COLS, QualityGovernanceTabProps (+23 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.07
-Nodes (39): PHASE_COLORS, STANDARD_BLUEPRINT_PRESETS, StepTemplates(), SyncStep, SEVERITY_COLORS, STATUS_COLORS, VALID_DASH_TABS, MatrixViewMode (+31 more)
+Cohesion: 0.09
+Nodes (33): AccessManagerModal(), AccessManagerModalProps, LoginView(), SEVERITY_COLORS, STATUS_COLORS, VALID_DASH_TABS, MatrixViewMode, ModuleDeliveryMatrix() (+25 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.07
-Nodes (31): FEAT_PALETTE, FeatureSwimlaneChart(), FeatureSwimlaneChartProps, HitArea, LaneGroup, RELEASE_STATUS_COLORS, SwimlaneCategoryTrackProps, SwimlaneRow (+23 more)
+Nodes (31): ComplexityFilter, computeScreenSuggestions(), FEAT_STOP_WORDS, featTokenise(), STANDARD_CATEGORIES, ViewMode, DEF_ST_MAP, DensityMode (+23 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.09
-Nodes (29): DomainTab, FieldArchitect(), SchedulerView(), getWebSample(), DEFAULT_DEFECT_COLS, DEFAULT_DELIVERY_COLS, DEFAULT_TASK_COLS, getDefaultState() (+21 more)
-
-### Community 5 - "Community 5"
 Cohesion: 0.08
 Nodes (31): FunctionalMatrix(), formatLibraryName(), LIBRARY_LABELS, RegistryView(), RESERVED_CORE_KEYS, AIPulseAnalysis(), BurndownChart(), DashboardView() (+23 more)
 
+### Community 5 - "Community 5"
+Cohesion: 0.07
+Nodes (25): PHASE_COLORS, STANDARD_BLUEPRINT_PRESETS, StepTemplates(), SyncStep, useMediaQuery(), Modal(), ModalProps, GO_CHORD_MAP (+17 more)
+
 ### Community 6 - "Community 6"
-Cohesion: 0.1
-Nodes (24): COCKPIT_EASE, DetailCardType, OverviewView(), CATEGORY_PALETTE, IMPACT_ROWS, PIPELINE_STAGES, PROB_COLS, QualityGovernanceTabProps (+16 more)
+Cohesion: 0.09
+Nodes (29): AccessDenied(), AccessDeniedProps, getAllNavItems(), getHubForView(), getNavItem(), NAV_HUBS, NavHub, NavItem (+21 more)
 
 ### Community 7 - "Community 7"
-Cohesion: 0.1
-Nodes (18): DEF_ST_MAP, DensityMode, ViewMode, ALM_ST_MAP, AutofitStrategy, DEL_ST_MAP, DeliveryModal(), DeliveryModalProps (+10 more)
+Cohesion: 0.09
+Nodes (29): DomainTab, FieldArchitect(), SchedulerView(), getWebSample(), DEFAULT_DEFECT_COLS, DEFAULT_DELIVERY_COLS, DEFAULT_TASK_COLS, getDefaultState() (+21 more)
 
 ### Community 8 - "Community 8"
-Cohesion: 0.13
-Nodes (16): getMergedFieldGuide(), GLOBAL_SHORTCUTS, ShortcutItem, STANDARD_FIELD_GUIDE, StandardFieldItem, VIEW_HELP_DATA, ViewHelpItem, DefectModal() (+8 more)
+Cohesion: 0.09
+Nodes (25): FEAT_PALETTE, FeatureSwimlaneChart(), FeatureSwimlaneChartProps, HitArea, LaneGroup, RELEASE_STATUS_COLORS, SwimlaneCategoryTrackProps, SwimlaneRow (+17 more)
 
 ### Community 9 - "Community 9"
-Cohesion: 0.15
-Nodes (18): DARK_MAP, FilterCategory, LIGHT_MAP, ThemeDef, ThemeFlyout(), ThemeFlyoutProps, THEMES, DARK_MAP (+10 more)
+Cohesion: 0.13
+Nodes (20): DARK_MAP, FilterCategory, LIGHT_MAP, ThemeDef, ThemeFlyout(), ThemeFlyoutProps, THEMES, SettingsView() (+12 more)
 
 ### Community 10 - "Community 10"
 Cohesion: 0.12
@@ -131,17 +131,17 @@ Nodes (3): 📚 Core Documentation, ⚡ Key Highlights, Welcome to the ProjectPu
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `useProject()` connect `Community 5` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 6`, `Community 7`, `Community 8`, `Community 9`?**
-  _High betweenness centrality (0.155) - this node is a cross-community bridge._
-- **Why does `useAuth()` connect `Community 0` to `Community 2`, `Community 5`, `Community 6`?**
+- **Why does `useProject()` connect `Community 4` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`?**
+  _High betweenness centrality (0.154) - this node is a cross-community bridge._
+- **Why does `useAuth()` connect `Community 2` to `Community 1`, `Community 4`, `Community 5`, `Community 6`, `Community 9`?**
   _High betweenness centrality (0.017) - this node is a cross-community bridge._
-- **Why does `TaskStatus` connect `Community 2` to `Community 0`, `Community 1`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`?**
+- **Why does `TaskStatus` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 7`, `Community 8`?**
   _High betweenness centrality (0.017) - this node is a cross-community bridge._
 - **What connects `env`, `GO_CHORD_MAP`, `WidgetLayout` to the rest of the system?**
   _162 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.06 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.08 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
   _Cohesion score 0.08 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
-  _Cohesion score 0.07 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09 - nodes in this community are weakly interconnected._

@@ -548,6 +548,39 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }, [setTheme]);
 
+  // Synchronize mobile OS browser chrome (<meta name="theme-color">) with active CSS theme surface
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    const syncThemeColor = () => {
+      requestAnimationFrame(() => {
+        const styles = getComputedStyle(document.documentElement);
+        const surface = styles.getPropertyValue('--color-surface').trim();
+        const bg = styles.getPropertyValue('--color-bg').trim();
+        const candidate = (surface && !surface.startsWith('rgba') && !surface.startsWith('linear'))
+          ? surface
+          : bg;
+        if (!candidate || candidate.startsWith('linear')) return;
+        const existing = Array.from(document.querySelectorAll('meta[name="theme-color"]'));
+        existing.slice(1).forEach(el => el.remove());
+        let meta = existing[0] as HTMLMetaElement | undefined;
+        if (!meta) {
+          meta = document.createElement('meta');
+          meta.name = 'theme-color';
+          document.head.appendChild(meta);
+        }
+        meta.removeAttribute('media');
+        meta.content = candidate;
+      });
+    };
+    syncThemeColor();
+    const observer = new MutationObserver(syncThemeColor);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme', 'data-color-mode']
+    });
+    return () => observer.disconnect();
+  }, [state.theme]);
+
   const updateSettings = useCallback((settings: Partial<ProjectState['settings']>) => {
     setState(prev => ({ ...prev, settings: { ...prev.settings, ...settings } }));
   }, []);

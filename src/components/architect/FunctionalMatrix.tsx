@@ -880,7 +880,7 @@ export const FunctionalMatrix: React.FC = () => {
         title="Functional Matrix & Architecture"
         subtitle={`${totalFeatures} Strategic Capabilities • ${mappedScreens.length}/${allScreens.length} Screens Mapped • ${coveragePct}% Architecture Coverage`}
         actions={
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 max-w-full flex-wrap">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-nowrap md:flex-wrap">
             {/* View Mode Switcher */}
             <div className="flex items-center p-0.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl">
               <button
@@ -888,7 +888,7 @@ export const FunctionalMatrix: React.FC = () => {
                 aria-label="Grid Matrix View"
                 title="Grid Matrix Cards"
                 className={clsx(
-                  "px-2 sm:px-2.5 py-1 min-h-[32px] text-xs font-semibold rounded-lg flex items-center gap-1 transition-all cursor-pointer",
+                  "px-2.5 py-1 min-h-[36px] min-w-[36px] sm:min-h-[32px] sm:min-w-0 text-xs font-semibold rounded-lg flex items-center justify-center gap-1 transition-all cursor-pointer",
                   viewMode === 'matrix' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
@@ -900,7 +900,7 @@ export const FunctionalMatrix: React.FC = () => {
                 aria-label="Tabular List View"
                 title="Tabular List View"
                 className={clsx(
-                  "px-2 sm:px-2.5 py-1 min-h-[32px] text-xs font-semibold rounded-lg flex items-center gap-1 transition-all cursor-pointer",
+                  "px-2.5 py-1 min-h-[36px] min-w-[36px] sm:min-h-[32px] sm:min-w-0 text-xs font-semibold rounded-lg flex items-center justify-center gap-1 transition-all cursor-pointer",
                   viewMode === 'table' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
@@ -912,7 +912,7 @@ export const FunctionalMatrix: React.FC = () => {
                 aria-label="Timeline Gantt View"
                 title="Timeline Gantt View"
                 className={clsx(
-                  "px-2 sm:px-2.5 py-1 min-h-[32px] text-xs font-semibold rounded-lg flex items-center gap-1 transition-all cursor-pointer",
+                  "px-2.5 py-1 min-h-[36px] min-w-[36px] sm:min-h-[32px] sm:min-w-0 text-xs font-semibold rounded-lg flex items-center justify-center gap-1 transition-all cursor-pointer",
                   viewMode === 'timeline' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
@@ -924,7 +924,7 @@ export const FunctionalMatrix: React.FC = () => {
                 aria-label="Swimlane View"
                 title="Swimlane Status View"
                 className={clsx(
-                  "px-2 sm:px-2.5 py-1 min-h-[32px] text-xs font-semibold rounded-lg flex items-center gap-1 transition-all cursor-pointer",
+                  "px-2.5 py-1 min-h-[36px] min-w-[36px] sm:min-h-[32px] sm:min-w-0 text-xs font-semibold rounded-lg flex items-center justify-center gap-1 transition-all cursor-pointer",
                   viewMode === 'swimlane' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
@@ -936,7 +936,8 @@ export const FunctionalMatrix: React.FC = () => {
             {/* Auto-Build Button */}
             <button
               onClick={handleOpenAutoBuild}
-              className="px-2.5 sm:px-3 py-1.5 min-h-[32px] rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/30 hover:bg-[var(--color-primary-hex)] hover:text-white transition-all text-xs font-bold flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs"
+              aria-label="Auto-Build features from unmapped screens"
+              className="px-2.5 sm:px-3 py-1.5 min-h-[36px] min-w-[36px] sm:min-h-[32px] rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/30 hover:bg-[var(--color-primary-hex)] hover:text-white transition-all text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs"
               title="Automatically cluster screens and generate feature nodes"
             >
               <Wand2 size={13} />
@@ -947,7 +948,7 @@ export const FunctionalMatrix: React.FC = () => {
             <button
               onClick={() => setShowCoverageAudit(!showCoverageAudit)}
               className={clsx(
-                "px-2.5 sm:px-3 py-1.5 min-h-[32px] rounded-xl border text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-all active:scale-95 shadow-2xs",
+                "px-2.5 sm:px-3 py-1.5 min-h-[36px] sm:min-h-[32px] rounded-xl border text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-all active:scale-95 shadow-2xs",
                 showCoverageAudit
                   ? "bg-[var(--color-surface-2)] border-[var(--color-primary-hex)] text-[var(--color-primary-hex)]"
                   : "bg-[var(--color-surface)] border-[var(--color-divider)] text-[var(--color-text-muted)] hover:text-[var(--color-text)]"

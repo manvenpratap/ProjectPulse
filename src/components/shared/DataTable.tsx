@@ -1,5 +1,5 @@
-import React from 'react';
-import { ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { ChevronRight, LayoutList, Table2 } from 'lucide-react';
 import clsx from 'clsx';
 import TablePagination, { UsePaginationReturn } from './TablePagination';
 
@@ -63,6 +63,17 @@ export interface DataTableProps<T> {
   // Empty State
   emptyMessage?: React.ReactNode;
 
+  // Responsive Accessibility & Mobile Card Mode (< md)
+  tableLabel?: string;
+  mobileCardRenderer?: (
+    item: T,
+    meta: {
+      isSelected: boolean;
+      onToggleSelect: (event: React.ChangeEvent<HTMLInputElement> | React.MouseEvent) => void;
+      index: number;
+    }
+  ) => React.ReactNode;
+
   // Optional Integrated Pagination
   pagination?: UsePaginationReturn<T>;
   itemLabel?: string;
@@ -97,10 +108,13 @@ export function DataTable<T>({
   onRowClick,
   rowClassName,
   emptyMessage,
+  tableLabel,
+  mobileCardRenderer,
   pagination,
   itemLabel,
   pageSizeOptions
 }: DataTableProps<T>): React.ReactElement {
+  const [showMatrixOnMobile, setShowMatrixOnMobile] = useState(false);
   // Determine if expand slot should be shown
   const hasExpand = expandable ?? (Boolean(canExpand) || Boolean(renderSubRows));
   const hasInlineFilters = showInlineFilters && columns.some(c => c.filter !== undefined && c.filter !== null);
@@ -133,7 +147,89 @@ export function DataTable<T>({
 
   return (
     <div className={clsx("rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs overflow-hidden", containerClassName)}>
-      <div className={clsx("overflow-auto custom-scroll relative", maxHeight)}>
+      {/* Optional Mobile Presentation Toggle (< md only when mobileCardRenderer is provided) */}
+      {mobileCardRenderer && (
+        <div className="md:hidden px-3 py-2 border-b border-[var(--color-divider)] bg-[var(--color-surface-2)]/60 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 text-xs text-[var(--color-text-muted)] font-semibold">
+            {selectable && (
+              <label className="inline-flex items-center gap-1.5 cursor-pointer min-h-[32px]">
+                <input
+                  type="checkbox"
+                  checked={isAllSelected}
+                  onChange={onToggleSelectAll}
+                  aria-label="Select all rows"
+                  className="rounded border-[var(--color-divider)] text-[var(--color-primary-hex)] cursor-pointer"
+                />
+                <span>Select all</span>
+              </label>
+            )}
+            {!selectable && <span>{itemsToRender.length} {itemLabel || 'items'}</span>}
+          </div>
+          <div className="inline-flex items-center p-0.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-divider)]">
+            <button
+              type="button"
+              onClick={() => setShowMatrixOnMobile(false)}
+              className={clsx(
+                "px-2.5 py-1 rounded-md text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer",
+                !showMatrixOnMobile ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)]" : "text-[var(--color-text-muted)]"
+              )}
+            >
+              <LayoutList size={12} aria-hidden="true" />
+              <span>Cards</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowMatrixOnMobile(true)}
+              className={clsx(
+                "px-2.5 py-1 rounded-md text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer",
+                showMatrixOnMobile ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)]" : "text-[var(--color-text-muted)]"
+              )}
+            >
+              <Table2 size={12} aria-hidden="true" />
+              <span>Matrix</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Native Touch Cards (< md) */}
+      {mobileCardRenderer && !showMatrixOnMobile && (
+        <div className="md:hidden divide-y divide-[var(--color-divider)]/60">
+          {itemsToRender.map((item, idx) => {
+            const id = getKey(item, idx);
+            const isSelected = selectedIds ? selectedIds.has(id) : false;
+            return (
+              <React.Fragment key={id}>
+                {mobileCardRenderer(item, {
+                  isSelected,
+                  onToggleSelect: (e) => onToggleSelect && onToggleSelect(id, e),
+                  index: idx,
+                })}
+              </React.Fragment>
+            );
+          })}
+          {itemsToRender.length === 0 && (
+            <div className="py-10 px-4 text-center">
+              {emptyMessage ?? (
+                <div className="text-sm font-semibold text-[var(--color-text-muted)]">
+                  No records to display
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      <div
+        role="region"
+        aria-label={tableLabel || 'Data table'}
+        tabIndex={0}
+        className={clsx(
+          "overflow-auto custom-scroll relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]",
+          maxHeight,
+          mobileCardRenderer && !showMatrixOnMobile && "hidden md:block"
+        )}
+      >
         <table className={clsx("w-full text-left border-collapse", minWidth, tableClassName)}>
           <thead className="sticky top-0 z-10 bg-[var(--color-surface-offset)] shadow-[0_1px_0_0_var(--color-divider)]">
             {/* Primary Column Header Row */}

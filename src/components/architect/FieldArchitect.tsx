@@ -250,7 +250,7 @@ export const FieldArchitect: React.FC = () => {
         title="Field Architect"
         subtitle="Configure existing system core attributes & define proprietary custom field extensions"
         actions={
-          <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+          <div className="flex items-center gap-2 sm:gap-3 flex-nowrap md:flex-wrap">
             {/* Domain Pill Switcher */}
             <div className="flex items-center gap-1 p-1 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl shadow-2xs">
               <button 
@@ -332,13 +332,13 @@ export const FieldArchitect: React.FC = () => {
         </div>
 
         {/* Inline Compact Telemetry Stats Bar */}
-        <div className="flex items-stretch border border-[var(--color-divider)] rounded-xl overflow-hidden bg-[var(--color-surface-2)] shadow-2xs text-xs">
-          <div className="px-3 py-1.5 flex items-center gap-2 border-r border-[var(--color-divider)]">
+        <div className="grid grid-cols-2 sm:flex w-full sm:w-auto items-stretch border border-[var(--color-divider)] rounded-xl overflow-hidden bg-[var(--color-surface-2)] shadow-2xs text-xs">
+          <div className="px-3 py-1.5 flex items-center gap-2 border-b sm:border-b-0 border-r border-[var(--color-divider)]">
             <Database size={13} className="text-[var(--color-primary-hex)]" />
             <span className="font-semibold text-[var(--color-text-muted)]">Total</span>
             <span className="font-mono font-bold text-sm text-[var(--color-text)]">{totalAttributes}</span>
           </div>
-          <div className="px-3 py-1.5 flex items-center gap-2 border-r border-[var(--color-divider)]">
+          <div className="px-3 py-1.5 flex items-center gap-2 border-b sm:border-b-0 sm:border-r border-[var(--color-divider)]">
             <ShieldCheck size={13} className="text-sky-500" />
             <span className="font-semibold text-[var(--color-text-muted)]">System</span>
             <span className="font-mono font-bold text-sm text-sky-500">{stdCols.length}</span>
@@ -348,7 +348,7 @@ export const FieldArchitect: React.FC = () => {
             <span className="font-semibold text-[var(--color-text-muted)]">Custom</span>
             <span className="font-mono font-bold text-sm text-amber-500">{customFields.length}</span>
           </div>
-          <div className="px-3 py-1.5 flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 font-bold">
+          <div className="px-3 py-1.5 flex items-center gap-1.5 bg-emerald-500/10 text-emerald-500 font-bold">
             <CheckCircle2 size={13} />
             <span>100% Integrity</span>
           </div>
@@ -384,8 +384,8 @@ export const FieldArchitect: React.FC = () => {
               </span>
             </div>
 
-            {/* List Header */}
-            <div className="grid grid-cols-12 gap-2 px-4 py-2.5 bg-[var(--color-surface-2)]/30 border-b border-[var(--color-divider)] text-[10px] font-mono font-bold text-[var(--color-text-faint)] uppercase tracking-wider">
+            {/* Desktop List Header (>= md) */}
+            <div className="hidden md:grid grid-cols-12 gap-2 px-4 py-2.5 bg-[var(--color-surface-2)]/30 border-b border-[var(--color-divider)] text-[10px] font-mono font-bold text-[var(--color-text-faint)] uppercase tracking-wider">
               <div className="col-span-1 text-center">ORDER</div>
               <div className="col-span-2">SYSTEM ID</div>
               <div className="col-span-3">DATA TYPE</div>
@@ -393,52 +393,58 @@ export const FieldArchitect: React.FC = () => {
               <div className="col-span-2 text-right">WIDTH (PX)</div>
             </div>
 
-            {/* Field Rows */}
-            <div className="divide-y divide-[var(--color-divider)] overflow-x-auto">
-              {filteredStdCols.map((col, idx) => {
+            {/* Single-DOM Responsive Schema List (Cards on < md via Grid Ordering, 5-Col Matrix on >= md) */}
+            <div className="divide-y divide-[var(--color-divider)]">
+              {filteredStdCols.map((col) => {
                 const realIdx = stdCols.findIndex(c => c.key === col.key);
                 const typeInfo = getTypeDisplay(col.type, col.mapKey);
                 const isLocked = col.key === 'id' || col.key === 'name' || col.key === 'title' || col.key === 'almId';
                 const isHidden = col.visible === false;
 
                 return (
-                  <div 
+                  <div
                     key={col.key}
                     className={clsx(
-                      "grid grid-cols-12 gap-2 items-center px-4 py-3 transition-colors duration-150 hover:bg-[var(--color-surface-2)]/50",
+                      "grid grid-cols-12 gap-2.5 md:gap-2 items-center px-3.5 sm:px-4 py-3.5 md:py-3 transition-colors duration-150 hover:bg-[var(--color-surface-2)]/50",
                       isHidden && "opacity-50 bg-[var(--color-surface-2)]/20"
                     )}
                   >
-                    {/* Reorder & Visibility */}
-                    <div className="col-span-1 flex items-center justify-center gap-1">
-                      <div className="flex flex-col items-center">
+                    {/* Reorder & Visibility (Top-right on < md, Col 1 on >= md) */}
+                    <div className="col-span-4 md:col-span-1 order-2 md:order-1 flex items-center justify-end md:justify-center gap-1">
+                      <div className="flex flex-row md:flex-col items-center gap-0.5 md:gap-0">
                         <button
+                          type="button"
                           onClick={() => handleMoveCol(realIdx, 'up')}
                           disabled={realIdx === 0}
                           title="Move up"
-                          className="p-0.5 text-[var(--color-text-muted)] hover:text-[var(--color-primary-hex)] disabled:opacity-20 cursor-pointer"
+                          aria-label={`Move ${col.key} up`}
+                          className="p-1.5 md:p-0.5 min-h-[32px] min-w-[32px] md:min-h-0 md:min-w-0 flex items-center justify-center rounded-lg md:rounded-none bg-[var(--color-surface-2)] md:bg-transparent text-[var(--color-text-muted)] hover:text-[var(--color-primary-hex)] disabled:opacity-20 cursor-pointer"
                         >
-                          <ArrowUp size={11} />
+                          <ArrowUp size={12} className="md:w-[11px] md:h-[11px]" />
                         </button>
                         <button
+                          type="button"
                           onClick={() => handleMoveCol(realIdx, 'down')}
                           disabled={realIdx === stdCols.length - 1}
                           title="Move down"
-                          className="p-0.5 text-[var(--color-text-muted)] hover:text-[var(--color-primary-hex)] disabled:opacity-20 cursor-pointer"
+                          aria-label={`Move ${col.key} down`}
+                          className="p-1.5 md:p-0.5 min-h-[32px] min-w-[32px] md:min-h-0 md:min-w-0 flex items-center justify-center rounded-lg md:rounded-none bg-[var(--color-surface-2)] md:bg-transparent text-[var(--color-text-muted)] hover:text-[var(--color-primary-hex)] disabled:opacity-20 cursor-pointer"
                         >
-                          <ArrowDown size={11} />
+                          <ArrowDown size={12} className="md:w-[11px] md:h-[11px]" />
                         </button>
                       </div>
                       <button
+                        type="button"
                         onClick={() => handleToggleVisibility(col.key)}
                         disabled={isLocked}
                         title={isLocked ? "Required core field (cannot hide)" : (isHidden ? "Show column in table" : "Hide column in table")}
+                        aria-label={isLocked ? "Required core field" : (isHidden ? `Show ${col.key}` : `Hide ${col.key}`)}
                         className={clsx(
-                          "p-1 rounded cursor-pointer transition-colors",
-                          isLocked 
-                            ? "text-[var(--color-text-faint)] cursor-not-allowed opacity-50" 
-                            : isHidden 
-                              ? "text-rose-400 hover:text-rose-300" 
+                          "p-1.5 md:p-1 min-h-[32px] min-w-[32px] md:min-h-0 md:min-w-0 flex items-center justify-center rounded-lg md:rounded cursor-pointer transition-colors border md:border-0 border-[var(--color-divider)] bg-[var(--color-surface-2)] md:bg-transparent",
+                          isLocked
+                            ? "text-[var(--color-text-faint)] cursor-not-allowed opacity-50"
+                            : isHidden
+                              ? "text-rose-400 hover:text-rose-300"
                               : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                         )}
                       >
@@ -446,33 +452,34 @@ export const FieldArchitect: React.FC = () => {
                       </button>
                     </div>
 
-                    {/* System ID */}
-                    <div className="col-span-2 font-mono text-[11px] font-bold text-[var(--color-text-muted)] truncate" title={col.key}>
+                    {/* System ID (Top-left on < md, Col 2 on >= md) */}
+                    <div className="col-span-4 md:col-span-2 order-1 md:order-2 font-mono text-xs md:text-[11px] font-bold text-[var(--color-text)] md:text-[var(--color-text-muted)] truncate" title={col.key}>
                       {col.key.toUpperCase()}
                     </div>
 
-                    {/* Data Type Badge */}
-                    <div className="col-span-3">
+                    {/* Data Type Badge (Top-center on < md, Col 3 on >= md) */}
+                    <div className="col-span-4 md:col-span-3 order-1 md:order-3">
                       <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 truncate max-w-full">
                         {typeInfo.icon}
                         <span className="truncate">{typeInfo.label}</span>
                       </div>
                     </div>
 
-                    {/* Custom Display Label Input */}
-                    <div className="col-span-4">
+                    {/* Custom Display Label Input (Row 2 Left on < md, Col 4 on >= md) */}
+                    <div className="col-span-8 md:col-span-4 order-3 md:order-4">
                       <input
                         type="text"
                         value={col.label}
                         onChange={e => handleLabelChange(col.key, e.target.value)}
                         placeholder={col.key}
-                        className="w-full px-2.5 py-1 text-xs font-semibold rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-divider)] focus:border-[var(--color-primary-hex)] focus:bg-[var(--color-surface)] text-[var(--color-text)] outline-none transition-colors"
+                        aria-label={`Display label for ${col.key}`}
+                        className="w-full px-2.5 py-1.5 md:py-1 text-xs font-semibold rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-divider)] focus:border-[var(--color-primary-hex)] focus:bg-[var(--color-surface)] text-[var(--color-text)] outline-none transition-colors"
                         title="Edit column display label for table headers & exports"
                       />
                     </div>
 
-                    {/* Column Width Input */}
-                    <div className="col-span-2 flex items-center justify-end gap-1.5">
+                    {/* Column Width Input (Row 2 Right on < md, Col 5 on >= md) */}
+                    <div className="col-span-4 md:col-span-2 order-4 md:order-5 flex items-center justify-end gap-1.5">
                       <input
                         type="number"
                         min={50}
@@ -480,7 +487,8 @@ export const FieldArchitect: React.FC = () => {
                         step={10}
                         value={col.width || 120}
                         onChange={e => handleWidthChange(col.key, parseInt(e.target.value))}
-                        className="w-16 px-1.5 py-1 text-xs font-mono font-bold text-center rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-divider)] focus:border-[var(--color-primary-hex)] text-[var(--color-text)] outline-none"
+                        aria-label={`Width in px for ${col.key}`}
+                        className="w-full md:w-16 px-1.5 py-1.5 md:py-1 text-xs font-mono font-bold text-center rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-divider)] focus:border-[var(--color-primary-hex)] text-[var(--color-text)] outline-none"
                       />
                       <span className="text-[10px] font-mono text-[var(--color-text-faint)] font-bold">PX</span>
                     </div>

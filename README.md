@@ -66,6 +66,7 @@ npm start
 15. **Journey-First Navigation, Command Search & Keyboard Chords**: Six clear workflow hubs (**Insights & Reporting**, **Planning & Scope**, **Delivery & Execution**, **People & Capacity**, **Quality & Governance**, and collapsible **Workspace & Schema**) backed by RBAC-aware dual routing, live Global Command Search (`/` or `Cmd/Ctrl+K`) across screens and entities, two-key navigation chords (`G` + `O/D/R/T/L/F/C/B/K/S`, `Cmd/Ctrl+E` Excel export), interactive PageHeader hub breadcrumbs, URL sub-tab deep-linking (`#/cxo`, `#/scheduler`, `?tab=...`), adaptive `MobileBottomNav`, and a utility header on onboarding setup.
 16. **Field Architect & Custom Schema Studio**: Two-panel dynamic metadata architect allowing in-place customization of system core attributes (custom column headers, pixel widths, visibility toggling, order repositioning, and factory reset defaults) alongside proprietary custom field extensions (text, numeric, temporal, boolean, manual selection, and global registry linkages) dynamically synced across Tasks, Defects, and Deliveries tables.
 17. **40 Curated Themes & Live Cockpit Previews**: Theme switcher (`ThemeFlyout` & `SettingsView` -> `ThemeGrid`) depicting real canvases, surface elevation, corner radii, typography, and contrast tokens across light and dark design systems.
+18. **Mobile-First Responsive App Shell & Native Touch Ergonomics**: Zero-clipping `PageHeader` flex architecture, full-width inset mobile `ShareExportMenu`, swipe-to-dismiss `Sidebar` drawer (`inert` background shell + elevated backdrop), draggable bottom-sheet `Modal` dialogs (`overscroll-contain`), `DataTable` mobile card views with Cards/Matrix toggle (`Deliveries`, `Tasks`, `RAID`), responsive single-DOM `FieldArchitect` schema cards, dynamic `<meta name="theme-color">` and OS `color-scheme` sync across all 40 themes, progressive scroll-fade tabs (`.scroll-fade-x`), and reactive `useMediaQuery` breakpoint awareness.
 
 ---
 
@@ -95,6 +96,9 @@ ProjectPulse 2.0/
 │   ├── config/
 │   │   ├── navigation.ts        # Canonical 6-hub journey navigation & quick-jump targets
 │   │   └── viewHelpData.ts      # Contextual guides, dynamic field dictionary & shortcuts
+│   ├── hooks/
+│   │   ├── useClickOutside.ts   # Shared outside-click & Escape dismiss hook
+│   │   └── useMediaQuery.ts     # Reactive CSS media query listener hook
 │   ├── services/
 │   │   ├── aiService.ts         # Gemini AI Pulse intelligence
 │   │   └── excelService.ts      # Bi-directional ExcelJS synchronization

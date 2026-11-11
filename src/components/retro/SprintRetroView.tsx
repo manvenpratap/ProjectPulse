@@ -177,11 +177,11 @@ export const SprintRetroView: React.FC = () => {
 
       <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full min-w-0 max-w-full space-y-6">
         {/* Sprint Vital Gauges */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="flex sm:grid overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar scroll-fade-x sm:grid-cols-3 gap-3 sm:gap-4 pb-1">
             {/* Morale Index */}
-            <div className="p-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 border border-emerald-500/20">
-                <Smile size={24} />
+            <div className="min-w-[235px] sm:min-w-0 shrink-0 snap-start p-3.5 sm:p-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl flex items-center gap-3.5 sm:gap-4">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 border border-emerald-500/20">
+                <Smile size={22} />
               </div>
               <div>
                 <span className="text-xs font-medium text-[var(--color-text-muted)]">Team Morale Index</span>
@@ -193,9 +193,9 @@ export const SprintRetroView: React.FC = () => {
             </div>
 
             {/* Velocity Fulfillment */}
-            <div className="p-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center shrink-0 border border-sky-500/20">
-                <TrendingUp size={24} />
+            <div className="min-w-[235px] sm:min-w-0 shrink-0 snap-start p-3.5 sm:p-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl flex items-center gap-3.5 sm:gap-4">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center shrink-0 border border-sky-500/20">
+                <TrendingUp size={22} />
               </div>
               <div>
                 <span className="text-xs font-medium text-[var(--color-text-muted)]">Velocity Delivered</span>
@@ -207,9 +207,9 @@ export const SprintRetroView: React.FC = () => {
             </div>
 
             {/* Kaizen Actions Closure */}
-            <div className="p-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl flex items-center gap-4">
-              <div className="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0 border border-purple-500/20">
-                <CheckCircle2 size={24} />
+            <div className="min-w-[235px] sm:min-w-0 shrink-0 snap-start p-3.5 sm:p-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl flex items-center gap-3.5 sm:gap-4">
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0 border border-purple-500/20">
+                <CheckCircle2 size={22} />
               </div>
               <div>
                 <span className="text-xs font-medium text-[var(--color-text-muted)]">Action Resolution</span>
@@ -222,7 +222,7 @@ export const SprintRetroView: React.FC = () => {
           </div>
 
         {/* 2. CATEGORY PILL FILTER BAR (Information Pyramid Level 2) */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 custom-scroll max-w-full">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar scroll-fade-x max-w-full">
           <button
             onClick={() => setActiveCategoryFilter('all')}
             className={clsx(

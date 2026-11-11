@@ -621,7 +621,7 @@ export const DeliveriesView: React.FC = () => {
         title="Software Deliveries & Deployment Schedule"
         subtitle={`ALM / PDN Release Workstation • ${deliveries.length} Total Packages`}
         actions={
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-nowrap">
             {/* View Mode Switcher */}
             <div className="flex items-center p-0.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl">
               <button
@@ -690,10 +690,10 @@ export const DeliveriesView: React.FC = () => {
       />
 
       {/* 1. Cockpit Telemetry Banner */}
-      <div className="bg-[var(--color-surface)] border-b border-[var(--color-divider)] p-4 sm:p-6 lg:p-8 shrink-0">
-        {/* Bento Telemetry Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5">
-          <div className="bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3.5 rounded-2xl shadow-2xs">
+      <div className="bg-[var(--color-surface)] border-b border-[var(--color-divider)] p-3 sm:p-6 lg:p-8 shrink-0">
+        {/* Bento Telemetry Cards (Horizontal Snap Strip on Mobile, Grid on sm+) */}
+        <div className="flex sm:grid overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar scroll-fade-x sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pb-1">
+          <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Deployed Live</div>
             <div className="text-xl font-bold text-emerald-500 mt-1 flex items-baseline gap-1.5 tracking-tight">
               <span>{telemetry.deployed}</span>
@@ -704,7 +704,7 @@ export const DeliveriesView: React.FC = () => {
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Production sign-off</div>
           </div>
 
-          <div className="bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3.5 rounded-2xl shadow-2xs">
+          <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Ready / In Flight</div>
             <div className="text-xl font-bold text-sky-500 mt-1 flex items-baseline gap-1.5 tracking-tight">
               <span>{telemetry.ready + telemetry.inProgress}</span>
@@ -715,7 +715,7 @@ export const DeliveriesView: React.FC = () => {
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Staging & UAT queues</div>
           </div>
 
-          <div className="bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3.5 rounded-2xl shadow-2xs">
+          <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Pending Sign-Off</div>
             <div className="text-xl font-bold text-amber-500 mt-1 tracking-tight">
               {telemetry.pendingSignoff}
@@ -723,7 +723,7 @@ export const DeliveriesView: React.FC = () => {
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Awaiting lead sign-off</div>
           </div>
 
-          <div className="bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3.5 rounded-2xl shadow-2xs">
+          <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Smoke Test Gates</div>
             <div className="text-xl font-bold mt-1 flex items-center gap-2 tracking-tight">
               <span className={telemetry.failedSmoke > 0 ? "text-rose-500" : "text-emerald-500"}>
@@ -738,7 +738,7 @@ export const DeliveriesView: React.FC = () => {
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Automated test matrix</div>
           </div>
 
-          <div className="bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3.5 rounded-2xl shadow-2xs">
+          <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Avg Cycle Lead Time</div>
             <div className="text-xl font-bold text-[var(--color-text)] mt-1 tracking-tight">
               {telemetry.avgLeadTime} <span className="text-xs text-[var(--color-text-muted)] font-normal">days</span>
@@ -746,7 +746,7 @@ export const DeliveriesView: React.FC = () => {
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Commit-to-release duration</div>
           </div>
 
-          <div className="bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3.5 rounded-2xl shadow-2xs">
+          <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Delay Variance</div>
             <div className={clsx(
               "text-xl font-bold mt-1 tracking-tight",
@@ -941,12 +941,13 @@ export const DeliveriesView: React.FC = () => {
 
       {/* 3. Main Workspace Body */}
       <div className="flex-1 overflow-auto custom-scroll p-4 sm:p-6 lg:p-8">
-        {/* VIEW MODE 1: MATRIX TABLE (Powered by generic DataTable) */}
+        {/* VIEW MODE 1: MATRIX TABLE (Powered by generic DataTable + Mobile Touch Cards) */}
         {viewMode === 'table' && (
           <DataTable<Delivery>
             data={filteredDeliveries}
             columns={columns}
             keyField="id"
+            tableLabel="Deliveries and Deployment Packages"
             density={autofitStrategy === 'compact' ? 'compact' : 'comfortable'}
             showInlineFilters={showInlineFilters}
             sortField={sortBy}
@@ -964,6 +965,57 @@ export const DeliveriesView: React.FC = () => {
             pagination={pagination}
             itemLabel="packages"
             onRowClick={(item) => handleOpenEdit(item)}
+            mobileCardRenderer={(item, { isSelected, onToggleSelect: toggleRowSelect }) => (
+              <div
+                onClick={() => handleOpenEdit(item)}
+                className={clsx(
+                  "p-3.5 space-y-2.5 transition-colors active:bg-[var(--color-surface-2)]/70 cursor-pointer",
+                  isSelected && "bg-[var(--color-primary-highlight-hex)]/25"
+                )}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div onClick={e => e.stopPropagation()} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={(e) => toggleRowSelect(e)}
+                        aria-label={`Select delivery ${item.almId || item.id}`}
+                        className="w-4 h-4 rounded border-[var(--color-divider)] text-[var(--color-primary-hex)] cursor-pointer"
+                      />
+                    </div>
+                    <span className="font-mono font-bold text-xs text-[var(--color-primary-hex)]">{item.almId}</span>
+                    {item.pdn && <span className="font-mono text-[10px] text-[var(--color-text-muted)]">({item.pdn})</span>}
+                  </div>
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text)]">
+                      {item.environment}
+                    </span>
+                    <span className={clsx("st-badge text-[10px]", `st-${DEL_ST_MAP[item.status] || 'not-started'}`)}>
+                      <span className="dot" />
+                      <span>{item.status}</span>
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="font-bold text-sm text-[var(--color-text)] leading-snug line-clamp-2">{item.name}</div>
+                  <div className="text-[11px] text-[var(--color-text-muted)] mt-0.5 flex items-center gap-2 flex-wrap">
+                    <span>{item.module}</span>
+                    {item.releaseVersion && (
+                      <span className="font-mono px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[10px]">
+                        {item.releaseVersion}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-[var(--color-divider)]/50 text-[var(--color-text-muted)]">
+                  <span>{item.smokeTestStatus ? `Smoke: ${item.smokeTestStatus}` : 'No smoke gate'}</span>
+                  <span className="font-mono">{item.targetDeliveryDate ? fmtDate(item.targetDeliveryDate) : 'Unscheduled'}</span>
+                </div>
+              </div>
+            )}
             rowClassName={(item) => {
               const isOverdue = daysDiff(item.targetDeliveryDate)! < 0 && item.status !== 'Deployed' && item.status !== 'Cancelled';
               return isOverdue ? "is-overdue bg-rose-500/[0.02]" : "";

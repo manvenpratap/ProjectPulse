@@ -568,24 +568,24 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
           </div>
 
           {showTemplates && (
-            <div className="bg-amber-50 border border-amber-100 rounded-2xl p-4 motion-safe:animate-in motion-safe:slide-in-from-top-2 duration-200">
-               <div className="flex items-center justify-between mb-3 text-xs font-medium text-amber-800">
+            <div className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-2xl p-4 motion-safe:animate-in motion-safe:slide-in-from-top-2 duration-200">
+               <div className="flex items-center justify-between mb-3 text-xs font-medium text-amber-500">
                   <span>Strategic Blueprints</span>
-                  <button onClick={() => setShowTemplates(false)} className="hover:text-amber-600 underline text-xs">Close</button>
+                  <button onClick={() => setShowTemplates(false)} className="hover:underline text-xs cursor-pointer">Close</button>
                </div>
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto custom-scroll p-1">
                   {(state.stepTemplates || []).map((tpl, i) => (
                     <button 
                       key={i} 
                       onClick={() => applyTemplate(tpl)}
-                      className="text-left p-3 bg-white border border-amber-200 rounded-xl hover:border-amber-500 transition-colors duration-150 active:scale-[0.98] group"
+                      className="text-left p-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl hover:border-amber-500 transition-colors duration-150 active:scale-[0.98] group cursor-pointer"
                     >
-                       <div className="font-bold text-xs text-amber-900 truncate">{tpl.name}</div>
-                       <div className="text-[11px] font-medium text-amber-600/80">{tpl.steps.length} Phases • {tpl.category}</div>
+                       <div className="font-bold text-xs text-[var(--color-text)] truncate">{tpl.name}</div>
+                       <div className="text-[11px] font-medium text-[var(--color-text-muted)]">{tpl.steps.length} Phases • {tpl.category}</div>
                     </button>
                   ))}
                   {(state.stepTemplates || []).length === 0 && (
-                    <div className="col-span-full text-center py-4 text-[10px] font-bold text-amber-600/40">No templates found in architect registry.</div>
+                    <div className="col-span-full text-center py-4 text-[10px] font-bold text-[var(--color-text-faint)]">No templates found in architect registry.</div>
                   )}
                </div>
             </div>
@@ -593,41 +593,43 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
 
           <div className="space-y-2">
             {(formData.subtasks || []).map((sub, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-2xl group/sub">
-                <div className="w-6 h-6 rounded-lg bg-white border border-[var(--color-divider)] flex items-center justify-center text-[10px] font-black text-[var(--color-primary-hex)] shrink-0">
+              <div key={i} className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-2xl group/sub">
+                <div className="w-6 h-6 rounded-lg bg-[var(--color-surface)] border border-[var(--color-divider)] flex items-center justify-center text-[10px] font-black text-[var(--color-primary-hex)] shrink-0">
                   {i+1}
                 </div>
                 <input 
-                  className="flex-1 bg-transparent border-none text-sm font-bold outline-none focus:text-[var(--color-primary-hex)]"
+                  className="flex-1 min-w-[140px] bg-transparent border-none text-sm font-bold outline-none text-[var(--color-text)] focus:text-[var(--color-primary-hex)]"
                   value={sub.name}
                   onChange={e => updateSubtask(i, 'name', e.target.value)}
                 />
-                <div className="flex items-center gap-1 bg-white border border-[var(--color-divider)] rounded-lg px-2 shrink-0">
-                  <Clock size={10} className="text-slate-400" />
+                <div className="flex items-center gap-1 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg px-2 shrink-0">
+                  <Clock size={10} className="text-[var(--color-text-faint)]" />
                   <input 
                     type="number"
                     step="0.25"
-                    className="w-10 bg-transparent border-none text-[10px] font-bold outline-none text-center"
+                    className="w-10 bg-transparent border-none text-[10px] font-bold outline-none text-center text-[var(--color-text)]"
                     value={sub.effort}
                     onChange={e => updateSubtask(i, 'effort', parseFloat(e.target.value) || 0)}
                   />
-                  <span className="text-[9px] font-bold text-slate-400">d</span>
+                  <span className="text-[9px] font-bold text-[var(--color-text-faint)]">d</span>
                 </div>
                 <select 
-                  className="bg-white border border-[var(--color-divider)] rounded-lg px-2 py-1 text-[10px] font-bold outline-none transition-colors"
+                  className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg px-2 py-1 text-[10px] font-bold outline-none text-[var(--color-text)] transition-colors"
                   value={sub.status}
                   onChange={e => updateSubtask(i, 'status', e.target.value as TaskStatus)}
                 >
                   {state.dropdowns.status.map(s => <option key={s} value={s}>{s}</option>)}
                 </select>
-                <div className="flex items-center gap-2 group-hover/sub:hidden">
-                   <div className="w-12 h-1 bg-white rounded-full overflow-hidden border border-[var(--color-divider)]">
+                <div className="hidden sm:flex items-center gap-2 sm:group-hover/sub:hidden">
+                   <div className="w-12 h-1 bg-[var(--color-surface)] rounded-full overflow-hidden border border-[var(--color-divider)]">
                       <div className="h-full bg-[var(--color-primary-hex)]" style={{ width: `${sub.progress}%` }} />
                    </div>
                 </div>
                 <button 
+                   type="button"
                    onClick={() => removeSubtask(i)}
-                   className="hidden group-hover/sub:flex p-1.5 text-red-400 hover:text-red-600 transition-colors"
+                   aria-label={`Remove subtask ${sub.name || i + 1}`}
+                   className="flex sm:hidden sm:group-hover/sub:flex p-1.5 min-h-[34px] min-w-[34px] items-center justify-center rounded-lg text-red-400 hover:text-red-500 hover:bg-red-500/10 transition-colors cursor-pointer"
                 >
                    <Trash2 size={14} />
                 </button>

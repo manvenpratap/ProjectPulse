@@ -10,6 +10,8 @@ import MobileBottomNav from './components/layout/MobileBottomNav';
 import LoginView from './components/auth/LoginView';
 import AccessDenied from './components/auth/AccessDenied';
 import AccessManagerModal from './components/auth/AccessManagerModal';
+import CxoEmailModal from './components/reports/CxoEmailModal';
+import { useMediaQuery } from './hooks/useMediaQuery';
 import TaskView from './components/tasks/TaskView';
 import TimelineView from './components/timeline/TimelineView';
 import DashboardView from './components/dashboard/DashboardView';
@@ -48,10 +50,22 @@ const GO_CHORD_MAP: Record<string, { view: string; subTab?: string; label: strin
 const MainApp: React.FC = () => {
   const { state, setView } = useProject();
   const { isAuthenticated, hasViewAccess, canPerform, currentUser } = useAuth();
+  const isMobile = useMediaQuery('(max-width: 1023px)');
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
+  const [isCxoEmailOpen, setIsCxoEmailOpen] = useState(false);
   const [isChordArmed, setIsChordArmed] = useState(false);
   const chordTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    setIsSidebarOpen(!isMobile);
+  }, [isMobile]);
+
+  useEffect(() => {
+    const handleOpenCxo = () => setIsCxoEmailOpen(true);
+    window.addEventListener('open-cxo-email', handleOpenCxo);
+    return () => window.removeEventListener('open-cxo-email', handleOpenCxo);
+  }, []);
 
   // If current screen is not permitted for the active user role, automatically route to the user's primary accessible screen
   useEffect(() => {
@@ -198,7 +212,7 @@ const MainApp: React.FC = () => {
         onNavigate={handleNav}
       />
       
-      {/* Mobile Sidebar Overlay */}
+      {/* Mobile Sidebar Overlay (dims Topbar z-40 cleanly under z-50 drawer) */}
       <AnimatePresence>
         {isSidebarOpen && (
           <motion.div 
@@ -206,13 +220,16 @@ const MainApp: React.FC = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.24, ease: 'easeOut' }}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 lg:hidden overscroll-contain"
+            className="fixed inset-0 bg-black/45 backdrop-blur-sm z-[45] lg:hidden overscroll-contain"
             onClick={() => setIsSidebarOpen(false)}
           />
         )}
       </AnimatePresence>
       
-      <div className="flex flex-col flex-1 min-w-0 h-full relative">
+      <div
+        className="flex flex-col flex-1 min-w-0 h-full relative"
+        inert={isMobile && isSidebarOpen ? true : undefined}
+      >
         <OfflineBanner />
         <Topbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
         
@@ -265,6 +282,12 @@ const MainApp: React.FC = () => {
       <AccessManagerModal 
         isOpen={isAccessModalOpen} 
         onClose={() => setIsAccessModalOpen(false)} 
+      />
+
+      {/* Executive CXO Email Brief Modal */}
+      <CxoEmailModal
+        isOpen={isCxoEmailOpen}
+        onClose={() => setIsCxoEmailOpen(false)}
       />
     </div>
   );

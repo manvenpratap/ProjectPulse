@@ -12,7 +12,7 @@
 
   --color-primary: var(--color-primary-hex);
   --color-primary-highlight: var(--color-primary-highlight-hex);
-  --color-primary-text: var(--color-primary-text, #ffffff);
+  --color-primary-text: #ffffff;
   --color-surface-offset: var(--color-surface-offset, #f0ede8);
 
   --theme-nexus-color: #0f4c5c;
@@ -71,6 +71,7 @@
   --color-primary-hex: #0f4c5c;
   --color-primary-hover: #0a3541;
   --color-primary-highlight-hex: rgba(15, 76, 92, 0.08);
+  --color-primary-text: #ffffff;
   --color-border: #e5e5e0;
   --color-divider: #f0ede8;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -588,6 +589,69 @@ html {
   overscroll-behavior: none;
 }
 
+html[data-color-mode="dark"] {
+  color-scheme: dark;
+}
+
+html:not([data-color-mode="dark"]) {
+  color-scheme: light;
+}
+
+/* Touch hit-area expander for compact inline header icons & breadcrumbs without adding visual bloat */
+.touch-hit-expand {
+  position: relative;
+}
+
+@media (pointer: coarse) {
+  .touch-hit-expand::after {
+    content: '';
+    position: absolute;
+    inset: -14px -8px;
+  }
+}
+
+/* Progressive scroll-driven horizontal edge fades for overflowing tab/chip/KPI strips */
+@supports (animation-timeline: scroll(self inline)) and (mask-composite: subtract) {
+  @property --fade-start {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+  }
+
+  @property --fade-end {
+    syntax: "<length>";
+    inherits: false;
+    initial-value: 0px;
+  }
+
+  @keyframes pp-reveal-fade-start {
+    to {
+      --fade-start: var(--fade-size);
+    }
+  }
+
+  @keyframes pp-hide-fade-end {
+    from {
+      --fade-end: var(--fade-size);
+    }
+  }
+
+  .scroll-fade-x {
+    --fade-size: 2rem;
+    --fade-dir: right;
+    --fade-start-pos: 0;
+    --fade-end-pos: 100%;
+    scroll-padding-inline: 1.25rem;
+    mask:
+      linear-gradient(black, black) no-clip subtract,
+      linear-gradient(to var(--fade-dir), black, transparent) var(--fade-start-pos) 0 / var(--fade-start) 100% no-repeat no-clip,
+      linear-gradient(to var(--fade-dir), transparent, black) var(--fade-end-pos) 0 / var(--fade-end) 100% no-repeat no-clip;
+    animation: pp-reveal-fade-start linear both, pp-hide-fade-end linear both;
+    animation-timeline: scroll(self inline);
+    animation-range: 0 var(--fade-size), calc(100% - var(--fade-size)) 100%;
+  }
+}
+
 @media (pointer: coarse) {
   input, textarea, select {
     font-size: 16px !important;
@@ -662,8 +726,10 @@ button, a, [role="button"], .tappable {
   border-radius: 10px;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-faint);
+@media (hover: hover) and (pointer: fine) {
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-faint);
+  }
 }
 
 /* --- Brutalist Theme Overrides --- */
@@ -690,9 +756,11 @@ button, a, [role="button"], .tappable {
   box-shadow: var(--shadow-sm) !important;
 }
 
-[data-theme="brutalist"] button:not(.btn-ghost):not(.p-1):not(.no-brutalist):hover {
-  transform: translate(-2px, -2px) !important;
-  box-shadow: var(--shadow-md) !important;
+@media (hover: hover) and (pointer: fine) {
+  [data-theme="brutalist"] button:not(.btn-ghost):not(.p-1):not(.no-brutalist):hover {
+    transform: translate(-2px, -2px) !important;
+    box-shadow: var(--shadow-md) !important;
+  }
 }
 
 [data-theme="brutalist"] button:not(.btn-ghost):not(.p-1):not(.no-brutalist):active {
@@ -942,6 +1010,7 @@ button, a, [role="button"], .tappable {
   --color-primary-hex: #0f4c5c;
   --color-primary-hover: #0a3541;
   --color-primary-highlight-hex: rgba(15, 76, 92, 0.08);
+  --color-primary-text: #ffffff;
   --color-border: #e2ddd6;
   --color-divider: #f0ede6;
 }
@@ -1117,10 +1186,12 @@ html[data-color-mode="dark"][data-theme="paper-editorial"] {
   flex-shrink: 0;
 }
 
-.st-badge:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+@media (hover: hover) and (pointer: fine) {
+  .st-badge:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  }
 }
 
 .st-not-started {
@@ -1294,9 +1365,11 @@ html[data-color-mode="dark"] .st-failed {
   box-sizing: border-box;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
-.pri-badge:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
+@media (hover: hover) and (pointer: fine) {
+  .pri-badge:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+  }
 }
 .pri-critical {
   background: rgba(127, 29, 29, 0.15);

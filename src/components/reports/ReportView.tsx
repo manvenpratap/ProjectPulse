@@ -117,7 +117,7 @@ const ReportView: React.FC = () => {
         <div className="w-full space-y-6">
           
           {/* Report Tab Selector */}
-          <div className="w-full flex p-1 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl print:hidden shadow-sm overflow-x-auto">
+          <div className="w-full flex p-1 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl print:hidden shadow-sm overflow-x-auto no-scrollbar scroll-fade-x">
             {[
               { id: 'status', label: 'Status Summary', icon: TrendingUp },
               { id: 'cxo', label: 'CXO Email Briefing', icon: Mail },
@@ -127,9 +127,12 @@ const ReportView: React.FC = () => {
             ].map(type => (
               <button
                 key={type.id}
-                onClick={() => setReportType(type.id as any)}
+                onClick={(e) => {
+                  setReportType(type.id as any);
+                  e.currentTarget.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+                }}
                 className={clsx(
-                  "flex-1 min-w-[120px] flex items-center justify-center gap-2 py-2 px-3 rounded-xl text-xs font-bold transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] shrink-0",
+                  "flex-1 min-w-[120px] flex items-center justify-center gap-2 py-2.5 sm:py-2 px-3 rounded-xl text-xs font-bold transition-colors duration-150 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] shrink-0 cursor-pointer",
                   reportType === type.id 
                     ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] shadow-sm" 
                     : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
@@ -148,14 +151,14 @@ const ReportView: React.FC = () => {
             </div>
           ) : (
             /* Actual Report Sheet */
-            <div className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-xl p-8 md:p-12 print:border-none print:shadow-none min-h-[800px] text-[var(--color-text)]">
+            <div className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl sm:rounded-3xl shadow-xl p-4 sm:p-8 md:p-12 print:border-none print:shadow-none min-h-[800px] text-[var(--color-text)]">
               
               {/* Sheet Banner Header */}
-              <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-10 border-b border-[var(--color-divider)] pb-8">
+              <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-6 sm:mb-10 border-b border-[var(--color-divider)] pb-5 sm:pb-8">
                 <div>
-                  <h2 className="text-3xl font-display font-black tracking-tight text-[var(--color-text)] flex items-center gap-3">
+                  <h2 className="text-xl sm:text-3xl font-display font-black tracking-tight text-[var(--color-text)] flex flex-wrap items-center gap-2 sm:gap-3">
                     <span>{state.name}</span>
-                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)]">Telemetry Report</span>
+                    <span className="text-[11px] sm:text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)]">Telemetry Report</span>
                   </h2>
                   <p className="text-xs text-[var(--color-text-muted)] mt-1 font-medium">
                     {state.desc || 'Monolithic high-density project performance and governance dossier.'}

@@ -16,7 +16,7 @@ import { NAV_HUBS, getHubForView } from '../../config/navigation';
 import { isRaidActive } from '../../utils/projectUtils';
 import { motion, AnimatePresence } from 'motion/react';
 import { exportProjectExcel, importProjectExcel } from '../../services/excelService';
-import CxoEmailModal from '../reports/CxoEmailModal';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -27,9 +27,10 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
   const { state, updateProject } = useProject();
   const { hasViewAccess, canPerform, isAdmin } = useAuth();
-  const [isCxoEmailOpen, setIsCxoEmailOpen] = useState(false);
   const [processingLatency, setProcessingLatency] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const isMobileViewport = useMediaQuery('(max-width: 1023px)');
 
   const hasTaskAccess = hasViewAccess('tasks');
   const hasDeliveryAccess = hasViewAccess('deliveries');
@@ -97,12 +98,19 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
     }
   }, [currentHub?.id]);
 
-  // Retain global listener for programmatic quick-launch modals (e.g. shortcuts/tools)
+  // Escape dismissal strictly scoped to open mobile drawer when no higher dialog is active
   useEffect(() => {
-    const handleOpenCxo = () => setIsCxoEmailOpen(true);
-    window.addEventListener('open-cxo-email', handleOpenCxo);
-    return () => window.removeEventListener('open-cxo-email', handleOpenCxo);
-  }, []);
+    if (!isMobileViewport || !isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      const openDialogAbove = document.querySelector('[aria-modal="true"]:not(aside)');
+      if (!openDialogAbove) {
+        toggle();
+      }
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isMobileViewport, isOpen, toggle]);
 
   const toggleHub = (hubId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -128,9 +136,30 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
   const homeView = visibleHubs[0]?.defaultView || 'overview';
   const showQuickData = isOpen && (canPerform('canExportExcel') || isAdmin || canPerform('canManageSettings'));
 
+  const handleSwipeTouchStart = (e: React.TouchEvent<HTMLElement>) => {
+    if (!isMobileViewport || !isOpen || e.touches.length !== 1) return;
+    touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  };
+
+  const handleSwipeTouchEnd = (e: React.TouchEvent<HTMLElement>) => {
+    const start = touchStartRef.current;
+    touchStartRef.current = null;
+    if (!start || !isMobileViewport || !isOpen || e.changedTouches.length !== 1) return;
+    const dx = e.changedTouches[0].clientX - start.x;
+    const dy = e.changedTouches[0].clientY - start.y;
+    // Strict horizontal left-swipe threshold prevents vertical drawer scroll misfires
+    if (dx < -70 && Math.abs(dx) > 2 * Math.abs(dy)) {
+      toggle();
+    }
+  };
+
   return (
     <aside
       aria-label="Workspace Navigation Drawer"
+      role={isMobileViewport && isOpen ? 'dialog' : undefined}
+      aria-modal={isMobileViewport && isOpen ? true : undefined}
+      onTouchStart={handleSwipeTouchStart}
+      onTouchEnd={handleSwipeTouchEnd}
       className={clsx(
         "h-full bg-[var(--color-surface)]/92 backdrop-blur-2xl border-r border-[var(--color-divider)] flex flex-col motion-safe:transition-[transform,width] duration-250 ease-[cubic-bezier(0.23,1,0.32,1)] fixed lg:relative z-50 lg:z-30 shadow-xl lg:shadow-none motion-reduce:transition-none select-none",
         isOpen ? 'translate-x-0 w-[270px] max-w-[85vw]' : '-translate-x-full lg:translate-x-0 lg:w-[68px]'
@@ -163,8 +192,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
           <button
             type="button"
             onClick={toggle}
-            aria-label="Collapse sidebar navigation"
-            className="lg:hidden p-1.5 hover:bg-[var(--color-surface-2)] rounded-lg text-[var(--color-text-muted)] min-h-[36px] min-w-[36px] flex items-center justify-center active:scale-95 cursor-pointer"
+            aria-label="Close navigation drawer"
+            className="lg:hidden p-1.5 hover:bg-[var(--color-surface-2)] rounded-xl text-[var(--color-text-muted)] min-h-[44px] min-w-[44px] -mr-1.5 flex items-center justify-center active:scale-95 cursor-pointer"
           >
             <ChevronLeft size={18} />
           </button>
@@ -375,12 +404,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
         onChange={handleFileChange}
       />
 
-      {/* Executive CXO Email Brief Modal (retained for programmatic/quick triggers) */}
-      <CxoEmailModal isOpen={isCxoEmailOpen} onClose={() => setIsCxoEmailOpen(false)} />
-
       {/* Compact Utility Footer: Quick Excel I/O + Contextual Screen Guide */}
       {isOpen && (
-        <div className="px-3 pt-2.5 pb-2 border-t border-[var(--color-divider)] shrink-0 space-y-2">
+        <div className="px-3 pt-2.5 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] lg:pb-2 border-t border-[var(--color-divider)] shrink-0 space-y-2">
           {showQuickData && (
             <div className="grid grid-cols-2 gap-1.5">
               {(isAdmin || canPerform('canManageSettings')) && (
@@ -423,8 +449,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
         </div>
       )}
 
-      {/* Collapse / Expand Toggle Button */}
-      <div className="p-3 pb-[calc(0.75rem+env(safe-area-inset-bottom,0px))] border-t border-[var(--color-divider)] shrink-0">
+      {/* Collapse / Expand Toggle Button (Desktop Rail only) */}
+      <div className="hidden lg:block p-3 border-t border-[var(--color-divider)] shrink-0">
         <button
           type="button"
           onClick={toggle}

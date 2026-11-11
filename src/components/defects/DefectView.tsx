@@ -440,9 +440,9 @@ const DefectView: React.FC = () => {
         title="Defect Workshop & Quality Matrix"
         subtitle={`${state.defects.length} Total Issues • ${state.defects.filter(d => d.status === DefectStatus.NEW).length} Unaddressed • ${state.defects.filter(d => d.severity?.startsWith('S1')).length} Critical (S1)`}
         actions={
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-nowrap md:flex-wrap items-center gap-2">
             {/* Quick Filters */}
-            <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-center gap-1.5 flex-nowrap md:flex-wrap">
               {/* Quick Status */}
               <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-xs">
                 <span className="text-[var(--color-text-faint)] font-bold text-[11px]">Status:</span>
