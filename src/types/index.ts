@@ -270,6 +270,8 @@ export interface Feature {
   status?: string;
   priority?: string;
   tasks?: string[];
+  dependsOn?: string | string[];
+  actCompletionDate?: string;
 }
 
 export interface RaidItem {

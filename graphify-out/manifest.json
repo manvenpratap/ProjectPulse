@@ -16,8 +16,8 @@
     "hash": "2b36426d5ad7e08ef79746aa524f4fb7"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/types/index.ts": {
-    "mtime": 1794278475.4400861,
-    "hash": "48b9683711b26e59c37ba052061a61bb"
+    "mtime": 1794368652.6382096,
+    "hash": "6460070d9a313a72af4c7f30bfe89fd6"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/config/navigation.ts": {
     "mtime": 1794251528.1022718,
@@ -152,7 +152,7 @@
     "hash": "f94f30a4ef7e87450e5f27991727f1e4"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/OverviewView.tsx": {
-    "mtime": 1794367000.8866959,
+    "mtime": 1794367659.076659,
     "hash": "e0cc511b8ee5b525be8e515dd8e6e2d7"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/WhatIfSandbox.tsx": {
@@ -191,9 +191,17 @@
     "mtime": 1794367064.4854856,
     "hash": "a79a9b0de9ff6af34fb603798ecdebbc"
   },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/FeatureTimelineChart.tsx": {
+    "mtime": 1794368663.056922,
+    "hash": "18a518afb05d0509fcc76d9902f0ac51"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/FeatureSwimlaneChart.tsx": {
+    "mtime": 1794368544.0517282,
+    "hash": "8ab424834ff2abeae93ca996e9f63d99"
+  },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/FunctionalMatrix.tsx": {
-    "mtime": 1794367062.62595,
-    "hash": "463fa9a65a7e464b16f5ddc6689cd3f4"
+    "mtime": 1794368626.468557,
+    "hash": "e22d8797e414a003b6ae6894d2711cd1"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/ReleaseRoadmap.tsx": {
     "mtime": 1794367062.8809457,

@@ -40,6 +40,8 @@ import clsx from 'clsx';
 import { Feature, Task, TaskStatus } from '../../types';
 import { daysDiff, fmtDate, todayStr } from '../../utils/projectUtils';
 import { motion, AnimatePresence } from 'motion/react';
+import FeatureTimelineChart from './FeatureTimelineChart';
+import FeatureSwimlaneChart from './FeatureSwimlaneChart';
 
 type ViewMode = 'matrix' | 'table' | 'timeline' | 'swimlane';
 type ComplexityFilter = 'all' | 'simple' | 'moderate' | 'complex';
@@ -806,7 +808,12 @@ export const FunctionalMatrix: React.FC = () => {
       </div>
 
       {/* ── 4. Main Workspace Display Modes ── */}
-      <div className="flex-1 overflow-auto custom-scroll p-4 sm:p-6 lg:p-8 min-w-0">
+      <div className={clsx(
+        "flex-1 min-w-0",
+        viewMode === 'timeline' || viewMode === 'swimlane'
+          ? "flex flex-col min-h-0 overflow-hidden"
+          : "overflow-auto custom-scroll p-4 sm:p-6 lg:p-8"
+      )}>
         {/* ── VIEW MODE 1: GRID MATRIX CARDS (Matches projectpulse.html) ── */}
         {viewMode === 'matrix' && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 grid-flow-dense gap-5 sm:gap-6 items-stretch">
@@ -1011,111 +1018,34 @@ export const FunctionalMatrix: React.FC = () => {
 
         {/* ── VIEW MODE 3: TIMELINE GANTT VIEW (Matches projectpulse.html) ── */}
         {viewMode === 'timeline' && (
-          <div className="space-y-4">
-            <div className="p-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl flex items-center justify-between text-xs">
-              <div className="flex items-center gap-2">
-                <Flag size={14} className="text-[var(--color-primary-hex)]" />
-                <span className="font-bold">Feature Execution Span</span>
-                <span className="text-[var(--color-text-muted)]">— derived from linked tasks earliest start date and latest due date</span>
-              </div>
-              <span className="text-[11px] font-mono font-semibold text-[var(--color-text-faint)]">
-                Today: {todayStr()}
-              </span>
-            </div>
-
-            <div className="space-y-2.5">
-              {filteredFeatures.map((f, idx) => {
-                const mObj = featureMetrics[f.name];
-                return (
-                  <div key={f.name} className="p-4 rounded-xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xs space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-[var(--color-text-faint)]">#{idx + 1}</span>
-                        <h4 className="font-bold text-xs sm:text-sm text-[var(--color-text)]">{f.name}</h4>
-                        {f.release && (
-                          <span className="text-[10px] font-bold px-2 py-0.2 rounded-full bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)]">
-                            {f.release}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-3 text-xs font-mono">
-                        <span className="text-[var(--color-text-muted)]">{mObj.minDate || 'No start'} → {mObj.maxDate || 'No due'}</span>
-                        <span className="font-bold text-cyan-600 dark:text-cyan-400">{mObj.avgProg}%</span>
-                      </div>
-                    </div>
-
-                    {/* Timeline Bar Visual */}
-                    <div className="h-6 w-full bg-[var(--color-surface-2)] rounded-lg relative overflow-hidden flex items-center px-3 border border-[var(--color-divider)]">
-                      <div 
-                        className={clsx(
-                          "absolute top-0 bottom-0 left-0 rounded-lg transition-all duration-500 opacity-25",
-                          mObj.overdueTasks > 0 ? "bg-rose-500" : "bg-cyan-500"
-                        )}
-                        style={{ width: '100%' }}
-                      />
-                      <div 
-                        className={clsx(
-                          "absolute top-0 bottom-0 left-0 rounded-lg transition-all duration-500",
-                          mObj.overdueTasks > 0 ? "bg-rose-500" : mObj.avgProg === 100 ? "bg-emerald-500" : "bg-cyan-500"
-                        )}
-                        style={{ width: `${mObj.avgProg}%` }}
-                      />
-                      <span className="relative z-10 text-[10px] font-bold text-[var(--color-text)] drop-shadow-xs">
-                        {mObj.doneTasks} of {mObj.totTasks} linked tasks completed
-                      </span>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <FeatureTimelineChart
+            features={filteredFeatures}
+            allFeatures={features}
+            tasks={state.tasks}
+            releases={state.releases || []}
+            members={state.members || []}
+            featureMetrics={featureMetrics}
+            screenTasksMap={screenTasksMap}
+            onSelectFeature={(f) => {
+              setSelectedFeature(f);
+            }}
+          />
         )}
 
-        {/* ── VIEW MODE 4: SWIMLANE STATUS KANBAN (Matches projectpulse.html) ── */}
+        {/* ── VIEW MODE 4: SWIMLANE STATUS VIEW (Matches projectpulse.html) ── */}
         {viewMode === 'swimlane' && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {(['Planned', 'Active', 'Done', 'At Risk'] as const).map(lane => {
-              const laneFeatures = filteredFeatures.filter(f => (featureMetrics[f.name]?.status || 'Planned') === lane);
-              const headerColor = lane === 'Done' ? "text-emerald-600 border-emerald-500/30" : lane === 'At Risk' ? "text-rose-600 border-rose-500/30" : lane === 'Active' ? "text-cyan-600 border-cyan-500/30" : "text-[var(--color-text-muted)] border-[var(--color-divider)]";
-
-              return (
-                <div key={lane} className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl p-4 flex flex-col space-y-3">
-                  <div className={clsx("flex items-center justify-between pb-2 border-b", headerColor)}>
-                    <h3 className="font-extrabold text-xs uppercase tracking-wider">{lane}</h3>
-                    <span className="px-2 py-0.5 rounded-full bg-[var(--color-surface-2)] text-[10px] font-mono font-bold">
-                      {laneFeatures.length}
-                    </span>
-                  </div>
-
-                  <div className="space-y-3 flex-1 overflow-y-auto">
-                    {laneFeatures.map(f => {
-                      const mObj = featureMetrics[f.name];
-                      return (
-                        <div 
-                          key={f.name}
-                          onClick={() => setSelectedFeature(f)}
-                          className="p-3.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 transition-colors shadow-2xs cursor-pointer space-y-2"
-                        >
-                          <h4 className="font-bold text-xs text-[var(--color-text)]">{f.name}</h4>
-                          <p className="text-[11px] text-[var(--color-text-muted)] line-clamp-2">{f.desc}</p>
-                          <div className="flex items-center justify-between text-[10px] pt-1 border-t border-[var(--color-divider)] font-mono">
-                            <span>{f.screens.length} screens</span>
-                            <span className="font-bold text-cyan-600 dark:text-cyan-400">{mObj.avgProg}%</span>
-                          </div>
-                        </div>
-                      );
-                    })}
-
-                    {laneFeatures.length === 0 && (
-                      <div className="py-8 text-center text-xs text-[var(--color-text-faint)] italic">
-                        No features in {lane}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+          <FeatureSwimlaneChart
+            features={filteredFeatures}
+            allFeatures={features}
+            tasks={state.tasks}
+            releases={state.releases || []}
+            members={state.members || []}
+            featureMetrics={featureMetrics}
+            screenTasksMap={screenTasksMap}
+            onSelectFeature={(f) => {
+              setSelectedFeature(f);
+            }}
+          />
         )}
       </div>
 
