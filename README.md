@@ -67,6 +67,7 @@ npm start
 16. **Field Architect & Custom Schema Studio**: Two-panel dynamic metadata architect allowing in-place customization of system core attributes (custom column headers, pixel widths, visibility toggling, order repositioning, and factory reset defaults) alongside proprietary custom field extensions (text, numeric, temporal, boolean, manual selection, and global registry linkages) dynamically synced across Tasks, Defects, and Deliveries tables.
 17. **40 Curated Themes & Live Cockpit Previews**: Theme switcher (`ThemeFlyout` & `SettingsView` -> `ThemeGrid`) depicting real canvases, surface elevation, corner radii, typography, and contrast tokens across light and dark design systems.
 18. **Mobile-First Responsive App Shell & Native Touch Ergonomics**: Zero-clipping `PageHeader` flex architecture, full-width inset mobile `ShareExportMenu`, swipe-to-dismiss `Sidebar` drawer (`inert` background shell + elevated backdrop), draggable bottom-sheet `Modal` dialogs (`overscroll-contain`), `DataTable` mobile card views with Cards/Matrix toggle (`Deliveries`, `Tasks`, `RAID`), responsive single-DOM `FieldArchitect` schema cards, dynamic `<meta name="theme-color">` and OS `color-scheme` sync across all 40 themes, progressive scroll-fade tabs (`.scroll-fade-x`), and reactive `useMediaQuery` breakpoint awareness.
+19. **Tactile Design Spells & Micro-Interactions**: Physics-backed CSS `linear()` spring curves (`--ease-spring-physics`), circular iris `startViewTransition` reveals across all 40 themes and light/dark toggles, shared Framer Motion `layoutId` indicators across `Sidebar`, `MobileBottomNav`, and `ThemeGrid`, compositor-only primary CTA specular sweeps (`.btn-spell-primary`), zero-rerender radial card spotlights (`.spell-spotlight`), CSS scroll-driven reading hairlines (`.spell-scroll-hairline`), origin-anchored celebration bursts, morphing clipboard icons, Command Search spells (`magic` / `surprise`), and Shift/triple-tap pulse easter eggs under global `<MotionConfig reducedMotion="user">`.
 
 ---
 
@@ -107,8 +108,9 @@ ProjectPulse 2.0/
 │   │   ├── ProjectContext.tsx   # Global reactive state provider
 │   │   └── defaultState.ts      # Authoritative clean schema factory (0 sample data)
 │   ├── types/                   # Unified TypeScript schemas
-│   ├── index.css                # 26+ Curated theme design tokens & Tailwind
-│   └── App.tsx                  # Main router & layout shell
+│   ├── utils/                   # Domain math (projectUtils) & tactile animations (designSpells)
+│   ├── index.css                # 40 Curated theme design tokens, Design Spells & Tailwind
+│   └── App.tsx                  # Main router, MotionConfig reduced-motion & layout shell
 ├── demo_project_database.xlsx   # Full enterprise showcase workbook (24 tasks, 12 deliveries, etc.)
 ├── server.ts                    # Node / Express SSR & API backend
 ├── vite.config.ts               # Vite bundler configuration

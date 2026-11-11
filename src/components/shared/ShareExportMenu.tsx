@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { useClickOutside } from '../../hooks/useClickOutside';
 import { 
   Share2, 
@@ -253,7 +254,18 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
               role="menuitem"
             >
               <div className="w-6 h-6 rounded-md bg-blue-500/10 text-blue-500 flex items-center justify-center shrink-0">
-                {copied ? <Check size={13} className="text-emerald-500" /> : <Copy size={13} />}
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.span
+                    key={copied ? 'check-share' : 'copy-share'}
+                    initial={{ opacity: 0, scale: 0.55, rotate: -25 }}
+                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                    exit={{ opacity: 0, scale: 0.55, rotate: 25 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 26 }}
+                    className="inline-flex"
+                  >
+                    {copied ? <Check size={13} className="text-emerald-500" /> : <Copy size={13} />}
+                  </motion.span>
+                </AnimatePresence>
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-semibold text-xs text-[var(--color-text)] flex items-center gap-1.5">

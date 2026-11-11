@@ -1,7 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { Check, Search, Sparkles, Palette } from 'lucide-react';
+import { motion } from 'motion/react';
 import clsx from 'clsx';
+import { runCircularThemeTransition } from '../../utils/designSpells';
 
 export type ThemeBackdropEffect = 'dots' | 'glass' | 'aura' | 'hud' | 'brutal' | 'editorial' | 'bento' | 'clean';
 
@@ -1380,9 +1382,11 @@ export const ThemeGrid: React.FC<ThemeGridProps> = ({
   const featuredThemes = useMemo(() => filteredThemes.filter(t => t.featured), [filteredThemes]);
   const legacyThemes = useMemo(() => filteredThemes.filter(t => !t.featured), [filteredThemes]);
 
-  const handleThemeClick = (themeId: string) => {
-    setTheme(themeId);
-    if (onSelectTheme) onSelectTheme(themeId);
+  const handleThemeClick = (themeId: string, event?: React.SyntheticEvent) => {
+    runCircularThemeTransition(() => {
+      setTheme(themeId);
+      if (onSelectTheme) onSelectTheme(themeId);
+    }, event as any);
   };
 
   const renderThemeCard = (t: ThemeDef) => {
@@ -1399,11 +1403,11 @@ export const ThemeGrid: React.FC<ThemeGridProps> = ({
         tabIndex={0}
         aria-pressed={isActive}
         aria-label={`${t.name} theme — ${t.isDark ? 'Dark' : 'Light'}, ${t.archetype}`}
-        onClick={() => handleThemeClick(t.id)}
+        onClick={(e) => handleThemeClick(t.id, e)}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
-            handleThemeClick(t.id);
+            handleThemeClick(t.id, e);
           }
         }}
         onMouseEnter={() => onHoverTheme?.(t)}
@@ -1568,14 +1572,21 @@ export const ThemeGrid: React.FC<ThemeGridProps> = ({
                   key={cat.id}
                   onClick={() => setActiveFilter(cat.id as ThemeFilterCategory)}
                   className={clsx(
-                    'px-2 sm:px-2.5 py-1 rounded-lg font-semibold transition-colors duration-150 flex items-center gap-1 cursor-pointer whitespace-nowrap',
+                    'relative px-2 sm:px-2.5 py-1 rounded-lg font-semibold transition-colors duration-150 flex items-center gap-1 cursor-pointer whitespace-nowrap',
                     activeFilter === cat.id
-                      ? 'bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-2xs'
+                      ? 'text-[var(--color-primary-hex)]'
                       : 'text-[var(--color-text-muted)] hover:text-[var(--color-text)]'
                   )}
                 >
-                  <span>{cat.label}</span>
-                  <span className="text-[10px] opacity-70">({cat.count})</span>
+                  {activeFilter === cat.id && (
+                    <motion.span
+                      layoutId="themeFilterPill"
+                      transition={{ type: 'spring', stiffness: 450, damping: 34 }}
+                      className="absolute inset-0 bg-[var(--color-surface)] rounded-lg shadow-2xs"
+                    />
+                  )}
+                  <span className="relative z-[1]">{cat.label}</span>
+                  <span className="relative z-[1] text-[10px] opacity-70">({cat.count})</span>
                 </button>
               ))}
             </div>

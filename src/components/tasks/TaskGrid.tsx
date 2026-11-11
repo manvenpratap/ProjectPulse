@@ -31,6 +31,7 @@ import Button from '../shared/Button';
 import { motion, AnimatePresence } from 'motion/react';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef } from '../shared/DataTable';
+import { markInteractionOrigin } from '../../utils/designSpells';
 
 interface TaskGridProps {
   onEditTask: (id: string) => void;
@@ -130,6 +131,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
     const curIdx = cycle.indexOf(task.status);
     const nextStatus = cycle[(curIdx + 1) % cycle.length];
     const isDone = nextStatus === TaskStatus.COMPLETED;
+    if (isDone) markInteractionOrigin(e.currentTarget);
 
     updateTask(task.id, {
       status: nextStatus,
@@ -156,6 +158,9 @@ const TaskGrid: React.FC<TaskGridProps> = ({
     const doneCount = updatedSubtasks.filter(s => s.done).length;
     const newProgress = updatedSubtasks.length ? Math.round((doneCount / updatedSubtasks.length) * 100) : task.progress;
     const allDone = doneCount === updatedSubtasks.length && updatedSubtasks.length > 0;
+    if (allDone && task.status !== TaskStatus.COMPLETED) {
+      markInteractionOrigin(e.currentTarget);
+    }
 
     updateTask(task.id, {
       subtasks: updatedSubtasks,

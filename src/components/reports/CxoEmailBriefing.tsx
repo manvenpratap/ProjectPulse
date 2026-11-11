@@ -33,6 +33,7 @@ import { TaskStatus, DefectStatus } from '../../types';
 import Button from '../shared/Button';
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'motion/react';
+import { castOriginConfetti } from '../../utils/designSpells';
 
 export interface CxoEmailBriefingProps {
   embedded?: boolean;
@@ -1297,17 +1298,42 @@ export const CxoEmailBriefing: React.FC<CxoEmailBriefingProps> = ({
               onClick={handleCopyMarkdown}
               className="rounded-xl h-8 px-2.5 text-xs font-semibold"
             >
-              {copiedType === 'markdown' ? <Check size={13} className="mr-1.5 text-emerald-500" /> : <Copy size={13} className="mr-1.5" />}
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={copiedType === 'markdown' ? 'check-md' : 'copy-md'}
+                  initial={{ opacity: 0, scale: 0.55, rotate: -25 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.55, rotate: 25 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 26 }}
+                  className="inline-flex mr-1.5"
+                >
+                  {copiedType === 'markdown' ? <Check size={13} className="text-emerald-500" /> : <Copy size={13} />}
+                </motion.span>
+              </AnimatePresence>
               <span>{copiedType === 'markdown' ? 'Copied MD!' : 'Copy MD'}</span>
             </Button>
 
             <Button
               variant="primary"
               size="sm"
-              onClick={handleCopyHtml}
+              onClick={(e) => {
+                handleCopyHtml();
+                castOriginConfetti(e.currentTarget, { particleCount: 20, spread: 48 });
+              }}
               className="rounded-xl h-8 px-3.5 text-xs font-bold shadow-sm"
             >
-              {copiedType === 'html' ? <Check size={13} className="mr-1.5 text-white" /> : <Copy size={13} className="mr-1.5" />}
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={copiedType === 'html' ? 'check-html' : 'copy-html'}
+                  initial={{ opacity: 0, scale: 0.55, rotate: -25 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  exit={{ opacity: 0, scale: 0.55, rotate: 25 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 26 }}
+                  className="inline-flex mr-1.5"
+                >
+                  {copiedType === 'html' ? <Check size={13} className="text-white" /> : <Copy size={13} />}
+                </motion.span>
+              </AnimatePresence>
               <span>{copiedType === 'html' ? 'Copied HTML!' : 'Copy Rich Email'}</span>
             </Button>
           </div>
@@ -1333,7 +1359,18 @@ export const CxoEmailBriefing: React.FC<CxoEmailBriefingProps> = ({
             className="px-2 py-1 rounded-lg bg-[var(--color-surface)] hover:bg-[var(--color-surface-offset)] border border-[var(--color-divider)] text-[11px] font-bold text-[var(--color-text)] transition-colors cursor-pointer shrink-0 flex items-center gap-1 active:scale-95"
             title="Copy subject line to clipboard"
           >
-            {copiedType === 'subject' ? <Check size={11} className="text-emerald-500" /> : <Copy size={11} />}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={copiedType === 'subject' ? 'check-subj' : 'copy-subj'}
+                initial={{ opacity: 0, scale: 0.55, rotate: -25 }}
+                animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                exit={{ opacity: 0, scale: 0.55, rotate: 25 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 26 }}
+                className="inline-flex"
+              >
+                {copiedType === 'subject' ? <Check size={11} className="text-emerald-500" /> : <Copy size={11} />}
+              </motion.span>
+            </AnimatePresence>
             <span>{copiedType === 'subject' ? 'Copied!' : 'Copy Subject'}</span>
           </button>
         </div>

@@ -19,7 +19,8 @@ import {
   Package,
   ShieldAlert,
   Layers,
-  Users
+  Users,
+  Sparkles
 } from 'lucide-react';
 import clsx from 'clsx';
 import ThemeFlyout from './ThemeFlyout';
@@ -27,6 +28,8 @@ import SmartAlertsCenter, { computeAlerts } from './SmartAlertsCenter';
 import UserProfileFlyout from './UserProfileFlyout';
 import AccessManagerModal from '../auth/AccessManagerModal';
 import { useAuth } from '../../store/AuthContext';
+import { THEMES } from '../shared/ThemeGrid';
+import { runCircularThemeTransition, castOriginConfetti } from '../../utils/designSpells';
 
 interface TopbarProps {
   toggleSidebar: () => void;
@@ -34,7 +37,7 @@ interface TopbarProps {
 
 interface SearchResultItem {
   id: string;
-  kind: 'screen' | 'submode' | 'task' | 'defect' | 'delivery' | 'raid' | 'feature' | 'member';
+  kind: 'screen' | 'submode' | 'task' | 'defect' | 'delivery' | 'raid' | 'feature' | 'member' | 'spell';
   title: string;
   subtitle: string;
   badge: string;
@@ -43,7 +46,7 @@ interface SearchResultItem {
 }
 
 const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
-  const { state, setView, searchTerm, setSearchTerm } = useProject();
+  const { state, setView, setTheme, searchTerm, setSearchTerm } = useProject();
   const { currentUser, hasViewAccess } = useAuth();
   const [isThemeOpen, setIsThemeOpen] = useState(false);
   const [isNotifOpen, setIsNotifOpen] = useState(false);
@@ -338,8 +341,49 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
         });
     }
 
+    const magicQuery = searchTerm.trim().toLowerCase();
+    if (
+      magicQuery === 'magic' ||
+      magicQuery === 'surprise' ||
+      magicQuery === 'random' ||
+      magicQuery === 'confetti' ||
+      magicQuery === 'party' ||
+      magicQuery === 'spell' ||
+      magicQuery === 'shuffle'
+    ) {
+      results.unshift(
+        {
+          id: 'spell-surprise-theme',
+          kind: 'spell',
+          title: 'Surprise Me: Shuffle Theme Palette',
+          subtitle: 'Apply a random curated workspace theme with an iris transition',
+          badge: 'Spell',
+          onSelect: () => {
+            const candidates = THEMES.filter(t => t.id !== state.theme);
+            const nextTheme = candidates[Math.floor(Math.random() * candidates.length)] || THEMES[0];
+            runCircularThemeTransition(() => setTheme(nextTheme.id), {
+              clientX: window.innerWidth * 0.5,
+              clientY: 28,
+            });
+            setSearchTerm('');
+          },
+        },
+        {
+          id: 'spell-pulse-celebration',
+          kind: 'spell',
+          title: 'Cast Pulse Celebration',
+          subtitle: 'Celebrate delivery momentum from the workspace command bar',
+          badge: 'Spell',
+          onSelect: () => {
+            castOriginConfetti(searchContainerRef.current, { particleCount: 28, spread: 64 });
+            setSearchTerm('');
+          },
+        }
+      );
+    }
+
     return results.slice(0, 12);
-  }, [searchTerm, hasViewAccess, state.tasks, state.defects, state.deliveries, state.raids, state.features, state.members, setView, setSearchTerm]);
+  }, [searchTerm, hasViewAccess, state.tasks, state.defects, state.deliveries, state.raids, state.features, state.members, state.theme, setTheme, setView, setSearchTerm]);
 
   useEffect(() => {
     setHighlightedIdx(0);
@@ -382,6 +426,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
       case 'raid': return <ShieldAlert size={13} className="text-amber-500 shrink-0" aria-hidden="true" />;
       case 'feature': return <Layers size={13} className="text-violet-500 shrink-0" aria-hidden="true" />;
       case 'member': return <Users size={13} className="text-cyan-500 shrink-0" aria-hidden="true" />;
+      case 'spell': return <Sparkles size={13} className="text-[var(--color-primary-hex)] shrink-0" aria-hidden="true" />;
       default: return <Compass size={13} className="text-[var(--color-primary-hex)] shrink-0" aria-hidden="true" />;
     }
   };
@@ -497,8 +542,14 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
 
         <button
           type="button"
-          onClick={() => hasViewAccess('overview') && setView('overview')}
-          className="touch-hit-expand min-h-[34px] flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 rounded-full bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] shadow-2xs backdrop-blur-sm cursor-pointer hover:border-[var(--color-primary-hex)]/40 transition-colors select-none whitespace-nowrap shrink-0"
+          onClick={(e) => {
+            if (e.shiftKey) {
+              castOriginConfetti(e.currentTarget, { particleCount: 16, spread: 42 });
+              return;
+            }
+            if (hasViewAccess('overview')) setView('overview');
+          }}
+          className="touch-hit-expand min-h-[34px] flex items-center gap-1.5 sm:gap-2 px-2.5 py-1 rounded-full bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] shadow-2xs backdrop-blur-sm cursor-pointer hover:border-[var(--color-primary-hex)]/40 transition-[border-color,transform,background-color] active:scale-95 select-none whitespace-nowrap shrink-0"
           title={`Project Health: ${health}% (${getHealthLabel(health)}) — Click to view Executive Overview`}
         >
           <div className={clsx('w-2 h-2 rounded-full motion-safe:animate-pulse bg-current shrink-0', getHealthColor(health))} />

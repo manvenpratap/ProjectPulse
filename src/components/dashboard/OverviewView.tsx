@@ -33,6 +33,7 @@ import {
   RotateCcw
 } from 'lucide-react';
 import clsx from 'clsx';
+import { updateCardSpotlight } from '../../utils/designSpells';
 import PageHeader from '../shared/PageHeader';
 import Button from '../shared/Button';
 import { motion, AnimatePresence, useReducedMotion, animate } from 'motion/react';
@@ -1106,7 +1107,7 @@ export const OverviewView: React.FC = () => {
           hasViewAccess('dash') ? (
             <button 
               onClick={() => setView('dash')}
-              className="h-9 px-3.5 bg-[var(--color-primary-hex)] hover:opacity-95 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-white rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer shadow-xs transition-opacity"
+              className="btn-spell-primary h-9 px-3.5 bg-[var(--color-primary-hex)] hover:opacity-95 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-white rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer shadow-xs transition-opacity"
               aria-label="Navigate to advanced intelligence telemetry"
             >
               <TrendingUp size={15} /> 
@@ -1117,7 +1118,9 @@ export const OverviewView: React.FC = () => {
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full space-y-6 pb-16">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scroll w-full">
+        <div className="spell-scroll-hairline" aria-hidden="true" />
+        <div className="p-4 sm:p-6 lg:p-8 w-full space-y-6 pb-16">
 
         {/* ═════════════════════════════════════════════════════════════════════ */}
         {/* SECTION 0: EXECUTIVE TELEMETRY COMMAND STRIP (Below PageHeader)       */}
@@ -1198,7 +1201,8 @@ export const OverviewView: React.FC = () => {
             animate={{ opacity: 1, transform: 'translateY(0px)' }}
             transition={{ duration: shouldReduceMotion ? 0.1 : 0.24, delay: shouldReduceMotion ? 0 : 0.02, ease: COCKPIT_EASE }}
             onClick={() => setActiveDetail('health')}
-            className="lg:col-span-4 p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/50 rounded-3xl shadow-2xs hover:shadow-md transition-[border-color,box-shadow,transform] duration-200 flex flex-col justify-between items-center text-center cursor-pointer select-none group relative overflow-hidden active:scale-[0.99]"
+            onPointerMove={updateCardSpotlight}
+            className="spell-spotlight lg:col-span-4 p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/50 rounded-3xl shadow-2xs hover:shadow-md transition-[border-color,box-shadow,transform] duration-200 flex flex-col justify-between items-center text-center cursor-pointer select-none group relative overflow-hidden active:scale-[0.99]"
             title="Click to inspect algorithmic health diagnostics and contributors"
             role="button"
             tabIndex={0}
@@ -1354,7 +1358,8 @@ export const OverviewView: React.FC = () => {
             animate={{ opacity: 1, transform: 'translateY(0px)' }}
             transition={{ duration: shouldReduceMotion ? 0.1 : 0.24, delay: shouldReduceMotion ? 0 : 0.06, ease: COCKPIT_EASE }}
             onClick={() => setActiveDetail('effort')}
-            className="lg:col-span-4 p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/50 rounded-3xl shadow-2xs hover:shadow-md transition-[border-color,box-shadow,transform] duration-200 flex flex-col justify-between items-center text-center cursor-pointer select-none group relative overflow-hidden active:scale-[0.99]"
+            onPointerMove={updateCardSpotlight}
+            className="spell-spotlight lg:col-span-4 p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/50 rounded-3xl shadow-2xs hover:shadow-md transition-[border-color,box-shadow,transform] duration-200 flex flex-col justify-between items-center text-center cursor-pointer select-none group relative overflow-hidden active:scale-[0.99]"
             title="Click to inspect delivery velocity and forecast runway"
             role="button"
             tabIndex={0}
@@ -1422,7 +1427,8 @@ export const OverviewView: React.FC = () => {
             animate={{ opacity: 1, transform: 'translateY(0px)' }}
             transition={{ duration: shouldReduceMotion ? 0.1 : 0.24, delay: shouldReduceMotion ? 0 : 0.1, ease: COCKPIT_EASE }}
             onClick={() => setActiveDetail('ews')}
-            className="lg:col-span-4 p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/50 rounded-3xl shadow-2xs hover:shadow-md transition-[border-color,box-shadow,transform] duration-200 flex flex-col justify-between space-y-3 cursor-pointer select-none group relative overflow-hidden active:scale-[0.99]"
+            onPointerMove={updateCardSpotlight}
+            className="spell-spotlight lg:col-span-4 p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/50 rounded-3xl shadow-2xs hover:shadow-md transition-[border-color,box-shadow,transform] duration-200 flex flex-col justify-between space-y-3 cursor-pointer select-none group relative overflow-hidden active:scale-[0.99]"
             title="Click to inspect early warning signals and anomaly radar"
             role="button"
             tabIndex={0}
@@ -2396,7 +2402,7 @@ export const OverviewView: React.FC = () => {
             {hasViewAccess('dash') && (
               <button
                 onClick={() => setView('dash')}
-                className="h-11 px-5 rounded-2xl bg-[var(--color-primary-hex)] text-white hover:opacity-95 font-bold text-xs shrink-0 flex items-center gap-2 transition-[transform,opacity] active:scale-95 cursor-pointer shadow-xs"
+                className="btn-spell-primary h-11 px-5 rounded-2xl bg-[var(--color-primary-hex)] text-white hover:opacity-95 font-bold text-xs shrink-0 flex items-center gap-2 transition-[transform,opacity] active:scale-95 cursor-pointer shadow-xs"
               >
                 <span>Launch Intelligence Cockpit</span>
                 <ArrowRight size={15} />
@@ -2429,6 +2435,7 @@ export const OverviewView: React.FC = () => {
             ))}
           </div>
         </motion.div>
+        </div>
       </div>
 
       {/* Interactive Detail Inspector Modal with AnimatePresence */}

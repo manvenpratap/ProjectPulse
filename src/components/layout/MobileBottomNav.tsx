@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Presentation, ClipboardList, Users, ShieldAlert, Flag, Menu } from 'lucide-react';
+import { motion } from 'motion/react';
 import clsx from 'clsx';
 import { useProject } from '../../store/ProjectContext';
 import { useAuth } from '../../store/AuthContext';
@@ -76,7 +77,9 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
             )}
           >
             {isActive && (
-              <span
+              <motion.span
+                layoutId="mobileNavActivePill"
+                transition={{ type: 'spring', stiffness: 460, damping: 32 }}
                 aria-hidden="true"
                 className="w-6 h-0.5 rounded-full bg-[var(--color-primary-hex)] mb-0.5"
               />
@@ -110,7 +113,9 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({
         )}
       >
         {isMoreActive && (
-          <span
+          <motion.span
+            layoutId="mobileNavActivePill"
+            transition={{ type: 'spring', stiffness: 460, damping: 32 }}
             aria-hidden="true"
             className="w-6 h-0.5 rounded-full bg-[var(--color-primary-hex)] mb-0.5"
           />

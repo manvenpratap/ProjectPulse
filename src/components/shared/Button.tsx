@@ -25,7 +25,7 @@ const Button: React.FC<ButtonProps> = ({
   const baseStyles = "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-150 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.96] motion-reduce:transition-none motion-reduce:transform-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]/40 disabled:opacity-50 disabled:pointer-events-none cursor-pointer select-none";
   
   const variants = {
-    primary: "bg-[var(--color-primary-hex)] text-[var(--color-primary-text,white)] hover:opacity-95 shadow-sm active:shadow-none border border-black/5 dark:border-white/10",
+    primary: "btn-spell-primary bg-[var(--color-primary-hex)] text-[var(--color-primary-text,white)] hover:opacity-95 shadow-sm active:shadow-none border border-black/5 dark:border-white/10",
     outline: "bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text)] hover:bg-[var(--color-surface-2)] shadow-2xs active:bg-[var(--color-surface-offset)]",
     secondary: "bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text)] hover:bg-[var(--color-surface-offset)] shadow-2xs active:bg-[var(--color-surface-2)]/80",
     ghost: "bg-transparent text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)]",

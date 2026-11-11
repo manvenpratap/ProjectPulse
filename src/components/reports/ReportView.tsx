@@ -113,8 +113,9 @@ const ReportView: React.FC = () => {
       />
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 space-y-6 print:p-0">
-        <div className="w-full space-y-6">
+      <div className="flex-1 overflow-y-auto custom-scroll print:overflow-visible">
+        <div className="spell-scroll-hairline print:hidden" aria-hidden="true" />
+        <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6 print:p-0">
           
           {/* Report Tab Selector */}
           <div className="w-full flex p-1 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl print:hidden shadow-sm overflow-x-auto no-scrollbar scroll-fade-x">

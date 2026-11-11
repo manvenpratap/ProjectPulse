@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { X, Check, Sun, Moon, Star, Palette } from 'lucide-react';
 import clsx from 'clsx';
 import { THEMES, ThemeDef, DARK_MAP, LIGHT_MAP, ThemeGrid, ThemePreviewStage, getContrastInk } from '../shared/ThemeGrid';
+import { runCircularThemeTransition } from '../../utils/designSpells';
 
 // Re-export ThemeDef for backward compatibility with existing callers
 export type { ThemeDef };
@@ -36,23 +37,25 @@ const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
     }
   }, [state.theme]);
 
-  // Handler for explicit Light / Dark segmented toggle
-  const handleToggleColorMode = (targetMode: 'light' | 'dark') => {
-    setColorMode(targetMode);
-    document.documentElement.setAttribute('data-color-mode', targetMode);
-    localStorage.setItem('pp-color-mode', targetMode);
+  // Handler for explicit Light / Dark segmented toggle (with circular iris reveal)
+  const handleToggleColorMode = (targetMode: 'light' | 'dark', event?: React.MouseEvent) => {
+    runCircularThemeTransition(() => {
+      setColorMode(targetMode);
+      document.documentElement.setAttribute('data-color-mode', targetMode);
+      localStorage.setItem('pp-color-mode', targetMode);
 
-    if (targetMode === 'dark') {
-      const counterpart = DARK_MAP[state.theme];
-      if (counterpart) {
-        setTheme(counterpart);
+      if (targetMode === 'dark') {
+        const counterpart = DARK_MAP[state.theme];
+        if (counterpart) {
+          setTheme(counterpart);
+        }
+      } else {
+        const counterpart = LIGHT_MAP[state.theme];
+        if (counterpart) {
+          setTheme(counterpart);
+        }
       }
-    } else {
-      const counterpart = LIGHT_MAP[state.theme];
-      if (counterpart) {
-        setTheme(counterpart);
-      }
-    }
+    }, event);
   };
 
   const activeThemeObj = useMemo(() => {
@@ -246,7 +249,7 @@ const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
               <div className="grid grid-cols-2 gap-1 p-1 bg-[var(--color-surface-2)] border border-[var(--color-border)] rounded-xl">
                 <button
                   type="button"
-                  onClick={() => handleToggleColorMode('light')}
+                  onClick={(e) => handleToggleColorMode('light', e)}
                   className={clsx(
                     "min-h-[44px] py-2 px-3 rounded-lg font-semibold text-xs flex items-center justify-center gap-2 transition-all duration-150 cursor-pointer",
                     colorMode === 'light'
@@ -259,7 +262,7 @@ const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => handleToggleColorMode('dark')}
+                  onClick={(e) => handleToggleColorMode('dark', e)}
                   className={clsx(
                     "min-h-[44px] py-2 px-3 rounded-lg font-semibold text-xs flex items-center justify-center gap-2 transition-all duration-150 cursor-pointer",
                     colorMode === 'dark'

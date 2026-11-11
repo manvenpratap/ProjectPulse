@@ -8,6 +8,7 @@ import { nowISO, todayStr, getBusinessDays, addBusDays, getNextBusDay } from '..
 
 import { importProjectExcel } from '../services/excelService';
 import confetti from 'canvas-confetti';
+import { consumeInteractionOrigin, prefersReducedMotion } from '../utils/designSpells';
 
 import { getNavItem } from '../config/navigation';
 
@@ -320,12 +321,16 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       if (data.status === TaskStatus.COMPLETED && task.status !== TaskStatus.COMPLETED) {
         newTask.progress = 100;
         if (!newTask.actCompletionDate) newTask.actCompletionDate = todayStr();
-        confetti({
-          particleCount: 150,
-          spread: 70,
-          origin: { y: 0.6 },
-          colors: ['#4F46E5', '#10B981', '#F59E0B']
-        });
+        if (!prefersReducedMotion()) {
+          const origin = consumeInteractionOrigin() || { x: 0.5, y: 0.6 };
+          confetti({
+            particleCount: origin.y === 0.6 ? 120 : 48,
+            spread: 68,
+            startVelocity: 32,
+            origin,
+            colors: ['#4F46E5', '#10B981', '#F59E0B', '#38BDF8']
+          });
+        }
       }
 
       // Logging

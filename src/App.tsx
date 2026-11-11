@@ -32,7 +32,7 @@ import DeliveriesView from './components/deliveries/DeliveriesView';
 import ReleaseRoadmap from './components/architect/ReleaseRoadmap';
 import RAIDView from './components/risks/RAIDView';
 import SprintRetroView from './components/retro/SprintRetroView';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence, MotionConfig } from 'motion/react';
 
 const GO_CHORD_MAP: Record<string, { view: string; subTab?: string; label: string }> = {
   o: { view: 'overview', label: 'Executive Overview' },
@@ -295,10 +295,12 @@ const MainApp: React.FC = () => {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <ProjectProvider>
-        <MainApp />
-      </ProjectProvider>
-    </AuthProvider>
+    <MotionConfig reducedMotion="user">
+      <AuthProvider>
+        <ProjectProvider>
+          <MainApp />
+        </ProjectProvider>
+      </AuthProvider>
+    </MotionConfig>
   );
 }

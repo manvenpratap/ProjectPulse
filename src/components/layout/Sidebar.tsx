@@ -17,6 +17,7 @@ import { isRaidActive } from '../../utils/projectUtils';
 import { motion, AnimatePresence } from 'motion/react';
 import { exportProjectExcel, importProjectExcel } from '../../services/excelService';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
+import { castOriginConfetti } from '../../utils/designSpells';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -30,6 +31,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
   const [processingLatency, setProcessingLatency] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const logoTapsRef = useRef<number[]>([]);
+  const [pulseBeatCount, setPulseBeatCount] = useState(0);
   const isMobileViewport = useMediaQuery('(max-width: 1023px)');
 
   const hasTaskAccess = hasViewAccess('tasks');
@@ -169,14 +172,28 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
       <div className="h-[calc(54px+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] flex items-center justify-between px-3.5 border-b border-[var(--color-divider)] bg-[var(--color-surface)]/75 shrink-0">
         <button
           type="button"
-          onClick={() => onNavigate(homeView)}
+          onClick={(e) => {
+            const now = Date.now();
+            logoTapsRef.current = [...logoTapsRef.current.filter(ts => now - ts < 900), now];
+            if (e.shiftKey || logoTapsRef.current.length >= 3) {
+              logoTapsRef.current = [];
+              setPulseBeatCount(c => c + 1);
+              castOriginConfetti(e.currentTarget, { particleCount: 28, spread: 50 });
+            }
+            onNavigate(homeView);
+          }}
           className="flex items-center gap-3 min-w-0 text-left rounded-xl p-1 -ml-1 hover:bg-[var(--color-surface-2)]/70 transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
-          title="Return to Home Dashboard"
+          title="Return to Home Dashboard (Shift-click for Pulse burst)"
           aria-label="ProjectPulse Home"
         >
-          <div className="w-8 h-8 bg-[var(--color-primary-hex)] rounded-xl flex items-center justify-center text-white shrink-0 shadow-2xs">
+          <motion.div
+            key={`pulse-logo-${pulseBeatCount}`}
+            animate={pulseBeatCount > 0 ? { scale: [1, 1.24, 0.94, 1.14, 1] } : undefined}
+            transition={{ duration: 0.45, ease: 'easeOut' }}
+            className="w-8 h-8 bg-[var(--color-primary-hex)] rounded-xl flex items-center justify-center text-white shrink-0 shadow-2xs"
+          >
             <Activity size={16} strokeWidth={2.4} aria-hidden="true" />
-          </div>
+          </motion.div>
           {isOpen && (
             <div className="min-w-0">
               <span className="font-bold text-sm tracking-tight text-[var(--color-text)] truncate block">
@@ -299,7 +316,9 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
                               >
                                 {/* Non-color active indicator bar (WCAG 1.4.1) */}
                                 {isItemActive && (
-                                  <span
+                                  <motion.span
+                                    layoutId="sidebarActivePill"
+                                    transition={{ type: 'spring', stiffness: 450, damping: 34 }}
                                     aria-hidden="true"
                                     className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-[var(--color-primary-hex)]"
                                   />
