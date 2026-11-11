@@ -113,6 +113,31 @@ def test_visual_overview_widgets():
         page.screenshot(path=LOWER_SCREENSHOT)
         print(f"✓ Milestones & Stream screenshot saved to: {LOWER_SCREENSHOT}")
 
+        # Step 2b: Test Telemetry Controls & Interactive In-Card Mode Toggles
+        print("[4b] Testing Telemetry Controls & Interactive Chart Toggles...")
+        pause_btn = page.locator("button:has-text('Pause Sweep')").first
+        assert pause_btn.is_visible(), "Pause Sweep button missing"
+        pause_btn.click()
+        page.wait_for_timeout(150)
+        assert page.locator("button:has-text('Resume Sweep')").is_visible(), "Resume Sweep toggle failed"
+        page.locator("button:has-text('Resume Sweep')").first.click()
+        page.wait_for_timeout(150)
+
+        replay_btn = page.locator("button:has-text('Replay')").first
+        assert replay_btn.is_visible(), "Replay button missing"
+        replay_btn.click()
+        page.wait_for_timeout(450)
+
+        # Switch Velocity Mode to Curve & back without triggering modal
+        curve_btn = page.locator("button:has-text('Curve')").first
+        assert curve_btn.is_visible(), "Curve toggle missing"
+        curve_btn.click()
+        page.wait_for_timeout(300)
+        assert page.locator("text=Effort Burn & Resource Velocity").count() == 0, "Curve toggle must not bubble into card modal"
+        page.locator("button:has-text('Bars')").first.click()
+        page.wait_for_timeout(200)
+        print("✓ Telemetry Strip, Replay & Interactive Chart Mode Toggles verified!")
+
         # Scroll back to top
         page.locator("text=Composite Health Index").scroll_into_view_if_needed()
         page.wait_for_timeout(300)
@@ -137,16 +162,37 @@ def test_visual_overview_widgets():
         assert page.locator("text=Composite Health Diagnostics & Telemetry").count() == 0, "Detail modal did not close"
         print("✓ Successfully closed Health detail modal")
 
-        # Step 4: Test Interactive Modal Inspection (Risk Matrix)
+        # Step 4: Test Interactive Modal Inspection (Risk Matrix + Escape Key Dismissal)
         print("[6] Testing Card Click: RAID 3x3 Risk Heatmap Matrix...")
         risk_card = page.locator("div[role='button']:has-text('RAID 3×3 Risk Heatmap Matrix')").first
         risk_card.click()
         page.wait_for_timeout(400)
 
         assert page.locator("text=Governance, Compliance & Decision Ledger").is_visible(), "Governance detail modal did not open"
-        page.locator("button:has-text('Close')").first.click()
+        page.keyboard.press("Escape")
         page.wait_for_timeout(300)
-        print("✓ Risk Heatmap / Governance detail inspector verified")
+        assert page.locator("text=Governance, Compliance & Decision Ledger").count() == 0, "Escape key did not close modal"
+        print("✓ Risk Heatmap / Governance detail inspector & Escape dismissal verified")
+
+        # Step 4b: Light Theme & Mobile Viewport Overflow Check
+        page.evaluate("() => { if (window.setTheme) window.setTheme('origin'); document.documentElement.setAttribute('data-theme', 'origin'); document.documentElement.setAttribute('data-color-mode', 'light'); }")
+        page.wait_for_timeout(300)
+        assert page.locator("text=Composite Health Index").is_visible(), "Overview failed on light theme"
+
+        mobile_ctx = browser.new_context(viewport={"width": 375, "height": 812})
+        m_page = mobile_ctx.new_page()
+        m_page.goto("http://localhost:3000")
+        m_page.wait_for_timeout(1000)
+        m_demo = m_page.locator('button:has-text("Load Demo Database")')
+        if m_demo.count() > 0 and m_demo.first.is_visible():
+            m_demo.first.click()
+            m_page.wait_for_timeout(1000)
+        m_page.goto("http://localhost:3000/#/overview")
+        m_page.wait_for_timeout(700)
+        overflow = m_page.evaluate("document.documentElement.scrollWidth > window.innerWidth + 2")
+        assert not overflow, "Horizontal overflow detected on 375px mobile viewport"
+        mobile_ctx.close()
+        print("✓ Light theme & 375px Mobile responsive check passed with 0 overflow!")
 
         # Step 5: Test Deep-Dive Link to Intelligence Cockpit
         print("[7] Testing Launch Intelligence Cockpit button...")

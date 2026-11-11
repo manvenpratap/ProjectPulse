@@ -49,7 +49,7 @@ npm start
 
 ## 🛠️ Key Capabilities & Operational Modules
 
-1. **Executive Overview Dashboard**: Health Index dial, Delivery Confidence meter, active RAID count, Early Warning System (EWS), and What-If Predictive Simulation Sandbox.
+1. **Executive Overview Dashboard (`OverviewView`)**: Motion-choreographed Bento telemetry cockpit featuring a live command strip (`Pause Sweep` / `Replay`), precision-tick Health Index gauge + sparkline, spring-physics 180° Confidence Speedometer, live rotating Threat Radar, switchable Weekly/Cumulative Delivery Velocity corridor, interactive Module Mass donut, 3×3 RAID Threat Heatmap, Dual Scope & Effort rings, connected Milestone Runway flight path, and animated drill-down inspector modals.
 2. **Live Velocity, Predictive & Quality Intelligence (`Project Intelligence Cockpit`)**: 4-week moving average completion velocity, Earned Value Management (EVM), Burndown / Burnup trajectories, Cumulative Flow Diagrams (CFD), and the **Quality & Governance** tab (Quality Reliability Index, Defect Pipeline Progression, Root Cause & Module Hotspots, Analytics Data Integrity, Release Sign-Off & Smoke Gate, interactive 3×3 RAID Threat Heatmap, and Steering Decisions Log).
 3. **Software Deliveries & Deployment Schedule**: Dedicated ALM / PDN release workstation, multi-entity linkage to parent tasks and screen specs, cycle lead time & variance metrics, smoke test sign-offs, and 3 Delivery Heatmap perspectives (`feat_screens`, `env_pipeline`, `del_impact`).
 4. **Release Roadmap & Version Governance**: Milestone version lifecycle (`Planned`, `Active`, `Released`), cycle start and target date synchronization, and mapped assets intelligence.
