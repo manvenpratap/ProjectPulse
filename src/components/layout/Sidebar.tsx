@@ -264,11 +264,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
                       {hub.id === 'analytics' && (hasViewAccess('reports') || isAdmin) && (
                         <button
                           onClick={() => {
-                            if (typeof window !== 'undefined') {
-                              window.sessionStorage.setItem('pp-report-subtab', 'cxo');
-                            }
-                            setView('reports');
-                            window.dispatchEvent(new CustomEvent('switch-report-tab', { detail: 'cxo' }));
+                            window.dispatchEvent(new CustomEvent('open-cxo-email'));
                           }}
                           className="w-full flex items-center justify-between px-2.5 py-1.5 min-h-[34px] rounded-lg text-xs font-medium text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)] transition-colors duration-150 active:scale-[0.98] cursor-pointer group text-left"
                           title="Generate executive steering email brief"

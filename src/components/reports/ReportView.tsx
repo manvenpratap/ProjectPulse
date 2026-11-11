@@ -131,112 +131,111 @@ const ReportView: React.FC = () => {
             ))}
           </div>
 
-          {/* Actual Report Sheet */}
-          <div className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-xl p-8 md:p-12 print:border-none print:shadow-none min-h-[800px] text-[var(--color-text)]">
-            
-            {/* Sheet Banner Header */}
-            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-10 border-b border-[var(--color-divider)] pb-8">
-              <div>
-                <h2 className="text-3xl font-display font-black tracking-tight text-[var(--color-text)] flex items-center gap-3">
-                  <span>{state.name}</span>
-                  <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600">Telemetry Report</span>
-                </h2>
-                <p className="text-xs text-[var(--color-text-muted)] mt-1 font-medium">
-                  {state.desc || 'Monolithic high-density project performance and governance dossier.'}
-                </p>
-              </div>
-              <div className="text-left sm:text-right shrink-0">
-                <div className="text-xs font-medium text-[var(--color-text-faint)] mb-1">Generated at</div>
-                <div className="text-xs font-mono font-bold text-[var(--color-text)]">
-                  {new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
-                </div>
-                <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold">
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 motion-safe:animate-pulse" />
-                  Health Index: {health}%
-                </div>
-              </div>
+          {/* TAB 2: CXO EMAIL BRIEFING (High-Density Cockpit Studio) */}
+          {reportType === 'cxo' ? (
+            <div className="w-full animate-in fade-in duration-300">
+              <CxoEmailBriefing embedded={true} />
             </div>
-
-            {/* TAB 1: STATUS SUMMARY */}
-            {reportType === 'status' && (
-              <div className="space-y-8 motion-safe:animate-in motion-safe:fade-in duration-300">
-                {/* 4 Core Metrics */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                  <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-                    <span className="text-xs font-medium text-[var(--color-text-faint)]">Tasks done</span>
-                    <div className="text-2xl font-mono font-bold text-emerald-600 mt-1">{completedTasks.length} / {totalTasks}</div>
-                    <span className="text-[10px] text-[var(--color-text-muted)]">{progress}% completed</span>
-                  </div>
-                  <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-                    <span className="text-xs font-medium text-[var(--color-text-faint)]">ALM deliveries</span>
-                    <div className="text-2xl font-mono font-bold text-indigo-600 mt-1">{state.deliveries?.length || 0}</div>
-                    <span className="text-[10px] text-[var(--color-text-muted)]">Release packages</span>
-                  </div>
-                  <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-                    <span className="text-xs font-medium text-[var(--color-text-faint)]">Active RAID</span>
-                    <div className="text-2xl font-mono font-bold text-amber-600 mt-1">{activeRaids.length}</div>
-                    <span className="text-[10px] text-[var(--color-text-muted)]">Risks & dependencies</span>
-                  </div>
-                  <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-                    <span className="text-xs font-medium text-[var(--color-text-faint)]">Overdue items</span>
-                    <div className="text-2xl font-mono font-bold text-red-500 mt-1">{overdueTasks.length}</div>
-                    <span className="text-[10px] text-[var(--color-text-muted)]">Need intervention</span>
-                  </div>
+          ) : (
+            /* Actual Report Sheet */
+            <div className="w-full bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-xl p-8 md:p-12 print:border-none print:shadow-none min-h-[800px] text-[var(--color-text)]">
+              
+              {/* Sheet Banner Header */}
+              <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-10 border-b border-[var(--color-divider)] pb-8">
+                <div>
+                  <h2 className="text-3xl font-display font-black tracking-tight text-[var(--color-text)] flex items-center gap-3">
+                    <span>{state.name}</span>
+                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600">Telemetry Report</span>
+                  </h2>
+                  <p className="text-xs text-[var(--color-text-muted)] mt-1 font-medium">
+                    {state.desc || 'Monolithic high-density project performance and governance dossier.'}
+                  </p>
                 </div>
-
-                {/* Progress Visual */}
-                <div className="space-y-2 p-5 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-                  <div className="flex justify-between items-center text-xs font-bold">
-                    <span className="text-xs font-medium text-[var(--color-text-muted)]">Total delivery momentum</span>
-                    <span className="font-mono text-indigo-600">{progress}%</span>
+                <div className="text-left sm:text-right shrink-0">
+                  <div className="text-xs font-medium text-[var(--color-text-faint)] mb-1">Generated at</div>
+                  <div className="text-xs font-mono font-bold text-[var(--color-text)]">
+                    {new Date().toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
-                  <div className="h-3 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
-                    <div className="h-full bg-[var(--color-primary-hex)] rounded-full" style={{ width: `${progress}%` }} />
-                  </div>
-                </div>
-
-                {/* Key Executive Insights */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="p-5 rounded-2xl border border-[var(--color-divider)] space-y-3">
-                    <h4 className="text-xs font-bold text-[var(--color-text-faint)] flex items-center gap-1.5">
-                      <TrendingUp size={14} className="text-indigo-600" />
-                      Executive Highlights
-                    </h4>
-                    <ul className="text-xs space-y-2 text-[var(--color-text-muted)] list-disc pl-4 leading-relaxed">
-                      <li>Overall project velocity is maintaining a stable delivery pace across all primary modules.</li>
-                      <li>Core architectural foundations and API Gateway infrastructure have completed verification.</li>
-                      <li>{completedTasks.length} functional deliverables verified against quality benchmarks.</li>
-                    </ul>
-                  </div>
-
-                  <div className="p-5 rounded-2xl border border-[var(--color-divider)] space-y-3">
-                    <h4 className="text-xs font-bold text-[var(--color-text-faint)] flex items-center gap-1.5">
-                      <ShieldAlert size={14} className="text-amber-500" />
-                      Early Warnings & Bottlenecks
-                    </h4>
-                    <ul className="text-xs space-y-2 text-[var(--color-text-muted)] list-disc pl-4 leading-relaxed">
-                      {overdueTasks.length > 0 ? (
-                        overdueTasks.slice(0, 3).map(t => (
-                          <li key={t.id}><strong className="text-[var(--color-text)]">{t.id}:</strong> {t.name} (Due: {fmtDate(t.dueDate)})</li>
-                        ))
-                      ) : (
-                        <li>Zero overdue tasks detected. All scheduled deliverables remain on track.</li>
-                      )}
-                    </ul>
+                  <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 motion-safe:animate-pulse" />
+                    Health Index: {health}%
                   </div>
                 </div>
               </div>
-            )}
 
-            {/* TAB 2: CXO EMAIL BRIEFING (Unified Executive Steering Brief) */}
-            {reportType === 'cxo' && (
-              <div className="space-y-4 animate-in fade-in duration-300">
-                <CxoEmailBriefing embedded={true} />
-              </div>
-            )}
+              {/* TAB 1: STATUS SUMMARY */}
+              {reportType === 'status' && (
+                <div className="space-y-8 motion-safe:animate-in motion-safe:fade-in duration-300">
+                  {/* 4 Core Metrics */}
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                      <span className="text-xs font-medium text-[var(--color-text-faint)]">Tasks done</span>
+                      <div className="text-2xl font-mono font-bold text-emerald-600 mt-1">{completedTasks.length} / {totalTasks}</div>
+                      <span className="text-[10px] text-[var(--color-text-muted)]">{progress}% completed</span>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                      <span className="text-xs font-medium text-[var(--color-text-faint)]">ALM deliveries</span>
+                      <div className="text-2xl font-mono font-bold text-indigo-600 mt-1">{state.deliveries?.length || 0}</div>
+                      <span className="text-[10px] text-[var(--color-text-muted)]">Release packages</span>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                      <span className="text-xs font-medium text-[var(--color-text-faint)]">Active RAID</span>
+                      <div className="text-2xl font-mono font-bold text-amber-600 mt-1">{activeRaids.length}</div>
+                      <span className="text-[10px] text-[var(--color-text-muted)]">Risks & dependencies</span>
+                    </div>
+                    <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                      <span className="text-xs font-medium text-[var(--color-text-faint)]">Overdue items</span>
+                      <div className="text-2xl font-mono font-bold text-red-500 mt-1">{overdueTasks.length}</div>
+                      <span className="text-[10px] text-[var(--color-text-muted)]">Need intervention</span>
+                    </div>
+                  </div>
 
-            {/* TAB 3: RELEASE & DELIVERIES CHECKLIST */}
-            {reportType === 'milestones' && (
+                  {/* Progress Visual */}
+                  <div className="space-y-2 p-5 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                    <div className="flex justify-between items-center text-xs font-bold">
+                      <span className="text-xs font-medium text-[var(--color-text-muted)]">Total delivery momentum</span>
+                      <span className="font-mono text-indigo-600">{progress}%</span>
+                    </div>
+                    <div className="h-3 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
+                      <div className="h-full bg-[var(--color-primary-hex)] rounded-full" style={{ width: `${progress}%` }} />
+                    </div>
+                  </div>
+
+                  {/* Key Executive Insights */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="p-5 rounded-2xl border border-[var(--color-divider)] space-y-3">
+                      <h4 className="text-xs font-bold text-[var(--color-text-faint)] flex items-center gap-1.5">
+                        <TrendingUp size={14} className="text-indigo-600" />
+                        Executive Highlights
+                      </h4>
+                      <ul className="text-xs space-y-2 text-[var(--color-text-muted)] list-disc pl-4 leading-relaxed">
+                        <li>Overall project velocity is maintaining a stable delivery pace across all primary modules.</li>
+                        <li>Core architectural foundations and API Gateway infrastructure have completed verification.</li>
+                        <li>{completedTasks.length} functional deliverables verified against quality benchmarks.</li>
+                      </ul>
+                    </div>
+
+                    <div className="p-5 rounded-2xl border border-[var(--color-divider)] space-y-3">
+                      <h4 className="text-xs font-bold text-[var(--color-text-faint)] flex items-center gap-1.5">
+                        <ShieldAlert size={14} className="text-amber-500" />
+                        Early Warnings & Bottlenecks
+                      </h4>
+                      <ul className="text-xs space-y-2 text-[var(--color-text-muted)] list-disc pl-4 leading-relaxed">
+                        {overdueTasks.length > 0 ? (
+                          overdueTasks.slice(0, 3).map(t => (
+                            <li key={t.id}><strong className="text-[var(--color-text)]">{t.id}:</strong> {t.name} (Due: {fmtDate(t.dueDate)})</li>
+                          ))
+                        ) : (
+                          <li>Zero overdue tasks detected. All scheduled deliverables remain on track.</li>
+                        )}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* TAB 3: RELEASE & DELIVERIES CHECKLIST */}
+              {reportType === 'milestones' && (
               <div className="space-y-6 animate-in fade-in duration-300">
                 <div className="flex items-center justify-between">
                   <h3 className="font-bold text-base text-[var(--color-text)] flex items-center gap-2">
@@ -379,6 +378,7 @@ const ReportView: React.FC = () => {
               </div>
             )}
           </div>
+          )}
         </div>
       </div>
     </div>
