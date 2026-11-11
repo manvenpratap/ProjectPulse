@@ -133,10 +133,7 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
   };
 
   const handleOpenCxoModal = () => {
-    if (typeof window !== 'undefined') {
-      window.sessionStorage.setItem('pp-report-subtab', 'cxo');
-    }
-    setView('reports');
+    setView('reports', false, 'cxo');
     window.dispatchEvent(new CustomEvent('switch-report-tab', { detail: 'cxo' }));
     setIsOpen(false);
   };
@@ -165,19 +162,22 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
     deliveries: 'Deliveries',
     defects: 'Defects',
     features: 'Features',
+    scaffolder: 'Project Scaffolder',
     risks: 'RAID',
     team: 'Team',
+    capacity: 'Capacity',
     log: 'Audit Log',
     releases: 'Releases',
     registry: 'Option Libraries',
     dropdowns: 'Option Libraries',
-    templates: 'Blueprints',
-    steps: 'Blueprints',
+    templates: 'Step Blueprints',
+    steps: 'Step Blueprints',
     fields: 'Field Architect',
     reports: 'Reports',
     dash: 'Intelligence',
     overview: 'Overview',
-    settings: 'Settings',
+    timeline: 'Timeline',
+    settings: 'Workspace Settings',
   };
 
   const viewTitle = VIEW_TITLES[activeView] || (activeView.charAt(0).toUpperCase() + activeView.slice(1));

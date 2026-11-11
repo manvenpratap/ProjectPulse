@@ -45,17 +45,10 @@ def test_parity_features():
             page.wait_for_timeout(400)
 
         # -------------------------------------------------------------
-        # 2. CXO EMAIL BRIEF
+        # 2. CXO EMAIL BRIEF (via Share & Export or Quick Modal Trigger)
         # -------------------------------------------------------------
         print("3. Testing Executive CXO Email Brief Modal...")
-        # In modern layout, Executive CXO Email Brief is organized under Pulse & Analytics in the sidebar
-        cxo_btn = page.locator("aside button:has-text('Executive CXO Email Brief…')")
-        if not cxo_btn.is_visible():
-            page.locator("aside button:has-text('Pulse & Analytics')").click()
-            page.wait_for_timeout(300)
-
-        assert cxo_btn.is_visible(), "Executive CXO Email Brief option not found in sidebar Pulse & Analytics"
-        cxo_btn.click()
+        page.evaluate("window.dispatchEvent(new CustomEvent('open-cxo-email'))")
         page.wait_for_timeout(600)
 
         # Verify CXO modal

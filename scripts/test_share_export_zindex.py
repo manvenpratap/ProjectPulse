@@ -26,7 +26,7 @@ async def test_share_export_zindex():
 
         # Step 1: Go to #/tasks
         print("[1] Navigating to #/tasks...")
-        tasks_nav = page.get_by_role("button", name="Tasks Matrix").first
+        tasks_nav = page.locator("aside button:has-text('Tasks & Timeline')").first
         if await tasks_nav.is_visible():
             await tasks_nav.click()
         else:

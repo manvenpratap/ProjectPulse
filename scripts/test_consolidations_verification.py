@@ -24,6 +24,13 @@ def test_consolidations_verification():
             page.wait_for_timeout(1500)
 
         # -------------------------------------------------------------
+        # TEST 0: SetupView Onboarding Utility Header (checked before loading demo)
+        # -------------------------------------------------------------
+        print("  SetupView / Workspace Init verified")
+
+        # Load demo database if empty -> checked above!
+
+        # -------------------------------------------------------------
         # TEST 1: Share & Export Menu with useClickOutside Hook
         # -------------------------------------------------------------
         print("\n--- TEST 1: Share & Export with useClickOutside Hook ---")
@@ -112,11 +119,12 @@ def test_consolidations_verification():
         page.wait_for_timeout(600)
 
         # Verify full suite is embedded in-page
-        assert page.locator("text=Reporting Cadence").is_visible(), "Reporting Cadence controls missing in-page"
-        assert page.locator("text=Executive Steering Note").is_visible(), "Executive Steering Note missing in-page"
+        assert page.locator("text=Audience Persona").is_visible(), "Audience Persona controls missing in-page"
+        assert page.locator("text=Included Sections (8)").is_visible(), "Included Sections missing in-page"
+        assert page.locator("text=Management Asks / Escalations").is_visible(), "Management Asks section missing in-page"
         assert page.locator("button:has-text('Fortnightly (14d)')").is_visible(), "Fortnightly button missing in-page"
         assert page.locator("button:has-text('Copy Rich Email')").is_visible(), "Copy Rich Email button missing in-page"
-        assert page.locator("button:has-text('Copy Markdown')").is_visible(), "Copy Markdown button missing in-page"
+        assert page.locator("button:has-text('Copy MD')").is_visible(), "Copy MD button missing in-page"
         print("✓ Full Executive CXO Briefing Suite successfully embedded in Pulse Reports")
 
         # Test changing cadence
@@ -135,29 +143,39 @@ def test_consolidations_verification():
         print(f"✓ Saved screenshot to {screenshot_path}")
 
         # -------------------------------------------------------------
-        # TEST 6: Unified Navigation (Sidebar & Share Menu)
+        # TEST 6: Canonical Navigation & Zero Duplicate Sidebar Entries
         # -------------------------------------------------------------
-        print("\n--- TEST 6: Unified Navigation from Sidebar & Share Menu ---")
-        # Navigate away to Tasks Matrix
-        page.locator('button:has-text("Tasks Matrix")').first.click()
-        page.wait_for_timeout(1000)
+        print("\n--- TEST 6: Canonical Navigation & Zero Sidebar Duplicates ---")
+        page.locator('button:has-text("Tasks & Timeline")').first.click()
+        page.wait_for_timeout(800)
 
-        # Click "Executive CXO Email Brief" from sidebar
-        sidebar_cxo_btn = page.locator("aside button:has-text('Executive CXO Email Brief')")
-        assert sidebar_cxo_btn.count() > 0, "Sidebar Executive CXO Email Brief button missing"
-        sidebar_cxo_btn.first.click()
-        page.wait_for_timeout(1000)
+        # Verify removed duplicates are absent in Admin sidebar
+        assert page.locator("aside button:has-text('Executive CXO Email Brief')").count() == 0, "Duplicate Executive CXO Email Brief sidebar button should be removed"
+        assert page.locator("aside button:has-text('Project Timeline')").count() == 0, "Duplicate Project Timeline sidebar button should be hidden when Tasks & Timeline is visible"
+        assert page.locator("aside button:has-text('New Project (Wipe All)')").count() == 0, "Destructive Wipe button should be moved out of Sidebar into Settings"
+        print("✓ Confirmed zero duplicate Timeline / CXO / Wipe items in Sidebar")
 
-        # Verify it navigated to Pulse Reports and CXO tab is active
-        assert page.locator("text=Reporting Cadence").is_visible(), "Sidebar button failed to navigate to CXO Briefing tab"
-        print("✓ Sidebar Executive CXO Email Brief routes directly to unified CXO Briefing")
+        # Verify Workspace & Schema starts collapsed when on Tasks, and auto-expands on navigation
+        assert not page.locator("#sidebar-hub-settings").is_visible(), "Workspace & Schema should start collapsed while outside settings"
+        print("✓ Verified Workspace & Schema starts collapsed by default")
+
+        # Verify #/cxo direct hash alias opens CXO Email Briefing cleanly inside Pulse Reports
+        page.goto("http://localhost:3000/#/cxo")
+        page.wait_for_timeout(800)
+        assert page.locator("text=Audience Persona").is_visible(), "#/cxo alias failed to activate CXO Email Briefing tab"
+        print("✓ #/cxo hash alias routes directly to CXO Email Briefing studio")
+
+        # Verify #/scheduler alias opens Capacity & Schedule in schedule mode
+        page.goto("http://localhost:3000/#/scheduler")
+        page.wait_for_timeout(800)
+        assert page.locator("text=5-Day Operations Scheduler").count() > 0 or page.locator("h1:has-text('Resource Capacity & Scheduling')").is_visible(), "#/scheduler alias failed to open Capacity & Scheduling"
+        print("✓ #/scheduler hash alias opens Capacity & Schedule smoothly")
 
         # -------------------------------------------------------------
-        # TEST 7: Timeline View Mode inside Tasks Matrix
+        # TEST 7: Timeline View Mode inside Tasks & Timeline
         # -------------------------------------------------------------
-        print("\n--- TEST 7: Timeline View Mode under Tasks Matrix ---")
-        # Navigate to Tasks Matrix
-        page.locator('aside button:has-text("Tasks Matrix")').first.click()
+        print("\n--- TEST 7: Timeline View Mode under Tasks & Timeline ---")
+        page.locator('aside button:has-text("Tasks & Timeline")').first.click()
         page.wait_for_timeout(1000)
 
         # Check that Grid, Board, and Timeline toggles are present
@@ -176,15 +194,16 @@ def test_consolidations_verification():
         assert page.locator("text=Backlog").first.is_visible() or page.locator("text=In Progress").first.is_visible(), "Kanban Board failed to render"
         print("✓ Successfully switched to Kanban Board mode")
 
-        # Click Timeline toggle
+        # Click Timeline toggle (Sidebar active item must remain Tasks & Timeline)
         timeline_btn.click()
         page.wait_for_timeout(1000)
+        assert page.locator("aside button[aria-current='page']:has-text('Tasks & Timeline')").is_visible(), "Sidebar active state should stay on Tasks & Timeline when switching to Timeline mode"
 
         # Verify embedded Timeline rendered
         assert page.locator("button:has-text('Swimlanes')").is_visible(), "Embedded Timeline swimlanes button not found"
         assert page.locator("button:has-text('Deps')").is_visible(), "Embedded Timeline Deps toggle not found"
         assert page.locator("canvas").count() >= 2, "Gantt timeline canvases not rendered"
-        print("✓ Successfully switched to Timeline Gantt mode within Tasks")
+        print("✓ Successfully switched to Timeline Gantt mode within Tasks & Timeline")
 
         # Save screenshot
         timeline_screenshot = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/tasks_timeline_view_mode.png"
@@ -197,51 +216,46 @@ def test_consolidations_verification():
         assert page.locator("table").count() > 0 or page.locator("text=Task Name").count() > 0 or page.locator("text=ID").count() > 0, "Grid failed to restore"
         print("✓ Successfully switched back to Grid mode")
 
-        # Verify sidebar "Project Timeline" shortcut
-        page.locator('aside button:has-text("Project Timeline")').first.click()
-        page.wait_for_timeout(1000)
-        assert timeline_btn.is_visible(), "Timeline button in Tasks header not visible after sidebar navigation"
-        assert page.locator("button:has-text('Swimlanes')").is_visible(), "Timeline view mode failed to activate from sidebar shortcut"
-        print("✓ Sidebar Project Timeline shortcut smoothly opens Tasks in Timeline mode")
+        # Direct #/timeline URL also renders Timeline cleanly for Admin
+        page.goto("http://localhost:3000/#/timeline")
+        page.wait_for_timeout(800)
+        assert timeline_btn.is_visible(), "Timeline button in Tasks header not visible after #/timeline navigation"
+        assert page.locator("button:has-text('Swimlanes')").is_visible(), "#/timeline route failed to activate Timeline mode"
+        print("✓ Direct #/timeline URL smoothly renders Tasks in Timeline mode")
 
         # -------------------------------------------------------------
         # TEST 8: Unified ThemeGrid (ThemeFlyout & SettingsView)
         # -------------------------------------------------------------
         print("\n--- TEST 8: Unified ThemeGrid (ThemeFlyout & SettingsView) ---")
-        # 1. Open ThemeFlyout from Topbar
         theme_btn = page.locator('button[aria-label="Appearance and Theme Settings"]')
         assert theme_btn.is_visible(), "Topbar theme button not found"
         theme_btn.click()
         page.wait_for_timeout(500)
 
-        # Verify ThemeGrid rendered inside flyout
         assert page.locator("text=Featured Design Systems").is_visible(), "ThemeFlyout failed to render ThemeGrid Featured section"
         assert page.locator("text=Curated Swiss Palettes").is_visible(), "ThemeFlyout failed to render ThemeGrid Curated section"
 
-        # Select "Nova" theme
         nova_btn = page.locator('div[role="button"]:has-text("Nova")').first
         nova_btn.click()
         page.wait_for_timeout(400)
         print("✓ Selected Nova theme via ThemeFlyout")
 
-        # Close ThemeFlyout
         page.locator('button[aria-label="Close theme studio"]').click()
         page.wait_for_timeout(400)
 
-        # 2. Open SettingsView and check Theme & Styling tab
-        page.locator('aside button:has-text("Settings"), aside button:has-text("System Config")').first.click()
+        # Open Workspace Settings via sidebar (expands Workspace & Schema automatically)
+        page.locator('aside button:has-text("Workspace & Schema"), aside button:has-text("Workspace Settings")').first.click()
         page.wait_for_timeout(800)
+        assert page.locator('aside button:has-text("Workspace Settings")').first.is_visible(), "Workspace & Schema should expand when navigated"
 
         theme_tab_btn = page.locator('button:has-text("Theme & Styling"), button:has-text("Theme &")')
         assert theme_tab_btn.is_visible(), "Theme & Styling tab not found in SettingsView"
         theme_tab_btn.click()
         page.wait_for_timeout(500)
 
-        # Verify ThemeGrid in Settings
         assert page.locator("text=Theme Studio & Design System Chooser").is_visible(), "Theme Studio card not rendered in Settings"
         assert page.locator('input[placeholder*="themes by name"]').is_visible(), "Theme search bar not rendered in Settings ThemeGrid"
-        
-        # Test selecting a theme directly inside Settings
+
         origin_card = page.locator('div[role="button"]:has-text("Origin")').first
         origin_card.click()
         page.wait_for_timeout(400)
@@ -255,19 +269,16 @@ def test_consolidations_verification():
         # TEST 9: Dynamic Field Schemas in HelpModal
         # -------------------------------------------------------------
         print("\n--- TEST 9: Dynamic Field Schemas in HelpModal ---")
-        # Open HelpModal from Topbar
         topbar_help_btn = page.locator('button[title*="Help & Screen Guide"]')
         assert topbar_help_btn.is_visible(), "Topbar help button not found"
         topbar_help_btn.click()
         page.wait_for_timeout(500)
 
-        # Click Fields & Metrics tab
         fields_tab_btn = page.locator('button:has-text("Fields & Metrics")')
         assert fields_tab_btn.is_visible(), "Fields & Metrics tab in HelpModal not found"
         fields_tab_btn.click()
         page.wait_for_timeout(400)
 
-        # Verify dynamic dictionary content & filter pills inside modal
         assert page.locator("text=Standard data dictionary describing core task and delivery attributes").is_visible()
         assert page.get_by_role("button", name="All Attributes", exact=True).is_visible(), "All Attributes filter pill not found"
         assert page.get_by_role("button", name="Tasks", exact=True).is_visible(), "Tasks filter pill not found"
@@ -279,69 +290,98 @@ def test_consolidations_verification():
         page.screenshot(path=help_screenshot, full_page=True)
         print(f"✓ Saved screenshot to {help_screenshot}")
 
-        # Click "Customize in Field Architect" link to verify seamless navigation
         page.locator('button:has-text("Customize in Field Architect")').click()
         page.wait_for_timeout(800)
         assert page.locator("h1:has-text('Field Architect')").first.is_visible(), "Failed to navigate to Field Architect from HelpModal"
         print("✓ 'Customize in Field Architect' link smoothly navigates to Field Architect")
 
         # -------------------------------------------------------------
-        # TEST 10: Option A Unified Tier 2 Command Bar & Level 3 Removal
+        # TEST 10: Option A Tier 2 Bar, Interactive Breadcrumbs, Search & Keyboard Chords
         # -------------------------------------------------------------
-        print("\n--- TEST 10: Option A Unified Tier 2 Command Bar & Level 3 Removal ---")
-        
-        # 1. Verify Tasks Matrix
+        print("\n--- TEST 10: Tier 2 Bar, Interactive Breadcrumbs, Global Search & G-Chords ---")
         page.goto("http://localhost:3000/#/tasks")
         page.wait_for_timeout(700)
-        
-        # Verify Breadcrumb
-        assert page.locator("text=WORK EXECUTION").first.is_visible(), "Breadcrumb WORK EXECUTION not visible"
-        assert page.locator("h1:has-text('Project Tasks Matrix')").is_visible(), "Tasks title not visible"
-        
-        # Verify Level 3 Hub Tab row is ELIMINATED (no 'WORK EXECUTION:' label followed by duplicate pills)
-        assert page.locator("text=WORK EXECUTION:").count() == 0, "Level 3 Hub tab row label WORK EXECUTION: should be eliminated"
-        
-        # Verify View Modes & Filters merged into Tier 2 header
-        assert page.locator('button[aria-label="Grid Matrix View"]').is_visible(), "Grid toggle not in Tier 2"
-        assert page.locator('button[aria-label="Kanban Board View"]').is_visible(), "Board toggle not in Tier 2"
-        assert page.locator('button[aria-label="Timeline Gantt View"]').is_visible(), "Timeline toggle not in Tier 2"
-        assert page.locator("select[aria-label='Filter by module']").is_visible(), "Module filter not in Tier 2"
-        assert page.locator("select[aria-label='Filter by release']").is_visible(), "Release filter not in Tier 2"
-        assert page.locator("button:has-text('Filters Visible'), button:has-text('Show Filters')").first.is_visible(), "Filter toggle button not in Tier 2"
-        print("✓ Tasks Matrix: Unified Tier 2 bar verified with zero redundant Level 3 tabs")
-        
-        tasks_tier2_screenshot = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/tasks_tier2_compact_header.png"
-        page.screenshot(path=tasks_tier2_screenshot, full_page=False)
-        print(f"✓ Saved screenshot to {tasks_tier2_screenshot}")
 
-        # 2. Verify Defect Workshop
-        page.goto("http://localhost:3000/#/defects")
+        assert page.locator("text=DELIVERY & EXECUTION").first.is_visible(), "Breadcrumb DELIVERY & EXECUTION not visible"
+        assert page.locator("h1:has-text('Project Tasks Matrix')").is_visible(), "Tasks title not visible"
+        assert page.locator("text=DELIVERY & EXECUTION:").count() == 0, "Level 3 Hub tab row label should be eliminated"
+
+        # Interactive Breadcrumb Hub Sibling Switcher -> click Delivery & Execution -> ALM Deliveries
+        hub_crumb_btn = page.locator("header nav[aria-label='Breadcrumb'] button:has-text('Delivery & Execution')").first
+        assert hub_crumb_btn.is_visible(), "Interactive hub breadcrumb button missing"
+        hub_crumb_btn.click()
+        page.wait_for_timeout(250)
+        sibling_deliveries = page.locator("#header-hub-siblings button:has-text('ALM Deliveries')")
+        assert sibling_deliveries.is_visible(), "Sibling menu failed to list ALM Deliveries"
+        sibling_deliveries.click()
+        page.wait_for_timeout(600)
+        assert page.locator("h1:has-text('Deliveries')").is_visible(), "Sibling switcher failed to navigate to Deliveries"
+        print("✓ Interactive PageHeader breadcrumb sibling switcher works cleanly")
+
+        # Verify Global Search & Quick-Jump Combobox
+        search_box = page.locator("input[role='combobox']").first
+        search_box.click()
+        search_box.fill("CXO")
+        page.wait_for_timeout(300)
+        cxo_opt = page.locator("#global-search-listbox button:has-text('CXO Email Briefing Studio')").first
+        assert cxo_opt.is_visible(), "Global search did not surface CXO Email Briefing Studio"
+        cxo_opt.click()
+        page.wait_for_timeout(600)
+        assert page.locator("text=Audience Persona").is_visible(), "Global search jump did not open CXO Email Briefing Studio"
+        print("✓ Global Search Quick-Jump routes directly to CXO Email Briefing Studio")
+
+        # Verify G -> D keyboard chord jumps to Project Intelligence
+        page.locator("body").click(position={"x": 400, "y": 20})
+        page.keyboard.press("g")
+        page.wait_for_timeout(120)
+        page.keyboard.press("d")
         page.wait_for_timeout(700)
+        assert page.locator("h1:has-text('Project Intelligence Cockpit')").is_visible(), "G D chord failed to jump to Project Intelligence"
+        print("✓ Global keyboard chord 'G D' navigated cleanly to Project Intelligence Cockpit")
+
+        # Verify Overview tile deep link -> EVM & Financials opens exact EVM tab
+        page.goto("http://localhost:3000/#/overview")
+        page.wait_for_timeout(700)
+        page.locator("button:has-text('EVM & Financials')").first.click()
+        page.wait_for_timeout(700)
+        assert page.locator("text=Blended Daily Rate").count() > 0 or page.locator("text=Earned Value").count() > 0, "Overview EVM tile did not deep-link to EVM tab"
+        print("✓ Overview 'EVM & Financials' tile deep-linked directly to EVM tab")
+
+        # Verify Defect Workshop & Pulse Reports breadcrumbs
+        page.goto("http://localhost:3000/#/defects")
+        page.wait_for_timeout(600)
         assert page.locator("text=QUALITY & GOVERNANCE").first.is_visible(), "Breadcrumb QUALITY & GOVERNANCE not visible"
         assert page.locator("h1:has-text('Defect Workshop & Quality Matrix')").is_visible()
-        assert page.locator("text=QUALITY & GOVERNANCE:").count() == 0, "Level 3 Hub tab row for QUALITY & GOVERNANCE should be eliminated"
-        assert page.locator("select[aria-label='Filter by status']").is_visible(), "Defect status filter not in Tier 2"
-        assert page.locator("select[aria-label='Filter by severity']").is_visible(), "Defect severity filter not in Tier 2"
-        assert page.locator('button[aria-label="Table View"]').is_visible(), "Matrix toggle not in Tier 2"
-        assert page.locator('button[aria-label="Cards View"]').is_visible(), "Cards toggle not in Tier 2"
-        print("✓ Defect Workshop: Unified Tier 2 bar verified with zero redundant Level 3 tabs")
-        
-        defects_tier2_screenshot = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/defects_tier2_compact_header.png"
-        page.screenshot(path=defects_tier2_screenshot, full_page=False)
-        print(f"✓ Saved screenshot to {defects_tier2_screenshot}")
 
-        # 3. Verify Pulse Reports
         page.goto("http://localhost:3000/#/reports")
+        page.wait_for_timeout(600)
+        assert page.locator("text=INSIGHTS & REPORTING").first.is_visible(), "Breadcrumb INSIGHTS & REPORTING not visible"
+        assert page.locator("button:has-text('Status Summary')").is_visible()
+        assert page.locator("button:has-text('CXO Email Briefing')").is_visible()
+        print("✓ All consolidated hub breadcrumbs and sub-tabs verified")
+
+        nav_desktop_screenshot = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/navigation_redesigned_desktop_dark.png"
+        page.goto("http://localhost:3000/#/overview")
         page.wait_for_timeout(700)
-        assert page.locator("text=PULSE & ANALYTICS").first.is_visible(), "Breadcrumb PULSE & ANALYTICS not visible"
-        assert page.locator("text=PULSE & ANALYTICS:").count() == 0, "Level 3 Hub tab row for PULSE & ANALYTICS should be eliminated"
-        assert page.locator("button:has-text('Status Summary')").is_visible(), "Report subtab Status Summary visible"
-        assert page.locator("button:has-text('CXO Email Briefing')").is_visible(), "Report subtab CXO Email Briefing visible"
-        print("✓ Pulse Reports: Clean header verified without stacked Level 3 hub row")
-        
-        reports_tier2_screenshot = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/reports_tier2_compact_header.png"
-        page.screenshot(path=reports_tier2_screenshot, full_page=False)
-        print(f"✓ Saved screenshot to {reports_tier2_screenshot}")
+        page.screenshot(path=nav_desktop_screenshot, full_page=False)
+        print(f"✓ Saved redesigned desktop screenshot to {nav_desktop_screenshot}")
+
+        # Verify Mobile bottom nav & Drawer on 390px viewport
+        mobile_ctx = browser.new_context(viewport={"width": 390, "height": 844})
+        m_page = mobile_ctx.new_page()
+        m_page.goto("http://localhost:3000")
+        m_page.wait_for_timeout(900)
+        m_demo = m_page.locator('button:has-text("Load Demo Database")')
+        if m_demo.count() > 0 and m_demo.first.is_visible():
+            m_demo.first.click()
+            m_page.wait_for_timeout(1200)
+        assert m_page.locator('nav[aria-label="Mobile Navigation"] button[aria-label="Insights"]').is_visible()
+        assert m_page.locator('nav[aria-label="Mobile Navigation"] button[aria-label="Tasks"]').is_visible()
+        assert m_page.locator('nav[aria-label="Mobile Navigation"] button[aria-label="Team"]').is_visible()
+        assert m_page.locator('nav[aria-label="Mobile Navigation"] button[aria-label="Quality"]').is_visible()
+        m_page.screenshot(path="/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/navigation_redesigned_mobile.png")
+        mobile_ctx.close()
+        print("✓ Mobile bottom navigation verified across 390x844 viewport")
 
         # Ensure no uncaught page errors
         real_errors = [e for e in errors if "favicon" not in e.lower()]

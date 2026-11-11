@@ -34,8 +34,10 @@ export interface CapacityViewProps {
   initialMode?: 'cards' | 'heatmap' | 'classic' | 'schedule';
 }
 
+const VALID_CAPACITY_MODES = new Set(['cards', 'heatmap', 'classic', 'schedule']);
+
 const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
-  const { state, updateSettings, updateProject, addLog } = useProject();
+  const { state, activeSubTab, updateSettings, updateProject, addLog } = useProject();
   const { members, tasks, settings } = state;
 
   // Filter and Interactive state
@@ -44,8 +46,17 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
   // Responsive default: Mobile defaults to touch-friendly cards, Desktop defaults to heatmap
   const [viewMode, setViewMode] = useState<'cards' | 'heatmap' | 'classic' | 'schedule'>(() => {
     if (initialMode) return initialMode;
+    if (activeSubTab?.view === 'capacity' && VALID_CAPACITY_MODES.has(activeSubTab.tab)) {
+      return activeSubTab.tab as 'cards' | 'heatmap' | 'classic' | 'schedule';
+    }
     return typeof window !== 'undefined' && window.innerWidth < 1024 ? 'cards' : 'heatmap';
   });
+
+  React.useEffect(() => {
+    if (activeSubTab?.view === 'capacity' && VALID_CAPACITY_MODES.has(activeSubTab.tab)) {
+      setViewMode(activeSubTab.tab as 'cards' | 'heatmap' | 'classic' | 'schedule');
+    }
+  }, [activeSubTab?.seq, activeSubTab?.view, activeSubTab?.tab]);
   const [heatmapMetric, setHeatmapMetric] = useState<'days' | 'percent' | 'none'>('days');
   const [spotlightThreshold, setSpotlightThreshold] = useState<number>(100);
   const [enableSpotlight, setEnableSpotlight] = useState<boolean>(true);

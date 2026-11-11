@@ -273,7 +273,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
                 onClick={() => {
                   setCreatedReceipt(null);
                   onClose();
-                  setView('capacity');
+                  setView('capacity', false, 'schedule');
                 }}
                 className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-offset)] text-xs font-semibold text-[var(--color-text)] transition-colors cursor-pointer"
               >

@@ -2406,15 +2406,16 @@ export const OverviewView: React.FC = () => {
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-[var(--color-divider)] text-xs">
             {[
-              { title: 'Monte Carlo', desc: 'P50/P90 finish horizons', icon: <TrendingUp size={13} className="text-emerald-500" /> },
-              { title: 'Velocity Band', desc: '±1.25σ Shewhart corridor', icon: <Flame size={13} className="text-amber-500" /> },
-              { title: 'EVM & Financials', desc: 'PV, EV, CPI, and SPI matrices', icon: <DollarSign size={13} className="text-cyan-500" /> },
-              { title: 'Quality & Risk', desc: 'RAID heatmap & audit ledger', icon: <ShieldCheck size={13} className="text-purple-500" /> }
+              { title: 'Monte Carlo', subTab: 'predictive', desc: 'P50/P90 finish horizons', icon: <TrendingUp size={13} className="text-emerald-500" /> },
+              { title: 'Velocity Band', subTab: 'flow', desc: '±1.25σ Shewhart corridor', icon: <Flame size={13} className="text-amber-500" /> },
+              { title: 'EVM & Financials', subTab: 'evm', desc: 'PV, EV, CPI, and SPI matrices', icon: <DollarSign size={13} className="text-cyan-500" /> },
+              { title: 'Quality & Risk', subTab: 'quality', desc: 'RAID heatmap & audit ledger', icon: <ShieldCheck size={13} className="text-purple-500" /> }
             ].map(tile => (
-              <div
+              <button
+                type="button"
                 key={tile.title}
-                onClick={() => { if (hasViewAccess('dash')) setView('dash'); }}
-                className="p-3.5 rounded-2xl bg-[var(--color-surface-2)]/60 hover:bg-[var(--color-surface-2)] transition-[background-color,border-color,transform] duration-150 border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 cursor-pointer space-y-1 group active:scale-95"
+                onClick={() => { if (hasViewAccess('dash')) setView('dash', false, tile.subTab); }}
+                className="p-3.5 rounded-2xl bg-[var(--color-surface-2)]/60 hover:bg-[var(--color-surface-2)] transition-[background-color,border-color,transform] duration-150 border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 cursor-pointer space-y-1 group active:scale-95 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
               >
                 <div className="font-bold text-[var(--color-text)] flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
@@ -2424,7 +2425,7 @@ export const OverviewView: React.FC = () => {
                   <ArrowUpRight size={11} className="opacity-0 group-hover:opacity-100 transition-opacity text-[var(--color-primary-hex)]" />
                 </div>
                 <p className="text-[11px] text-[var(--color-text-muted)]">{tile.desc}</p>
-              </div>
+              </button>
             ))}
           </div>
         </motion.div>

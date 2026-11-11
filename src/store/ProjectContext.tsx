@@ -9,6 +9,14 @@ import { nowISO, todayStr, getBusinessDays, addBusDays, getNextBusDay } from '..
 import { importProjectExcel } from '../services/excelService';
 import confetti from 'canvas-confetti';
 
+import { getNavItem } from '../config/navigation';
+
+export interface RouteSubTab {
+  view: string;
+  tab: string;
+  seq: number;
+}
+
 interface ProjectContextType {
   state: ProjectState;
   createTask: (data: Partial<Task>) => Task;
@@ -22,7 +30,8 @@ interface ProjectContextType {
   deleteDelivery: (deliveryId: string) => void;
   batchUpdateDeliveries: (ids: string[], updates: Partial<Delivery>) => void;
   addLog: (action: string, taskId: string, taskName: string, field?: string, oldVal?: string, newVal?: string, comment?: string) => void;
-  setView: (view: string, replace?: boolean) => void;
+  setView: (view: string, replace?: boolean, subTab?: string) => void;
+  activeSubTab: RouteSubTab | null;
   setTheme: (theme: string) => void;
   updateSettings: (settings: Partial<ProjectState['settings']>) => void;
   resetProject: (name: string, desc: string, team: string[]) => void;
@@ -37,23 +46,43 @@ interface ProjectContextType {
 const VALID_VIEWS = new Set([
   'overview', 'dash', 'reports', 'tasks', 'deliveries',
   'timeline', 'releases', 'team', 'capacity', 'scheduler',
-  'defects', 'risks', 'retro', 'log', 'features',
+  'cxo', 'defects', 'risks', 'retro', 'log', 'features',
   'scaffolder', 'fields', 'steps', 'dropdowns', 'settings'
 ]);
 
-export const getViewFromURL = (): string | null => {
-  if (typeof window === 'undefined') return null;
-  // 1. Check hash first: #/tasks or #tasks
-  const hash = window.location.hash.replace(/^#\/?/, '').split('?')[0].trim().toLowerCase();
-  if (hash && VALID_VIEWS.has(hash)) {
-    return hash === 'scheduler' ? 'capacity' : hash;
+const normalizeRoute = (rawView: string, rawQuery = ''): { view: string; subTab: string | null } => {
+  const params = new URLSearchParams(rawQuery);
+  const queryTab = (params.get('tab') || params.get('mode') || '').trim().toLowerCase() || null;
+
+  if (rawView === 'scheduler') {
+    return { view: 'capacity', subTab: queryTab || 'schedule' };
+  }
+  if (rawView === 'cxo') {
+    return { view: 'reports', subTab: queryTab || 'cxo' };
+  }
+  return { view: rawView, subTab: queryTab };
+};
+
+export const getRouteFromURL = (): { view: string | null; subTab: string | null } => {
+  if (typeof window === 'undefined') return { view: null, subTab: null };
+  // 1. Check hash first: #/tasks?tab=timeline or #tasks
+  const rawHash = window.location.hash.replace(/^#\/?/, '');
+  const [hashPath = '', hashQuery = ''] = rawHash.split('?');
+  const normalizedHash = hashPath.trim().toLowerCase();
+  if (normalizedHash && VALID_VIEWS.has(normalizedHash)) {
+    return normalizeRoute(normalizedHash, hashQuery);
   }
   // 2. Check pathname: /tasks
   const path = window.location.pathname.replace(/^\//, '').split('/')[0].trim().toLowerCase();
+  const pathQuery = window.location.search.replace(/^\?/, '');
   if (path && VALID_VIEWS.has(path)) {
-    return path === 'scheduler' ? 'capacity' : path;
+    return normalizeRoute(path, pathQuery);
   }
-  return null;
+  return { view: null, subTab: null };
+};
+
+export const getViewFromURL = (): string | null => {
+  return getRouteFromURL().view;
 };
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -61,11 +90,15 @@ const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, setState] = useState<ProjectState>(() => {
     const base = getDefaultState();
-    const urlView = getViewFromURL();
+    const { view: urlView } = getRouteFromURL();
     if (urlView) {
       base.view = urlView;
     }
     return base;
+  });
+  const [activeSubTab, setActiveSubTab] = useState<RouteSubTab | null>(() => {
+    const { view, subTab } = getRouteFromURL();
+    return view && subTab ? { view, tab: subTab, seq: 1 } : null;
   });
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -84,6 +117,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         view: 'overview',
         theme: prev.theme || 'pulse'
       }));
+      setActiveSubTab(null);
       if (typeof window !== 'undefined') {
         window.history.replaceState({ view: 'overview' }, '', '#/overview');
       }
@@ -100,7 +134,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       document.documentElement.setAttribute('data-color-mode', savedColorMode);
     }
 
-    const urlView = getViewFromURL();
+    const { view: urlView, subTab: urlSubTab } = getRouteFromURL();
 
     if (savedData) {
       try {
@@ -110,8 +144,13 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         document.documentElement.setAttribute('data-theme', finalTheme);
 
         const activeView = urlView || parsed.view || defaultState.view || 'overview';
+        const targetSubTab = urlView ? urlSubTab : null;
+        if (targetSubTab) {
+          setActiveSubTab({ view: activeView, tab: targetSubTab, seq: 1 });
+        }
         if (typeof window !== 'undefined') {
-          window.history.replaceState({ view: activeView }, '', '#/' + activeView);
+          const hash = '#/' + activeView + (targetSubTab ? `?tab=${targetSubTab}` : '');
+          window.history.replaceState({ view: activeView, subTab: targetSubTab }, '', hash);
         }
 
         setState({ 
@@ -143,8 +182,13 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       const defaultState = getDefaultState();
       document.documentElement.setAttribute('data-theme', 'pulse');
       const activeView = urlView || 'overview';
+      const targetSubTab = urlView ? urlSubTab : null;
+      if (targetSubTab) {
+        setActiveSubTab({ view: activeView, tab: targetSubTab, seq: 1 });
+      }
       if (typeof window !== 'undefined') {
-        window.history.replaceState({ view: activeView }, '', '#/' + activeView);
+        const hash = '#/' + activeView + (targetSubTab ? `?tab=${targetSubTab}` : '');
+        window.history.replaceState({ view: activeView, subTab: targetSubTab }, '', hash);
       }
       setState({
         ...defaultState,
@@ -160,11 +204,17 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     if (typeof window === 'undefined') return;
 
     const handleLocationChange = () => {
-      const targetView = getViewFromURL() || 'overview';
+      const { view, subTab } = getRouteFromURL();
+      const targetView = view || 'overview';
       setState(prev => {
         if (prev.view === targetView) return prev;
         return { ...prev, view: targetView };
       });
+      if (subTab) {
+        setActiveSubTab({ view: targetView, tab: subTab, seq: Date.now() });
+      } else {
+        setActiveSubTab(null);
+      }
     };
 
     window.addEventListener('popstate', handleLocationChange);
@@ -175,6 +225,18 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       window.removeEventListener('hashchange', handleLocationChange);
     };
   }, []);
+
+  // Keep browser document.title synchronized with active screen & workspace name
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    if (!state.name) {
+      document.title = 'Setup Workspace | ProjectPulse';
+      return;
+    }
+    const navItem = getNavItem(state.view);
+    const viewLabel = navItem?.label || 'Executive Overview';
+    document.title = `${viewLabel} | ${state.name}`;
+  }, [state.view, state.name]);
 
   // Save to localStorage
   useEffect(() => {
@@ -447,18 +509,29 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }));
   }, []);
 
-  const setView = useCallback((view: string, replace = false) => {
+  const setView = useCallback((view: string, replace = false, subTab?: string) => {
+    const normalized = normalizeRoute(view.toLowerCase());
+    const targetView = normalized.view;
+    const targetSubTab = subTab || normalized.subTab || null;
+
     setState(prev => {
-      if (prev.view === view) return prev;
-      return { ...prev, view };
+      if (prev.view === targetView) return prev;
+      return { ...prev, view: targetView };
     });
+
+    if (targetSubTab) {
+      setActiveSubTab({ view: targetView, tab: targetSubTab, seq: Date.now() });
+    } else {
+      setActiveSubTab(null);
+    }
+
     if (typeof window !== 'undefined') {
-      const targetHash = '#/' + view;
+      const targetHash = '#/' + targetView + (targetSubTab ? `?tab=${targetSubTab}` : '');
       if (window.location.hash !== targetHash) {
         if (replace) {
-          window.history.replaceState({ view }, '', targetHash);
+          window.history.replaceState({ view: targetView, subTab: targetSubTab }, '', targetHash);
         } else {
-          window.history.pushState({ view }, '', targetHash);
+          window.history.pushState({ view: targetView, subTab: targetSubTab }, '', targetHash);
         }
       }
     }
@@ -515,7 +588,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
       state, createTask, updateTask, deleteTask, 
       saveMember, deleteMember, saveDefect, deleteDefect,
       saveDelivery, deleteDelivery, batchUpdateDeliveries,
-      addLog, setView, setTheme, updateSettings, updateProject,
+      addLog, setView, activeSubTab, setTheme, updateSettings, updateProject,
       resetProject, loadSample, clearAllData, isLoading,
       searchTerm, setSearchTerm
     }}>

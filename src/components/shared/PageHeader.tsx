@@ -1,8 +1,11 @@
-import React from 'react';
-import { LucideIcon, HelpCircle, ChevronRight } from 'lucide-react';
+import React, { useState, useRef, useMemo } from 'react';
+import { LucideIcon, HelpCircle, ChevronRight, ChevronDown, Check } from 'lucide-react';
 import { useProject } from '../../store/ProjectContext';
+import { useAuth } from '../../store/AuthContext';
+import { useClickOutside } from '../../hooks/useClickOutside';
 import { getHubForView } from '../../config/navigation';
 import { ShareExportMenu } from './ShareExportMenu';
+import clsx from 'clsx';
 
 interface PageHeaderProps {
   icon: LucideIcon;
@@ -26,8 +29,28 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   showShareExport = true,
   className = '',
 }) => {
-  const { state } = useProject();
-  const currentHub = getHubForView(state.view);
+  const { state, setView } = useProject();
+  const { hasViewAccess } = useAuth();
+  const [isHubMenuOpen, setIsHubMenuOpen] = useState(false);
+  const hubMenuRef = useRef<HTMLLIElement>(null);
+
+  useClickOutside(hubMenuRef, () => setIsHubMenuOpen(false), isHubMenuOpen);
+
+  const hasTaskAccess = hasViewAccess('tasks');
+  const currentHub = getHubForView(state.view, hasTaskAccess);
+
+  const siblingViews = useMemo(() => {
+    return currentHub.items.filter(item => {
+      if (item.id === 'timeline' && hasTaskAccess) return false;
+      return hasViewAccess(item.id);
+    });
+  }, [currentHub, hasTaskAccess, hasViewAccess]);
+
+  const currentNavItem = useMemo(() => {
+    return siblingViews.find(i => i.id === state.view) ||
+      (state.view === 'timeline' && hasTaskAccess ? siblingViews.find(i => i.id === 'tasks') : undefined) ||
+      siblingViews[0];
+  }, [siblingViews, state.view, hasTaskAccess]);
 
   return (
     <header className={`border-b border-[var(--color-divider)] bg-[var(--color-surface)]/85 backdrop-blur-xl saturate-180 sticky top-0 z-30 shrink-0 shadow-2xs ${className}`}>
@@ -38,17 +61,91 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
             <Icon size={17} strokeWidth={2.2} />
           </div>
           <div className="min-w-0 max-w-4xl">
+            {/* Accessible Interactive Hub Breadcrumb + Sibling Quick-Switcher */}
             {currentHub?.label && (
-              <div className="flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider leading-none mb-0.5 truncate">
-                <span>{currentHub.label}</span>
-                <ChevronRight size={10} className="text-[var(--color-text-faint)]/70 shrink-0" />
-              </div>
+              <nav aria-label="Breadcrumb" className="mb-0.5">
+                <ol className="flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-[var(--color-text-muted)] uppercase tracking-wider leading-none">
+                  <li className="relative" ref={hubMenuRef}>
+                    {siblingViews.length > 1 ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => setIsHubMenuOpen(prev => !prev)}
+                          aria-expanded={isHubMenuOpen}
+                          aria-haspopup="true"
+                          aria-controls="header-hub-siblings"
+                          className="inline-flex items-center gap-1 rounded px-1 py-0.5 -ml-1 hover:bg-[var(--color-surface-2)] hover:text-[var(--color-primary-hex)] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
+                          title={`Switch view within ${currentHub.label}`}
+                        >
+                          <span>{currentHub.label}</span>
+                          <ChevronDown size={10} aria-hidden="true" className={clsx('transition-transform duration-150', isHubMenuOpen && 'rotate-180')} />
+                        </button>
+                        {isHubMenuOpen && (
+                          <div
+                            id="header-hub-siblings"
+                            className="absolute left-0 top-full mt-1.5 w-60 rounded-xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xl z-[70] py-1.5 normal-case tracking-normal"
+                          >
+                            <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] border-b border-[var(--color-divider)] mb-1">
+                              {currentHub.label}
+                            </div>
+                            <ul className="space-y-0.5 px-1.5">
+                              {siblingViews.map(sib => {
+                                const SibIcon = sib.icon;
+                                const isActive = sib.id === state.view || (state.view === 'timeline' && sib.id === 'tasks');
+                                return (
+                                  <li key={sib.id}>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        setView(sib.id);
+                                        setIsHubMenuOpen(false);
+                                      }}
+                                      aria-current={isActive ? 'page' : undefined}
+                                      className={clsx(
+                                        'w-full flex items-center justify-between gap-2 px-2.5 py-2 rounded-lg text-xs text-left transition-colors cursor-pointer',
+                                        isActive
+                                          ? 'bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold'
+                                          : 'text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] hover:text-[var(--color-text)] font-medium'
+                                      )}
+                                    >
+                                      <span className="flex items-center gap-2 min-w-0">
+                                        <SibIcon size={13} className="shrink-0" aria-hidden="true" />
+                                        <span className="truncate">{sib.label}</span>
+                                      </span>
+                                      {sib.shortcut ? (
+                                        <kbd className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-[var(--color-surface-2)] text-[var(--color-text-faint)] border border-[var(--color-divider)] shrink-0">
+                                          {sib.shortcut}
+                                        </kbd>
+                                      ) : isActive ? (
+                                        <Check size={12} className="shrink-0 text-[var(--color-primary-hex)]" aria-hidden="true" />
+                                      ) : null}
+                                    </button>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <span>{currentHub.label}</span>
+                    )}
+                  </li>
+                  <li aria-hidden="true" className="text-[var(--color-text-faint)]/70 flex items-center">
+                    <ChevronRight size={10} />
+                  </li>
+                  <li className="text-[var(--color-text-muted)] truncate max-w-[160px]" aria-current="page">
+                    {currentNavItem?.shortLabel || title}
+                  </li>
+                </ol>
+              </nav>
             )}
             <div className="flex items-center gap-1.5 sm:gap-2">
               <h1 className="text-sm sm:text-base md:text-lg font-display font-black text-[var(--color-text)] tracking-tight leading-snug truncate">
                 {title}
               </h1>
               <button
+                type="button"
                 onClick={() => window.dispatchEvent(new CustomEvent('open-view-help', { detail: { view: state.view } }))}
                 className="text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] p-1 rounded-lg hover:bg-[var(--color-surface-2)] transition-colors cursor-pointer shrink-0"
                 title={`Guide: How ${title} works (F1 or ?)`}

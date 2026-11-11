@@ -31,10 +31,23 @@ import clsx from 'clsx';
 import PageHeader from '../shared/PageHeader';
 import ThemeGrid, { THEMES } from '../shared/ThemeGrid';
 
+const VALID_SETTINGS_TABS = new Set(['parameters', 'theme', 'baselines', 'access']);
+
 const SettingsView: React.FC = () => {
-  const { state, updateSettings, updateProject, loadSample, clearAllData } = useProject();
+  const { state, activeSubTab, updateSettings, updateProject, loadSample, clearAllData } = useProject();
   const { users, currentUser, rolePermissions, isAdmin, switchUser } = useAuth();
-  const [activeTab, setActiveTab] = useState<'parameters' | 'theme' | 'baselines' | 'access'>('parameters');
+  const [activeTab, setActiveTab] = useState<'parameters' | 'theme' | 'baselines' | 'access'>(() => {
+    if (activeSubTab?.view === 'settings' && VALID_SETTINGS_TABS.has(activeSubTab.tab)) {
+      return activeSubTab.tab as 'parameters' | 'theme' | 'baselines' | 'access';
+    }
+    return 'parameters';
+  });
+
+  React.useEffect(() => {
+    if (activeSubTab?.view === 'settings' && VALID_SETTINGS_TABS.has(activeSubTab.tab)) {
+      setActiveTab(activeSubTab.tab as 'parameters' | 'theme' | 'baselines' | 'access');
+    }
+  }, [activeSubTab?.seq, activeSubTab?.view, activeSubTab?.tab]);
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -418,7 +431,7 @@ const SettingsView: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -439,6 +452,16 @@ const SettingsView: React.FC = () => {
                   {isImporting ? <Loader2 size={14} className="animate-spin text-[var(--color-primary-hex)]" /> : <UploadCloud size={14} className="text-[var(--color-primary-hex)]" />}
                   <span>Import Excel File</span>
                 </Button>
+
+                <a
+                  href="/demo-data.xlsx"
+                  download
+                  className="h-10 px-3 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)] text-xs font-semibold text-[var(--color-text)] flex items-center justify-center gap-2 transition-colors no-underline"
+                  title="Download ready-to-import demo Excel template"
+                >
+                  <Download size={14} className="text-emerald-500" />
+                  <span>Download Demo .xlsx</span>
+                </a>
 
                 <Button 
                   variant="primary" 

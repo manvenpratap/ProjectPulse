@@ -101,7 +101,7 @@ def test_excel_enhanced_roundtrip():
         page.wait_for_timeout(2500)
 
         # Verify state is fully active
-        page.click("button:has-text('Tasks Matrix')")
+        page.click("button:has-text('Tasks & Timeline')")
         page.wait_for_timeout(1000)
         body_text = page.locator("body").inner_text()
         assert "TASK-001" in body_text, "Expected TASK-001 after full workbook re-import"

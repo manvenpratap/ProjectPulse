@@ -20,9 +20,9 @@ export const DEFAULT_ROLE_PERMISSIONS: Record<UserRole, RolePermissions> = {
     role: 'Project Manager',
     description: 'Work planning, sprint execution, resource leveling, risk monitoring, and reporting.',
     allowedViews: [
-      'overview', 'dash', 'reports', 'tasks', 'deliveries', 
-      'timeline', 'releases', 'scheduler', 'team', 'capacity', 
-      'defects', 'risks', 'retro', 'log', 'features'
+      'overview', 'dash', 'reports', 'releases', 'features', 'scaffolder',
+      'tasks', 'deliveries', 'timeline', 'team', 'capacity',
+      'defects', 'risks', 'retro', 'log'
     ],
     canCreateTask: true,
     canEditTask: true,

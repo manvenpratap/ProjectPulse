@@ -44,13 +44,26 @@ import {
   CartesianGrid
 } from 'recharts';
 
+const VALID_DASH_TABS = new Set(['predictive', 'flow', 'evm', 'quality']);
+
 export const DashboardView: React.FC = () => {
-  const { state, setView, loadSample } = useProject();
+  const { state, setView, activeSubTab, loadSample } = useProject();
   const { hasViewAccess } = useAuth();
   const { tasks = [], defects = [], raids = [], members = [], decisions = [], deliveries = [], log = [] } = state;
 
   // Active Intelligence Mode
-  const [activeTab, setActiveTab] = useState<'predictive' | 'flow' | 'evm' | 'quality'>('predictive');
+  const [activeTab, setActiveTab] = useState<'predictive' | 'flow' | 'evm' | 'quality'>(() => {
+    if (activeSubTab?.view === 'dash' && VALID_DASH_TABS.has(activeSubTab.tab)) {
+      return activeSubTab.tab as 'predictive' | 'flow' | 'evm' | 'quality';
+    }
+    return 'predictive';
+  });
+
+  React.useEffect(() => {
+    if (activeSubTab?.view === 'dash' && VALID_DASH_TABS.has(activeSubTab.tab)) {
+      setActiveTab(activeSubTab.tab as 'predictive' | 'flow' | 'evm' | 'quality');
+    }
+  }, [activeSubTab?.seq, activeSubTab?.view, activeSubTab?.tab]);
   
   // Financial Simulation State
   const [blendedRate, setBlendedRate] = useState<number>(800);

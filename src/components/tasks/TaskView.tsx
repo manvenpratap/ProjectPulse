@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useProject } from '../../store/ProjectContext';
+import { useAuth } from '../../store/AuthContext';
 import TaskGrid from './TaskGrid';
 import BoardView from './BoardView';
 import TaskModal from './TaskModal';
@@ -13,8 +14,12 @@ export interface TaskViewProps {
   initialMode?: 'grid' | 'board' | 'timeline';
 }
 
+const VALID_MODES = new Set(['grid', 'board', 'timeline']);
+
 const TaskView: React.FC<TaskViewProps> = ({ initialMode }) => {
-  const { state, setView } = useProject();
+  const { state, setView, activeSubTab } = useProject();
+  const { canPerform } = useAuth();
+  const canCreate = canPerform('canCreateTask');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
 
@@ -29,10 +34,13 @@ const TaskView: React.FC<TaskViewProps> = ({ initialMode }) => {
 
   const [viewMode, setViewMode] = useState<'grid' | 'board' | 'timeline'>(() => {
     if (initialMode) return initialMode;
+    if (activeSubTab?.view === 'tasks' && VALID_MODES.has(activeSubTab.tab)) {
+      return activeSubTab.tab as 'grid' | 'board' | 'timeline';
+    }
     if (state.view === 'timeline') return 'timeline';
     if (typeof window !== 'undefined') {
       const stored = window.sessionStorage.getItem('pp-task-view-mode') as 'grid' | 'board' | 'timeline' | null;
-      if (stored) return stored;
+      if (stored && VALID_MODES.has(stored)) return stored;
     }
     return 'grid';
   });
@@ -42,18 +50,21 @@ const TaskView: React.FC<TaskViewProps> = ({ initialMode }) => {
       setViewMode(initialMode);
     } else if (state.view === 'timeline') {
       setViewMode('timeline');
+    } else if (activeSubTab?.view === 'tasks' && VALID_MODES.has(activeSubTab.tab)) {
+      setViewMode(activeSubTab.tab as 'grid' | 'board' | 'timeline');
     }
-  }, [initialMode, state.view]);
+  }, [initialMode, state.view, activeSubTab?.seq, activeSubTab?.view, activeSubTab?.tab]);
 
   const handleSetViewMode = (mode: 'grid' | 'board' | 'timeline') => {
     setViewMode(mode);
     if (typeof window !== 'undefined') {
       window.sessionStorage.setItem('pp-task-view-mode', mode);
     }
-    if (mode === 'timeline' && state.view !== 'timeline') {
-      setView('timeline', true);
-    } else if (mode !== 'timeline' && state.view === 'timeline') {
-      setView('tasks', true);
+    // Keep Sidebar on Delivery -> Tasks & Timeline unless currently on legacy #/timeline
+    if (state.view === 'timeline' && mode !== 'timeline') {
+      setView('tasks', true, mode);
+    } else if (state.view === 'tasks') {
+      setView('tasks', true, mode);
     }
   };
 
@@ -198,11 +209,13 @@ const TaskView: React.FC<TaskViewProps> = ({ initialMode }) => {
           </div>
         }
         primaryAction={
-          <Button variant="primary" size="sm" onClick={handleAddNewTask} className="h-9 font-bold active:scale-95 px-2.5 sm:px-3 shadow-xs">
-            <Plus size={15} className="sm:mr-1" />
-            <span className="hidden sm:inline">New Task</span>
-            <span className="sm:hidden">New</span>
-          </Button>
+          canCreate ? (
+            <Button variant="primary" size="sm" onClick={handleAddNewTask} className="h-9 font-bold active:scale-95 px-2.5 sm:px-3 shadow-xs">
+              <Plus size={15} className="sm:mr-1" />
+              <span className="hidden sm:inline">New Task</span>
+              <span className="sm:hidden">New</span>
+            </Button>
+          ) : undefined
         }
       />
 

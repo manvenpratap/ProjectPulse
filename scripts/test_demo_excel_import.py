@@ -41,7 +41,7 @@ async def run_test():
 
         # Step 3: Check Tasks
         print("[5] Checking Tasks view...")
-        await page.click("button:has-text('Tasks Matrix')")
+        await page.click("button:has-text('Tasks & Timeline')")
         await page.wait_for_timeout(1000)
         tasks_body = await page.text_content("body")
         assert "TASK-001" in tasks_body or "Core API Gateway" in tasks_body, "Expected Tasks loaded"
@@ -66,9 +66,9 @@ async def run_test():
         assert "Sarah Chen" in team_body, "Expected Sarah Chen in Team Hub"
         print("[10] Verified Team Hub populated with 10 members and rich attributes.")
 
-        # Step 6: Check Capacity & Scheduler
-        print("[11] Checking Capacity & Scheduling view...")
-        await page.click("button:has-text('Capacity & Scheduling')")
+        # Step 6: Check Capacity & Schedule
+        print("[11] Checking Capacity & Schedule view...")
+        await page.click("button:has-text('Capacity & Schedule')")
         await page.wait_for_timeout(1000)
         cap_body = await page.text_content("body")
         assert "Capacity" in cap_body or "Workload" in cap_body, "Expected Capacity view loaded"

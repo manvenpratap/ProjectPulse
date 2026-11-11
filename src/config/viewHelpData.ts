@@ -162,7 +162,7 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
       }
     ],
     proTips: [
-      'Use the Executive CXO Email Brief modal (accessible from Pulse & Analytics in the sidebar) to generate HTML and Markdown updates for leadership.',
+      'Switch directly to the CXO Email Briefing tab in Pulse Reports (or search "CXO" via / or Cmd+K) to copy Outlook-ready HTML or Markdown leadership digests.',
       'Verify that all tasks have assigned modules and owners to achieve a 100% Audit Scorecard rating.'
     ]
   },
@@ -675,7 +675,7 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
       }
     ],
     proTips: [
-      'Configure Step Templates first so the Scaffolder can automatically generate standard technical steps for each screen.',
+      'Configure Step Blueprints first so the Scaffolder can automatically generate standard technical steps for each screen.',
       'Assign realistic complexity ratings in Step 2 to ensure accurate automated effort calculations.'
     ]
   },
@@ -911,13 +911,20 @@ export const STANDARD_FIELD_GUIDE: StandardFieldItem[] = [
 ];
 
 export const GLOBAL_SHORTCUTS: ShortcutItem[] = [
-  { keys: '/', action: 'Focus Global Search bar across all tasks, defects & RAID items', category: 'Navigation' },
+  { keys: '/ or Cmd+K', action: 'Open Global Search & Quick-Jump across screens, tasks, defects & RAID', category: 'Navigation' },
   { keys: 'F1 or ?', action: 'Open contextual in-app screen help & user guide', category: 'Dialogs' },
-  { keys: 'Esc', action: 'Close open modal, flyout drawer, or dismiss alert', category: 'Dialogs' },
+  { keys: 'Esc', action: 'Close open modal, flyout drawer, search list, or dismiss alert', category: 'Dialogs' },
   { keys: 'Cmd+E / Ctrl+E', action: 'Export complete project database to Excel workbook', category: 'Actions' },
   { keys: 'G O', action: 'Jump directly to Executive Overview', category: 'Navigation' },
-  { keys: 'G D', action: 'Jump directly to Intelligence Dashboard', category: 'Navigation' },
-  { keys: 'G T', action: 'Jump directly to Tasks Matrix', category: 'Navigation' },
+  { keys: 'G D', action: 'Jump directly to Project Intelligence Cockpit', category: 'Navigation' },
+  { keys: 'G R', action: 'Jump directly to Pulse Reports & CXO Briefing', category: 'Navigation' },
+  { keys: 'G T', action: 'Jump directly to Tasks & Timeline Matrix', category: 'Navigation' },
+  { keys: 'G L', action: 'Jump directly to Project Gantt Timeline', category: 'Navigation' },
+  { keys: 'G F', action: 'Jump directly to Functional Matrix', category: 'Navigation' },
+  { keys: 'G C', action: 'Jump directly to Capacity & Schedule', category: 'Navigation' },
+  { keys: 'G B', action: 'Jump directly to Defect Workshop', category: 'Navigation' },
+  { keys: 'G K', action: 'Jump directly to RAID Register', category: 'Navigation' },
+  { keys: 'G S', action: 'Jump directly to Workspace Settings', category: 'Navigation' },
   { keys: 'Double-Click Cell', action: 'Quick inline edit on supported spreadsheet table cells', category: 'Actions' }
 ];
 

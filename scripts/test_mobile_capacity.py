@@ -18,7 +18,7 @@ async def run_mobile_capacity_test():
         # Navigate to Team Hub then Capacity
         await page.click('nav[aria-label="Mobile Navigation"] button[aria-label="Team"]')
         await page.wait_for_timeout(500)
-        await page.click('button:has-text("Capacity")')
+        await page.get_by_role("button", name="Capacity", exact=True).click()
         await page.wait_for_timeout(1000)
 
         # Verify Page Title

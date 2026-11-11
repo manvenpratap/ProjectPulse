@@ -13,7 +13,7 @@ async def run_auth_verification():
         if await page.locator("button:has-text('Load Demo Database')").is_visible():
             await page.click("button:has-text('Load Demo Database')")
             await page.wait_for_timeout(1000)
-        await page.wait_for_selector("text=Executive Steering & Health Index", timeout=10000)
+        await page.wait_for_selector("h1:has-text('Executive Overview')", timeout=10000)
         
         # Verify Topbar contains the user avatar & Admin badge
         user_btn = page.locator("button[aria-label='User Account and Access Controls']")
@@ -38,26 +38,26 @@ async def run_auth_verification():
         print("✓ Switched to Marcus Vance (Developer)")
         
         # Verify Developer's unique experience: screens NOT permitted must NOT be visible!
-        # Configuration & System Architecture hubs must NOT exist in the sidebar
-        config_hubs = page.locator("button:has-text('Configuration')")
-        assert await config_hubs.count() == 0, "Configuration hub should NOT be visible to Developer"
-        arch_hubs = page.locator("button:has-text('System Architecture')")
-        assert await arch_hubs.count() == 0, "System Architecture hub should NOT be visible to Developer"
-        print("✓ Configuration and System Architecture hubs are hidden from Developer")
+        # Workspace & Schema & Scaffolder must NOT exist in the sidebar for Developer
+        config_hubs = page.locator("button:has-text('Workspace & Schema'), button:has-text('Workspace Settings')")
+        assert await config_hubs.count() == 0, "Workspace & Schema hub should NOT be visible to Developer"
+        scaffolder_items = page.locator("button:has-text('Project Scaffolder')")
+        assert await scaffolder_items.count() == 0, "Project Scaffolder should NOT be visible to Developer"
+        print("✓ Workspace & Schema and Project Scaffolder are hidden from Developer")
 
-        # Screens like Intelligence and Reports must NOT be in the sidebar
-        intel_item = page.locator("button:has-text('Intelligence')")
+        # Screens like Project Intelligence and Pulse Reports must NOT be in the sidebar
+        intel_item = page.locator("button:has-text('Project Intelligence')")
         assert await intel_item.count() == 0, "Intelligence screen should NOT be visible to Developer"
         report_item = page.locator("button:has-text('Pulse Reports')")
         assert await report_item.count() == 0, "Pulse Reports screen should NOT be visible to Developer"
         print("✓ Intelligence and Pulse Reports are hidden from Developer")
 
         # Permitted screens must be visible
-        tasks_item = page.locator("button:has-text('Tasks Matrix')")
-        assert await tasks_item.count() > 0, "Tasks Matrix should be visible to Developer"
+        tasks_item = page.locator("button:has-text('Tasks & Timeline')")
+        assert await tasks_item.count() > 0, "Tasks & Timeline should be visible to Developer"
         defects_item = page.locator("button:has-text('Defect Workshop')")
         assert await defects_item.count() > 0, "Defect Workshop should be visible to Developer"
-        print("✓ Permitted screens (Tasks, Defects) are properly visible to Developer")
+        print("✓ Permitted screens (Tasks & Timeline, Defects) are properly visible to Developer")
 
         print("\n--- TEST 3: Role-Based Screen Visibility for Stakeholder (Elena) ---")
         # Click Elena (Stakeholder) in quick switch
@@ -71,17 +71,27 @@ async def run_auth_verification():
         await stakeholder_badge.wait_for(state="visible")
         print("✓ Switched to Elena Rostova (Stakeholder)")
 
-        # Stakeholder should NOT see Tasks Matrix, Defect Workshop, Team Hub, Configuration, Architecture
-        assert await page.locator("button:has-text('Tasks Matrix')").count() == 0, "Tasks Matrix should NOT be visible to Stakeholder"
+        # Stakeholder should NOT see Tasks & Timeline, Defect Workshop, Team Hub, Workspace & Schema
+        assert await page.locator("button:has-text('Tasks & Timeline')").count() == 0, "Tasks & Timeline should NOT be visible to Stakeholder"
         assert await page.locator("button:has-text('Defect Workshop')").count() == 0, "Defect Workshop should NOT be visible to Stakeholder"
         assert await page.locator("button:has-text('Team Hub')").count() == 0, "Team Hub should NOT be visible to Stakeholder"
-        assert await page.locator("button:has-text('Configuration')").count() == 0, "Configuration should NOT be visible to Stakeholder"
-        print("✓ Tasks, Defects, Team, and Configuration are hidden from Stakeholder")
+        assert await page.locator("button:has-text('Workspace & Schema')").count() == 0, "Workspace & Schema should NOT be visible to Stakeholder"
+        print("✓ Tasks, Defects, Team, and Workspace & Schema are hidden from Stakeholder")
 
-        # Stakeholder should see Executive Overview, Intelligence, Pulse Reports, Project Timeline, Release Roadmap
+        # Stakeholder should see Executive Overview, Project Intelligence, Pulse Reports, Release Roadmap, Project Timeline (read-only)
         assert await page.locator("button:has-text('Pulse Reports')").count() > 0, "Pulse Reports should be visible to Stakeholder"
-        assert await page.locator("button:has-text('Intelligence')").count() > 0, "Intelligence should be visible to Stakeholder"
-        print("✓ Permitted screens (Overview, Intelligence, Reports, Roadmap) are visible to Stakeholder")
+        assert await page.locator("button:has-text('Project Intelligence')").count() > 0, "Project Intelligence should be visible to Stakeholder"
+        assert await page.locator("button:has-text('Release Roadmap')").count() > 0, "Release Roadmap should be visible to Stakeholder"
+        assert await page.locator("button:has-text('Project Timeline')").count() > 0, "Read-only Project Timeline should be visible to Stakeholder under Planning & Scope"
+        print("✓ Permitted screens (Overview, Intelligence, Reports, Roadmap, Timeline) are visible to Stakeholder")
+
+        # Open read-only Project Timeline as Stakeholder -> must render standalone TimelineView without New Task
+        await page.locator("aside button:has-text('Project Timeline')").first.click()
+        await page.wait_for_timeout(600)
+        assert await page.locator("h1:has-text('Project Timeline & Gantt')").is_visible(), "Stakeholder timeline should render standalone TimelineView"
+        assert await page.locator("header button:has-text('New Task')").count() == 0, "Stakeholder should NOT see New Task button on read-only Timeline"
+        assert await page.locator("header button:has-text('Jump to Today')").is_visible(), "Stakeholder should see Jump to Today primary action on Timeline"
+        print("✓ Stakeholder read-only Project Timeline hides New Task & renders Jump to Today")
 
         print("\n--- TEST 4: Direct Access Guard & Return to Workspace ---")
         # If an unauthorized screen is triggered, AccessDenied displays with 'Return to Workspace'
@@ -92,6 +102,8 @@ async def run_auth_verification():
         admin_switch_btn = page.locator("button:has-text('Sarah')").first
         await admin_switch_btn.click()
         await page.wait_for_timeout(500)
+        await page.locator("aside button:has-text('Executive Overview')").first.click()
+        await page.wait_for_timeout(400)
 
         # Open Access Manager Modal via Topbar flyout
         await user_btn.click()
@@ -145,12 +157,12 @@ async def run_auth_verification():
         await page.wait_for_timeout(800)
         
         # Check workspace is restored
-        await page.wait_for_selector("text=Executive Steering & Health Index", timeout=5000)
+        await page.wait_for_selector("h1:has-text('Executive Overview')", timeout=5000)
         print("✓ Persona quick login succeeded: Workspace restored!")
         
         print("\n--- TEST 6: Admin Access to Settings ---")
-        # Navigate to Settings via sidebar (visible to Admin)
-        config_btn = page.locator("button:has-text('Configuration')").first
+        # Navigate to Workspace Settings via sidebar (Workspace & Schema hub defaultView is settings)
+        config_btn = page.locator("button:has-text('Workspace & Schema'), button:has-text('Workspace Settings')").first
         await config_btn.click()
         await page.wait_for_timeout(500)
         

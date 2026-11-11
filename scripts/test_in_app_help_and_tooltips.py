@@ -88,7 +88,7 @@ def test_in_app_help_and_tooltips():
         shortcuts_tab.click()
         page.wait_for_timeout(300)
 
-        assert page.locator("text=Focus Global Search bar").is_visible(), "Search shortcut missing"
+        assert page.locator("text=Open Global Search & Quick-Jump").is_visible(), "Search shortcut missing"
         assert page.locator("text=F1 or ?").is_visible(), "F1 help shortcut missing"
         assert page.locator("text=Offline-First Engine").is_visible(), "Architecture notes missing"
         print("✓ Keyboard shortcuts and architecture notes verified")

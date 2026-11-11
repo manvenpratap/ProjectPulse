@@ -42,19 +42,29 @@ import { motion, AnimatePresence } from 'motion/react';
 const COLORS = ['#4F46E5', '#10B981', '#F59E0B', '#E11D48', '#8B5CF6', '#06B6D4', '#EC4899'];
 
 type ReportType = 'status' | 'cxo' | 'milestones' | 'workload' | 'architecture';
+const VALID_REPORT_TABS = new Set(['status', 'cxo', 'milestones', 'workload', 'architecture']);
 
 const ReportView: React.FC = () => {
-  const { state } = useProject();
+  const { state, activeSubTab } = useProject();
   const [reportType, setReportType] = useState<ReportType>(() => {
+    if (activeSubTab?.view === 'reports' && VALID_REPORT_TABS.has(activeSubTab.tab)) {
+      return activeSubTab.tab as ReportType;
+    }
     if (typeof window !== 'undefined') {
       const stored = window.sessionStorage.getItem('pp-report-subtab') as ReportType | null;
-      if (stored) {
+      if (stored && VALID_REPORT_TABS.has(stored)) {
         window.sessionStorage.removeItem('pp-report-subtab');
         return stored;
       }
     }
     return 'status';
   });
+
+  useEffect(() => {
+    if (activeSubTab?.view === 'reports' && VALID_REPORT_TABS.has(activeSubTab.tab)) {
+      setReportType(activeSubTab.tab as ReportType);
+    }
+  }, [activeSubTab?.seq, activeSubTab?.view, activeSubTab?.tab]);
 
   useEffect(() => {
     const handleSwitchTab = (e: CustomEvent<ReportType>) => {

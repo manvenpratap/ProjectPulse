@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useMemo, useCallback } from 'react';
 import { useProject } from '../../store/ProjectContext';
+import { useAuth } from '../../store/AuthContext';
 import { 
   GanttChart as GanttIcon, 
   ZoomIn, 
@@ -53,6 +54,9 @@ export interface TimelineViewProps {
 
 export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) => {
   const { state } = useProject();
+  const { canPerform } = useAuth();
+  const canCreate = canPerform('canCreateTask');
+  const canEdit = canPerform('canEditTask');
 
   // Control states
   const [zoom, setZoom] = useState<ZoomMode>('week');
@@ -823,6 +827,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
 
   // Handle canvas click to edit task
   const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (!canEdit) return;
     const cvs = bodyCanvasRef.current;
     if (!cvs) return;
     const rect = cvs.getBoundingClientRect();
@@ -913,16 +918,29 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
             </div>
           }
           primaryAction={
-            <Button 
-              variant="primary" 
-              size="sm" 
-              onClick={() => { setSelectedTaskId(null); setIsModalOpen(true); }}
-              className="text-xs font-bold h-9 min-h-[36px] active:scale-95 px-3.5 shadow-xs flex items-center gap-1.5"
-              title="Create a new scheduled task"
-            >
-              <Plus size={14} />
-              <span>New Task</span>
-            </Button>
+            canCreate ? (
+              <Button 
+                variant="primary" 
+                size="sm" 
+                onClick={() => { setSelectedTaskId(null); setIsModalOpen(true); }}
+                className="text-xs font-bold h-9 min-h-[36px] active:scale-95 px-3.5 shadow-xs flex items-center gap-1.5"
+                title="Create a new scheduled task"
+              >
+                <Plus size={14} />
+                <span>New Task</span>
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={jumpToToday}
+                className="text-xs font-bold h-9 min-h-[36px] active:scale-95 px-3.5 flex items-center gap-1.5"
+                title="Jump to current date on timeline"
+              >
+                <CalendarDays size={14} />
+                <span>Jump to Today</span>
+              </Button>
+            )
           }
         />
       )}
@@ -1171,8 +1189,11 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
                     return (
                       <div
                         key={t.id}
-                        onClick={() => { setSelectedTaskId(t.id); setIsModalOpen(true); }}
-                        className="h-[36px] px-3 border-b border-[var(--color-divider)] flex items-center gap-2 text-xs hover:bg-[var(--color-surface-2)] cursor-pointer transition-colors"
+                        onClick={() => { if (canEdit) { setSelectedTaskId(t.id); setIsModalOpen(true); } }}
+                        className={clsx(
+                          "h-[36px] px-3 border-b border-[var(--color-divider)] flex items-center gap-2 text-xs transition-colors",
+                          canEdit ? "hover:bg-[var(--color-surface-2)] cursor-pointer" : "cursor-default"
+                        )}
                       >
                         <span 
                           className="w-2 h-2 rounded-full shrink-0" 
@@ -1235,7 +1256,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
                           return (
                             <div
                               key={t.id}
-                              onClick={() => { setSelectedTaskId(t.id); setIsModalOpen(true); }}
+                              onClick={() => { if (canEdit) { setSelectedTaskId(t.id); setIsModalOpen(true); } }}
                               className="h-[36px] pl-6 pr-3 border-b border-[var(--color-divider)] flex items-center gap-2 text-xs hover:bg-[var(--color-surface-2)] cursor-pointer transition-colors"
                             >
                               <span 
