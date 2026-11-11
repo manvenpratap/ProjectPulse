@@ -70,34 +70,53 @@ export const FunctionalMatrix: React.FC = () => {
 
   const features = state.features || [];
 
-  // ── 1. Discover all project screens across tasks & subtasks ──
+  // ── 1. Discover all project screens across tasks, subtasks & features ──
   const { allScreens, screenModuleMap, screenTasksMap } = useMemo(() => {
     const screens = new Set<string>();
     const modMap: Record<string, string> = {};
     const taskMap: Record<string, Task[]> = {};
 
+    const registerScreen = (name: string, task?: Task, mod?: string) => {
+      const clean = name.trim();
+      if (!clean) return;
+      screens.add(clean);
+      if (mod && !modMap[clean]) modMap[clean] = mod;
+      if (task) {
+        if (!taskMap[clean]) taskMap[clean] = [];
+        if (!taskMap[clean].includes(task)) taskMap[clean].push(task);
+      }
+    };
+
+    // 1. Scan task GUI screens
     state.tasks.forEach(t => {
       const taskMod = t.module || 'General';
 
-      // Check subtasks
+      if (t.guiScreens) {
+        if (Array.isArray(t.guiScreens)) {
+          t.guiScreens.forEach(sc => registerScreen(sc, t, taskMod));
+        } else if (typeof t.guiScreens === 'string') {
+          (t.guiScreens as string).split(',').forEach(sc => registerScreen(sc, t, taskMod));
+        }
+      }
+
+      // Check subtasks specifically designated as screens
       if (t.subtasks && t.subtasks.length > 0) {
         t.subtasks.forEach(st => {
-          if (st.name) {
-            screens.add(st.name);
-            if (!modMap[st.name]) modMap[st.name] = taskMod;
-            if (!taskMap[st.name]) taskMap[st.name] = [];
-            taskMap[st.name].push(t);
+          if ((st.type === 'screen' || (st as any).isScreen) && st.name) {
+            registerScreen(st.name, t, taskMod);
           }
         });
       }
 
-      // Check task name if module looks like a screen or category is GUI
-      if (t.name && (t.category === 'GUI Screen' || t.name.toLowerCase().includes('screen') || t.name.toLowerCase().includes('view') || t.name.toLowerCase().includes('dashboard'))) {
-        screens.add(t.name);
-        if (!modMap[t.name]) modMap[t.name] = taskMod;
-        if (!taskMap[t.name]) taskMap[t.name] = [];
-        taskMap[t.name].push(t);
+      // Check task name if category is GUI Screen
+      if (t.name && t.category === 'GUI Screen') {
+        registerScreen(t.name, t, taskMod);
       }
+    });
+
+    // 2. Scan features' declared screens
+    features.forEach(f => {
+      (f.screens || []).forEach(sc => registerScreen(sc, undefined, f.category || 'General'));
     });
 
     return {
@@ -105,23 +124,30 @@ export const FunctionalMatrix: React.FC = () => {
       screenModuleMap: modMap,
       screenTasksMap: taskMap
     };
-  }, [state.tasks]);
+  }, [state.tasks, features]);
 
   // ── 2. Derive mapped vs unmapped screens ──
-  const { allMappedScreens, unmappedScreens } = useMemo(() => {
-    const mapped = new Set<string>();
+  const { allMappedScreens, mappedScreens, unmappedScreens } = useMemo(() => {
+    const screensInFeatures = new Set<string>();
     features.forEach(f => {
-      (f.screens || []).forEach(s => mapped.add(s));
+      (f.screens || []).forEach(s => {
+        const clean = s.trim();
+        if (clean) screensInFeatures.add(clean);
+      });
     });
-    const unmapped = allScreens.filter(s => !mapped.has(s));
+
+    const mapped = allScreens.filter(s => screensInFeatures.has(s));
+    const unmapped = allScreens.filter(s => !screensInFeatures.has(s));
+
     return {
-      allMappedScreens: mapped,
+      allMappedScreens: screensInFeatures,
+      mappedScreens: mapped,
       unmappedScreens: unmapped
     };
   }, [features, allScreens]);
 
   const coveragePct = allScreens.length > 0 
-    ? Math.round(((allScreens.length - unmappedScreens.length) / allScreens.length) * 100) 
+    ? Math.round((mappedScreens.length / allScreens.length) * 100) 
     : 100;
 
   // ── 3. Derive Feature Telemetry (Maturation, Linked Tasks, Overdue, Dates) ──
@@ -143,6 +169,7 @@ export const FunctionalMatrix: React.FC = () => {
       const linkedTasks = state.tasks.filter(t => 
         t.module === f.name || 
         screens.includes(t.name) || 
+        (t.guiScreens && (Array.isArray(t.guiScreens) ? t.guiScreens.some(sc => screens.includes(sc)) : screens.includes(String(t.guiScreens)))) ||
         (t.subtasks && t.subtasks.some(st => screens.includes(st.name)))
       );
 
@@ -523,7 +550,7 @@ export const FunctionalMatrix: React.FC = () => {
       <PageHeader
         icon={Layers}
         title="Functional Matrix & Architecture"
-        subtitle={`${totalFeatures} Strategic Capabilities • ${allMappedScreens.size}/${allScreens.length} Screens Mapped • ${coveragePct}% Architecture Coverage`}
+        subtitle={`${totalFeatures} Strategic Capabilities • ${mappedScreens.length}/${allScreens.length} Screens Mapped • ${coveragePct}% Architecture Coverage`}
         actions={
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 max-w-full flex-wrap">
             {/* View Mode Switcher */}
@@ -645,7 +672,7 @@ export const FunctionalMatrix: React.FC = () => {
                         "text-[10px] font-mono px-2 py-0.5 rounded-full font-bold",
                         unmappedScreens.length === 0 ? "bg-emerald-500/15 text-emerald-600" : "bg-amber-500/15 text-amber-600"
                       )}>
-                        {coveragePct}% Covered ({allMappedScreens.size} of {allScreens.length} mapped)
+                        {coveragePct}% Covered ({mappedScreens.length} of {allScreens.length} mapped)
                       </span>
                     </h3>
                     <p className="text-[11px] text-[var(--color-text-muted)]">
@@ -726,7 +753,7 @@ export const FunctionalMatrix: React.FC = () => {
           </div>
           <div className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-between">
             <span className="font-semibold text-[var(--color-text-muted)]">Mapped Screens</span>
-            <span className="font-mono font-bold text-sm text-cyan-600 dark:text-cyan-400">{allMappedScreens.size} / {allScreens.length}</span>
+            <span className="font-mono font-bold text-sm text-cyan-600 dark:text-cyan-400">{mappedScreens.length} / {allScreens.length}</span>
           </div>
           <div className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-between">
             <span className="font-semibold text-[var(--color-text-muted)]">Avg Maturation</span>
