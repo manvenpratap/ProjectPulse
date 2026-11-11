@@ -1,16 +1,16 @@
 # Graph Report - ProjectPulse 2.0  (2026-11-11)
 
 ## Corpus Check
-- 79 files · ~194,947 words
+- 79 files · ~196,978 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 437 nodes · 1263 edges · 19 communities (18 shown, 1 thin omitted)
+- 443 nodes · 1270 edges · 19 communities (18 shown, 1 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ad62f09e`
+- Built from commit: `b79f6310`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -45,42 +45,42 @@
 10. `TaskPriority` - 17 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `FeatureSwimlaneChart()` --calls--> `fmtDate()`  [EXTRACTED]
-  src/components/architect/FeatureSwimlaneChart.tsx → src/utils/projectUtils.ts
-- `TaskView()` --calls--> `useProject()`  [EXTRACTED]
-  src/components/tasks/TaskView.tsx → src/store/ProjectContext.tsx
 - `ThemeFlyout()` --calls--> `useProject()`  [EXTRACTED]
   src/components/layout/ThemeFlyout.tsx → src/store/ProjectContext.tsx
 - `HelpModal()` --calls--> `useProject()`  [EXTRACTED]
   src/components/shared/HelpModal.tsx → src/store/ProjectContext.tsx
-- `AIPulseAnalysis()` --calls--> `useProject()`  [EXTRACTED]
-  src/components/dashboard/AIPulseAnalysis.tsx → src/store/ProjectContext.tsx
+- `VelocityBandChart()` --calls--> `useProject()`  [EXTRACTED]
+  src/components/dashboard/VelocityBandChart.tsx → src/store/ProjectContext.tsx
+- `ScaffolderView()` --calls--> `useProject()`  [EXTRACTED]
+  src/components/architect/ScaffolderView.tsx → src/store/ProjectContext.tsx
+- `StepTemplates()` --calls--> `useProject()`  [EXTRACTED]
+  src/components/architect/StepTemplates.tsx → src/store/ProjectContext.tsx
 
 ## Communities (19 total, 1 thin omitted)
 
 ### Community 0 - "Community 0"
-Cohesion: 0.06
-Nodes (63): FEAT_PALETTE, FeatureTimelineChart(), FeatureTimelineChartProps, HitArea, RELEASE_STATUS_COLORS, TimelineRow, ZoomMode, ComplexityFilter (+55 more)
+Cohesion: 0.07
+Nodes (53): DomainTab, FieldArchitect(), PHASE_COLORS, STANDARD_BLUEPRINT_PRESETS, StepTemplates(), SyncStep, SEVERITY_COLORS, STATUS_COLORS (+45 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.09
-Nodes (53): DetailCardType, OverviewView(), blendColors(), buildDeliveriesSheet(), buildDeliveriesWorkbook(), buildExecutiveDashboardSheet(), buildFeatureMatrixWorkbook(), buildFeatureRolloutsSheet() (+45 more)
+Cohesion: 0.05
+Nodes (56): FunctionalMatrix(), AIPulseAnalysis(), BurndownChart(), ModuleDeliveryMatrix(), PredictiveIntelligence(), DefectModal(), DefectModalProps, DEF_ST_MAP (+48 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.06
-Nodes (44): AccessDenied(), AccessDeniedProps, AccessManagerModal(), AccessManagerModalProps, LoginView(), getAllNavItems(), getHubForView(), NAV_HUBS (+36 more)
+Cohesion: 0.09
+Nodes (49): blendColors(), buildDeliveriesSheet(), buildDeliveriesWorkbook(), buildExecutiveDashboardSheet(), buildFeatureMatrixWorkbook(), buildFeatureRolloutsSheet(), buildFeatureScreenTraceabilitySheet(), buildUnifiedTasksSheet() (+41 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.06
-Nodes (45): FunctionalMatrix(), BurndownChart(), PredictiveIntelligence(), DefectModal(), DefectModalProps, DEF_ST_MAP, DefectView(), DensityMode (+37 more)
+Cohesion: 0.07
+Nodes (40): AccessDenied(), AccessDeniedProps, AccessManagerModal(), AccessManagerModalProps, LoginView(), getAllNavItems(), getHubForView(), NAV_HUBS (+32 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.07
-Nodes (26): PHASE_COLORS, STANDARD_BLUEPRINT_PRESETS, StepTemplates(), SyncStep, AIPulseAnalysis(), CATEGORIES, SprintRetroView(), analyzeProject() (+18 more)
+Cohesion: 0.06
+Nodes (38): FEAT_PALETTE, FeatureSwimlaneChart(), FeatureSwimlaneChartProps, HitArea, LaneGroup, RELEASE_STATUS_COLORS, SwimlaneCategoryTrackProps, SwimlaneRow (+30 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.12
-Nodes (15): DomainTab, FieldArchitect(), getMergedFieldGuide(), GLOBAL_SHORTCUTS, ShortcutItem, STANDARD_FIELD_GUIDE, StandardFieldItem, VIEW_HELP_DATA (+7 more)
+Cohesion: 0.15
+Nodes (14): DashboardView(), DetailCardType, OverviewView(), WhatIfSandbox(), CxoEmailBriefing(), CxoEmailBriefingProps, CxoEmailModal(), CxoEmailModalProps (+6 more)
 
 ### Community 6 - "Community 6"
 Cohesion: 0.12
@@ -99,8 +99,8 @@ Cohesion: 0.17
 Nodes (11): ⚡ Bi-directional Excel Sync Sequence, code:mermaid (flowchart TD), code:mermaid (flowchart LR), code:mermaid (sequenceDiagram), code:mermaid (flowchart LR), code:mermaid (stateDiagram-v2), 🌊 Project Data Flow Pipeline, 🔄 Project Governance & Delivery Workflow (+3 more)
 
 ### Community 10 - "Community 10"
-Cohesion: 0.18
-Nodes (9): FEAT_PALETTE, FeatureSwimlaneChart(), FeatureSwimlaneChartProps, HitArea, LaneGroup, RELEASE_STATUS_COLORS, SwimlaneCategoryTrackProps, SwimlaneRow (+1 more)
+Cohesion: 0.29
+Nodes (9): getMergedFieldGuide(), GLOBAL_SHORTCUTS, ShortcutItem, STANDARD_FIELD_GUIDE, StandardFieldItem, VIEW_HELP_DATA, ViewHelpItem, HelpModal() (+1 more)
 
 ### Community 11 - "Community 11"
 Cohesion: 0.18
@@ -119,24 +119,24 @@ Cohesion: 0.5
 Nodes (3): 📚 Core Documentation, ⚡ Key Highlights, Welcome to the ProjectPulse Wiki
 
 ## Knowledge Gaps
-- **140 isolated node(s):** `env`, `WidgetLayout`, `ProjectSettings`, `NavItem`, `NavHub` (+135 more)
+- **142 isolated node(s):** `env`, `WidgetLayout`, `ProjectSettings`, `NavItem`, `NavHub` (+137 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **1 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `useProject()` connect `Community 3` to `Community 0`, `Community 1`, `Community 2`, `Community 4`, `Community 5`, `Community 7`, `Community 12`?**
-  _High betweenness centrality (0.170) - this node is a cross-community bridge._
-- **Why does `useAuth()` connect `Community 2` to `Community 0`, `Community 1`?**
+- **Why does `useProject()` connect `Community 1` to `Community 0`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 7`, `Community 10`, `Community 12`?**
+  _High betweenness centrality (0.169) - this node is a cross-community bridge._
+- **Why does `fmtDate()` connect `Community 4` to `Community 0`, `Community 1`, `Community 2`, `Community 5`?**
   _High betweenness centrality (0.015) - this node is a cross-community bridge._
-- **Why does `fmtDate()` connect `Community 0` to `Community 1`, `Community 10`, `Community 3`, `Community 4`?**
+- **Why does `TaskStatus` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`?**
   _High betweenness centrality (0.015) - this node is a cross-community bridge._
 - **What connects `env`, `WidgetLayout`, `ProjectSettings` to the rest of the system?**
-  _140 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _142 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.06 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.09 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05 - nodes in this community are weakly interconnected._
 - **Should `Community 2` be split into smaller, more focused modules?**
-  _Cohesion score 0.06 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.09 - nodes in this community are weakly interconnected._

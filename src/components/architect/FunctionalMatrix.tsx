@@ -4,7 +4,7 @@ import {
   Layers, 
   Plus, 
   Search, 
-  Map, 
+  Map as MapIcon, 
   Activity,
   Edit2, 
   Trash2, 
@@ -30,7 +30,10 @@ import {
   ArrowUpDown,
   ChevronDown,
   Calendar,
-  AlertCircle
+  AlertCircle,
+  Sparkles,
+  ListChecks,
+  Link as LinkIcon
 } from 'lucide-react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
@@ -46,6 +49,119 @@ import FeatureSwimlaneChart from './FeatureSwimlaneChart';
 type ViewMode = 'matrix' | 'table' | 'timeline' | 'swimlane';
 type ComplexityFilter = 'all' | 'simple' | 'moderate' | 'complex';
 
+// ── Intelligence & Auto-Inference Constants & Algorithms (HTML Reference Parity) ──
+const FEAT_STOP_WORDS = new Set([
+  'screen', 'view', 'page', 'modal', 'form', 'ui', 'tab', 'component',
+  'dialog', 'popup', 'panel', 'widget', 'list', 'details', 'overview',
+  'manage', 'management', 'settings', 'setting', 'edit', 'create', 'add',
+  'new', 'v1', 'v2', 'the', 'a', 'and', 'for', 'to', 'module'
+]);
+
+function featTokenise(str: string): string[] {
+  return (str || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(t => t.length > 1 && !FEAT_STOP_WORDS.has(t));
+}
+
+function inferFeatureCategory(name: string, desc: string = ''): string {
+  const text = `${name || ''} ${desc || ''}`.toLowerCase();
+  if (/\b(governance|compliance|audit|aml|kyc|tax|regulatory|sanction|sanctions|forensic|forensics)\b/.test(text)) return 'Compliance';
+  if (/\b(risk|var|margin|collateral|credit|underwriting)\b/.test(text)) return 'Risk Management';
+  if (/\b(rebalance|rebalancing|portfolio)\b/.test(text)) return 'Portfolio Management';
+  if (/\b(crypto|token|tokenization|smart contract|blockchain|liquidity pool|yield|staking)\b/.test(text)) return 'Digital Assets';
+  if (/\b(billing|invoice|invoicing|fee|commission|rebate)\b/.test(text)) return 'Billing';
+  if (/\b(payment|payments|remittance|wire|currency|fx|sepa|swift)\b/.test(text)) return 'Payments';
+  if (/\b(market data|ticker|orderbook|market intelligence)\b/.test(text)) return 'Market Data';
+  if (/\b(order|orders|trade|trading|trades|matching|execution|lending|borrowing|bond|bonds|derivative|derivatives|option|options|algo)\b/.test(text)) return 'Trading';
+  if (/\b(analytics|analytic|dashboard|intelligence|chart|sunburst|etl|bi|reporting|kpi|metric)\b/.test(text)) return 'Analytics';
+  if (/\b(auth|authentication|oauth|sso|security|mfa|permission|rbac|identity)\b/.test(text)) return 'Security & Auth';
+  if (/\b(architecture|infrastructure|gateway|api|pipeline|microservice|cluster|cache)\b/.test(text)) return 'Architecture';
+  return 'Core Platform';
+}
+
+function inferTargetRelease(
+  selectedScreens: string[],
+  screenTasksMap: Record<string, Task[]>,
+  releases: { name: string }[]
+): string | null {
+  if (!selectedScreens.length) return null;
+
+  const releaseOrderMap = new Map<string, number>();
+  releases.forEach((r, idx) => {
+    if (r.name) releaseOrderMap.set(r.name.trim(), idx);
+  });
+
+  let bestIdx = -1;
+  let bestRelease = '';
+
+  selectedScreens.forEach(scName => {
+    const parentTasks = screenTasksMap[scName] || [];
+    parentTasks.forEach(t => {
+      const rv = (t.release || (t as any).releaseVersion || '').trim();
+      if (!rv) return;
+      if (releaseOrderMap.has(rv)) {
+        const ord = releaseOrderMap.get(rv)!;
+        if (ord > bestIdx) {
+          bestIdx = ord;
+          bestRelease = rv;
+        }
+      } else if (!bestRelease) {
+        bestRelease = rv;
+      }
+    });
+  });
+
+  return bestRelease || null;
+}
+
+function computeScreenSuggestions(
+  featName: string,
+  selectedScreens: string[],
+  allScreens: string[],
+  screenModuleMap: Record<string, string>
+): { name: string; module: string; score: number }[] {
+  const selectedSet = new Set(selectedScreens);
+  const refTokens = new Set<string>(featTokenise(featName));
+  selectedScreens.forEach(s => featTokenise(s).forEach(t => refTokens.add(t)));
+
+  if (refTokens.size === 0) return [];
+
+  const scored: { name: string; module: string; score: number }[] = [];
+  allScreens.forEach(s => {
+    if (selectedSet.has(s)) return;
+    const mod = screenModuleMap[s] || '';
+    const sTokens = [...featTokenise(s), ...featTokenise(mod)];
+    let overlap = 0;
+    sTokens.forEach(t => {
+      if (refTokens.has(t)) overlap++;
+    });
+    if (overlap >= 1) {
+      scored.push({ name: s, module: mod, score: overlap });
+    }
+  });
+
+  scored.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name));
+  return scored.slice(0, 8);
+}
+
+const STANDARD_CATEGORIES = [
+  'Core Platform',
+  'Architecture',
+  'Trading',
+  'Risk Management',
+  'Compliance',
+  'Portfolio Management',
+  'Analytics',
+  'Billing',
+  'Payments',
+  'Market Data',
+  'Security & Auth',
+  'Digital Assets',
+  'UI/UX Polish'
+];
+
 export const FunctionalMatrix: React.FC = () => {
   const { state, updateProject } = useProject();
   const [viewMode, setViewMode] = useState<ViewMode>('matrix');
@@ -54,19 +170,27 @@ export const FunctionalMatrix: React.FC = () => {
   const [selectedModule, setSelectedModule] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
   
-  // Coverage Audit Panel Toggle
+  // Coverage Audit Panel Toggle & Maps
   const [showCoverageAudit, setShowCoverageAudit] = useState(false);
   const [unmappedTargetFeature, setUnmappedTargetFeature] = useState<string>('');
+  const [batchAssignMap, setBatchAssignMap] = useState<Record<string, string>>({});
+  const [screenAssignMap, setScreenAssignMap] = useState<Record<string, string>>({});
 
   // Auto-Build Modal
   const [isAutoBuildOpen, setIsAutoBuildOpen] = useState(false);
   const [autoBuildCandidates, setAutoBuildCandidates] = useState<{ name: string; desc: string; screens: string[]; module: string; selected: boolean }[]>([]);
 
-  // Edit / Details Modal
+  // Edit / Details Modal State & Auto-Inference Guards (HTML Parity)
   const [editingIdx, setEditingIdx] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<Feature | null>(null);
   const [newScreenInput, setNewScreenInput] = useState('');
   const [selectedFeature, setSelectedFeature] = useState<Feature | null>(null);
+  const [releaseUserSet, setReleaseUserSet] = useState(false);
+  const [categoryUserSet, setCategoryUserSet] = useState(false);
+  const [releaseAutoInferred, setReleaseAutoInferred] = useState(false);
+  const [categoryAutoInferred, setCategoryAutoInferred] = useState(false);
+  const [screenSearchQuery, setScreenSearchQuery] = useState('');
+  const [screenPickerModule, setScreenPickerModule] = useState<string>('all');
 
   const features = state.features || [];
 
@@ -149,6 +273,22 @@ export const FunctionalMatrix: React.FC = () => {
   const coveragePct = allScreens.length > 0 
     ? Math.round((mappedScreens.length / allScreens.length) * 100) 
     : 100;
+
+  // ── Group unmapped screens by module (HTML Parity: unmappedByModule) ──
+  const unmappedByModule = useMemo(() => {
+    const map: Record<string, string[]> = {};
+    unmappedScreens.forEach(scName => {
+      const mod = screenModuleMap[scName] || 'General';
+      if (!map[mod]) map[mod] = [];
+      map[mod].push(scName);
+    });
+    Object.keys(map).forEach(k => map[k].sort());
+    return map;
+  }, [unmappedScreens, screenModuleMap]);
+
+  const sortedUnmappedModules = useMemo(() => {
+    return Object.keys(unmappedByModule).sort((a, b) => a.localeCompare(b));
+  }, [unmappedByModule]);
 
   // ── 3. Derive Feature Telemetry (Maturation, Linked Tasks, Overdue, Dates) ──
   const featureMetrics = useMemo(() => {
@@ -416,18 +556,142 @@ export const FunctionalMatrix: React.FC = () => {
     }
   ], [features, featureMetrics]);
 
+  // ── Options and Dropdown Data for Modal & Filter ──
+  const allCategoryOptions = useMemo(() => {
+    const set = new Set<string>(STANDARD_CATEGORIES);
+    features.forEach(f => {
+      if (f.category) set.add(f.category);
+    });
+    return Array.from(set).sort();
+  }, [features]);
+
+  const allReleaseOptions = useMemo(() => {
+    const list = (state.releases || []).map(r => r.name).filter(Boolean);
+    if (list.length === 0) return ['v1.0.0', 'v1.1.0', 'v2.0.0'];
+    return list;
+  }, [state.releases]);
+
+  const availableScreenModules = useMemo(() => {
+    const mods = new Set<string>();
+    allScreens.forEach(sc => {
+      mods.add(screenModuleMap[sc] || 'General');
+    });
+    return Array.from(mods).sort();
+  }, [allScreens, screenModuleMap]);
+
+  // Screen Suggestions for Modal (HTML Parity: computeScreenSuggestions)
+  const screenSuggestions = useMemo(() => {
+    if (!editForm) return [];
+    return computeScreenSuggestions(editForm.name, editForm.screens, allScreens, screenModuleMap);
+  }, [editForm?.name, editForm?.screens, allScreens, screenModuleMap]);
+
+  // Candidate screens grouped by module for modal screen picker
+  const candidateScreensByModule = useMemo(() => {
+    if (!editForm) return {};
+    const selectedSet = new Set(editForm.screens);
+    const q = screenSearchQuery.toLowerCase().trim();
+    const map: Record<string, string[]> = {};
+
+    allScreens.forEach(sc => {
+      if (selectedSet.has(sc)) return;
+      const mod = screenModuleMap[sc] || 'General';
+      if (q && !sc.toLowerCase().includes(q) && !mod.toLowerCase().includes(q)) {
+        return;
+      }
+      if (screenPickerModule !== 'all' && mod !== screenPickerModule) {
+        return;
+      }
+      if (!map[mod]) map[mod] = [];
+      map[mod].push(sc);
+    });
+
+    Object.keys(map).forEach(k => map[k].sort());
+    return map;
+  }, [editForm?.screens, allScreens, screenModuleMap, screenSearchQuery, screenPickerModule]);
+
+  // ── Modal Input Handlers with Auto-Inference ──
+  const handleFeatureNameChange = (name: string) => {
+    if (!editForm) return;
+    const updated = { ...editForm, name };
+    if (!categoryUserSet) {
+      const inferredCat = inferFeatureCategory(name, updated.desc);
+      updated.category = inferredCat;
+      setCategoryAutoInferred(true);
+    }
+    setEditForm(updated);
+  };
+
+  const handleAddScreenToEditForm = (screenName: string) => {
+    if (!editForm) return;
+    const clean = screenName.trim();
+    if (!clean || editForm.screens.includes(clean)) return;
+    const nextScreens = [...editForm.screens, clean];
+    const updated = { ...editForm, screens: nextScreens };
+    if (!releaseUserSet) {
+      const inferredRel = inferTargetRelease(nextScreens, screenTasksMap, state.releases || []);
+      if (inferredRel) {
+        updated.release = inferredRel;
+        setReleaseAutoInferred(true);
+      }
+    }
+    setEditForm(updated);
+  };
+
+  const handleRemoveScreenFromEditForm = (screenIndex: number) => {
+    if (!editForm) return;
+    const nextScreens = editForm.screens.filter((_, i) => i !== screenIndex);
+    const updated = { ...editForm, screens: nextScreens };
+    if (!releaseUserSet) {
+      const inferredRel = inferTargetRelease(nextScreens, screenTasksMap, state.releases || []);
+      if (inferredRel) {
+        updated.release = inferredRel;
+        setReleaseAutoInferred(true);
+      } else if (nextScreens.length === 0) {
+        updated.release = '';
+        setReleaseAutoInferred(false);
+      }
+    }
+    setEditForm(updated);
+  };
+
+  const handleClearAutoRelease = () => {
+    setReleaseUserSet(true);
+    setReleaseAutoInferred(false);
+    if (editForm) {
+      setEditForm({ ...editForm, release: '' });
+    }
+  };
+
+  const handleClearAutoCategory = () => {
+    setCategoryUserSet(true);
+    setCategoryAutoInferred(false);
+    if (editForm) {
+      setEditForm({ ...editForm, category: '' });
+    }
+  };
+
   // ── 5. Feature Action Handlers ──
-  const handleAddFeature = () => {
+  const handleAddFeature = (initialScreens?: string[], defaultName?: string) => {
+    const sc = initialScreens || [];
+    const inferredRel = inferTargetRelease(sc, screenTasksMap, state.releases || []) || 'v1.0.0';
+    const inferredCat = defaultName ? inferFeatureCategory(defaultName) : 'Core Platform';
     const newFeature: Feature = {
-      name: 'New Strategic Feature',
-      desc: 'Define the architectural scope and user journey goals here.',
-      screens: [],
-      release: 'v1.0.0',
-      category: 'Core Platform'
+      name: defaultName || 'New Strategic Feature',
+      desc: sc.length > 0 
+        ? `Architectural feature node mapping ${sc.length} interface screen(s).` 
+        : 'Define the architectural scope and user journey goals here.',
+      screens: [...sc],
+      release: inferredRel,
+      category: inferredCat
     };
-    updateProject({ features: [...features, newFeature] });
     setEditingIdx(features.length);
     setEditForm(newFeature);
+    setReleaseUserSet(false);
+    setCategoryUserSet(false);
+    setReleaseAutoInferred(Boolean(sc.length && inferredRel));
+    setCategoryAutoInferred(Boolean(defaultName && inferredCat));
+    setNewScreenInput('');
+    setScreenSearchQuery('');
   };
 
   const removeFeature = (idx: number) => {
@@ -441,20 +705,45 @@ export const FunctionalMatrix: React.FC = () => {
     setEditingIdx(idx);
     setEditForm({ ...features[idx] });
     setNewScreenInput('');
+    setScreenSearchQuery('');
+    setReleaseUserSet(true);
+    setCategoryUserSet(true);
+    setReleaseAutoInferred(false);
+    setCategoryAutoInferred(false);
   };
 
   const saveEdit = () => {
     if (editingIdx === null || !editForm) return;
+    const cleanName = editForm.name.trim();
+    if (!cleanName) {
+      alert('Please enter a feature name before saving.');
+      return;
+    }
+    const finalFeature: Feature = {
+      ...editForm,
+      name: cleanName,
+      screens: editForm.screens.map(s => s.trim()).filter(Boolean)
+    };
     const newFeatures = [...features];
-    newFeatures[editingIdx] = editForm;
+    if (editingIdx < features.length) {
+      newFeatures[editingIdx] = finalFeature;
+    } else {
+      newFeatures.push(finalFeature);
+    }
     updateProject({ features: newFeatures });
     setEditingIdx(null);
     setEditForm(null);
   };
 
-  // Quick Map Unmapped Screen to Feature
+  // Quick Map Unmapped Screen to Feature (or open Create Feature modal)
   const handleAssignUnmappedScreen = (screenName: string, targetFeatureName: string) => {
     if (!targetFeatureName) return;
+    if (targetFeatureName === '__new__') {
+      const mod = screenModuleMap[screenName] || 'General';
+      handleAddFeature([screenName], `${screenName} Feature`);
+      return;
+    }
+
     const targetIdx = features.findIndex(f => f.name === targetFeatureName);
     if (targetIdx < 0) return;
 
@@ -470,17 +759,56 @@ export const FunctionalMatrix: React.FC = () => {
     updateProject({ features: newFeatures });
   };
 
+  // Batch Map all unmapped screens in a module to a feature (or open Create Feature modal)
+  const handleBatchAssignModule = (modName: string) => {
+    const targetVal = batchAssignMap[modName];
+    if (!targetVal) {
+      alert('Please select a target feature from the dropdown first.');
+      return;
+    }
+    const screensInMod = unmappedByModule[modName] || [];
+    if (!screensInMod.length) return;
+
+    if (targetVal === '__new__') {
+      handleAddFeature(screensInMod, `${modName} Capabilities`);
+      return;
+    }
+
+    const targetIdx = features.findIndex(f => f.name === targetVal);
+    if (targetIdx < 0) return;
+
+    const target = features[targetIdx];
+    const existingScreens = new Set(target.screens || []);
+    let addedCount = 0;
+    screensInMod.forEach(s => {
+      if (!existingScreens.has(s)) {
+        existingScreens.add(s);
+        addedCount++;
+      }
+    });
+
+    if (addedCount > 0) {
+      const updated = { ...target, screens: Array.from(existingScreens) };
+      const newFeatures = [...features];
+      newFeatures[targetIdx] = updated;
+      updateProject({ features: newFeatures });
+    }
+  };
+
+  // Map single unmapped screen to a feature (or open Create Feature modal)
+  const handleAssignScreen = (scName: string) => {
+    const targetVal = screenAssignMap[scName];
+    if (!targetVal) {
+      alert('Please select a target feature from the dropdown first.');
+      return;
+    }
+    handleAssignUnmappedScreen(scName, targetVal);
+  };
+
   // Bundle All Unmapped Screens Into a New Feature
   const handleBundleUnmappedScreens = () => {
     if (!unmappedScreens.length) return;
-    const bundledFeature: Feature = {
-      name: 'Interface Extension Node',
-      desc: `Auto-bundled strategic node mapping ${unmappedScreens.length} unassigned interface screens.`,
-      screens: [...unmappedScreens],
-      release: 'v1.1.0',
-      category: 'UI/UX Polish'
-    };
-    updateProject({ features: [...features, bundledFeature] });
+    handleAddFeature(unmappedScreens, 'Interface Extension Capabilities');
     setShowCoverageAudit(false);
   };
 
@@ -638,7 +966,7 @@ export const FunctionalMatrix: React.FC = () => {
           </div>
         }
         primaryAction={
-          <Button variant="primary" size="sm" onClick={handleAddFeature} className="h-9 rounded-xl font-bold px-3 active:scale-95 shrink-0 text-xs shadow-xs">
+          <Button variant="primary" size="sm" onClick={() => handleAddFeature()} className="h-9 rounded-xl font-bold px-3 active:scale-95 shrink-0 text-xs shadow-xs">
             <Plus size={14} className="sm:mr-1" />
             <span className="hidden sm:inline">New Feature</span>
             <span className="sm:hidden">Add</span>
@@ -705,37 +1033,107 @@ export const FunctionalMatrix: React.FC = () => {
                 </div>
               </div>
 
-              {/* Unmapped Screens Grid */}
+              {/* Module-Grouped Unmapped Screens (HTML Parity: unmappedByModule) */}
               {unmappedScreens.length > 0 ? (
-                <div className="p-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl space-y-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
-                    Unassigned Interface Windows & Screens:
-                  </span>
-                  <div className="flex flex-wrap gap-2 max-h-36 overflow-y-auto custom-scroll">
-                    {unmappedScreens.map((s) => (
+                <div className="space-y-3 max-h-96 overflow-y-auto custom-scroll pr-1">
+                  {sortedUnmappedModules.map(modLabel => {
+                    const screensInMod = unmappedByModule[modLabel] || [];
+                    const batchVal = batchAssignMap[modLabel] || '';
+                    return (
                       <div 
-                        key={s} 
-                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[var(--color-surface-2)] border border-amber-500/30 text-amber-700 dark:text-amber-300 text-xs font-semibold"
+                        key={modLabel}
+                        className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl p-3.5 space-y-2.5 shadow-2xs"
                       >
-                        <Monitor size={12} className="text-amber-500 shrink-0" />
-                        <span>{s}</span>
-                        <select
-                          onChange={(e) => {
-                            if (e.target.value) handleAssignUnmappedScreen(s, e.target.value);
-                            e.target.value = '';
-                          }}
-                          defaultValue=""
-                          aria-label={`Assign ${s} to feature`}
-                          className="bg-transparent text-[10px] font-bold text-[var(--color-primary-hex)] underline cursor-pointer outline-none ml-1"
-                        >
-                          <option value="" disabled>Map to...</option>
-                          {features.map(f => (
-                            <option key={f.name} value={f.name}>{f.name}</option>
-                          ))}
-                        </select>
+                        {/* Module Card Header */}
+                        <div className="flex items-center justify-between gap-3 flex-wrap">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-lg bg-[var(--color-primary-hex)]/10 text-[var(--color-primary-hex)] flex items-center justify-center font-bold shrink-0">
+                              <Layers size={13} />
+                            </div>
+                            <span className="text-xs font-extrabold uppercase tracking-wider text-[var(--color-text)]">
+                              {modLabel}
+                            </span>
+                            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text-muted)]">
+                              {screensInMod.length} screen{screensInMod.length !== 1 ? 's' : ''}
+                            </span>
+                          </div>
+
+                          {/* Batch Assign Controls for Module */}
+                          <div className="flex items-center gap-1.5">
+                            <select
+                              value={batchVal}
+                              onChange={(e) => setBatchAssignMap(prev => ({ ...prev, [modLabel]: e.target.value }))}
+                              className="text-xs px-2.5 py-1 rounded-lg border border-[var(--color-divider)] bg-[var(--color-surface-2)] text-[var(--color-text)] outline-none max-w-[180px] cursor-pointer"
+                              title={`Assign all unmapped screens in ${modLabel} to a feature`}
+                            >
+                              <option value="">Assign module to…</option>
+                              {features.map(f => (
+                                <option key={f.name} value={f.name}>{f.name}</option>
+                              ))}
+                              <option value="__new__">+ New Feature…</option>
+                            </select>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleBatchAssignModule(modLabel)}
+                              className="text-[11px] h-7 px-2.5 rounded-lg font-bold shrink-0"
+                              title={`Assign all ${screensInMod.length} screens in ${modLabel}`}
+                            >
+                              <ListChecks size={12} className="mr-1 text-[var(--color-primary-hex)]" />
+                              Assign All
+                            </Button>
+                          </div>
+                        </div>
+
+                        {/* Screens Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                          {screensInMod.map(scName => {
+                            const scVal = screenAssignMap[scName] || '';
+                            return (
+                              <div
+                                key={scName}
+                                className="flex items-center justify-between gap-2 p-2 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-divider)] hover:border-amber-500/40 transition-colors"
+                              >
+                                <div className="flex-1 min-w-0 pr-1">
+                                  <div className="text-xs font-bold text-[var(--color-text)] truncate" title={scName}>
+                                    {scName}
+                                  </div>
+                                  <div className="text-[10px] text-[var(--color-text-faint)] flex items-center gap-1 mt-0.5">
+                                    <Monitor size={10} className="shrink-0 text-amber-500" />
+                                    <span className="truncate">{modLabel}</span>
+                                  </div>
+                                </div>
+
+                                <div className="flex items-center gap-1.5 shrink-0">
+                                  <select
+                                    value={scVal}
+                                    onChange={(e) => setScreenAssignMap(prev => ({ ...prev, [scName]: e.target.value }))}
+                                    className="text-[11px] px-2 py-1 rounded-md border border-[var(--color-divider)] bg-[var(--color-surface)] text-[var(--color-text)] outline-none max-w-[130px] cursor-pointer"
+                                  >
+                                    <option value="">Assign to…</option>
+                                    {features.map(f => (
+                                      <option key={f.name} value={f.name}>{f.name}</option>
+                                    ))}
+                                    <option value="__new__">+ New Feature…</option>
+                                  </select>
+                                  <Button
+                                    variant="primary"
+                                    size="sm"
+                                    onClick={() => handleAssignScreen(scName)}
+                                    className="text-[10px] h-6.5 px-2 rounded-md font-bold shrink-0"
+                                    title={`Map ${scName}`}
+                                  >
+                                    <LinkIcon size={10} className="mr-1" />
+                                    Map
+                                  </Button>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
               ) : null}
             </div>
@@ -1013,7 +1411,7 @@ export const FunctionalMatrix: React.FC = () => {
 
             {filteredFeatures.length === 0 && (
               <div className="col-span-full py-24 text-center border-2 border-dashed border-[var(--color-divider)] rounded-3xl p-8 bg-[var(--color-surface)]">
-                <Map size={48} className="mx-auto text-[var(--color-text-faint)] opacity-40 mb-3" />
+                <MapIcon size={48} className="mx-auto text-[var(--color-text-faint)] opacity-40 mb-3" />
                 <h3 className="font-extrabold text-base text-[var(--color-text)]">No Features Match Filters</h3>
                 <p className="text-xs text-[var(--color-text-muted)] max-w-sm mx-auto mt-1">
                   Adjust your search terms or complexity filters, or auto-generate features from unmapped screens.
@@ -1236,118 +1634,334 @@ export const FunctionalMatrix: React.FC = () => {
         </div>
       )}
 
-      {/* ── 7. Edit / Create Feature Modal ── */}
+      {/* ── 7. Edit / Create Feature Modal (Enhanced with Module-Grouped Screen Picker & Auto-Inference) ── */}
       {editForm && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+          <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            {/* Modal Header */}
             <div className="px-6 py-4 border-b border-[var(--color-divider)] flex justify-between items-center bg-[var(--color-surface-2)]">
-              <h3 className="text-base font-extrabold text-[var(--color-text)]">
-                {editingIdx !== null && editingIdx < features.length ? 'Edit Strategic Feature' : 'Create Strategic Feature'}
-              </h3>
-              <button onClick={() => setEditForm(null)} className="p-1 text-[var(--color-text-faint)] hover:text-[var(--color-text)] cursor-pointer">
+              <div>
+                <h3 className="text-base font-extrabold text-[var(--color-text)]">
+                  {editingIdx !== null && editingIdx < features.length ? 'Edit Strategic Feature' : 'Create Strategic Feature'}
+                </h3>
+                <p className="text-[11px] text-[var(--color-text-muted)] mt-0.5">
+                  Define strategic architectural scope, release targets, and mapped interface components.
+                </p>
+              </div>
+              <button 
+                onClick={() => setEditForm(null)} 
+                className="p-1 text-[var(--color-text-faint)] hover:text-[var(--color-text)] cursor-pointer"
+                aria-label="Close modal"
+              >
                 <X size={16} />
               </button>
             </div>
 
-            <div className="p-6 space-y-4 text-xs">
+            {/* Modal Form Body */}
+            <div className="p-6 space-y-4 text-xs overflow-y-auto custom-scroll flex-1">
               <div>
                 <label className="font-bold text-[var(--color-text-muted)] block mb-1">Feature Name</label>
                 <input 
                   className="w-full px-3 py-2 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl font-bold text-xs outline-none focus:border-[var(--color-primary-hex)] text-[var(--color-text)]"
+                  placeholder="e.g. Risk Analytics & Limit Engine"
                   value={editForm.name}
-                  onChange={e => setEditForm({ ...editForm, name: e.target.value })}
+                  onChange={e => handleFeatureNameChange(e.target.value)}
                 />
               </div>
 
               <div>
                 <label className="font-bold text-[var(--color-text-muted)] block mb-1">Strategic Description / Scope</label>
                 <textarea 
-                  rows={3}
+                  rows={2}
                   className="w-full p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs outline-none focus:border-[var(--color-primary-hex)] text-[var(--color-text)] resize-none"
+                  placeholder="Describe the architectural capabilities, objectives, or user journeys covered by this feature..."
                   value={editForm.desc}
                   onChange={e => setEditForm({ ...editForm, desc: e.target.value })}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Target Release with Auto Inference */}
                 <div>
-                  <label className="font-bold text-[var(--color-text-muted)] block mb-1">Target Release</label>
-                  <input 
-                    className="w-full px-3 py-1.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs outline-none focus:border-[var(--color-primary-hex)] text-[var(--color-text)] font-mono"
-                    value={editForm.release || ''}
-                    placeholder="v1.0.0"
-                    onChange={e => setEditForm({ ...editForm, release: e.target.value })}
-                  />
+                  <div className="flex items-center justify-between gap-1 mb-1">
+                    <label className="font-bold text-[var(--color-text-muted)]">Target Release</label>
+                    {releaseAutoInferred && editForm.release && (
+                      <button
+                        type="button"
+                        onClick={handleClearAutoRelease}
+                        title="Auto-inferred from constituent screen tasks. Click to clear."
+                        className="inline-flex items-center gap-1 text-[10px] font-bold text-[var(--color-primary-hex)] bg-[var(--color-primary-hex)]/10 border border-[var(--color-primary-hex)]/30 rounded-full px-2 py-0.5 hover:bg-[var(--color-primary-hex)]/20 cursor-pointer transition-colors"
+                      >
+                        <Sparkles size={10} />
+                        <span>Auto: {editForm.release}</span>
+                        <span className="text-[9px] opacity-70">✕</span>
+                      </button>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <input 
+                      list="feature-releases-list"
+                      className="w-full px-3 py-1.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs outline-none focus:border-[var(--color-primary-hex)] text-[var(--color-text)] font-mono"
+                      value={editForm.release || ''}
+                      placeholder="e.g. v1.0.0"
+                      onChange={e => {
+                        setReleaseUserSet(true);
+                        setReleaseAutoInferred(false);
+                        setEditForm({ ...editForm, release: e.target.value });
+                      }}
+                    />
+                    <datalist id="feature-releases-list">
+                      {allReleaseOptions.map(r => (
+                        <option key={r} value={r} />
+                      ))}
+                    </datalist>
+                  </div>
                 </div>
+
+                {/* Category with Auto Inference */}
                 <div>
-                  <label className="font-bold text-[var(--color-text-muted)] block mb-1">Category / Domain</label>
-                  <input 
-                    className="w-full px-3 py-1.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs outline-none focus:border-[var(--color-primary-hex)] text-[var(--color-text)]"
-                    value={editForm.category || ''}
-                    placeholder="Architecture"
-                    onChange={e => setEditForm({ ...editForm, category: e.target.value })}
-                  />
+                  <div className="flex items-center justify-between gap-1 mb-1">
+                    <label className="font-bold text-[var(--color-text-muted)]">Category / Domain</label>
+                    {categoryAutoInferred && editForm.category && (
+                      <button
+                        type="button"
+                        onClick={handleClearAutoCategory}
+                        title="Auto-inferred from feature name keywords. Click to clear."
+                        className="inline-flex items-center gap-1 text-[10px] font-bold text-[var(--color-primary-hex)] bg-[var(--color-primary-hex)]/10 border border-[var(--color-primary-hex)]/30 rounded-full px-2 py-0.5 hover:bg-[var(--color-primary-hex)]/20 cursor-pointer transition-colors"
+                      >
+                        <Sparkles size={10} />
+                        <span>Auto: {editForm.category}</span>
+                        <span className="text-[9px] opacity-70">✕</span>
+                      </button>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <input 
+                      list="feature-categories-list"
+                      className="w-full px-3 py-1.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs outline-none focus:border-[var(--color-primary-hex)] text-[var(--color-text)]"
+                      value={editForm.category || ''}
+                      placeholder="e.g. Core Platform"
+                      onChange={e => {
+                        setCategoryUserSet(true);
+                        setCategoryAutoInferred(false);
+                        setEditForm({ ...editForm, category: e.target.value });
+                      }}
+                    />
+                    <datalist id="feature-categories-list">
+                      {allCategoryOptions.map(cat => (
+                        <option key={cat} value={cat} />
+                      ))}
+                    </datalist>
+                  </div>
                 </div>
               </div>
 
-              {/* Mapped Screens */}
-              <div className="space-y-2">
-                <label className="font-bold text-[var(--color-text-muted)] block">Mapped Interface Windows & Screens</label>
-                <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto custom-scroll p-2 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)]">
-                  {editForm.screens.map((sc, sci) => (
-                    <span key={sci} className="px-2 py-0.5 rounded-md bg-[var(--color-surface)] border border-[var(--color-divider)] text-[11px] font-semibold flex items-center gap-1">
-                      <span>{sc}</span>
-                      <button 
-                        onClick={() => {
-                          const next = editForm.screens.filter((_, i) => i !== sci);
-                          setEditForm({ ...editForm, screens: next });
-                        }}
-                        className="text-rose-500 hover:text-rose-600 cursor-pointer"
-                      >
-                        ×
-                      </button>
+              {/* Mapped Screens Header & Chips */}
+              <div className="space-y-2 pt-1 border-t border-[var(--color-divider)]">
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-[var(--color-text)] flex items-center gap-2">
+                    <span>Mapped Interface Windows & Screens</span>
+                    <span className="text-[10px] font-mono px-2 py-0.2 rounded-full font-bold bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-primary-hex)]">
+                      {editForm.screens.length} mapped
                     </span>
-                  ))}
-                  {editForm.screens.length === 0 && (
-                    <span className="text-[11px] text-[var(--color-text-faint)] italic">No screens assigned yet.</span>
+                  </label>
+                  {editForm.screens.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setEditForm({ ...editForm, screens: [] });
+                        if (!releaseUserSet) {
+                          setEditForm(prev => prev ? { ...prev, screens: [], release: '' } : null);
+                          setReleaseAutoInferred(false);
+                        }
+                      }}
+                      className="text-[10px] text-rose-500 hover:text-rose-600 font-bold cursor-pointer"
+                    >
+                      Clear All
+                    </button>
                   )}
                 </div>
 
-                {/* Add Screen Input */}
+                <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto custom-scroll p-2.5 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)]">
+                  {editForm.screens.map((sc, sci) => {
+                    const mod = screenModuleMap[sc] || 'General';
+                    return (
+                      <span 
+                        key={sci} 
+                        className="px-2 py-1 rounded-lg bg-[var(--color-surface)] border border-[var(--color-divider)] text-[11px] font-semibold flex items-center gap-1.5 shadow-2xs"
+                      >
+                        <Monitor size={11} className="text-[var(--color-primary-hex)] shrink-0" />
+                        <span className="text-[var(--color-text)]">{sc}</span>
+                        <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] text-[var(--color-text-muted)] uppercase tracking-wider">
+                          {mod}
+                        </span>
+                        <button 
+                          type="button"
+                          onClick={() => handleRemoveScreenFromEditForm(sci)}
+                          className="text-rose-500 hover:text-rose-600 font-bold ml-0.5 cursor-pointer"
+                          title="Remove screen"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    );
+                  })}
+                  {editForm.screens.length === 0 && (
+                    <span className="text-[11px] text-[var(--color-text-faint)] italic py-1">
+                      No screens assigned yet. Click suggested screens below or choose from the module groups.
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* AI Screen Suggestions (HTML Parity: computeScreenSuggestions) */}
+              {screenSuggestions.length > 0 && (
+                <div className="p-3 rounded-xl bg-[var(--color-primary-hex)]/5 border border-dashed border-[var(--color-primary-hex)]/30 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-[11px] font-extrabold text-[var(--color-primary-hex)] uppercase tracking-wider">
+                      <Sparkles size={13} />
+                      <span>Suggested Screens (Token-Overlap Match)</span>
+                    </div>
+                    <span className="text-[10px] text-[var(--color-text-muted)]">Click pill to add</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {screenSuggestions.map(s => (
+                      <button
+                        key={s.name}
+                        type="button"
+                        onClick={() => handleAddScreenToEditForm(s.name)}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[var(--color-surface)] border border-[var(--color-primary-hex)]/30 hover:border-[var(--color-primary-hex)] hover:bg-[var(--color-primary-hex)]/10 text-xs font-semibold text-[var(--color-text)] transition-all cursor-pointer group shadow-2xs"
+                        title={`Module: ${s.module || 'General'} — Click to add`}
+                      >
+                        <Plus size={11} className="text-[var(--color-primary-hex)] group-hover:scale-125 transition-transform" />
+                        <span>{s.name}</span>
+                        {s.module && (
+                          <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] text-[var(--color-text-muted)] uppercase tracking-wider">
+                            {s.module}
+                          </span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Module-Grouped Screen Selection & Search */}
+              <div className="space-y-2.5 pt-1 border-t border-[var(--color-divider)]">
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <span className="font-bold text-[var(--color-text)] text-xs">
+                    Available Interface Screens by Module
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={screenPickerModule}
+                      onChange={e => setScreenPickerModule(e.target.value)}
+                      className="text-[11px] px-2 py-1 rounded-lg border border-[var(--color-divider)] bg-[var(--color-surface-2)] text-[var(--color-text)] outline-none cursor-pointer"
+                    >
+                      <option value="all">All Modules</option>
+                      {availableScreenModules.map(m => (
+                        <option key={m} value={m}>{m}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Filter / Custom Add Input */}
                 <div className="flex items-center gap-2">
-                  <input 
-                    className="flex-1 px-3 py-1.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs outline-none focus:border-[var(--color-primary-hex)] text-[var(--color-text)]"
-                    placeholder="Type or pick a screen to map..."
-                    value={newScreenInput}
-                    onChange={e => setNewScreenInput(e.target.value)}
-                    onKeyDown={e => {
-                      if (e.key === 'Enter' && newScreenInput.trim()) {
-                        e.preventDefault();
-                        if (!editForm.screens.includes(newScreenInput.trim())) {
-                          setEditForm({ ...editForm, screens: [...editForm.screens, newScreenInput.trim()] });
+                  <div className="relative flex-1">
+                    <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
+                    <input 
+                      className="w-full bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg pl-8 pr-3 py-1.5 text-xs text-[var(--color-text)] outline-none focus:border-[var(--color-primary-hex)] transition-colors"
+                      placeholder="Search screens or enter custom screen..."
+                      value={screenSearchQuery}
+                      onChange={e => setScreenSearchQuery(e.target.value)}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' && screenSearchQuery.trim()) {
+                          e.preventDefault();
+                          handleAddScreenToEditForm(screenSearchQuery.trim());
+                          setScreenSearchQuery('');
                         }
-                        setNewScreenInput('');
-                      }
-                    }}
-                  />
+                      }}
+                    />
+                    {screenSearchQuery && (
+                      <button 
+                        type="button"
+                        onClick={() => setScreenSearchQuery('')} 
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
+                      >
+                        <X size={11} />
+                      </button>
+                    )}
+                  </div>
                   <Button 
+                    type="button"
                     variant="outline" 
                     size="sm"
-                    className="text-xs h-7.5 rounded-lg"
+                    className="text-xs h-7.5 rounded-lg shrink-0 font-bold"
                     onClick={() => {
-                      if (newScreenInput.trim() && !editForm.screens.includes(newScreenInput.trim())) {
-                        setEditForm({ ...editForm, screens: [...editForm.screens, newScreenInput.trim()] });
-                        setNewScreenInput('');
+                      if (screenSearchQuery.trim()) {
+                        handleAddScreenToEditForm(screenSearchQuery.trim());
+                        setScreenSearchQuery('');
                       }
                     }}
                   >
-                    Add
+                    <Plus size={12} className="mr-1 text-[var(--color-primary-hex)]" />
+                    Add Custom
                   </Button>
+                </div>
+
+                {/* Module-Grouped Inventory Grid */}
+                <div className="space-y-2 max-h-48 overflow-y-auto custom-scroll pr-1">
+                  {Object.keys(candidateScreensByModule).length > 0 ? (
+                    Object.entries(candidateScreensByModule).map(([mod, screens]) => (
+                      <div 
+                        key={mod}
+                        className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] space-y-1.5"
+                      >
+                        <div className="flex items-center justify-between text-[11px]">
+                          <div className="flex items-center gap-1.5 font-extrabold uppercase tracking-wider text-[var(--color-text)]">
+                            <Layers size={11} className="text-[var(--color-primary-hex)]" />
+                            <span>{mod}</span>
+                            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text-muted)]">
+                              {screens.length}
+                            </span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              screens.forEach(s => handleAddScreenToEditForm(s));
+                            }}
+                            className="text-[10px] font-bold text-[var(--color-primary-hex)] hover:underline cursor-pointer"
+                          >
+                            + Add All in {mod}
+                          </button>
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {screens.map(sc => (
+                            <button
+                              key={sc}
+                              type="button"
+                              onClick={() => handleAddScreenToEditForm(sc)}
+                              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)] text-[11px] font-medium text-[var(--color-text)] transition-colors cursor-pointer group"
+                            >
+                              <Plus size={10} className="text-[var(--color-text-faint)] group-hover:text-[var(--color-primary-hex)]" />
+                              <span>{sc}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="p-3 text-center text-[11px] text-[var(--color-text-faint)] italic">
+                      No matching unmapped screens found. Type above to add a custom screen.
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
 
-            <div className="px-6 py-4 bg-[var(--color-surface-2)] border-t border-[var(--color-divider)] flex justify-end gap-2">
+            {/* Modal Footer */}
+            <div className="px-6 py-3.5 bg-[var(--color-surface-2)] border-t border-[var(--color-divider)] flex justify-end gap-2">
               <Button variant="ghost" size="sm" onClick={() => setEditForm(null)}>Cancel</Button>
               <Button variant="primary" size="sm" onClick={saveEdit} className="font-bold">Save Changes</Button>
             </div>
