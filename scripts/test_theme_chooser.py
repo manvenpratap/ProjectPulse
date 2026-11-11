@@ -14,6 +14,11 @@ def test_theme_chooser():
         page.goto("http://localhost:3000", wait_until="networkidle")
         time.sleep(1)
 
+        demo_btn = page.locator('button:has-text("Load Demo Database")')
+        if demo_btn.count() > 0 and demo_btn.first.is_visible():
+            demo_btn.first.click()
+            time.sleep(1.2)
+
         # Find theme palette button in topbar
         palette_btn = page.locator('button[aria-label="Appearance and Theme Settings"]')
         assert palette_btn.is_visible(), "Theme palette button must be visible in Topbar"
@@ -21,33 +26,44 @@ def test_theme_chooser():
         time.sleep(0.5)
 
         # Verify Theme Flyout opens
-        flyout_title = page.locator('text=System Aesthetics & Themes')
+        dialog = page.locator('[role="dialog"][aria-label="System Aesthetics & Themes"]')
+        assert dialog.is_visible(), "Theme flyout dialog must be visible"
+        flyout_title = dialog.locator('text=System Aesthetics & Themes')
         assert flyout_title.is_visible(), "Theme flyout header must be visible"
         print("✓ Theme Flyout drawer opened successfully")
 
         # Verify Now Playing card exists
-        now_playing = page.locator('text=Now active:')
+        now_playing = dialog.locator('text=Now active:')
         assert now_playing.is_visible(), "Active theme indicator must be visible"
         print("✓ 'Now Playing' active indicator is visible")
 
-        # Test Filter Pills
+        # Test Filter Pills scoped inside Theme Flyout dialog
         for filter_name in ['Featured', 'Light', 'Dark', 'Classic', 'All']:
-            btn = page.locator(f'button:has-text("{filter_name}")').first
+            btn = dialog.locator(f'button:has-text("{filter_name}")').first
             assert btn.is_visible(), f"Filter pill '{filter_name}' should be visible"
             btn.click()
             time.sleep(0.2)
             print(f"✓ Clicked '{filter_name}' filter pill")
 
         # Test Search Box
-        search_input = page.locator('input[placeholder*="Search themes"]')
+        search_input = dialog.locator('input[placeholder*="themes by name"]')
         assert search_input.is_visible(), "Search input should be visible"
         search_input.fill("nova")
         time.sleep(0.3)
-        
-        # Verify Nova appears
-        nova_card = page.locator('div[role="button"]:has-text("Nova")').first
+
+        # Verify Nova appears with miniature cockpit preview
+        nova_card = dialog.locator('div[role="button"]:has-text("Nova")').first
         assert nova_card.is_visible(), "Nova theme card should appear in search results"
-        print("✓ Search for 'nova' returned Nova theme")
+        nova_text = nova_card.inner_text()
+        assert "Titan Q4" in nova_text, f"Theme card should render miniature UI preview, got: {nova_text}"
+        assert "HEALTH" in nova_text.upper(), f"Theme card should render miniature KPI widget preview, got: {nova_text}"
+        print("✓ Search for 'nova' returned Nova theme with live cockpit preview")
+
+        # Hover check for Live Preview stage in flyout
+        nova_card.hover()
+        time.sleep(0.2)
+        assert dialog.locator('text=Live Preview').is_visible(), "Hovering card should switch Hero stage to Live Preview"
+        print("✓ Hovering theme card updates Hero Live Preview stage")
 
         # Click Nova theme card
         nova_card.click()
@@ -61,8 +77,8 @@ def test_theme_chooser():
         time.sleep(0.3)
 
         # Test Light / Dark Mode Toggle
-        dark_btn = page.locator('button:has-text("🌙 Dark Mode")')
-        light_btn = page.locator('button:has-text("☀️ Light Mode")')
+        dark_btn = dialog.locator('button:has-text("Dark Mode")')
+        light_btn = dialog.locator('button:has-text("Light Mode")')
         assert dark_btn.is_visible() and light_btn.is_visible(), "Light and Dark mode buttons must be visible"
 
         dark_btn.click()
@@ -78,7 +94,7 @@ def test_theme_chooser():
         print("✓ Color mode successfully switched to 'light'")
 
         # Test selecting Terminal theme
-        terminal_card = page.locator('div[role="button"]:has-text("Terminal")').first
+        terminal_card = dialog.locator('div[role="button"]:has-text("Terminal")').first
         if terminal_card.is_visible():
             terminal_card.click()
             time.sleep(0.3)
@@ -87,7 +103,7 @@ def test_theme_chooser():
             print("✓ Theme changed to 'terminal'")
 
         # Close Flyout via 'Seal Configuration'
-        seal_btn = page.locator('button:has-text("Seal Configuration")')
+        seal_btn = dialog.locator('button:has-text("Seal Configuration")')
         seal_btn.click()
         time.sleep(0.5)
         print("✓ Flyout closed via 'Seal Configuration'")
@@ -98,6 +114,11 @@ def test_theme_chooser():
         m_page = mobile_ctx.new_page()
         m_page.goto("http://localhost:3000", wait_until="networkidle")
         time.sleep(1)
+
+        m_demo = m_page.locator('button:has-text("Load Demo Database")')
+        if m_demo.count() > 0 and m_demo.first.is_visible():
+            m_demo.first.click()
+            time.sleep(1.2)
 
         m_palette = m_page.locator('button[aria-label="Appearance and Theme Settings"]')
         assert m_palette.is_visible(), "Palette button should be visible on mobile"

@@ -239,7 +239,7 @@ def test_consolidations_verification():
 
         # Verify ThemeGrid in Settings
         assert page.locator("text=Theme Studio & Design System Chooser").is_visible(), "Theme Studio card not rendered in Settings"
-        assert page.locator('input[placeholder*="Search 26 themes"]').is_visible(), "Theme search bar not rendered in Settings ThemeGrid"
+        assert page.locator('input[placeholder*="themes by name"]').is_visible(), "Theme search bar not rendered in Settings ThemeGrid"
         
         # Test selecting a theme directly inside Settings
         origin_card = page.locator('div[role="button"]:has-text("Origin")').first

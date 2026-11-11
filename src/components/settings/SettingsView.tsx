@@ -29,7 +29,7 @@ import AccessManagerModal from '../auth/AccessManagerModal';
 import { exportProjectExcel, importProjectExcel } from '../../services/excelService';
 import clsx from 'clsx';
 import PageHeader from '../shared/PageHeader';
-import ThemeGrid from '../shared/ThemeGrid';
+import ThemeGrid, { THEMES } from '../shared/ThemeGrid';
 
 const SettingsView: React.FC = () => {
   const { state, updateSettings, updateProject, loadSample, clearAllData } = useProject();
@@ -175,7 +175,7 @@ const SettingsView: React.FC = () => {
                   <div>
                     <h3 className="text-sm font-bold text-[var(--color-text)]">Theme Studio & Design System Chooser</h3>
                     <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                      Select your operational visual aesthetic from 26 Swiss design systems. Changes apply instantly across all matrices and views.
+                      Select your operational visual aesthetic from {THEMES.length} Swiss design systems. Each preview depicts real surfaces, typography, corners, and accents.
                     </p>
                   </div>
                 </div>
