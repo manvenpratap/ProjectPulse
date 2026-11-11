@@ -1762,7 +1762,7 @@
       "label": "RESERVED_CORE_KEYS",
       "file_type": "code",
       "source_file": "src/components/architect/RegistryView.tsx",
-      "source_location": "L34",
+      "source_location": "L33",
       "id": "architect_registryview_reserved_core_keys",
       "community": 11,
       "norm_label": "reserved_core_keys"
@@ -1771,7 +1771,7 @@
       "label": "LIBRARY_LABELS",
       "file_type": "code",
       "source_file": "src/components/architect/RegistryView.tsx",
-      "source_location": "L42",
+      "source_location": "L41",
       "id": "architect_registryview_library_labels",
       "community": 11,
       "norm_label": "library_labels"
@@ -1780,7 +1780,7 @@
       "label": "formatLibraryName()",
       "file_type": "code",
       "source_file": "src/components/architect/RegistryView.tsx",
-      "source_location": "L63",
+      "source_location": "L62",
       "id": "architect_registryview_formatlibraryname",
       "community": 11,
       "norm_label": "formatlibraryname()"
@@ -1789,7 +1789,7 @@
       "label": "getOptionBadgeStyle()",
       "file_type": "code",
       "source_file": "src/components/architect/RegistryView.tsx",
-      "source_location": "L71",
+      "source_location": "L70",
       "id": "architect_registryview_getoptionbadgestyle",
       "community": 11,
       "norm_label": "getoptionbadgestyle()"
@@ -1798,7 +1798,7 @@
       "label": "RegistryView()",
       "file_type": "code",
       "source_file": "src/components/architect/RegistryView.tsx",
-      "source_location": "L94",
+      "source_location": "L93",
       "id": "architect_registryview_registryview",
       "community": 11,
       "norm_label": "registryview()"
@@ -1816,7 +1816,7 @@
       "label": "STANDARD_BLUEPRINT_PRESETS",
       "file_type": "code",
       "source_file": "src/components/architect/StepTemplates.tsx",
-      "source_location": "L47",
+      "source_location": "L46",
       "id": "architect_steptemplates_standard_blueprint_presets",
       "community": 0,
       "norm_label": "standard_blueprint_presets"
@@ -1825,7 +1825,7 @@
       "label": "getCategoryMeta()",
       "file_type": "code",
       "source_file": "src/components/architect/StepTemplates.tsx",
-      "source_location": "L119",
+      "source_location": "L118",
       "id": "architect_steptemplates_getcategorymeta",
       "community": 0,
       "norm_label": "getcategorymeta()"
@@ -1834,7 +1834,7 @@
       "label": "PHASE_COLORS",
       "file_type": "code",
       "source_file": "src/components/architect/StepTemplates.tsx",
-      "source_location": "L139",
+      "source_location": "L138",
       "id": "architect_steptemplates_phase_colors",
       "community": 0,
       "norm_label": "phase_colors"
@@ -1843,7 +1843,7 @@
       "label": "SyncStep",
       "file_type": "code",
       "source_file": "src/components/architect/StepTemplates.tsx",
-      "source_location": "L153",
+      "source_location": "L152",
       "id": "architect_steptemplates_syncstep",
       "community": 0,
       "norm_label": "syncstep"
@@ -1852,7 +1852,7 @@
       "label": "smartSyncSubtasks()",
       "file_type": "code",
       "source_file": "src/components/architect/StepTemplates.tsx",
-      "source_location": "L158",
+      "source_location": "L157",
       "id": "architect_steptemplates_smartsyncsubtasks",
       "community": 0,
       "norm_label": "smartsyncsubtasks()"
@@ -1861,7 +1861,7 @@
       "label": "StepTemplates()",
       "file_type": "code",
       "source_file": "src/components/architect/StepTemplates.tsx",
-      "source_location": "L245",
+      "source_location": "L244",
       "id": "architect_steptemplates_steptemplates",
       "community": 0,
       "norm_label": "steptemplates()"
@@ -2239,7 +2239,7 @@
       "label": "getFileStamp()",
       "file_type": "code",
       "source_file": "src/services/exportService.ts",
-      "source_location": "L48",
+      "source_location": "L56",
       "id": "services_exportservice_getfilestamp",
       "community": 1,
       "norm_label": "getfilestamp()"
@@ -2248,7 +2248,7 @@
       "label": "escapeCSV()",
       "file_type": "code",
       "source_file": "src/services/exportService.ts",
-      "source_location": "L53",
+      "source_location": "L61",
       "id": "services_exportservice_escapecsv",
       "community": 1,
       "norm_label": "escapecsv()"
@@ -2257,7 +2257,7 @@
       "label": "styleHeaderRow()",
       "file_type": "code",
       "source_file": "src/services/exportService.ts",
-      "source_location": "L63",
+      "source_location": "L71",
       "id": "services_exportservice_styleheaderrow",
       "community": 1,
       "norm_label": "styleheaderrow()"
@@ -2266,7 +2266,7 @@
       "label": "exportViewToExcel()",
       "file_type": "code",
       "source_file": "src/services/exportService.ts",
-      "source_location": "L94",
+      "source_location": "L102",
       "id": "services_exportservice_exportviewtoexcel",
       "community": 1,
       "norm_label": "exportviewtoexcel()"
@@ -2275,7 +2275,7 @@
       "label": "exportViewToCSV()",
       "file_type": "code",
       "source_file": "src/services/exportService.ts",
-      "source_location": "L476",
+      "source_location": "L484",
       "id": "services_exportservice_exportviewtocsv",
       "community": 1,
       "norm_label": "exportviewtocsv()"
@@ -2284,7 +2284,7 @@
       "label": "exportViewToJSON()",
       "file_type": "code",
       "source_file": "src/services/exportService.ts",
-      "source_location": "L571",
+      "source_location": "L610",
       "id": "services_exportservice_exportviewtojson",
       "community": 1,
       "norm_label": "exportviewtojson()"
@@ -2293,7 +2293,7 @@
       "label": "exportProjectJSON()",
       "file_type": "code",
       "source_file": "src/services/exportService.ts",
-      "source_location": "L605",
+      "source_location": "L666",
       "id": "services_exportservice_exportprojectjson",
       "community": 1,
       "norm_label": "exportprojectjson()"
@@ -2302,7 +2302,7 @@
       "label": "exportViewToHTML()",
       "file_type": "code",
       "source_file": "src/services/exportService.ts",
-      "source_location": "L637",
+      "source_location": "L698",
       "id": "services_exportservice_exportviewtohtml",
       "community": 1,
       "norm_label": "exportviewtohtml()"
@@ -2311,7 +2311,7 @@
       "label": "copyViewSummaryToClipboard()",
       "file_type": "code",
       "source_file": "src/services/exportService.ts",
-      "source_location": "L764",
+      "source_location": "L825",
       "id": "services_exportservice_copyviewsummarytoclipboard",
       "community": 1,
       "norm_label": "copyviewsummarytoclipboard()"
@@ -2320,7 +2320,7 @@
       "label": "shareViewViaEmail()",
       "file_type": "code",
       "source_file": "src/services/exportService.ts",
-      "source_location": "L848",
+      "source_location": "L909",
       "id": "services_exportservice_shareviewviaemail",
       "community": 1,
       "norm_label": "shareviewviaemail()"
@@ -16260,5 +16260,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "7818d3e77d09f0e557b2ff0a66e3587db27953fc"
+  "built_at_commit": "476e242afb53960be50862cdb1cdda0055a43871"
 }

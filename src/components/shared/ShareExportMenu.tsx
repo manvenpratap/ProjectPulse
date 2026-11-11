@@ -160,7 +160,27 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
     }
   };
 
-  const viewTitle = activeView.charAt(0).toUpperCase() + activeView.slice(1);
+  const VIEW_TITLES: Record<string, string> = {
+    tasks: 'Tasks',
+    deliveries: 'Deliveries',
+    defects: 'Defects',
+    features: 'Features',
+    risks: 'RAID',
+    team: 'Team',
+    log: 'Audit Log',
+    releases: 'Releases',
+    registry: 'Option Libraries',
+    dropdowns: 'Option Libraries',
+    templates: 'Blueprints',
+    steps: 'Blueprints',
+    fields: 'Field Architect',
+    reports: 'Reports',
+    dash: 'Intelligence',
+    overview: 'Overview',
+    settings: 'Settings',
+  };
+
+  const viewTitle = VIEW_TITLES[activeView] || (activeView.charAt(0).toUpperCase() + activeView.slice(1));
 
   return (
     <div className={`relative inline-block text-left ${isOpen ? 'z-[60]' : ''} ${className}`} ref={menuRef}>

@@ -39,6 +39,14 @@ export const getViewItemCount = (state: ProjectState, viewId: string): number =>
       return state.log?.length || 0;
     case 'releases':
       return state.releases?.length || 0;
+    case 'registry':
+    case 'dropdowns':
+      return Object.keys(state.dropdowns || {}).length;
+    case 'templates':
+    case 'steps':
+      return (state.stepTemplates || []).length;
+    case 'fields':
+      return (state.cols?.length || 0) + (state.customFields?.length || 0);
     default:
       return state.tasks?.length || 0;
   }
@@ -551,6 +559,37 @@ export const exportViewToCSV = (state: ProjectState, viewId: string): string => 
       break;
     }
 
+    case 'registry':
+    case 'dropdowns': {
+      const headers = ['LibraryKey', 'Label', 'DefaultValue', 'OptionCount', 'Values'];
+      const rows = Object.entries(state.dropdowns || {}).map(([key, vals]) => [
+        key,
+        key.charAt(0).toUpperCase() + key.slice(1),
+        state.dropdownDefaults?.[key] || '',
+        vals.length,
+        vals.join(';')
+      ]);
+      csvContent = [headers.map(escapeCSV).join(','), ...rows.map(r => r.map(escapeCSV).join(','))].join('\n');
+      break;
+    }
+
+    case 'templates':
+    case 'steps': {
+      const headers = ['BlueprintName', 'Category', 'TotalEffortDays', 'StepCount', 'Steps'];
+      const rows = (state.stepTemplates || []).map(t => {
+        const totalEffort = (t.steps || []).reduce((acc, s) => acc + (s.effort || 0), 0);
+        return [
+          t.name,
+          t.category,
+          totalEffort,
+          t.steps?.length || 0,
+          (t.steps || []).map(s => `${s.name} (${s.effort}d)`).join(';')
+        ];
+      });
+      csvContent = [headers.map(escapeCSV).join(','), ...rows.map(r => r.map(escapeCSV).join(','))].join('\n');
+      break;
+    }
+
     default: {
       // General tasks fallback
       const headers = ['ID', 'Name', 'Status', 'Assignee', 'DueDate'];
@@ -582,6 +621,28 @@ export const exportViewToJSON = (state: ProjectState, viewId: string): string =>
     case 'team': dataset = state.members || []; break;
     case 'log': dataset = state.log || []; break;
     case 'releases': dataset = state.releases || []; break;
+    case 'registry':
+    case 'dropdowns':
+      dataset = {
+        librariesCount: Object.keys(state.dropdowns || {}).length,
+        dropdowns: state.dropdowns,
+        dropdownDefaults: state.dropdownDefaults
+      };
+      break;
+    case 'templates':
+    case 'steps':
+      dataset = {
+        blueprintsCount: (state.stepTemplates || []).length,
+        stepTemplates: state.stepTemplates || []
+      };
+      break;
+    case 'fields':
+      dataset = {
+        coreColumns: state.cols,
+        customFields: state.customFields,
+        fieldDefinitions: state.fieldDefinitions
+      };
+      break;
     default: dataset = state; break;
   }
 

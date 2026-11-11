@@ -25,7 +25,6 @@ import {
   PlusCircle,
   MinusCircle,
   Sliders,
-  Download,
   Upload,
   LayoutGrid,
   List,
@@ -365,23 +364,6 @@ const StepTemplates: React.FC = () => {
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
-  // Export / Import
-  const handleExportBlueprints = () => {
-    const payload = {
-      workspace: state.name || 'ProjectPulse 2.0',
-      exportedAt: new Date().toISOString(),
-      blueprintsCount: templates.length,
-      stepTemplates: templates
-    };
-    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(payload, null, 2));
-    const dl = document.createElement('a');
-    dl.setAttribute('href', dataUri);
-    dl.setAttribute('download', `ProjectPulse_Blueprints_${todayStr()}.json`);
-    document.body.appendChild(dl);
-    dl.click();
-    dl.remove();
-  };
-
   const handleImportBlueprints = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -702,15 +684,6 @@ const StepTemplates: React.FC = () => {
             >
               <Sparkles size={13} className="text-amber-500" />
               <span className="hidden sm:inline">ALM Presets</span>
-            </button>
-
-            <button
-              onClick={handleExportBlueprints}
-              title="Export all blueprints to JSON"
-              className="h-9 px-2.5 sm:px-3 text-xs font-semibold rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)] text-[var(--color-text)] flex items-center gap-1.5 transition-all shadow-2xs active:scale-95 cursor-pointer"
-            >
-              <Download size={13} className="text-[var(--color-text-muted)]" />
-              <span className="hidden md:inline">Export</span>
             </button>
 
             <button

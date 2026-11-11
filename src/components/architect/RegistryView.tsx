@@ -8,7 +8,6 @@ import {
   ShieldCheck, 
   Database,
   Upload, 
-  Download,
   X, 
   Check,
   Star,
@@ -356,23 +355,6 @@ const RegistryView: React.FC = () => {
     }
   };
 
-  const handleExportLibrariesJSON = () => {
-    const payload = {
-      workspace: state.name || 'ProjectPulse 2.0',
-      exportedAt: new Date().toISOString(),
-      librariesCount: keys.length,
-      dropdowns: state.dropdowns,
-      dropdownDefaults: state.dropdownDefaults
-    };
-    const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(payload, null, 2));
-    const dl = document.createElement('a');
-    dl.setAttribute('href', dataUri);
-    dl.setAttribute('download', `ProjectPulse_Option_Libraries_${todayStr()}.json`);
-    document.body.appendChild(dl);
-    dl.click();
-    dl.remove();
-  };
-
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)]">
       {/* ── 1. Page Header ── */}
@@ -382,14 +364,6 @@ const RegistryView: React.FC = () => {
         subtitle="Standardized selection lists, dropdown taxonomies, and custom field lookups"
         actions={
           <div className="flex items-center gap-2">
-            <button
-              onClick={handleExportLibrariesJSON}
-              title="Export all option libraries as structured JSON"
-              className="h-9 px-3 text-xs font-semibold rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)] text-[var(--color-text)] flex items-center gap-1.5 transition-all shadow-2xs active:scale-95 cursor-pointer"
-            >
-              <Download size={13} className="text-[var(--color-text-muted)]" />
-              <span className="hidden sm:inline">Export JSON</span>
-            </button>
             <button
               onClick={() => setView('fields')}
               title="Open Field Architect to manage custom fields"

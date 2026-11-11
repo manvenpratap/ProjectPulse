@@ -189,6 +189,24 @@ def test_share_and_export_features():
         assert not report_export_btn.is_visible(), "Separate 'Export Excel Pack' button must NOT be present on Reports!"
         print("✓ Pulse Reports has no separate export button; uses unified Share & Export")
 
+        # 6i. Option Libraries
+        print("Checking Option Libraries...")
+        page.locator('button:has-text("Option Libraries")').first.click()
+        page.wait_for_timeout(800)
+        reg_export_btn = page.locator('button:has-text("Export JSON")')
+        assert not reg_export_btn.is_visible(), "Separate 'Export JSON' button must NOT be present on Option Libraries!"
+        assert page.locator('button[aria-label="Share and export data"]').is_visible(), "Share & Export must be visible on Option Libraries"
+        print("✓ Option Libraries has no separate export button; uses unified Share & Export")
+
+        # 6j. Step Templates / Workflow Blueprints
+        print("Checking Step Templates...")
+        page.locator('button:has-text("Step Templates")').first.click()
+        page.wait_for_timeout(800)
+        # Ensure only the Share & Export button in header has the word export
+        assert page.locator('header button:has-text("Export")').count() == 1, "Separate 'Export' button must NOT be present on Step Templates!"
+        assert page.locator('button[aria-label="Share and export data"]').is_visible(), "Share & Export must be visible on Step Templates"
+        print("✓ Step Templates has no separate export button; uses unified Share & Export")
+
         # -------------------------------------------------------------
         # TEST 7: Test Comprehensive Export Options Inside Share & Export
         # -------------------------------------------------------------
@@ -224,7 +242,23 @@ def test_share_and_export_features():
         assert page.locator("text=Export Feature Matrix (.xlsx)").is_visible(), "Export Feature Matrix (.xlsx) missing"
         assert page.locator("text=Export Full Project JSON (.json)").is_visible(), "Export Full Project JSON (.json) missing"
 
+        # 7c. Test on Option Libraries view: Dedicated Option Libraries JSON Export
+        page.locator('button:has-text("Option Libraries")').first.click()
+        page.wait_for_timeout(800)
+        share_btn_reg = page.locator('button[aria-label="Share and export data"]').first
+        share_btn_reg.click()
+        page.wait_for_timeout(400)
+
+        assert page.locator("text=Export Option Libraries JSON (.json)").is_visible(), "Export Option Libraries JSON (.json) option missing in Share & Export"
+        with page.expect_download() as download_info:
+            page.locator("text=Export Option Libraries JSON (.json)").click()
+        reg_json_download = download_info.value
+        assert reg_json_download.suggested_filename.endswith(".json"), "Exported Option Libraries file must be .json"
+        print(f"✓ Downloaded Option Libraries JSON via unified Share & Export: {reg_json_download.suggested_filename}")
+
         # Download Full Project JSON Backup
+        share_btn_reg.click()
+        page.wait_for_timeout(300)
         with page.expect_download() as download_info:
             page.locator("text=Export Full Project JSON (.json)").click()
         json_backup = download_info.value
