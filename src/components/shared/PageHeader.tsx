@@ -9,6 +9,7 @@ interface PageHeaderProps {
   title: string;
   subtitle?: React.ReactNode;
   actions?: React.ReactNode;
+  primaryAction?: React.ReactNode; // Prominent Primary Action Button positioned on the far top right
   toolbar?: React.ReactNode;
   showHubTabs?: boolean; // Deprecated in Option A: redundant Hub Sub-Navigation row eliminated across all screens
   showShareExport?: boolean;
@@ -20,6 +21,7 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   title,
   subtitle,
   actions,
+  primaryAction,
   toolbar,
   showShareExport = true,
   className = '',
@@ -63,10 +65,11 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
           </div>
         </div>
 
-        {(actions || showShareExport) && (
+        {(actions || showShareExport || primaryAction) && (
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-wrap justify-end">
             {actions}
             {showShareExport && <ShareExportMenu />}
+            {primaryAction}
           </div>
         )}
       </div>

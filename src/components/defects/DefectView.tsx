@@ -562,13 +562,14 @@ const DefectView: React.FC = () => {
                 </button>
               )}
             </div>
-
-            <Button variant="primary" size="sm" onClick={() => handleEdit(null)} className="h-9 px-2.5 sm:px-4 active:scale-95 shrink-0 font-bold">
-              <Plus size={15} className="sm:mr-1.5" />
-              <span className="hidden sm:inline">Log Defect</span>
-              <span className="sm:hidden">Log</span>
-            </Button>
           </div>
+        }
+        primaryAction={
+          <Button variant="primary" size="sm" onClick={() => handleEdit(null)} className="h-9 px-2.5 sm:px-4 active:scale-95 shrink-0 font-bold shadow-xs">
+            <Plus size={15} className="sm:mr-1.5" />
+            <span className="hidden sm:inline">Log Defect</span>
+            <span className="sm:hidden">Log</span>
+          </Button>
         }
       />
 

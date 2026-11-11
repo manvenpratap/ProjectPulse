@@ -302,18 +302,18 @@ export const FieldArchitect: React.FC = () => {
               <RotateCcw size={13} className="mr-1.5 text-amber-500" />
               <span className="hidden sm:inline">Reset Defaults</span>
             </Button>
-
-            {/* Add Custom Field */}
-            <Button 
-              variant="primary" 
-              size="sm" 
-              onClick={openAddModal} 
-              className="h-9 px-3.5 rounded-xl font-bold active:scale-95 shadow-2xs"
-            >
-              <Plus size={14} className="mr-1.5" />
-              <span>Add Field</span>
-            </Button>
           </div>
+        }
+        primaryAction={
+          <Button 
+            variant="primary" 
+            size="sm" 
+            onClick={openAddModal} 
+            className="h-9 px-3.5 rounded-xl font-bold active:scale-95 shadow-xs"
+          >
+            <Plus size={14} className="mr-1.5" />
+            <span>Add Field</span>
+          </Button>
         }
       />
 

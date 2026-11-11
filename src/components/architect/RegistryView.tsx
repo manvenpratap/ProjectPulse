@@ -372,15 +372,17 @@ const RegistryView: React.FC = () => {
               <Database size={13} className="text-[var(--color-primary-hex)]" />
               <span className="hidden sm:inline">Field Architect</span>
             </button>
-            <button
-              onClick={() => setIsNewLibModalOpen(true)}
-              title="Create new custom option library"
-              className="h-9 px-3 text-xs font-bold rounded-xl bg-[var(--color-primary-hex)] text-white hover:opacity-95 flex items-center gap-1.5 transition-all shadow-xs active:scale-95 cursor-pointer"
-            >
-              <Plus size={14} />
-              <span>Create Library</span>
-            </button>
           </div>
+        }
+        primaryAction={
+          <button
+            onClick={() => setIsNewLibModalOpen(true)}
+            title="Create new custom option library"
+            className="h-9 px-3.5 text-xs font-bold rounded-xl bg-[var(--color-primary-hex)] text-white hover:opacity-95 flex items-center gap-1.5 transition-all shadow-xs active:scale-95 cursor-pointer"
+          >
+            <Plus size={14} />
+            <span>Create Library</span>
+          </button>
         }
       />
 

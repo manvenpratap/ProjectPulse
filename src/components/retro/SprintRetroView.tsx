@@ -159,17 +159,19 @@ export const SprintRetroView: React.FC = () => {
               <option value="Sprint 22">Sprint 22</option>
               <option value="Sprint 21">Sprint 21</option>
             </select>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => setIsModalOpen(true)}
-              className="h-9 px-2.5 sm:px-4 active:scale-95 shrink-0"
-            >
-              <Plus size={16} className="sm:mr-1.5" />
-              <span className="hidden sm:inline">Add Retro Item</span>
-              <span className="sm:hidden">Add</span>
-            </Button>
           </div>
+        }
+        primaryAction={
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => setIsModalOpen(true)}
+            className="h-9 px-2.5 sm:px-4 active:scale-95 shrink-0 shadow-xs font-bold"
+          >
+            <Plus size={16} className="sm:mr-1.5" />
+            <span className="hidden sm:inline">Add Retro Item</span>
+            <span className="sm:hidden">Add</span>
+          </Button>
         }
       />
 

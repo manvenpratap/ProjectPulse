@@ -85,6 +85,13 @@ const SettingsView: React.FC = () => {
     }
   };
 
+  const handleCreateSnapshot = () => {
+    setActiveTab('baselines');
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('open-capture-baseline-modal'));
+    }, 50);
+  };
+
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)]">
       <PageHeader
@@ -138,6 +145,18 @@ const SettingsView: React.FC = () => {
               <ShieldCheck size={13} /> <span className="hidden md:inline">Roles & </span>Access
             </button>
           </div>
+        }
+        primaryAction={
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleCreateSnapshot}
+            className="h-9 px-3.5 rounded-xl font-bold flex items-center gap-1.5 active:scale-95 shadow-xs"
+            title="Capture an executive baseline snapshot of project state"
+          >
+            <Camera size={14} />
+            <span>Create Snapshot</span>
+          </Button>
         }
       />
 

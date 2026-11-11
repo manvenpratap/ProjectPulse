@@ -195,14 +195,14 @@ const TaskView: React.FC<TaskViewProps> = ({ initialMode }) => {
                 <span className="hidden sm:inline">Timeline</span>
               </button>
             </div>
-
-            {/* Primary Action Button */}
-            <Button variant="primary" size="sm" onClick={handleAddNewTask} className="h-9 font-bold active:scale-95 px-2.5 sm:px-3">
-              <Plus size={15} className="sm:mr-1" />
-              <span className="hidden sm:inline">New Task</span>
-              <span className="sm:hidden">New</span>
-            </Button>
           </div>
+        }
+        primaryAction={
+          <Button variant="primary" size="sm" onClick={handleAddNewTask} className="h-9 font-bold active:scale-95 px-2.5 sm:px-3 shadow-xs">
+            <Plus size={15} className="sm:mr-1" />
+            <span className="hidden sm:inline">New Task</span>
+            <span className="sm:hidden">New</span>
+          </Button>
         }
       />
 

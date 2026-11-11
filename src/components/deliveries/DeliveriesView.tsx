@@ -679,12 +679,13 @@ export const DeliveriesView: React.FC = () => {
                 <span className="hidden sm:inline">{isImporting ? 'Importing...' : 'Import'}</span>
               </button>
             </div>
-
-            <Button variant="primary" size="sm" onClick={handleOpenCreate} className="h-9 px-2.5 sm:px-3 font-bold active:scale-95 min-w-[36px]">
-              <Plus size={14} className="sm:mr-1" />
-              <span className="hidden sm:inline">New Package</span>
-            </Button>
           </div>
+        }
+        primaryAction={
+          <Button variant="primary" size="sm" onClick={handleOpenCreate} className="h-9 px-2.5 sm:px-3 font-bold active:scale-95 min-w-[36px] shadow-xs">
+            <Plus size={14} className="sm:mr-1" />
+            <span className="hidden sm:inline">New Package</span>
+          </Button>
         }
       />
 

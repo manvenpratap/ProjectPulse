@@ -606,14 +606,14 @@ export const FunctionalMatrix: React.FC = () => {
                 {coveragePct}%
               </span>
             </button>
-
-            {/* Create Feature */}
-            <Button variant="primary" size="sm" onClick={handleAddFeature} className="h-8 rounded-xl font-bold px-2.5 sm:px-3 active:scale-95 shrink-0 text-xs">
-              <Plus size={14} className="sm:mr-1" />
-              <span className="hidden sm:inline">New Feature</span>
-              <span className="sm:hidden">Add</span>
-            </Button>
           </div>
+        }
+        primaryAction={
+          <Button variant="primary" size="sm" onClick={handleAddFeature} className="h-9 rounded-xl font-bold px-3 active:scale-95 shrink-0 text-xs shadow-xs">
+            <Plus size={14} className="sm:mr-1" />
+            <span className="hidden sm:inline">New Feature</span>
+            <span className="sm:hidden">Add</span>
+          </Button>
         }
       />
 

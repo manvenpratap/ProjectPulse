@@ -94,12 +94,11 @@ const ReportView: React.FC = () => {
         title="Executive Reporting & Board Packs"
         subtitle="Project performance, CXO briefings, and release audit deliverables"
         className="print:hidden"
-        actions={
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" className="h-9 font-bold active:scale-95" onClick={handlePrint}>
-              <Printer size={15} className="mr-1.5" /> Print Sheet
-            </Button>
-          </div>
+        primaryAction={
+          <Button variant="primary" size="sm" className="h-9 px-3.5 rounded-xl font-bold active:scale-95 shadow-xs flex items-center gap-1.5" onClick={handlePrint}>
+            <Printer size={15} />
+            <span>Print Sheet</span>
+          </Button>
         }
       />
 

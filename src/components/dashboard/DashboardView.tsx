@@ -43,6 +43,7 @@ import ResourceUtilizationMatrix from './ResourceUtilizationMatrix';
 import WhatIfSandbox from './WhatIfSandbox';
 import AIPulseAnalysis from './AIPulseAnalysis';
 import PageHeader from '../shared/PageHeader';
+import Button from '../shared/Button';
 import DataTable, { ColumnDef } from '../shared/DataTable';
 import { 
   ResponsiveContainer, 
@@ -90,6 +91,14 @@ export const DashboardView: React.FC = () => {
   // Financial Simulation State
   const [blendedRate, setBlendedRate] = useState<number>(800);
   const [allocatedBudget, setAllocatedBudget] = useState<number>(300000);
+  const [isSimulating, setIsSimulating] = useState<boolean>(false);
+
+  const handleRecompute = () => {
+    setIsSimulating(true);
+    setTimeout(() => {
+      setIsSimulating(false);
+    }, 500);
+  };
 
   // Core metrics
   const health = getHealthScore(tasks);
@@ -455,6 +464,18 @@ export const DashboardView: React.FC = () => {
               </span>
             </div>
           </div>
+        }
+        primaryAction={
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={handleRecompute}
+            className="h-9 px-3.5 rounded-xl font-bold flex items-center gap-1.5 active:scale-95 shadow-xs"
+            title="Recompute Monte Carlo forecasts, EVM cost baselines, and quality dynamics"
+          >
+            <RefreshCw size={14} className={isSimulating ? "animate-spin" : ""} />
+            <span>Recompute Forecast</span>
+          </Button>
         }
       />
 

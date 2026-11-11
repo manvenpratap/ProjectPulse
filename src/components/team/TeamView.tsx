@@ -852,18 +852,16 @@ const TeamView: React.FC = () => {
         icon={Users}
         title="Team Hub"
         subtitle={`${members.length} Active Engineers • Strategic Capacity & Skills Matrix`}
-        actions={
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="primary" 
-              size="sm" 
-              onClick={handleOpenAddModal} 
-              className="h-9 px-4 rounded-xl flex items-center gap-1.5 font-semibold text-xs shadow-sm cursor-pointer active:scale-95"
-            >
-              <UserPlus size={15} />
-              <span>Add Member</span>
-            </Button>
-          </div>
+        primaryAction={
+          <Button 
+            variant="primary" 
+            size="sm" 
+            onClick={handleOpenAddModal} 
+            className="h-9 px-4 rounded-xl flex items-center gap-1.5 font-bold text-xs shadow-xs cursor-pointer active:scale-95"
+          >
+            <UserPlus size={15} />
+            <span>Add Member</span>
+          </Button>
         }
       />
 

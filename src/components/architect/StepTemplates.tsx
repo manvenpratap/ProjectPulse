@@ -694,11 +694,12 @@ const StepTemplates: React.FC = () => {
               <Upload size={13} className="text-[var(--color-text-muted)]" />
               <span className="hidden md:inline">Import</span>
             </button>
-
-            <Button variant="primary" size="sm" onClick={handleAddTemplate} className="h-9 px-3.5 shadow-sm font-bold active:scale-95">
-              <Plus size={15} className="mr-1" /> New Blueprint
-            </Button>
           </div>
+        }
+        primaryAction={
+          <Button variant="primary" size="sm" onClick={handleAddTemplate} className="h-9 px-3.5 shadow-xs font-bold active:scale-95">
+            <Plus size={15} className="mr-1" /> New Blueprint
+          </Button>
         }
       />
 

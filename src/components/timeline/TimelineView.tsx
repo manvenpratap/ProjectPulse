@@ -18,7 +18,8 @@ import {
   Clock,
   User,
   ArrowUpDown,
-  Filter
+  Filter,
+  Plus
 } from 'lucide-react';
 import { fmtDate, daysDiff, isBlocked } from '../../utils/projectUtils';
 import { Task, TaskStatus, Release } from '../../types';
@@ -910,6 +911,18 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
                 Today
               </Button>
             </div>
+          }
+          primaryAction={
+            <Button 
+              variant="primary" 
+              size="sm" 
+              onClick={() => { setSelectedTaskId(null); setIsModalOpen(true); }}
+              className="text-xs font-bold h-9 min-h-[36px] active:scale-95 px-3.5 shadow-xs flex items-center gap-1.5"
+              title="Create a new scheduled task"
+            >
+              <Plus size={14} />
+              <span>New Task</span>
+            </Button>
           }
         />
       )}

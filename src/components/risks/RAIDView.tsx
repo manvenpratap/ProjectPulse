@@ -532,15 +532,6 @@ const RAIDView: React.FC = () => {
         actions={
           <div className="flex items-center gap-2">
             <button 
-              onClick={() => handleOpenRaidModal()}
-              className="min-h-[38px] px-3 bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] rounded-xl text-xs font-semibold flex items-center gap-1.5 active:scale-95 shadow-sm cursor-pointer transition-transform"
-              aria-label="Log RAID Item"
-            >
-              <PlusCircle size={15} />
-              <span className="hidden sm:inline">Log RAID Item</span>
-              <span className="sm:hidden">RAID</span>
-            </button>
-            <button 
               onClick={() => handleOpenDecisionModal()}
               className="min-h-[38px] px-3 bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-xl text-xs font-semibold flex items-center gap-1.5 active:scale-95 shadow-sm cursor-pointer transition-transform"
               aria-label="Log Decision"
@@ -550,6 +541,17 @@ const RAIDView: React.FC = () => {
               <span className="sm:hidden">Decision</span>
             </button>
           </div>
+        }
+        primaryAction={
+          <button 
+            onClick={() => handleOpenRaidModal()}
+            className="min-h-[38px] px-3.5 bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] rounded-xl text-xs font-bold flex items-center gap-1.5 active:scale-95 shadow-xs cursor-pointer transition-transform"
+            aria-label="Log RAID Item"
+          >
+            <PlusCircle size={15} />
+            <span className="hidden sm:inline">Log RAID Item</span>
+            <span className="sm:hidden">RAID</span>
+          </button>
         }
       />
 

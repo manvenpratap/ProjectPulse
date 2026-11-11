@@ -130,20 +130,18 @@ export const OverviewView: React.FC = () => {
         icon={Presentation}
         title="Executive Overview"
         subtitle="Visual high-level project telemetry, health dials, and milestone release radar"
-        actions={
-          <div className="flex items-center gap-2.5">
-            {hasViewAccess('dash') && (
-              <button 
-                onClick={() => setView('dash')}
-                className="h-9 px-3.5 bg-[var(--color-primary-hex)] hover:opacity-95 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-white rounded-xl text-xs font-semibold flex items-center gap-2 cursor-pointer shadow-sm transition-opacity"
-                aria-label="Navigate to advanced intelligence telemetry"
-              >
-                <TrendingUp size={15} /> 
-                <span>Intelligence Cockpit</span>
-                <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono rounded bg-white/20 text-white">G D</kbd>
-              </button>
-            )}
-          </div>
+        primaryAction={
+          hasViewAccess('dash') ? (
+            <button 
+              onClick={() => setView('dash')}
+              className="h-9 px-3.5 bg-[var(--color-primary-hex)] hover:opacity-95 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)] text-white rounded-xl text-xs font-bold flex items-center gap-2 cursor-pointer shadow-xs transition-opacity"
+              aria-label="Navigate to advanced intelligence telemetry"
+            >
+              <TrendingUp size={15} /> 
+              <span>Intelligence Cockpit</span>
+              <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono rounded bg-white/20 text-white">G D</kbd>
+            </button>
+          ) : undefined
         }
       />
 

@@ -24,7 +24,7 @@
     "hash": "accb51a93698ff169dd1e80d9215f10f"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/config/viewHelpData.ts": {
-    "mtime": 1794363990.6888928,
+    "mtime": 1794365243.1291323,
     "hash": "73a5343a3e7ae89bc3cb771a75820d96"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/utils/projectUtils.ts": {
@@ -32,12 +32,12 @@
     "hash": "a5957314e1a50bd2f2ba0d123015362f"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/settings/BaselineManager.tsx": {
-    "mtime": 1794077295.857311,
-    "hash": "0e4642885b744f6601600c0bc0eb6c2b"
+    "mtime": 1794366528.130763,
+    "hash": "3f61ec8b9dd21336e23f5ab0b992c47c"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/settings/SettingsView.tsx": {
-    "mtime": 1794296513.6879292,
-    "hash": "43456e8acbd42fc619845eda09d0bed4"
+    "mtime": 1794366547.6354778,
+    "hash": "a18812bf1773287618d1e4057c301145"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/tasks/BoardView.tsx": {
     "mtime": 1794078523.999543,
@@ -52,8 +52,8 @@
     "hash": "a97ccce47cffca0d221812aabd361e22"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/tasks/TaskView.tsx": {
-    "mtime": 1794296514.1312852,
-    "hash": "6cba26bf7e8887a0a4ec91afe7ca9c9d"
+    "mtime": 1794366090.951314,
+    "hash": "400cad70d640bab757efea831a892f3b"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/auth/AccessManagerModal.tsx": {
     "mtime": 1794127381.7643664,
@@ -112,8 +112,8 @@
     "hash": "aa5cea6a63cb0590ef26b197135f858f"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/shared/PageHeader.tsx": {
-    "mtime": 1794296513.9997578,
-    "hash": "4df26370746591388a74f6b1977b1458"
+    "mtime": 1794366006.4550886,
+    "hash": "9424edcc0f2c515e32da78bf368a0f84"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/shared/ShareExportMenu.tsx": {
     "mtime": 1794362536.3158135,
@@ -136,8 +136,8 @@
     "hash": "2da63262f9ea26798363c4a2c23c1365"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/defects/DefectView.tsx": {
-    "mtime": 1794296513.9708638,
-    "hash": "81b20af73b61325b13afc5c03bdc8fd6"
+    "mtime": 1794366105.679407,
+    "hash": "cc75ba9517e6e7a7fe6e0e06479fe82d"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/defects/DefectModal.tsx": {
     "mtime": 1794077295.404792,
@@ -152,24 +152,24 @@
     "hash": "f94f30a4ef7e87450e5f27991727f1e4"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/OverviewView.tsx": {
-    "mtime": 1794363805.8084478,
-    "hash": "7023bcf4a72f38a432f0ebe9fb5cc070"
+    "mtime": 1794366320.661334,
+    "hash": "ad3f52f20fdba4d4dd559c0d5602a61c"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/WhatIfSandbox.tsx": {
-    "mtime": 1794363627.493633,
+    "mtime": 1794366747.6930401,
     "hash": "49f41422edcc0542da672f9a5d5054e1"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/ResourceUtilizationMatrix.tsx": {
-    "mtime": 1794363577.0051172,
+    "mtime": 1794366747.6924562,
     "hash": "7193caaaa34359a44fb822e56b6b2f40"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/ModuleDeliveryMatrix.tsx": {
-    "mtime": 1794364249.031209,
+    "mtime": 1794365243.2648096,
     "hash": "d8e57813102780c16d7ca78e77b21b12"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/DashboardView.tsx": {
-    "mtime": 1794363706.5728536,
-    "hash": "272bb18c63954134091cacd18f0ef74f"
+    "mtime": 1794366392.4145844,
+    "hash": "d51e8c270e0c1338e06ddb201a1cf881"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/dashboard/PredictiveIntelligence.tsx": {
     "mtime": 1794077295.3588836,
@@ -184,52 +184,52 @@
     "hash": "9cbdb1b09f2d44f7b684b22424fcb242"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/team/CapacityView.tsx": {
-    "mtime": 1794195110.5839672,
-    "hash": "0467badc8e4d300f04684271e3ddd4e3"
+    "mtime": 1794366177.2987666,
+    "hash": "65a8fe128c274613e031a01e397a7e7e"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/team/TeamView.tsx": {
-    "mtime": 1794280403.2374036,
-    "hash": "d6bae9f1fd294973ff134be8da850a32"
+    "mtime": 1794366149.9799662,
+    "hash": "a79a9b0de9ff6af34fb603798ecdebbc"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/FunctionalMatrix.tsx": {
-    "mtime": 1794272459.0028775,
-    "hash": "87e5589454fd43cb4c728b98e20fb46b"
+    "mtime": 1794366269.3943064,
+    "hash": "463fa9a65a7e464b16f5ddc6689cd3f4"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/ReleaseRoadmap.tsx": {
-    "mtime": 1794272459.121443,
-    "hash": "85c27e52ecc811a57cba25f79c222241"
+    "mtime": 1794366188.1554446,
+    "hash": "0ccbdf83131d01298dd9a84b56900f0c"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/ScaffolderView.tsx": {
-    "mtime": 1794272460.0210428,
-    "hash": "88e0e6deca26b9c0ccc82159b8a7fe28"
+    "mtime": 1794366300.3913956,
+    "hash": "150f754ec3f4062de4a2d4980e92c9d8"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/RegistryView.tsx": {
-    "mtime": 1794362536.1716769,
-    "hash": "bea68649c3c2b25157f902675e12886b"
+    "mtime": 1794366240.338404,
+    "hash": "27052e3d903555b5da555a981573428d"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/StepTemplates.tsx": {
-    "mtime": 1794362536.262351,
-    "hash": "a6b2844666023469d2bf4297e5efeba5"
+    "mtime": 1794366227.7289717,
+    "hash": "342b18f283010f7a0e86bea870ccd5a4"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/FieldArchitect.tsx": {
-    "mtime": 1794246395.1296356,
-    "hash": "2e4b8e74a0a0115b68a10e8d2646e0e8"
+    "mtime": 1794366257.6301072,
+    "hash": "c25c0902c75230ed2fb5ba85e5b70182"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/risks/RAIDView.tsx": {
-    "mtime": 1794272459.672557,
-    "hash": "edb23950614196ab547a6b6cac687918"
+    "mtime": 1794366136.8057086,
+    "hash": "2f40f58d266262a7a83186f728b4e4f1"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/retro/SprintRetroView.tsx": {
-    "mtime": 1794127381.753448,
-    "hash": "5a622ada4412a37502e6fd8f2cbf4fec"
+    "mtime": 1794366200.3805034,
+    "hash": "2e8ae5f7b5721419e56f05802ba64b8e"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/log/LogView.tsx": {
-    "mtime": 1794272459.5326364,
-    "hash": "80de5d636ed61a28e6fb951bdb713c7a"
+    "mtime": 1794366476.1891203,
+    "hash": "980bb343ac941325e95b2589465b1a54"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/timeline/TimelineView.tsx": {
-    "mtime": 1794282262.1008582,
-    "hash": "e28cb35b6ef54bf195a950a79632a8ee"
+    "mtime": 1794366421.863214,
+    "hash": "486327d0b8fe28d13aa00ee62d9a8f6e"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/reports/CxoEmailModal.tsx": {
     "mtime": 1794282261.7646518,
@@ -240,12 +240,12 @@
     "hash": "85f652103999eb964c8c56429b8f8699"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/reports/ReportView.tsx": {
-    "mtime": 1794282261.8582883,
-    "hash": "781d4dcbd2c890d91d6f0b4542c4eb8a"
+    "mtime": 1794366434.2821505,
+    "hash": "484e8c930bcedf2bf4f2ef0b336af8de"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/deliveries/DeliveriesView.tsx": {
-    "mtime": 1794273656.7735555,
-    "hash": "86993b2d89c0fb89c80bb5e7d6d66d67"
+    "mtime": 1794366121.4934042,
+    "hash": "3491a57f8d7c0bcb096a253d45f16c38"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/hooks/useClickOutside.ts": {
     "mtime": 1794279751.6925483,

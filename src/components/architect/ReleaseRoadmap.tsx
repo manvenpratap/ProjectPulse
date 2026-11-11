@@ -159,12 +159,10 @@ export const ReleaseRoadmap: React.FC = () => {
         icon={Flag}
         title="Release Roadmap"
         subtitle="Define delivery cycles, coordinate milestone rollouts, and monitor scope completion"
-        actions={
-          <div className="flex items-center gap-2">
-            <Button variant="primary" size="sm" onClick={openAddModal} className="h-9 px-4 rounded-xl font-bold active:scale-95">
-              <Plus size={15} className="mr-1.5" /> Add Release Version
-            </Button>
-          </div>
+        primaryAction={
+          <Button variant="primary" size="sm" onClick={openAddModal} className="h-9 px-4 rounded-xl font-bold active:scale-95 shadow-xs">
+            <Plus size={15} className="mr-1.5" /> Add Release Version
+          </Button>
         }
       />
 

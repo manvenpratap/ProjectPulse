@@ -30,6 +30,12 @@ export const BaselineManager: React.FC = () => {
   const [baselineDesc, setBaselineDesc] = useState('');
   const [selectedBaseline, setSelectedBaseline] = useState<string | null>(null);
 
+  React.useEffect(() => {
+    const handleOpen = () => setIsCaptureModalOpen(true);
+    window.addEventListener('open-capture-baseline-modal', handleOpen);
+    return () => window.removeEventListener('open-capture-baseline-modal', handleOpen);
+  }, []);
+
   // Group baselines by snapshot ID
   const groupedSnapshots = React.useMemo(() => {
     const map = new Map<string, { id: string; name: string; desc: string; date: string; items: Baseline[] }>();

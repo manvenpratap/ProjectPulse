@@ -208,6 +208,26 @@ const ScaffolderView: React.FC = () => {
         icon={Blocks}
         title="Project Scaffolder"
         subtitle="Design modular architecture and fast-scaffold deliverable matrices and task hierarchies"
+        actions={
+          step > 1 ? (
+            <Button variant="ghost" size="sm" onClick={() => setStep(step - 1)} className="h-9 font-bold active:scale-95 flex items-center gap-1.5">
+              <ArrowLeft size={14} /> Back
+            </Button>
+          ) : undefined
+        }
+        primaryAction={
+          step === 1 ? (
+            <Button variant="primary" size="sm" onClick={() => setStep(2)} className="h-9 px-4 font-bold rounded-xl active:scale-95 shadow-xs flex items-center gap-1.5">
+              <span>Next Step</span>
+              <ArrowRight size={14} />
+            </Button>
+          ) : (
+            <Button variant="primary" size="sm" onClick={handleFinish} className="h-9 px-4 font-bold rounded-xl active:scale-95 shadow-xs flex items-center gap-1.5">
+              <Zap size={14} />
+              <span>Generate Architecture</span>
+            </Button>
+          )
+        }
       />
       <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full space-y-8">
         {renderStepStepper()}

@@ -1,16 +1,16 @@
 # Graph Report - ProjectPulse 2.0  (2026-11-11)
 
 ## Corpus Check
-- 77 files · ~182,945 words
+- 77 files · ~183,487 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 416 nodes · 1221 edges · 18 communities (17 shown, 1 thin omitted)
+- 416 nodes · 1223 edges · 18 communities (17 shown, 1 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `5002d53c`
+- Built from commit: `3a2ac3bb`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -74,12 +74,12 @@ Cohesion: 0.08
 Nodes (32): ComplexityFilter, FunctionalMatrix(), ViewMode, DEF_ST_MAP, DefectView(), DensityMode, ViewMode, ALM_ST_MAP (+24 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.07
-Nodes (32): FieldArchitect(), ScaffolderView(), ScaffoldModule, AIPulseAnalysis(), DefectModal(), SetupView(), DARK_MAP, FilterCategory (+24 more)
+Cohesion: 0.08
+Nodes (30): FieldArchitect(), ScaffolderView(), ScaffoldModule, AIPulseAnalysis(), DefectModal(), SetupView(), DARK_MAP, FilterCategory (+22 more)
 
 ### Community 5 - "Community 5"
-Cohesion: 0.09
-Nodes (23): formatLibraryName(), LIBRARY_LABELS, RegistryView(), RESERVED_CORE_KEYS, ReleaseRoadmap(), BaselineManager(), Button(), ButtonProps (+15 more)
+Cohesion: 0.08
+Nodes (25): formatLibraryName(), LIBRARY_LABELS, RegistryView(), RESERVED_CORE_KEYS, ReleaseRoadmap(), LogView(), BaselineManager(), Button() (+17 more)
 
 ### Community 6 - "Community 6"
 Cohesion: 0.12

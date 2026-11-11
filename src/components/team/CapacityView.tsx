@@ -604,25 +604,6 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
               </button>
             </div>
 
-            <button 
-              onClick={handleAutoBalance}
-              className={clsx(
-                "h-9 px-3.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm cursor-pointer active:scale-95",
-                conflicts.length > 0 
-                  ? "bg-rose-500 hover:bg-rose-600 text-white" 
-                  : "bg-[var(--color-primary-hex)] hover:opacity-95 text-[var(--color-primary-text)]"
-              )}
-              title="Automatically reassign non-critical tasks from overloaded engineers to available peers"
-            >
-              <Cpu size={14} /> 
-              <span>Balance Workload</span>
-              {conflicts.length > 0 && (
-                <span className="ml-0.5 px-1.5 py-0.2 rounded-full bg-white/20 text-white font-mono text-[10px] font-bold">
-                  {conflicts.length}
-                </span>
-              )}
-            </button>
-
             <div className="hidden sm:flex items-center gap-1.5 sm:gap-2.5 bg-[var(--color-surface-2)] p-1 px-2.5 rounded-xl border border-[var(--color-divider)]">
               <Settings2 size={13} className="text-[var(--color-text-muted)] shrink-0" />
               <div className="flex items-center gap-2 text-xs divide-x divide-[var(--color-divider)]">
@@ -652,6 +633,26 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
               </div>
             </div>
           </div>
+        }
+        primaryAction={
+          <button 
+            onClick={handleAutoBalance}
+            className={clsx(
+              "h-9 px-3.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-xs cursor-pointer active:scale-95",
+              conflicts.length > 0 
+                ? "bg-rose-500 hover:bg-rose-600 text-white" 
+                : "bg-[var(--color-primary-hex)] hover:opacity-95 text-[var(--color-primary-text)]"
+            )}
+            title="Automatically reassign non-critical tasks from overloaded engineers to available peers"
+          >
+            <Cpu size={14} /> 
+            <span>Balance Workload</span>
+            {conflicts.length > 0 && (
+              <span className="ml-0.5 px-1.5 py-0.2 rounded-full bg-white/20 text-white font-mono text-[10px] font-bold">
+                {conflicts.length}
+              </span>
+            )}
+          </button>
         }
       />
 
