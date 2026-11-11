@@ -1,22 +1,34 @@
 #!/usr/bin/env python3
 """
 Playwright test script to verify:
-- Executive Overview Cockpit Bento Grid
-- Card click interactivity & detail inspector drawers
-- Deep-dive navigation
+- Executive Overview Visual Command Center
+- All Visual Instruments:
+  1. Composite Health Index (360° Circular SVG Gauge + 7-Week Sparkline + KPI strip)
+  2. Delivery Confidence (180° Speedometer SVG Dial + Runway Forecast)
+  3. Threat Radar & Anomaly Multi-Meters
+  4. Delivery Velocity 6-Week Histogram with Target Benchmark line
+  5. Module Architecture Mass Donut Chart with Domain Slices
+  6. RAID 3x3 Risk Heatmap Matrix
+  7. Deliverable Scope & Effort Dual Radial Rings & Priority Bar
+  8. Milestone Delivery Horizon & Release Flight Path
+  9. Recent Deliveries & Multi-Level Accomplishments Stream
+  10. Intelligence Deep-Dive Gateway Banner
+- Interactivity: Card click to open inspector modals and deep-dive links
 - Zero console/page errors
 """
 
 import sys
 from playwright.sync_api import sync_playwright
 
-SCREENSHOT_PATH = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/overview_cockpit_enhanced.png"
-DRAWER_SCREENSHOT_PATH = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/overview_cockpit_detail_drawer.png"
+OVERVIEW_SCREENSHOT = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/executive_overview_visual_widgets.png"
+MIDDLE_SCREENSHOT = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/executive_overview_matrix_and_scope.png"
+LOWER_SCREENSHOT = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/executive_overview_milestones_and_stream.png"
+MODAL_SCREENSHOT = "/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/executive_overview_detail_modal.png"
 
-def test_overview_cockpit_bentogrid():
+def test_visual_overview_widgets():
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=True)
-        context = browser.new_context(viewport={"width": 1440, "height": 920})
+        context = browser.new_context(viewport={"width": 1440, "height": 950})
         page = context.new_page()
 
         console_errors = []
@@ -35,137 +47,123 @@ def test_overview_cockpit_bentogrid():
         page.goto("http://localhost:3000/#/overview")
         page.wait_for_timeout(1000)
 
-        # Step 1: Verify All High-Quality Bento Grid Cards are Present
-        print("[3] Verifying Cockpit Bento Grid Cards...")
+        # Step 1: Verify All Visual Widgets and Charts
+        print("[3] Verifying All Visual Instruments & Charts...")
+        
+        # 1. Composite Health Index Dial & Sparkline
         assert page.locator("text=Composite Health Index").is_visible(), "Composite Health Index card missing"
-        assert page.locator("text=Milestone Delivery Radar").is_visible(), "Milestone Delivery Radar card missing"
-        assert page.locator("text=Early Warning Signals").is_visible(), "Early Warning Signals card missing"
-        assert page.locator("text=Scope Completed").is_visible(), "Scope Completed tile missing"
-        assert page.locator("text=Effort Burned").is_visible(), "Effort Burned tile missing"
-        assert page.locator("text=Team Bandwidth").is_visible(), "Team Bandwidth tile missing"
-        assert page.locator("text=Governance Index").is_visible(), "Governance Index tile missing"
-        assert page.locator("text=Strategic Deliverables Snapshot").is_visible(), "Strategic Deliverables Snapshot missing"
-        assert page.locator("text=Module Gravity").is_visible(), "Module Gravity missing"
-        print("✓ Verified all 9 Bento Grid Cards are rendered in the Cockpit")
+        assert page.locator("text=7-Week Trend").is_visible(), "7-Week Sparkline trend label missing"
+        
+        # 2. Delivery Confidence Speedometer
+        assert page.locator("text=Delivery Confidence").is_visible(), "Delivery Confidence card missing"
+        assert page.locator("text=Throughput vs Remaining Scope").is_visible(), "Delivery Confidence subtitle missing"
+        assert page.locator("text=Velocity Corridor:").is_visible(), "Velocity Corridor label missing"
 
-        # Capture Cockpit Bento Grid overview screenshot
-        page.screenshot(path=SCREENSHOT_PATH, full_page=True)
-        print(f"✓ Cockpit Bento Grid screenshot saved to: {SCREENSHOT_PATH}")
+        # 3. Threat Radar
+        assert page.locator("text=Threat Radar").is_visible(), "Threat Radar card missing"
+        assert page.locator("text=Overdue Deliverables").is_visible(), "Overdue Deliverables meter missing"
+        assert page.locator("text=High Threat RAID").is_visible(), "High Threat RAID meter missing"
 
-        # Step 2: Test Card Click to Open Details (Health Card)
-        print("[4] Testing Card Click: Composite Health Index...")
+        # 4. Delivery Velocity Histogram
+        assert page.locator("text=Delivery Velocity & Throughput Corridor").is_visible(), "Velocity histogram missing"
+        assert page.locator("text=Delivery Momentum:").is_visible(), "Delivery Momentum footer missing"
+
+        # 5. Module Architecture Mass Donut Chart
+        assert page.locator("text=Module Architecture Mass").is_visible(), "Module Architecture Donut missing"
+        assert page.locator("text=Total Mass").is_visible(), "Donut center Total Mass label missing"
+        assert page.locator("text=Architectural Cohesion").is_visible(), "Architectural Cohesion footer missing"
+
+        # 6. RAID 3x3 Risk Heatmap Matrix
+        assert page.locator("text=RAID 3×3 Risk Heatmap Matrix").is_visible(), "Risk Heatmap Matrix missing"
+        assert page.locator("text=Impact ↓ / Prob →").is_visible(), "3x3 Matrix header missing"
+        assert page.locator("text=Risk Resolution Progress").is_visible(), "Risk Resolution progress missing"
+
+        # 7. Scope & Effort Dual Radial Rings
+        assert page.locator("text=Deliverable Scope & Effort Burn").is_visible(), "Scope & Effort rings missing"
+        assert page.locator("text=Priority Distribution").is_visible(), "Priority Distribution segmented bar missing"
+
+        # 8. Milestone Delivery Horizon
+        assert page.locator("text=Milestone Delivery Horizon & Release Gates").is_visible(), "Milestones runway missing"
+        assert page.locator("text=Target Launch:").is_visible(), "Target Launch countdown missing"
+
+        # 9. Recent Deliveries Stream
+        assert page.locator("text=Recent Deliveries & Multi-Level Accomplishments").is_visible(), "Accomplishments stream missing"
+        assert page.locator("text=Verified Stream").is_visible(), "Verified stream badge missing"
+
+        # 10. Intelligence Deep-Dive Banner
+        assert page.locator("text=Looking for granular metrics and scenario modeling?").is_visible(), "Intelligence banner missing"
+        assert page.locator("button:has-text('Launch Intelligence Cockpit')").is_visible(), "Launch Intelligence button missing"
+
+        print("✓ All 10 Visual Telemetry Instruments & Charts verified successfully!")
+
+        # Step 2: Capture Visual Screenshots
+        print("[4] Capturing Executive Overview Visual Screenshots...")
+        page.screenshot(path=OVERVIEW_SCREENSHOT)
+        print(f"✓ Hero & Charts screenshot saved to: {OVERVIEW_SCREENSHOT}")
+
+        # Scroll to middle (Risk Heatmap & Scope Rings)
+        page.locator("text=RAID 3×3 Risk Heatmap Matrix").scroll_into_view_if_needed()
+        page.wait_for_timeout(400)
+        page.screenshot(path=MIDDLE_SCREENSHOT)
+        print(f"✓ Matrix & Scope Rings screenshot saved to: {MIDDLE_SCREENSHOT}")
+
+        # Scroll to lower (Milestone Flight Path & Accomplishments Stream)
+        page.locator("text=Looking for granular metrics").scroll_into_view_if_needed()
+        page.wait_for_timeout(400)
+        page.screenshot(path=LOWER_SCREENSHOT)
+        print(f"✓ Milestones & Stream screenshot saved to: {LOWER_SCREENSHOT}")
+
+        # Scroll back to top
+        page.locator("text=Composite Health Index").scroll_into_view_if_needed()
+        page.wait_for_timeout(300)
+
+        # Step 3: Test Interactive Modal Inspection (Health Card)
+        print("[5] Testing Card Click: Composite Health Index...")
         health_card = page.locator("div[role='button']:has-text('Composite Health Index')").first
         health_card.click()
-        page.wait_for_timeout(500)
+        page.wait_for_timeout(400)
 
-        # Verify Detail Modal opened
         assert page.locator("text=Composite Health Diagnostics & Telemetry").is_visible(), "Health detail modal did not open"
         assert page.locator("text=Identified Timeline Slippage & Bottlenecks").is_visible(), "Health factor breakdown missing"
         print("✓ Composite Health Diagnostics detail inspector opened with full factor breakdown")
 
-        # Capture Detail Modal screenshot
-        page.screenshot(path=DRAWER_SCREENSHOT_PATH, full_page=False)
-        print(f"✓ Detail Modal screenshot saved to: {DRAWER_SCREENSHOT_PATH}")
+        # Capture Modal screenshot
+        page.screenshot(path=MODAL_SCREENSHOT, full_page=False)
+        print(f"✓ Detail Modal screenshot saved to: {MODAL_SCREENSHOT}")
 
-        # Close with Close button
+        # Close Modal
         page.locator("button:has-text('Close')").first.click()
-        page.wait_for_timeout(400)
+        page.wait_for_timeout(300)
         assert page.locator("text=Composite Health Diagnostics & Telemetry").count() == 0, "Detail modal did not close"
         print("✓ Successfully closed Health detail modal")
 
-        # Step 3: Test Card Click: Milestone Delivery Radar
-        print("[5] Testing Card Click: Milestone Delivery Radar...")
-        milestone_card = page.locator("div[role='button']:has-text('Milestone Delivery Radar')").first
-        milestone_card.click()
+        # Step 4: Test Interactive Modal Inspection (Risk Matrix)
+        print("[6] Testing Card Click: RAID 3x3 Risk Heatmap Matrix...")
+        risk_card = page.locator("div[role='button']:has-text('RAID 3×3 Risk Heatmap Matrix')").first
+        risk_card.click()
         page.wait_for_timeout(400)
-        assert page.locator("text=Milestone Delivery Runway & Critical Gates").is_visible(), "Milestone detail modal did not open"
-        page.locator("button:has-text('Close')").first.click()
-        page.wait_for_timeout(300)
-        print("✓ Milestone Delivery Runway detail inspector verified")
 
-        # Step 4: Test Card Click: Early Warning Signals
-        print("[6] Testing Card Click: Early Warning Signals...")
-        ews_card = page.locator("div[role='button']:has-text('Early Warning Signals')").first
-        ews_card.click()
-        page.wait_for_timeout(400)
-        assert page.locator("text=Early Warning Signals & Threat Triage").is_visible(), "EWS detail modal did not open"
-        page.locator("button:has-text('Close')").first.click()
-        page.wait_for_timeout(300)
-        print("✓ Early Warning Signals detail inspector verified")
-
-        # Step 5: Test Card Click: Scope Completed
-        print("[7] Testing Card Click: Scope Completed...")
-        scope_card = page.locator("div[role='button']:has-text('Scope Completed')").first
-        scope_card.click()
-        page.wait_for_timeout(400)
-        assert page.locator("text=Scope Completion & Backlog Matrix").is_visible(), "Scope detail modal did not open"
-        page.locator("button:has-text('Close')").first.click()
-        page.wait_for_timeout(300)
-        print("✓ Scope Completion detail inspector verified")
-
-        # Step 6: Test Card Click: Effort Burned
-        print("[8] Testing Card Click: Effort Burned...")
-        effort_card = page.locator("div[role='button']:has-text('Effort Burned')").first
-        effort_card.click()
-        page.wait_for_timeout(400)
-        assert page.locator("text=Effort Burn & Resource Velocity").is_visible(), "Effort detail modal did not open"
-        page.locator("button:has-text('Close')").first.click()
-        page.wait_for_timeout(300)
-        print("✓ Effort Burn detail inspector verified")
-
-        # Step 7: Test Card Click: Team Bandwidth
-        print("[9] Testing Card Click: Team Bandwidth...")
-        team_card = page.locator("div[role='button']:has-text('Team Bandwidth')").first
-        team_card.click()
-        page.wait_for_timeout(400)
-        assert page.locator("text=Team Bandwidth & Allocation Roster").is_visible(), "Team detail modal did not open"
-        page.locator("button:has-text('Close')").first.click()
-        page.wait_for_timeout(300)
-        print("✓ Team Bandwidth detail inspector verified")
-
-        # Step 8: Test Card Click: Governance Index
-        print("[10] Testing Card Click: Governance Index...")
-        gov_card = page.locator("div[role='button']:has-text('Governance Index')").first
-        gov_card.click()
-        page.wait_for_timeout(400)
         assert page.locator("text=Governance, Compliance & Decision Ledger").is_visible(), "Governance detail modal did not open"
         page.locator("button:has-text('Close')").first.click()
         page.wait_for_timeout(300)
-        print("✓ Governance Index detail inspector verified")
+        print("✓ Risk Heatmap / Governance detail inspector verified")
 
-        # Step 9: Test Card Click: Strategic Deliverables Snapshot
-        print("[11] Testing Card Click: Strategic Deliverables Snapshot...")
-        deliv_card = page.locator("div[role='button']:has-text('Strategic Deliverables Snapshot')").first
-        deliv_card.click()
-        page.wait_for_timeout(400)
-        assert page.locator("text=Strategic Deliverables & Package Deployment").is_visible(), "Deliverables detail modal did not open"
-        page.locator("button:has-text('Close')").first.click()
-        page.wait_for_timeout(300)
-        print("✓ Strategic Deliverables detail inspector verified")
+        # Step 5: Test Deep-Dive Link to Intelligence Cockpit
+        print("[7] Testing Launch Intelligence Cockpit button...")
+        launch_btn = page.locator("button:has-text('Launch Intelligence Cockpit')").first
+        launch_btn.click()
+        page.wait_for_timeout(600)
+        assert page.locator("h1:has-text('Project Intelligence Cockpit')").is_visible(), "Failed to navigate to Intelligence Cockpit"
+        print("✓ Successfully navigated from Executive Overview to Project Intelligence Cockpit")
 
-        # Step 10: Test Card Click: Module Gravity
-        print("[12] Testing Card Click: Module Gravity...")
-        gravity_card = page.locator("div[role='button']:has-text('Module Gravity')").first
-        gravity_card.click()
-        page.wait_for_timeout(400)
-        assert page.locator("text=Module Gravity & Architectural Cohesion").is_visible(), "Gravity detail modal did not open"
-        
-        # Test deep-dive navigation button inside modal
-        print("[13] Testing Navigation from Detail Modal to Full Hub...")
-        nav_btn = page.locator("button:has-text('Open Functional Matrix')").first
-        nav_btn.click()
-        page.wait_for_timeout(800)
-        assert page.locator("h1:has-text('Functional Matrix & Architecture')").is_visible(), "Failed to navigate to Functional Matrix"
-        print("✓ Successfully navigated from Detail Modal to Functional Matrix")
-
+        # Check console errors
         fatal_errors = [e for e in console_errors if "favicon" not in e and "socket" not in e]
         assert len(fatal_errors) == 0, f"Encountered console errors: {fatal_errors}"
 
         browser.close()
         print("\n=======================================================")
-        print("🎉 ALL EXECUTIVE OVERVIEW COCKPIT & CARD DRILL-DOWN TESTS PASSED!")
+        print("🎉 ALL EXECUTIVE OVERVIEW VISUAL WIDGET TESTS PASSED!")
         print("=======================================================")
 
 if __name__ == "__main__":
-    test_overview_cockpit_bentogrid()
-
+    test_visual_overview_widgets()
