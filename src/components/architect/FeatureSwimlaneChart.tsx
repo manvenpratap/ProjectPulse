@@ -1287,3 +1287,4 @@ const SwimlaneCategoryTrack: React.FC<SwimlaneCategoryTrackProps> = ({
 };
 
 export default FeatureSwimlaneChart;
+
