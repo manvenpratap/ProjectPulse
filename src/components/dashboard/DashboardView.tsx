@@ -32,7 +32,8 @@ import {
   Compass,
   Gauge,
   RefreshCw,
-  AlertTriangle
+  AlertTriangle,
+  Lightbulb
 } from 'lucide-react';
 import clsx from 'clsx';
 import { TaskStatus, TaskPriority, DefectStatus, Task } from '../../types';
@@ -323,19 +324,19 @@ export const DashboardView: React.FC = () => {
     let quadrantColor = 'text-emerald-500';
     let quadrantBg = 'bg-emerald-500/10 border-emerald-500/20';
     if (SPI >= 1.0 && CPI >= 1.0) {
-      quadrantTitle = 'Ahead of Schedule & Under Budget 🚀';
+      quadrantTitle = 'Ahead of Schedule & Under Budget';
       quadrantColor = 'text-emerald-500';
       quadrantBg = 'bg-emerald-500/10 border-emerald-500/20';
     } else if (SPI < 1.0 && CPI >= 1.0) {
-      quadrantTitle = 'Behind Schedule & Under Budget ⚠️';
+      quadrantTitle = 'Behind Schedule & Under Budget';
       quadrantColor = 'text-amber-500';
       quadrantBg = 'bg-amber-500/10 border-amber-500/20';
     } else if (SPI >= 1.0 && CPI < 1.0) {
-      quadrantTitle = 'Ahead of Schedule & Over Budget ⚠️';
+      quadrantTitle = 'Ahead of Schedule & Over Budget';
       quadrantColor = 'text-amber-500';
       quadrantBg = 'bg-amber-500/10 border-amber-500/20';
     } else {
-      quadrantTitle = 'Behind Schedule & Over Budget 🚨';
+      quadrantTitle = 'Behind Schedule & Over Budget';
       quadrantColor = 'text-rose-500';
       quadrantBg = 'bg-rose-500/10 border-rose-500/20';
     }
@@ -418,7 +419,7 @@ export const DashboardView: React.FC = () => {
     return (
       <div className="flex flex-col items-center justify-center h-full bg-[var(--color-bg)] p-8 text-center">
         <div className="max-w-md">
-          <div className="w-20 h-20 bg-indigo-500/10 rounded-3xl flex items-center justify-center text-indigo-600 dark:text-indigo-400 mx-auto mb-8 shadow-inner border border-indigo-500/20">
+          <div className="w-20 h-20 bg-[var(--color-primary-highlight-hex)] rounded-3xl flex items-center justify-center text-[var(--color-primary-hex)] mx-auto mb-8 shadow-inner border border-[var(--color-primary-hex)]/20">
             <BarChart3 size={40} />
           </div>
           <h1 className="font-display text-3xl font-black tracking-tight text-[var(--color-text)] mb-3">Intelligence Engine Offline</h1>
@@ -428,7 +429,7 @@ export const DashboardView: React.FC = () => {
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button 
               onClick={() => loadSample('web')}
-              className="h-11 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs shadow-md transition-all active:scale-[0.98] cursor-pointer"
+              className="h-11 px-6 bg-[var(--color-primary-hex)] hover:opacity-90 text-[var(--color-primary-text)] rounded-xl font-bold text-xs shadow-md transition-all active:scale-[0.98] cursor-pointer"
             >
                Load Demo Excel Database
             </button>
@@ -497,7 +498,7 @@ export const DashboardView: React.FC = () => {
                 className={clsx(
                   "pb-3.5 font-bold text-xs sm:text-sm tracking-tight border-b-2 transition-all flex items-center gap-2 whitespace-nowrap cursor-pointer active:scale-97",
                   isActive 
-                    ? "border-indigo-600 text-indigo-600 dark:text-indigo-400" 
+                    ? "border-[var(--color-primary-hex)] text-[var(--color-primary-hex)]" 
                     : "border-transparent text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
               >
@@ -519,7 +520,7 @@ export const DashboardView: React.FC = () => {
               <div className="lg:col-span-6 card p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-sm flex flex-col justify-between space-y-5">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-500/20">
+                    <div className="w-10 h-10 rounded-2xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center border border-[var(--color-primary-hex)]/20">
                       <Target size={20} />
                     </div>
                     <div>
@@ -567,10 +568,10 @@ export const DashboardView: React.FC = () => {
 
                   {/* P50 Expected vs P90 Conservative Target */}
                   <div className="sm:col-span-8 space-y-3">
-                    <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] border-l-4 border-l-indigo-600">
+                    <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] border-l-4 border-l-[var(--color-primary-hex)]">
                       <div className="flex justify-between items-center mb-1">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-1.5">
-                          <Calendar size={12} className="text-indigo-600" /> Forecasted Finish (P50 Likely)
+                          <Calendar size={12} className="text-[var(--color-primary-hex)]" /> Forecasted Finish (P50 Likely)
                         </span>
                         <span className={clsx(
                           "text-[10px] font-mono font-bold px-2 py-0.5 rounded-full border",
@@ -738,8 +739,9 @@ export const DashboardView: React.FC = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-xs text-emerald-600 font-semibold text-center py-2">
-                    ✅ Zero stale or abandoned tasks. Team pacing is fresh!
+                  <div className="text-xs text-emerald-600 font-semibold text-center py-2 flex items-center justify-center gap-1.5">
+                    <CheckCircle2 size={13} className="text-emerald-500" />
+                    <span>Zero stale or abandoned tasks. Team pacing is fresh!</span>
                   </div>
                 )}
               </div>
@@ -771,7 +773,7 @@ export const DashboardView: React.FC = () => {
                             <div 
                               className={clsx(
                                 "h-full rounded-full",
-                                idx === 0 ? "bg-rose-500" : idx === 1 ? "bg-amber-500" : "bg-indigo-600"
+                                idx === 0 ? "bg-rose-500" : idx === 1 ? "bg-amber-500" : "bg-[var(--color-primary-hex)]"
                               )} 
                               style={{ width: `${pct}%` }} 
                             />
@@ -790,8 +792,9 @@ export const DashboardView: React.FC = () => {
                   </div>
                 )}
 
-                <div className="p-3 rounded-2xl bg-[var(--color-surface-2)] text-[11px] text-[var(--color-text-muted)] leading-relaxed">
-                  💡 <strong>Recommendation:</strong> Reallocate helper pairs or subtasks to alleviate top dependency owners.
+                <div className="p-3 rounded-2xl bg-[var(--color-surface-2)] text-[11px] text-[var(--color-text-muted)] leading-relaxed flex items-center gap-1.5">
+                  <Lightbulb size={13} className="text-amber-500 shrink-0" />
+                  <span><strong>Recommendation:</strong> Reallocate helper pairs or subtasks to alleviate top dependency owners.</span>
                 </div>
               </div>
             </div>
@@ -972,7 +975,7 @@ export const DashboardView: React.FC = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center text-xs font-bold">
                       <span className="text-[var(--color-text-muted)]">Blended Dev Day-Rate</span>
-                      <span className="font-mono text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-lg border border-indigo-500/20">
+                      <span className="font-mono text-[var(--color-primary-hex)] bg-[var(--color-primary-highlight-hex)] px-2 py-0.5 rounded-lg border border-[var(--color-primary-hex)]/20">
                         ${blendedRate} / day
                       </span>
                     </div>
@@ -983,7 +986,7 @@ export const DashboardView: React.FC = () => {
                       step="50" 
                       value={blendedRate} 
                       onChange={(e) => setBlendedRate(parseInt(e.target.value))}
-                      className="w-full h-2 bg-[var(--color-surface-2)] rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                      className="w-full h-2 bg-[var(--color-surface-2)] rounded-lg appearance-none cursor-pointer accent-[var(--color-primary-hex)]"
                     />
                   </div>
 
@@ -991,7 +994,7 @@ export const DashboardView: React.FC = () => {
                   <div className="space-y-2">
                     <div className="flex justify-between items-center text-xs font-bold">
                       <span className="text-[var(--color-text-muted)]">Budget Allocation Cap</span>
-                      <span className="font-mono text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded-lg border border-indigo-500/20">
+                      <span className="font-mono text-[var(--color-primary-hex)] bg-[var(--color-primary-highlight-hex)] px-2 py-0.5 rounded-lg border border-[var(--color-primary-hex)]/20">
                         ${allocatedBudget.toLocaleString()}
                       </span>
                     </div>
@@ -1002,7 +1005,7 @@ export const DashboardView: React.FC = () => {
                       step="10000" 
                       value={allocatedBudget} 
                       onChange={(e) => setAllocatedBudget(parseInt(e.target.value))}
-                      className="w-full h-2 bg-[var(--color-surface-2)] rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                      className="w-full h-2 bg-[var(--color-surface-2)] rounded-lg appearance-none cursor-pointer accent-[var(--color-primary-hex)]"
                     />
                   </div>
                 </div>
@@ -1108,8 +1111,8 @@ export const DashboardView: React.FC = () => {
                     <span className="text-base font-black text-[var(--color-text)]">{defects.length}</span>
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase font-bold text-indigo-500 block">Active Backlog</span>
-                    <span className="text-base font-black text-indigo-600">{defects.filter(d => d.status !== DefectStatus.CLOSED).length}</span>
+                    <span className="text-[10px] uppercase font-bold text-[var(--color-primary-hex)] block">Active Backlog</span>
+                    <span className="text-base font-black text-[var(--color-primary-hex)]">{defects.filter(d => d.status !== DefectStatus.CLOSED).length}</span>
                   </div>
                   <div>
                     <span className="text-[10px] uppercase font-bold text-emerald-500 block">Verified Fixed</span>
@@ -1129,7 +1132,7 @@ export const DashboardView: React.FC = () => {
                 {selectedRiskCell && (
                   <button 
                     onClick={() => setSelectedRiskCell(null)}
-                    className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
+                    className="text-xs font-bold text-[var(--color-primary-hex)] hover:underline cursor-pointer"
                   >
                     Clear Filter
                   </button>
@@ -1154,7 +1157,7 @@ export const DashboardView: React.FC = () => {
                               className={clsx(
                                 "h-14 rounded-2xl border flex flex-col items-center justify-center transition-all cursor-pointer",
                                 getMatrixCellBg(p, i, count),
-                                isSelected && "ring-2 ring-indigo-500 shadow-md scale-102"
+                                isSelected && "ring-2 ring-[var(--color-primary-hex)] shadow-md scale-102"
                               )}
                             >
                               <span className="text-base font-black font-display leading-none">{count}</span>
@@ -1265,7 +1268,7 @@ export const DashboardView: React.FC = () => {
               <div className="lg:col-span-6 card p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-sm flex flex-col justify-between space-y-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center border border-[var(--color-primary-hex)]/20">
                       <Activity size={16} />
                     </div>
                     <div>
@@ -1282,7 +1285,7 @@ export const DashboardView: React.FC = () => {
                   {log.slice(-10).reverse().map((l, idx) => (
                     <div key={idx} className="p-3 rounded-xl bg-[var(--color-surface-2)]/60 border border-[var(--color-divider)] flex flex-wrap items-center justify-between gap-2 text-xs">
                       <div className="flex items-center gap-2 min-w-0">
-                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0" />
+                        <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary-hex)] shrink-0" />
                         <span className="font-mono text-[10px] text-[var(--color-text-faint)] shrink-0">
                           {l.timestamp ? new Date(l.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Recent'}
                         </span>

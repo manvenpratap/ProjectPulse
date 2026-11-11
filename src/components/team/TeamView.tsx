@@ -34,7 +34,8 @@ import {
   Filter,
   BarChart2,
   Plane,
-  AlertCircle
+  AlertCircle,
+  Star
 } from 'lucide-react';
 import Button from '../shared/Button';
 import clsx from 'clsx';
@@ -217,7 +218,7 @@ const TeamView: React.FC = () => {
     const maxBar = Math.max(...activityData, 1);
     const pulseIntensity = totalEvents === 0 ? 0 : Math.min(100, Math.round((totalEvents / 35) * 100));
 
-    const intensityLabel = pulseIntensity >= 80 ? '🔥 High Momentum' : pulseIntensity >= 40 ? '⚡ Active' : pulseIntensity >= 15 ? '💫 Steady' : '😴 Quiet';
+    const intensityLabel = pulseIntensity >= 80 ? 'High Momentum' : pulseIntensity >= 40 ? 'Active' : pulseIntensity >= 15 ? 'Steady' : 'Quiet';
     const intensityColor = pulseIntensity >= 80 ? 'text-rose-500' : pulseIntensity >= 40 ? 'text-amber-500' : pulseIntensity >= 15 ? 'text-[var(--color-primary-hex)]' : 'text-[var(--color-text-muted)]';
     const topContributors = Object.entries(actByMember).sort((a, b) => b[1] - a[1]).slice(0, 3);
 
@@ -697,8 +698,15 @@ const TeamView: React.FC = () => {
       width: 'w-12',
       align: 'center',
       cell: (_, rank) => {
-        const rankEmoji = rank === 0 ? '🥇' : rank === 1 ? '🥈' : rank === 2 ? '🥉' : `${rank + 1}.`;
-        return <span className="font-bold text-xs">{rankEmoji}</span>;
+        const rankLabel = rank === 0 ? '#1' : rank === 1 ? '#2' : rank === 2 ? '#3' : `#${rank + 1}`;
+        return (
+          <span className={clsx(
+            "font-mono font-bold text-xs",
+            rank === 0 ? "text-amber-500" : rank === 1 ? "text-slate-400" : rank === 2 ? "text-amber-700 dark:text-amber-600" : "text-[var(--color-text-muted)]"
+          )}>
+            {rankLabel}
+          </span>
+        );
       }
     },
     {
@@ -804,7 +812,13 @@ const TeamView: React.FC = () => {
       headerTitle: 'TypeScript competency level',
       cell: (_, idx) => {
         const s1 = (idx * 2 + 3) % 6;
-        return <span className="font-mono text-indigo-500 font-bold whitespace-nowrap">{"★".repeat(s1)}{"☆".repeat(5 - s1)}</span>;
+        return (
+          <div className="flex items-center gap-0.5 text-indigo-500 whitespace-nowrap">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star key={i} size={11} className={i < s1 ? "fill-current" : "opacity-25"} />
+            ))}
+          </div>
+        );
       }
     },
     {
@@ -813,7 +827,13 @@ const TeamView: React.FC = () => {
       headerTitle: 'React & Next.js competency level',
       cell: (_, idx) => {
         const s2 = (idx * 3 + 1) % 6;
-        return <span className="font-mono text-emerald-500 font-bold whitespace-nowrap">{"★".repeat(s2)}{"☆".repeat(5 - s2)}</span>;
+        return (
+          <div className="flex items-center gap-0.5 text-emerald-500 whitespace-nowrap">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star key={i} size={11} className={i < s2 ? "fill-current" : "opacity-25"} />
+            ))}
+          </div>
+        );
       }
     },
     {
@@ -822,7 +842,13 @@ const TeamView: React.FC = () => {
       headerTitle: 'Backend services and APIs competency level',
       cell: (_, idx) => {
         const s3 = (idx + 4) % 6;
-        return <span className="font-mono text-blue-500 font-bold whitespace-nowrap">{"★".repeat(s3)}{"☆".repeat(5 - s3)}</span>;
+        return (
+          <div className="flex items-center gap-0.5 text-blue-500 whitespace-nowrap">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star key={i} size={11} className={i < s3 ? "fill-current" : "opacity-25"} />
+            ))}
+          </div>
+        );
       }
     },
     {
@@ -831,7 +857,13 @@ const TeamView: React.FC = () => {
       headerTitle: 'Database and SQL competency level',
       cell: (_, idx) => {
         const s4 = (idx * 2 + 1) % 6;
-        return <span className="font-mono text-amber-500 font-bold whitespace-nowrap">{"★".repeat(s4)}{"☆".repeat(5 - s4)}</span>;
+        return (
+          <div className="flex items-center gap-0.5 text-amber-500 whitespace-nowrap">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star key={i} size={11} className={i < s4 ? "fill-current" : "opacity-25"} />
+            ))}
+          </div>
+        );
       }
     },
     {
@@ -840,7 +872,13 @@ const TeamView: React.FC = () => {
       headerTitle: 'Cloud and DevOps competency level',
       cell: (_, idx) => {
         const s5 = (idx * 4 + 2) % 6;
-        return <span className="font-mono text-cyan-500 font-bold whitespace-nowrap">{"★".repeat(s5)}{"☆".repeat(5 - s5)}</span>;
+        return (
+          <div className="flex items-center gap-0.5 text-cyan-500 whitespace-nowrap">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star key={i} size={11} className={i < s5 ? "fill-current" : "opacity-25"} />
+            ))}
+          </div>
+        );
       }
     }
   ], []);
@@ -897,13 +935,14 @@ const TeamView: React.FC = () => {
               </div>
               <div className="space-y-2.5">
                 {velocityLeaders.scores.map((s, i) => {
-                  const medals = ['🥇', '🥈', '🥉'];
+                  const rankBadges = ['#1', '#2', '#3'];
+                  const rankColors = ['text-amber-500', 'text-slate-400', 'text-amber-700 dark:text-amber-600'];
                   const pct = Math.round((s.count / velocityLeaders.maxCount) * 100);
                   return (
                     <div key={i} className="space-y-1">
                       <div className="flex items-center justify-between text-xs">
                         <div className="flex items-center gap-2 truncate">
-                          <span className="text-xs">{medals[i]}</span>
+                          <span className={clsx("font-mono text-xs font-bold shrink-0 w-5", rankColors[i])}>{rankBadges[i]}</span>
                           <span className="font-bold text-[var(--color-text)] truncate">{s.name}</span>
                         </div>
                         <span className="font-mono text-xs font-bold text-amber-500">{s.count} <span className="text-[10px] font-normal text-[var(--color-text-muted)]">done</span></span>
@@ -939,11 +978,11 @@ const TeamView: React.FC = () => {
               </div>
               <div className="space-y-2.5">
                 {qualityChampions.map((c, i) => {
-                  const tierIcons = ['💎', '🌟', '✨'];
+                  const tierBadges = ['#1', '#2', '#3'];
                   return (
                     <div key={i} className="flex items-center justify-between p-2 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
                       <div className="flex items-center gap-2 truncate">
-                        <span className="text-xs">{tierIcons[i]}</span>
+                        <span className="font-mono text-xs font-bold text-emerald-500 shrink-0 w-5">{tierBadges[i]}</span>
                         <div className="truncate">
                           <div className="font-bold text-xs text-[var(--color-text)] truncate">{c.name}</div>
                           <div className="text-[10px] text-[var(--color-text-faint)] truncate">{c.tasksCount} tasks · {c.defectsCount} bugs</div>
@@ -978,12 +1017,12 @@ const TeamView: React.FC = () => {
               </div>
               <div className="space-y-2.5">
                 {growthLeaders.scores.map((g, i) => {
-                  const icons = ['🌱', '🌿', '🍀'];
+                  const growthBadges = ['#1', '#2', '#3'];
                   return (
                     <div key={i} className="space-y-1">
                       <div className="flex items-center justify-between text-xs">
                         <div className="flex items-center gap-2 truncate">
-                          <span>{icons[i]}</span>
+                          <span className="font-mono text-xs font-bold text-sky-500 shrink-0 w-5">{growthBadges[i]}</span>
                           <span className="font-bold text-[var(--color-text)] truncate">{g.name}</span>
                         </div>
                         <span className="font-mono text-xs font-bold text-sky-500">{g.count} <span className="text-[10px] font-normal text-[var(--color-text-muted)]">modules</span></span>
@@ -1081,7 +1120,7 @@ const TeamView: React.FC = () => {
                   const now = new Date();
                   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
                   const days = Math.ceil((m._bdayDate.getTime() - today.getTime()) / (864e5));
-                  const label = days === 0 ? '🎉 Today!' : days === 1 ? 'Tomorrow' : `${days} days`;
+                  const label = days === 0 ? 'Today!' : days === 1 ? 'Tomorrow' : `${days} days`;
                   const isSoon = days <= 3;
 
                   return (
@@ -1130,7 +1169,7 @@ const TeamView: React.FC = () => {
                   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
                   const isToday = new Date(lv.from) <= today && new Date(lv.to) >= today;
                   const daysUntil = Math.ceil((new Date(lv.from).getTime() - today.getTime()) / (864e5));
-                  const label = isToday ? '🌴 Active' : daysUntil === 1 ? 'Tomorrow' : `in ${daysUntil}d`;
+                  const label = isToday ? 'Active' : daysUntil === 1 ? 'Tomorrow' : `in ${daysUntil}d`;
 
                   return (
                     <div 
@@ -1585,17 +1624,20 @@ const TeamView: React.FC = () => {
             </div>
             {workloadData.highestEfficiencyMem && (
               <div className="flex items-center gap-1.5 text-[var(--color-text-muted)]">
-                <span>🏆 Most Efficient: <strong className="text-[var(--color-text)]">{workloadData.highestEfficiencyMem}</strong> ({Math.round(workloadData.highestEfficiencyPct * 100)}%)</span>
+                <Trophy size={13} className="text-amber-500 shrink-0" />
+                <span>Most Efficient: <strong className="text-[var(--color-text)]">{workloadData.highestEfficiencyMem}</strong> ({Math.round(workloadData.highestEfficiencyPct * 100)}%)</span>
               </div>
             )}
             {workloadData.highestEffortMem && (
               <div className="flex items-center gap-1.5 text-[var(--color-text-muted)]">
-                <span>⚡ Highest Load: <strong className="text-[var(--color-text)]">{workloadData.highestEffortMem}</strong> ({workloadData.highestEffortVal.toFixed(1)}d)</span>
+                <Zap size={13} className="text-sky-500 shrink-0" />
+                <span>Highest Load: <strong className="text-[var(--color-text)]">{workloadData.highestEffortMem}</strong> ({workloadData.highestEffortVal.toFixed(1)}d)</span>
               </div>
             )}
             {workloadData.highestOverdueMem && (
               <div className="flex items-center gap-1.5 text-rose-500 font-semibold">
-                <span>⚠️ Overdue Baggage: <strong>{workloadData.highestOverdueMem}</strong> ({workloadData.highestOverdueVal.toFixed(1)}d)</span>
+                <AlertTriangle size={13} className="text-rose-500 shrink-0" />
+                <span>Overdue Baggage: <strong>{workloadData.highestOverdueMem}</strong> ({workloadData.highestOverdueVal.toFixed(1)}d)</span>
               </div>
             )}
           </div>

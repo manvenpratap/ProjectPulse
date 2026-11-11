@@ -1,7 +1,7 @@
 # Graph Report - ProjectPulse 2.0  (2026-11-11)
 
 ## Corpus Check
-- 79 files · ~202,492 words
+- 79 files · ~202,626 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `db0d37cf`
+- Built from commit: `f4493d9f`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

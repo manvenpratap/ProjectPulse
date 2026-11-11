@@ -786,7 +786,7 @@ export const VelocityBandChart: React.FC = () => {
                     </div>
 
                     <div className="text-[10px] text-[var(--color-primary-hex)] font-semibold pt-1 border-t border-[var(--color-divider)]">
-                      {isSelected ? "✓ Click bar to close breakdown" : "👉 Click bar to inspect deliverables"}
+                      {isSelected ? "Click bar to close breakdown" : "Click bar to inspect deliverables"}
                     </div>
                   </div>
                 );

@@ -728,7 +728,7 @@ export const CxoEmailBriefing: React.FC<CxoEmailBriefingProps> = ({
     md += `**Classification:** Confidential & Steering Privileged\n\n`;
 
     if (incAsks && (pendingDecisions.length > 0 || execAsk.trim())) {
-      md += `## ⚠️ Leadership Input & Decision Gate\n`;
+      md += `## Leadership Input & Decision Gate\n`;
       if (execAsk.trim()) {
         md += `> **Direct Steering Ask:** ${execAsk}\n\n`;
       }
@@ -791,10 +791,10 @@ export const CxoEmailBriefing: React.FC<CxoEmailBriefingProps> = ({
       md += `## 6. Schedule Slippage & Risk Exposure\n`;
       overdueTasks.slice(0, 5).forEach(ot => {
         const dd = daysDiff(ot.dueDate);
-        md += `- ⚠️ **Overdue (${Math.abs(dd || 0)}d):** ${ot.name} (${ot.assignee || 'Unassigned'})\n`;
+        md += `- **[Overdue (${Math.abs(dd || 0)}d)]** ${ot.name} (${ot.assignee || 'Unassigned'})\n`;
       });
       criticalRisks.slice(0, 4).forEach(r => {
-        md += `- 🚨 **High Risk:** ${r.title} (Owner: ${r.owner || 'Lead'})\n`;
+        md += `- **[High Risk]** ${r.title} (Owner: ${r.owner || 'Lead'})\n`;
       });
       md += `\n`;
     }

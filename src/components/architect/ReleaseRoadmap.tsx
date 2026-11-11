@@ -173,7 +173,7 @@ export const ReleaseRoadmap: React.FC = () => {
           <div className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
             <div className="flex items-center justify-between text-xs font-semibold text-[var(--color-text-muted)]">
               <span>Total Cycles</span>
-              <Flag size={14} className="text-indigo-500" />
+              <Flag size={14} className="text-[var(--color-primary-hex)]" />
             </div>
             <div className="mt-2 text-2xl font-mono font-black text-[var(--color-text)]">
               {totalReleases}
@@ -186,9 +186,9 @@ export const ReleaseRoadmap: React.FC = () => {
           <div className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
             <div className="flex items-center justify-between text-xs font-semibold text-[var(--color-text-muted)]">
               <span>Active Cycle</span>
-              <Clock size={14} className="text-blue-500" />
+              <Clock size={14} className="text-sky-500" />
             </div>
-            <div className="mt-2 text-2xl font-mono font-black text-blue-600">
+            <div className="mt-2 text-2xl font-mono font-black text-sky-500">
               {activeReleases}
             </div>
             <div className="text-xs text-[var(--color-text-muted)] font-medium mt-0.5">
@@ -276,7 +276,7 @@ export const ReleaseRoadmap: React.FC = () => {
                 <div>
                   <div className="flex items-start justify-between gap-3 mb-3">
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center font-mono font-bold text-xs">
+                      <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center font-mono font-bold text-xs">
                         {r.name.slice(0, 3)}
                       </div>
                       <div>
@@ -338,7 +338,7 @@ export const ReleaseRoadmap: React.FC = () => {
                   <div className="space-y-1.5 mb-4">
                     <div className="flex justify-between items-center text-xs font-semibold">
                       <span className="text-xs font-semibold text-[var(--color-text-muted)]">Scope Completion</span>
-                      <span className="font-mono font-bold text-indigo-600">{progress}%</span>
+                      <span className="font-mono font-bold text-[var(--color-primary-hex)]">{progress}%</span>
                     </div>
                     <div className="h-2 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
                       <div 
@@ -351,7 +351,7 @@ export const ReleaseRoadmap: React.FC = () => {
                   {/* Mapped Assets */}
                   <div className="flex items-center gap-3 text-xs text-[var(--color-text-muted)] py-2 border-t border-[var(--color-divider)]">
                     <div className="flex items-center gap-1.5">
-                      <ClipboardList size={13} className="text-indigo-500" />
+                      <ClipboardList size={13} className="text-[var(--color-primary-hex)]" />
                       <span className="font-semibold text-[var(--color-text)]">{mappedTasks.length}</span> Tasks
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -365,7 +365,7 @@ export const ReleaseRoadmap: React.FC = () => {
                 <div className="flex items-center justify-between pt-3 border-t border-[var(--color-divider)] mt-2">
                   <button
                     onClick={() => handleSyncDatesToTasks(r)}
-                    className="text-[11px] font-bold text-[var(--color-text-muted)] hover:text-indigo-600 flex items-center gap-1 transition-colors"
+                    className="text-[11px] font-bold text-[var(--color-text-muted)] hover:text-[var(--color-primary-hex)] flex items-center gap-1 transition-colors"
                   >
                     <RefreshCw size={12} /> Sync Dates to Tasks
                   </button>
@@ -493,7 +493,7 @@ export const ReleaseRoadmap: React.FC = () => {
             {/* Mapped Tasks */}
             <div>
               <h4 className="text-xs font-semibold text-[var(--color-text-muted)] mb-3 flex items-center gap-2">
-                <ClipboardList size={14} className="text-indigo-500" />
+                <ClipboardList size={14} className="text-[var(--color-primary-hex)]" />
                 Mapped Tasks ({tasks.filter(t => t.release === selectedReleaseDetails.name).length})
               </h4>
               <div className="space-y-2">
@@ -505,7 +505,7 @@ export const ReleaseRoadmap: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
                       <span className="text-[10px] font-bold text-[var(--color-text-muted)]">{t.status}</span>
-                      <span className="font-mono font-bold text-indigo-600">{t.progress}%</span>
+                      <span className="font-mono font-bold text-[var(--color-primary-hex)]">{t.progress}%</span>
                     </div>
                   </div>
                 ))}

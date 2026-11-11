@@ -465,7 +465,7 @@ export const FunctionalMatrix: React.FC = () => {
       headerTitle: 'Functional architectural domain category',
       width: 'w-28',
       cell: (f) => (
-        <span className="px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 font-semibold text-[10px] border border-indigo-500/20 whitespace-nowrap inline-block">
+        <span className="px-2 py-0.5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-semibold text-[10px] border border-[var(--color-primary-hex)]/20 whitespace-nowrap inline-block">
           {f.category || 'General'}
         </span>
       )
@@ -1293,7 +1293,7 @@ export const FunctionalMatrix: React.FC = () => {
                             )}
 
                             {f.category && (
-                              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 inline-flex items-center gap-1">
+                              <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 inline-flex items-center gap-1">
                                 <Tag size={9} />
                                 <span>{f.category}</span>
                               </span>
@@ -1694,7 +1694,7 @@ export const FunctionalMatrix: React.FC = () => {
                       >
                         <Sparkles size={10} />
                         <span>Auto: {editForm.release}</span>
-                        <span className="text-[9px] opacity-70">✕</span>
+                        <X size={9} className="opacity-70" />
                       </button>
                     )}
                   </div>
@@ -1731,7 +1731,7 @@ export const FunctionalMatrix: React.FC = () => {
                       >
                         <Sparkles size={10} />
                         <span>Auto: {editForm.category}</span>
-                        <span className="text-[9px] opacity-70">✕</span>
+                        <X size={9} className="opacity-70" />
                       </button>
                     )}
                   </div>

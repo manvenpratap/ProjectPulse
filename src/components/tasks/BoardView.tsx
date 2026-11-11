@@ -91,7 +91,7 @@ const BoardView: React.FC<BoardViewProps> = ({ onEditTask }) => {
                     <div className="flex items-center justify-between">
                        <div className="flex -space-x-2">
                           {task.assignee ? (
-                             <div className="w-7 h-7 rounded-full bg-indigo-100 border-2 border-[var(--color-surface)] flex items-center justify-center text-[10px] font-bold text-indigo-600 shadow-sm" title={task.assignee}>
+                             <div className="w-7 h-7 rounded-full bg-[var(--color-primary-highlight-hex)] border-2 border-[var(--color-surface)] flex items-center justify-center text-[10px] font-bold text-[var(--color-primary-hex)] shadow-sm" title={task.assignee}>
                                 {task.assignee.charAt(0)}
                              </div>
                           ) : (

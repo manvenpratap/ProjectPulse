@@ -334,7 +334,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
         )}
 
         {hasDraft && !taskId && (
-          <div className="p-3 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-between text-xs text-indigo-700 dark:text-indigo-300">
+          <div className="p-3 rounded-xl bg-[var(--color-primary-highlight-hex)] border border-[var(--color-primary-hex)]/30 flex items-center justify-between text-xs text-[var(--color-primary-hex)]">
             <span>Unsaved draft restored from earlier session.</span>
             <div className="flex items-center gap-2">
               <button 
@@ -594,11 +594,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
           <div className="space-y-2">
             {(formData.subtasks || []).map((sub, i) => (
               <div key={i} className="flex items-center gap-3 p-3 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-2xl group/sub">
-                <div className="w-6 h-6 rounded-lg bg-white border border-[var(--color-divider)] flex items-center justify-center text-[10px] font-black text-indigo-500 shrink-0">
+                <div className="w-6 h-6 rounded-lg bg-white border border-[var(--color-divider)] flex items-center justify-center text-[10px] font-black text-[var(--color-primary-hex)] shrink-0">
                   {i+1}
                 </div>
                 <input 
-                  className="flex-1 bg-transparent border-none text-sm font-bold outline-none focus:text-indigo-600"
+                  className="flex-1 bg-transparent border-none text-sm font-bold outline-none focus:text-[var(--color-primary-hex)]"
                   value={sub.name}
                   onChange={e => updateSubtask(i, 'name', e.target.value)}
                 />
@@ -622,7 +622,7 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
                 </select>
                 <div className="flex items-center gap-2 group-hover/sub:hidden">
                    <div className="w-12 h-1 bg-white rounded-full overflow-hidden border border-[var(--color-divider)]">
-                      <div className="h-full bg-indigo-500" style={{ width: `${sub.progress}%` }} />
+                      <div className="h-full bg-[var(--color-primary-hex)]" style={{ width: `${sub.progress}%` }} />
                    </div>
                 </div>
                 <button 
@@ -647,11 +647,11 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
             <label className="text-xs font-medium text-[var(--color-text-muted)] flex items-center gap-2">
               <Activity size={14} /> Progress Oversight
             </label>
-            <span className="text-[10px] font-black text-indigo-600 px-2 py-0.5 bg-indigo-50 rounded-full">{formData.progress}%</span>
+            <span className="text-[10px] font-black text-[var(--color-primary-hex)] px-2 py-0.5 bg-[var(--color-primary-highlight-hex)] rounded-full">{formData.progress}%</span>
           </div>
           <input 
             type="range"
-            className="w-full h-2 bg-[var(--color-surface-offset)] rounded-lg appearance-none cursor-pointer accent-indigo-600"
+            className="w-full h-2 bg-[var(--color-surface-offset)] rounded-lg appearance-none cursor-pointer accent-[var(--color-primary-hex)]"
             min="0"
             max="100"
             value={formData.progress || 0}

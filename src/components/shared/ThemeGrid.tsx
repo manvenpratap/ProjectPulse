@@ -11,14 +11,13 @@ export interface ThemeDef {
   surface: string;
   font: string;
   desc: string;
-  emoji: string;
   isDark: boolean;
   featured: boolean;
   legacy?: boolean;
 }
 
 export const THEMES: ThemeDef[] = [
-  // ── ✦ FEATURED THEMES — 7 Distinct Design Systems ──
+  // ── FEATURED THEMES — 7 Distinct Design Systems ──
   {
     id: 'origin',
     name: 'Origin',
@@ -27,7 +26,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#ffffff',
     font: "'Fraunces', serif",
     desc: 'Classic enterprise. Sharp corners, editorial serif, restraint.',
-    emoji: '🏛',
     isDark: false,
     featured: true
   },
@@ -39,7 +37,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#ffffff',
     font: "'Outfit', sans-serif",
     desc: 'Modern SaaS. Rounded, glassy, vibrant indigo energy.',
-    emoji: '✦',
     isDark: false,
     featured: true
   },
@@ -51,7 +48,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#ffffff',
     font: "'JetBrains Mono', monospace",
     desc: 'Developer-first. Monospace precision, standard daily heatmap layout.',
-    emoji: '⌨',
     isDark: false,
     featured: true
   },
@@ -63,7 +59,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#ffffff',
     font: "'Satoshi', sans-serif",
     desc: 'Creative studio. Gradient-rich, glassmorphic, expressive.',
-    emoji: '🌌',
     isDark: false,
     featured: true
   },
@@ -75,7 +70,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#0a0a0a',
     font: "'JetBrains Mono', monospace",
     desc: 'Night operator. Void black, neon green. Pure dark experience.',
-    emoji: '◼',
     isDark: true,
     featured: true
   },
@@ -87,7 +81,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#fffdf8',
     font: "'Fraunces', serif",
     desc: 'Editorial warmth. Double serif, warm cream, quiet elegance.',
-    emoji: '📄',
     isDark: false,
     featured: true
   },
@@ -99,7 +92,6 @@ export const THEMES: ThemeDef[] = [
     surface: 'rgba(13, 13, 15, 0.8)',
     font: "'Inter', sans-serif",
     desc: 'Technical Edition with dotted texture and neon cyan highlights.',
-    emoji: '⚡',
     isDark: true,
     featured: true
   },
@@ -113,7 +105,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#ffffff',
     font: "'Fraunces', serif",
     desc: 'Classical elegance with serif titles and soft neutral tones.',
-    emoji: '🏛',
     isDark: false,
     featured: false,
     legacy: true
@@ -126,7 +117,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#0f2d35',
     font: "'Fraunces', serif",
     desc: 'Refined dark mode for quiet productivity.',
-    emoji: '🌌',
     isDark: true,
     featured: false,
     legacy: true
@@ -139,7 +129,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#0f0f0f',
     font: "'JetBrains Mono', monospace",
     desc: 'Deep neon industrial vibe with tactical monospace typography.',
-    emoji: '◼',
     isDark: true,
     featured: false,
     legacy: true
@@ -152,7 +141,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#ffffff',
     font: "'Fraunces', serif",
     desc: 'Editorial layout with clean lines and academic sophistication.',
-    emoji: '📄',
     isDark: false,
     featured: false,
     legacy: true
@@ -165,7 +153,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#292524',
     font: "'Fraunces', serif",
     desc: 'Classic editorial aesthetic for late-night reading.',
-    emoji: '📜',
     isDark: true,
     featured: false,
     legacy: true
@@ -178,7 +165,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#ffffff',
     font: "'Outfit', sans-serif",
     desc: 'Vibrant and energetic with soft curves and playful colors.',
-    emoji: '🌈',
     isDark: false,
     featured: false,
     legacy: true
@@ -191,7 +177,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#1e293b',
     font: "'Outfit', sans-serif",
     desc: 'Celestial dark mode with vibrant accents.',
-    emoji: '✨',
     isDark: true,
     featured: false,
     legacy: true
@@ -204,7 +189,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#111827',
     font: "'Orbitron', sans-serif",
     desc: 'Futuristic sci-fi interface with sharp edges and glowing accents.',
-    emoji: '💿',
     isDark: true,
     featured: false,
     legacy: true
@@ -217,7 +201,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#ffffff',
     font: "'Outfit', sans-serif",
     desc: 'Corporate minimalist design focused on clarity and precision.',
-    emoji: '🛡️',
     isDark: false,
     featured: false,
     legacy: true
@@ -230,7 +213,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#0f172a',
     font: "'Outfit', sans-serif",
     desc: 'Executive night mode for high-stakes focus.',
-    emoji: '🛡️',
     isDark: true,
     featured: false,
     legacy: true
@@ -243,7 +225,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#ffffff',
     font: "'Satoshi', sans-serif",
     desc: 'Premium modern light experience with airy whitespace and glassmorphism.',
-    emoji: '✨',
     isDark: false,
     featured: false,
     legacy: true
@@ -256,7 +237,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#0d1221',
     font: "'Satoshi', sans-serif",
     desc: 'Deep blue digital darkness.',
-    emoji: '💡',
     isDark: true,
     featured: false,
     legacy: true
@@ -269,7 +249,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#150a2e',
     font: "'DM Mono', monospace",
     desc: 'High-contrast neon glitch aesthetic with monospace precision.',
-    emoji: '👾',
     isDark: true,
     featured: false,
     legacy: true
@@ -282,7 +261,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#0d1117',
     font: "'Inter', sans-serif",
     desc: 'Deep ocean dark mode with high readability and blue accents.',
-    emoji: '🌙',
     isDark: true,
     featured: false,
     legacy: true
@@ -295,7 +273,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#ffffff',
     font: "'Fraunces', serif",
     desc: 'Royal elite aesthetic with gold accents and ivory tones.',
-    emoji: '🥂',
     isDark: false,
     featured: false,
     legacy: true
@@ -308,7 +285,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#2c2923',
     font: "'Fraunces', serif",
     desc: 'Luxury evening mode with golden highlights.',
-    emoji: '🥂',
     isDark: true,
     featured: false,
     legacy: true
@@ -321,7 +297,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#121214',
     font: "'Satoshi', sans-serif",
     desc: 'High-performance dark mode with monospace details and bold red accents.',
-    emoji: '🏎️',
     isDark: true,
     featured: false,
     legacy: true
@@ -334,7 +309,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#ffffff',
     font: "'Fraunces', serif",
     desc: 'Lush and refreshing light mode with deep emerald tones and soft curves.',
-    emoji: '💎',
     isDark: false,
     featured: false,
     legacy: true
@@ -347,7 +321,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#064e3b',
     font: "'Fraunces', serif",
     desc: 'Deep forest nocturnal aesthetic.',
-    emoji: '🌲',
     isDark: true,
     featured: false,
     legacy: true
@@ -360,7 +333,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#fdfdfd',
     font: "'Outfit', sans-serif",
     desc: 'Multi-color iconography and vibrant accents for a playful, energetic experience.',
-    emoji: '🔮',
     isDark: false,
     featured: false,
     legacy: true
@@ -373,7 +345,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#0a0a0a',
     font: "'Outfit', sans-serif",
     desc: 'Neon pop against pure darkness.',
-    emoji: '🔮',
     isDark: true,
     featured: false,
     legacy: true
@@ -386,7 +357,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#ffffff',
     font: "'Nunito', sans-serif",
     desc: 'A fun, casual theme using only emoji icons for a simplified workspace.',
-    emoji: '🎈',
     isDark: false,
     featured: false,
     legacy: true
@@ -399,7 +369,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#450a0a',
     font: "'Nunito', sans-serif",
     desc: 'Fun turned dark with high-energy reds.',
-    emoji: '🎈',
     isDark: true,
     featured: false,
     legacy: true
@@ -412,7 +381,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#232440',
     font: "'Outfit', sans-serif",
     desc: 'A premium warm amber dark theme for sophisticated SaaS workflows.',
-    emoji: '🪨',
     isDark: true,
     featured: false,
     legacy: true
@@ -425,7 +393,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#ffffff',
     font: "'Inter', sans-serif",
     desc: 'Executive financial dashboard with warm terracotta accents, crisp white cards, and distinct hierarchy.',
-    emoji: '🏺',
     isDark: false,
     featured: false,
     legacy: true
@@ -438,7 +405,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#ffffff',
     font: "'Fraunces', serif",
     desc: 'High-end editorial banking experience combining elegant serif headers with deep navy slate and soft gold accents.',
-    emoji: '💳',
     isDark: false,
     featured: false,
     legacy: true
@@ -451,7 +417,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#ffffff',
     font: "'Outfit', sans-serif",
     desc: 'Bold, high-contrast bento grid layout with saturated primary orange/blue cards and playful pill badges.',
-    emoji: '🍱',
     isDark: false,
     featured: false,
     legacy: true
@@ -464,7 +429,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#ffffff',
     font: "'Inter', sans-serif",
     desc: 'Premium dark-accented SaaS dashboard with a crisp light outer shell and rose crimson highlights.',
-    emoji: '🏷️',
     isDark: false,
     featured: false,
     legacy: true
@@ -477,7 +441,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#ffffff',
     font: "'Satoshi', sans-serif",
     desc: 'Smooth glassmorphism SaaS interface with floating violet containers, soft rounded corners, and duotone icon blobs.',
-    emoji: '⚡',
     isDark: false,
     featured: false,
     legacy: true
@@ -490,7 +453,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#0f1020',
     font: "'Outfit', sans-serif",
     desc: 'Nocturnal SaaS with luminescent violet accents and obsidian depth.',
-    emoji: '✦',
     isDark: true,
     featured: false,
     legacy: true
@@ -503,7 +465,6 @@ export const THEMES: ThemeDef[] = [
     surface: '#1a1a1a',
     font: "'Syne', sans-serif",
     desc: 'High-contrast Heavy Brutalist with neon accents.',
-    emoji: '📐',
     isDark: true,
     featured: false,
     legacy: true
@@ -516,7 +477,6 @@ export const THEMES: ThemeDef[] = [
     surface: 'rgba(255,255,255,0.4)',
     font: "'Plus Jakarta Sans', sans-serif",
     desc: 'Frosted aesthetics with high transparency and blur.',
-    emoji: '🪟',
     isDark: false,
     featured: false,
     legacy: true
@@ -529,7 +489,6 @@ export const THEMES: ThemeDef[] = [
     surface: 'rgba(15,23,42,0.5)',
     font: "'Plus Jakarta Sans', sans-serif",
     desc: 'Deep frosted glass in a midnight void.',
-    emoji: '🪟',
     isDark: true,
     featured: false,
     legacy: true
@@ -712,7 +671,7 @@ export const ThemeGrid: React.FC<ThemeGridProps> = ({
                 className="text-xs font-bold tracking-tight truncate flex items-center gap-1"
                 style={{ color: t.isDark ? '#f8fafc' : '#0f172a' }}
               >
-                <span>{t.emoji}</span>
+                <span className="w-2.5 h-2.5 rounded-full shrink-0 shadow-2xs border border-black/10 dark:border-white/10" style={{ backgroundColor: t.primary }} />
                 <span>{t.name}</span>
               </span>
               <div className="flex items-center gap-1 shrink-0">

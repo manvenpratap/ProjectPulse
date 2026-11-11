@@ -140,7 +140,7 @@ export const BaselineManager: React.FC = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)]">
         <div>
           <div className="flex items-center gap-2">
-            <Camera size={18} className="text-indigo-600" />
+            <Camera size={18} className="text-[var(--color-primary-hex)]" />
             <h3 className="text-base font-bold text-[var(--color-text)]">Project Performance Baselines</h3>
           </div>
           <p className="text-xs text-[var(--color-text-muted)] mt-1">
@@ -269,7 +269,7 @@ export const BaselineManager: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h4 className="font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
-                <TrendingUp size={16} className="text-indigo-600" />
+                <TrendingUp size={16} className="text-[var(--color-primary-hex)]" />
                 Baseline Comparison Table: {activeSnapshotDetails.name}
               </h4>
               <p className="text-xs text-[var(--color-text-muted)]">
@@ -352,7 +352,7 @@ export const BaselineManager: React.FC = () => {
             >
               <div className="px-6 py-4 border-b border-[var(--color-divider)] flex justify-between items-center">
                 <h3 className="text-sm font-bold text-[var(--color-text)] flex items-center gap-2">
-                  <Camera size={16} className="text-indigo-600" />
+                  <Camera size={16} className="text-[var(--color-primary-hex)]" />
                   Capture Project Baseline Snapshot
                 </h3>
                 <button onClick={() => setIsCaptureModalOpen(false)} className="text-[var(--color-text-faint)] hover:text-[var(--color-text)]">

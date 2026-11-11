@@ -123,16 +123,16 @@ const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
                 }}
               >
                 <div className="flex items-start gap-3.5">
-                  {/* Big emoji & accent swatch preview */}
+                  {/* Accent swatch preview */}
                   <div
-                    className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 shadow-md border-2"
+                    className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-md border-2"
                     style={{
                       backgroundColor: displayedTheme.bg,
                       borderColor: displayedTheme.primary,
                       boxShadow: `0 2px 10px ${displayedTheme.primary}40`
                     }}
                   >
-                    {displayedTheme.emoji}
+                    <Palette size={22} style={{ color: displayedTheme.primary }} />
                   </div>
 
                   <div className="flex-1 min-w-0">
@@ -203,7 +203,7 @@ const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
                   )}
                 >
                   <Sun size={15} className="text-amber-500" />
-                  <span>☀️ Light Mode</span>
+                  <span>Light Mode</span>
                 </button>
                 <button
                   type="button"
@@ -216,7 +216,7 @@ const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
                   )}
                 >
                   <Moon size={15} className="text-indigo-400" />
-                  <span>🌙 Dark Mode</span>
+                  <span>Dark Mode</span>
                 </button>
               </div>
 

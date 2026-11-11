@@ -401,7 +401,7 @@ export const OverviewView: React.FC = () => {
               </div>
               <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
                 <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)] block">High Threat RAID</span>
-                <span className="text-2xl font-black font-display font-mono text-indigo-500">
+                <span className="text-2xl font-black font-display font-mono text-[var(--color-primary-hex)]">
                   {activeHighRaids.length}
                 </span>
                 <span className="text-[11px] text-[var(--color-text-muted)] block mt-0.5">-5% deduction each</span>
@@ -478,9 +478,9 @@ export const OverviewView: React.FC = () => {
                         <div className="flex items-center gap-2">
                           <span className={clsx(
                             "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold font-mono",
-                            isDone ? "bg-emerald-500 text-white" : isInProg ? "bg-indigo-500 text-white" : "bg-[var(--color-surface-2)] text-[var(--color-text-faint)]"
+                            isDone ? "bg-emerald-500 text-white" : isInProg ? "bg-[var(--color-primary-hex)] text-white" : "bg-[var(--color-surface-2)] text-[var(--color-text-faint)]"
                           )}>
-                            {isDone ? "✓" : idx + 1}
+                            {isDone ? <Check size={11} className="stroke-[3]" /> : idx + 1}
                           </span>
                           <span className="font-bold text-[var(--color-text)]">{m.name}</span>
                         </div>
@@ -490,7 +490,7 @@ export const OverviewView: React.FC = () => {
                       </div>
                       <div className="w-full bg-[var(--color-surface-2)] h-2 rounded-full overflow-hidden border border-[var(--color-divider)]">
                         <div 
-                          className={clsx("h-full rounded-full transition-all", isDone ? "bg-emerald-500" : "bg-indigo-500")}
+                          className={clsx("h-full rounded-full transition-all", isDone ? "bg-emerald-500" : "bg-[var(--color-primary-hex)]")}
                           style={{ width: `${isDone ? 100 : m.progress || 0}%` }}
                         />
                       </div>
@@ -575,7 +575,7 @@ export const OverviewView: React.FC = () => {
               </div>
               <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
                 <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)] block">In Construction</span>
-                <span className="text-2xl font-black font-display font-mono text-indigo-600">{inProgressTasks.length}</span>
+                <span className="text-2xl font-black font-display font-mono text-[var(--color-primary-hex)]">{inProgressTasks.length}</span>
                 <span className="text-[11px] text-[var(--color-text-muted)] block mt-0.5">Active Sprint</span>
               </div>
               <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
@@ -598,7 +598,7 @@ export const OverviewView: React.FC = () => {
                         <span className={clsx(
                           "w-2 h-2 rounded-full",
                           pri === TaskPriority.CRITICAL ? "bg-rose-500" :
-                          pri === TaskPriority.HIGH ? "bg-amber-500" : "bg-indigo-500"
+                          pri === TaskPriority.HIGH ? "bg-amber-500" : "bg-[var(--color-primary-hex)]"
                         )} />
                         <span className="font-bold text-[var(--color-text)]">{pri}</span>
                       </div>
@@ -626,7 +626,7 @@ export const OverviewView: React.FC = () => {
             <div className="grid grid-cols-3 gap-3 text-center">
               <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
                 <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)] block">Burned Effort</span>
-                <span className="text-2xl font-black font-display font-mono text-indigo-600">{doneEffort}d</span>
+                <span className="text-2xl font-black font-display font-mono text-[var(--color-primary-hex)]">{doneEffort}d</span>
                 <span className="text-[11px] text-[var(--color-text-muted)] block mt-0.5">{effortPct}% total</span>
               </div>
               <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
@@ -651,7 +651,7 @@ export const OverviewView: React.FC = () => {
                       <span className="font-mono text-[var(--color-text-muted)]">{m.effort} person-days</span>
                     </div>
                     <div className="w-full bg-[var(--color-surface-2)] h-1.5 rounded-full overflow-hidden">
-                      <div className="h-full bg-indigo-500 rounded-full" style={{ width: `${Math.round((m.effort / Math.max(1, totalEffort)) * 100)}%` }} />
+                      <div className="h-full bg-[var(--color-primary-hex)] rounded-full" style={{ width: `${Math.round((m.effort / Math.max(1, totalEffort)) * 100)}%` }} />
                     </div>
                   </div>
                 ))}
@@ -786,12 +786,12 @@ export const OverviewView: React.FC = () => {
                   <div key={mod.name} className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] space-y-2 text-xs">
                     <div className="flex justify-between items-center">
                       <span className="font-bold text-[var(--color-text)]">{mod.name}</span>
-                      <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600">
+                      <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)]">
                         {mod.done}/{mod.total} Done
                       </span>
                     </div>
                     <div className="w-full bg-[var(--color-surface-2)] h-2 rounded-full overflow-hidden border border-[var(--color-divider)]">
-                      <div className="h-full bg-indigo-600 rounded-full" style={{ width: `${mod.pct}%` }} />
+                      <div className="h-full bg-[var(--color-primary-hex)] rounded-full" style={{ width: `${mod.pct}%` }} />
                     </div>
                     <div className="flex justify-between text-[11px] text-[var(--color-text-muted)] font-mono pt-1">
                       <span>Package Status: Active</span>
@@ -1048,7 +1048,7 @@ export const OverviewView: React.FC = () => {
               </div>
               <div>
                 <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)] block">Active RAID</span>
-                <span className="text-sm font-bold font-mono text-indigo-500">
+                <span className="text-sm font-bold font-mono text-[var(--color-primary-hex)]">
                   {raids.filter(r => r.status === 'Open' || r.status === 'Active').length}
                 </span>
               </div>
@@ -1071,7 +1071,7 @@ export const OverviewView: React.FC = () => {
 
             <div className="space-y-0.5 text-center w-full">
               <h3 className="font-sans font-bold text-sm sm:text-base text-[var(--color-text)]">Delivery Confidence</h3>
-              <p className="text-xs text-indigo-600 dark:text-indigo-400 font-semibold">Throughput vs Remaining Scope</p>
+              <p className="text-xs text-[var(--color-primary-hex)] font-semibold">Throughput vs Remaining Scope</p>
             </div>
 
             {/* 180° Speedometer SVG Gauge */}
@@ -1151,7 +1151,7 @@ export const OverviewView: React.FC = () => {
               </div>
               <div className="text-right">
                 <span className="text-[10px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider block">Weekly Throughput</span>
-                <span className="font-bold font-mono text-indigo-600 dark:text-indigo-400">
+                <span className="font-bold font-mono text-[var(--color-primary-hex)]">
                   {weeklyVelocityData.avg} tasks / wk
                 </span>
               </div>
@@ -1253,16 +1253,16 @@ export const OverviewView: React.FC = () => {
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
                   <span className="text-[var(--color-text-muted)] flex items-center gap-1.5">
-                    <FileText size={12} className="text-indigo-500" />
+                    <FileText size={12} className="text-[var(--color-primary-hex)]" />
                     Decisions Pending Sign-Off
                   </span>
-                  <span className="font-mono font-bold text-indigo-500">
+                  <span className="font-mono font-bold text-[var(--color-primary-hex)]">
                     {pendingDecisions.length}
                   </span>
                 </div>
                 <div className="w-full bg-[var(--color-surface-2)] h-2 rounded-full overflow-hidden border border-[var(--color-divider)]">
                   <div 
-                    className="h-full bg-indigo-500 rounded-full transition-all"
+                    className="h-full bg-[var(--color-primary-hex)] rounded-full transition-all"
                     style={{ width: `${Math.min(100, pendingDecisions.length * 20)}%` }}
                   />
                 </div>
@@ -1298,12 +1298,12 @@ export const OverviewView: React.FC = () => {
             <div className="flex justify-between items-center pr-14">
               <div>
                 <div className="flex items-center gap-2">
-                  <BarChart3 className="text-indigo-600" size={18} />
+                  <BarChart3 className="text-[var(--color-primary-hex)]" size={18} />
                   <h3 className="font-sans font-bold text-sm sm:text-base text-[var(--color-text)]">Delivery Velocity & Throughput Corridor</h3>
                 </div>
                 <p className="text-xs text-[var(--color-text-muted)]">Weekly completed deliverables vs target baseline throughput</p>
               </div>
-              <span className="text-xs font-mono font-bold text-indigo-600 bg-indigo-500/10 px-2.5 py-1 rounded-xl shrink-0">
+              <span className="text-xs font-mono font-bold text-[var(--color-primary-hex)] bg-[var(--color-primary-highlight-hex)] px-2.5 py-1 rounded-xl shrink-0">
                 Avg {weeklyVelocityData.avg} tasks / wk
               </span>
             </div>
@@ -1642,7 +1642,7 @@ export const OverviewView: React.FC = () => {
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                   <span className="font-display text-xl font-black text-emerald-600">{progressPct}%</span>
-                  <span className="text-[9px] font-mono font-bold text-indigo-600 dark:text-indigo-400">{effortPct}% Eff.</span>
+                  <span className="text-[9px] font-mono font-bold text-[var(--color-primary-hex)]">{effortPct}% Eff.</span>
                 </div>
               </div>
 
@@ -1666,7 +1666,7 @@ export const OverviewView: React.FC = () => {
                       title="High Priority"
                     />
                     <div 
-                      className="h-full bg-indigo-500" 
+                      className="h-full bg-[var(--color-primary-hex)]" 
                       style={{ width: `${(tasks.filter(t => t.priority === TaskPriority.MEDIUM).length / Math.max(1, totalTasks)) * 100}%` }}
                       title="Medium Priority"
                     />
@@ -1690,7 +1690,7 @@ export const OverviewView: React.FC = () => {
                     <b className="font-mono text-[var(--color-text)]">{tasks.filter(t => t.priority === TaskPriority.HIGH).length}</b>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-indigo-500" />
+                    <span className="w-2 h-2 rounded-full bg-[var(--color-primary-hex)]" />
                     <span className="text-[var(--color-text-muted)]">Medium:</span>
                     <b className="font-mono text-[var(--color-text)]">{tasks.filter(t => t.priority === TaskPriority.MEDIUM).length}</b>
                   </div>
@@ -1705,7 +1705,7 @@ export const OverviewView: React.FC = () => {
 
             <div className="pt-3 border-t border-[var(--color-divider)] flex justify-between items-center text-xs text-[var(--color-text-muted)]">
               <span>Effort Burned vs Total</span>
-              <span className="font-bold text-indigo-600 dark:text-indigo-400 font-mono">
+              <span className="font-bold text-[var(--color-primary-hex)] font-mono">
                 {doneEffort}d / {totalEffort}d Person-days
               </span>
             </div>
@@ -1730,7 +1730,7 @@ export const OverviewView: React.FC = () => {
 
           <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 pr-14">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+              <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center font-bold">
                 <Milestone size={16} />
               </div>
               <div>
@@ -1757,7 +1757,7 @@ export const OverviewView: React.FC = () => {
                   className={clsx(
                     "p-4 rounded-2xl border flex flex-col justify-between space-y-3 transition-colors relative overflow-hidden",
                     isDone ? "bg-emerald-500/5 border-emerald-500/25" :
-                    isInProg ? "bg-indigo-500/5 border-indigo-500/30" :
+                    isInProg ? "bg-[var(--color-primary-highlight-hex)] border-[var(--color-primary-hex)]/30" :
                     "bg-[var(--color-surface-2)]/50 border-[var(--color-divider)]"
                   )}
                 >
@@ -1765,15 +1765,15 @@ export const OverviewView: React.FC = () => {
                     <span className={clsx(
                       "w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold font-mono border",
                       isDone ? "bg-emerald-500 text-white border-emerald-600" :
-                      isInProg ? "bg-indigo-600 text-white border-indigo-700 animate-pulse" :
+                      isInProg ? "bg-[var(--color-primary-hex)] text-white border-[var(--color-primary-hex)] animate-pulse" :
                       "bg-[var(--color-surface-2)] text-[var(--color-text-faint)] border-[var(--color-divider)]"
                     )}>
-                      {isDone ? "✓" : idx + 1}
+                      {isDone ? <Check size={12} className="stroke-[3]" /> : idx + 1}
                     </span>
                     <span className={clsx(
                       "text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full font-mono",
                       isDone ? "bg-emerald-500/15 text-emerald-600" :
-                      isInProg ? "bg-indigo-500/15 text-indigo-600" : "bg-[var(--color-surface)] text-[var(--color-text-faint)]"
+                      isInProg ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)]" : "bg-[var(--color-surface)] text-[var(--color-text-faint)]"
                     )}>
                       {isDone ? "Done" : isInProg ? "Active" : "Planned"}
                     </span>
@@ -1790,7 +1790,7 @@ export const OverviewView: React.FC = () => {
 
                   <div className="w-full bg-[var(--color-surface-2)] h-1.5 rounded-full overflow-hidden border border-[var(--color-divider)]">
                     <div 
-                      className={clsx("h-full rounded-full transition-all", isDone ? "bg-emerald-500" : "bg-indigo-600")}
+                      className={clsx("h-full rounded-full transition-all", isDone ? "bg-emerald-500" : "bg-[var(--color-primary-hex)]")}
                       style={{ width: `${isDone ? 100 : m.progress || 0}%` }}
                     />
                   </div>

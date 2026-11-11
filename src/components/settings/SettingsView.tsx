@@ -314,7 +314,7 @@ const SettingsView: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Work Parameters */}
               <div className="card p-6 space-y-6">
-                <div className="flex items-center gap-3 text-indigo-500 mb-2">
+                <div className="flex items-center gap-3 text-[var(--color-primary-hex)] mb-2">
                   <Clock size={20} />
                   <h3 className="text-sm font-bold text-[var(--color-text)]">Work Cycles & Capacity</h3>
                 </div>
@@ -362,7 +362,7 @@ const SettingsView: React.FC = () => {
                       <span className="text-xs font-bold text-[var(--color-text-muted)] group-hover:text-[var(--color-text)]">{alert.label}</span>
                       <input 
                         type="checkbox" 
-                        className="w-4 h-4 rounded border-[var(--color-divider)] text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                        className="w-4 h-4 rounded border-[var(--color-divider)] accent-[var(--color-primary-hex)] cursor-pointer"
                         checked={(state.settings.alertPrefs as any)[alert.key] || false}
                         onChange={e => updateSettings({ alertPrefs: { ...state.settings.alertPrefs, [alert.key]: e.target.checked } })}
                       />
@@ -407,7 +407,7 @@ const SettingsView: React.FC = () => {
 
             <div className="card p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 text-indigo-500">
+                <div className="flex items-center gap-3 text-[var(--color-primary-hex)]">
                   <FileSpreadsheet size={20} />
                   <div>
                     <h3 className="text-sm font-bold text-[var(--color-text)]">Excel Database & Master Portability</h3>
@@ -425,7 +425,7 @@ const SettingsView: React.FC = () => {
                   className="h-10 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
                   onClick={handleExportExcel}
                 >
-                  <Download size={14} className="text-indigo-500" />
+                  <Download size={14} className="text-[var(--color-primary-hex)]" />
                   <span>Export Master Excel</span>
                 </Button>
 
@@ -436,7 +436,7 @@ const SettingsView: React.FC = () => {
                   className="h-10 text-xs font-semibold flex items-center justify-center gap-2 cursor-pointer"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  {isImporting ? <Loader2 size={14} className="animate-spin text-indigo-500" /> : <UploadCloud size={14} className="text-indigo-500" />}
+                  {isImporting ? <Loader2 size={14} className="animate-spin text-[var(--color-primary-hex)]" /> : <UploadCloud size={14} className="text-[var(--color-primary-hex)]" />}
                   <span>Import Excel File</span>
                 </Button>
 

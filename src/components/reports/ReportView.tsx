@@ -145,7 +145,7 @@ const ReportView: React.FC = () => {
                 <div>
                   <h2 className="text-3xl font-display font-black tracking-tight text-[var(--color-text)] flex items-center gap-3">
                     <span>{state.name}</span>
-                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-600">Telemetry Report</span>
+                    <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)]">Telemetry Report</span>
                   </h2>
                   <p className="text-xs text-[var(--color-text-muted)] mt-1 font-medium">
                     {state.desc || 'Monolithic high-density project performance and governance dossier.'}
@@ -175,7 +175,7 @@ const ReportView: React.FC = () => {
                     </div>
                     <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
                       <span className="text-xs font-medium text-[var(--color-text-faint)]">ALM deliveries</span>
-                      <div className="text-2xl font-mono font-bold text-indigo-600 mt-1">{state.deliveries?.length || 0}</div>
+                      <div className="text-2xl font-mono font-bold text-[var(--color-primary-hex)] mt-1">{state.deliveries?.length || 0}</div>
                       <span className="text-[10px] text-[var(--color-text-muted)]">Release packages</span>
                     </div>
                     <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
@@ -194,7 +194,7 @@ const ReportView: React.FC = () => {
                   <div className="space-y-2 p-5 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
                     <div className="flex justify-between items-center text-xs font-bold">
                       <span className="text-xs font-medium text-[var(--color-text-muted)]">Total delivery momentum</span>
-                      <span className="font-mono text-indigo-600">{progress}%</span>
+                      <span className="font-mono text-[var(--color-primary-hex)]">{progress}%</span>
                     </div>
                     <div className="h-3 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
                       <div className="h-full bg-[var(--color-primary-hex)] rounded-full" style={{ width: `${progress}%` }} />
@@ -205,7 +205,7 @@ const ReportView: React.FC = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="p-5 rounded-2xl border border-[var(--color-divider)] space-y-3">
                       <h4 className="text-xs font-bold text-[var(--color-text-faint)] flex items-center gap-1.5">
-                        <TrendingUp size={14} className="text-indigo-600" />
+                        <TrendingUp size={14} className="text-[var(--color-primary-hex)]" />
                         Executive Highlights
                       </h4>
                       <ul className="text-xs space-y-2 text-[var(--color-text-muted)] list-disc pl-4 leading-relaxed">
@@ -239,7 +239,7 @@ const ReportView: React.FC = () => {
               <div className="space-y-6 animate-in fade-in duration-300">
                 <div className="flex items-center justify-between">
                   <h3 className="font-bold text-base text-[var(--color-text)] flex items-center gap-2">
-                    <Flag size={18} className="text-indigo-600" />
+                    <Flag size={18} className="text-[var(--color-primary-hex)]" />
                     Release Version Roadmap & Audit
                   </h3>
                   <span className="text-xs text-[var(--color-text-muted)]">
@@ -271,13 +271,13 @@ const ReportView: React.FC = () => {
                             </span>
                           </div>
                           <div className="text-right">
-                            <span className="font-mono font-bold text-sm text-indigo-600">{pct}%</span>
+                            <span className="font-mono font-bold text-sm text-[var(--color-primary-hex)]">{pct}%</span>
                             <span className="text-[10px] text-[var(--color-text-faint)] block">{doneMapped.length} of {mappedTasks.length} tasks</span>
                           </div>
                         </div>
 
                         <div className="h-2 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
-                          <div className="h-full bg-indigo-600 rounded-full" style={{ width: `${pct}%` }} />
+                          <div className="h-full bg-[var(--color-primary-hex)] rounded-full" style={{ width: `${pct}%` }} />
                         </div>
                       </div>
                     );
@@ -291,7 +291,7 @@ const ReportView: React.FC = () => {
               <div className="space-y-6 animate-in fade-in duration-300">
                 <div className="flex items-center justify-between">
                   <h3 className="font-bold text-base text-[var(--color-text)] flex items-center gap-2">
-                    <Users size={18} className="text-indigo-600" />
+                    <Users size={18} className="text-[var(--color-primary-hex)]" />
                     Resource Capacity & Assignment Load
                   </h3>
                   <span className="text-xs text-[var(--color-text-muted)]">

@@ -420,7 +420,7 @@ const DefectView: React.FC = () => {
       cell: (defect) => {
         const val = (defect as any)[cf.name];
         if (val === undefined || val === null || val === '') return <span className="text-[10px] text-[var(--color-text-faint)] italic">—</span>;
-        if (cf.type === 'checkbox') return <span className="font-semibold text-xs text-emerald-400">{val ? '✓ Yes' : '✕ No'}</span>;
+        if (cf.type === 'checkbox') return <span className={clsx("font-semibold text-xs", val ? "text-emerald-500" : "text-[var(--color-text-muted)]")}>{val ? 'Yes' : 'No'}</span>;
         return <span className="text-xs text-[var(--color-text)] truncate max-w-[150px]">{String(val)}</span>;
       }
     });
@@ -717,7 +717,7 @@ const DefectView: React.FC = () => {
 
                 <div className="mt-auto pt-4 border-t border-[var(--color-divider)] flex items-center justify-between">
                   <div className="flex items-center gap-2 min-w-0">
-                    <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center text-[10px] font-bold text-indigo-700 shrink-0">
+                    <div className="w-6 h-6 rounded-full bg-[var(--color-primary-highlight-hex)] flex items-center justify-center text-[10px] font-bold text-[var(--color-primary-hex)] shrink-0 border border-[var(--color-primary-hex)]/30">
                       {defect.assignee ? defect.assignee[0] : '?'}
                     </div>
                     <span className="text-[11px] font-semibold text-[var(--color-text-muted)] truncate">

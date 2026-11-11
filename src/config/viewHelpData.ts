@@ -200,7 +200,7 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
       },
       {
         name: 'Dependencies',
-        desc: 'Predecessor task links. Blocked tasks display an alert lock (🔒) indicating unfinished prerequisites.'
+        desc: 'Predecessor task links. Blocked tasks display an alert lock icon indicating unfinished prerequisites.'
       }
     ],
     capabilities: [
@@ -296,7 +296,7 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
         desc: 'Internal shaded segments inside timeline bars indicate exact percentage completion.'
       },
       {
-        name: 'Milestone Markers (🚩)',
+        name: 'Milestone Markers',
         desc: 'Zero-duration delivery checkpoints with matching start and due dates rendered as milestone flags.'
       }
     ],
@@ -905,7 +905,7 @@ export const STANDARD_FIELD_GUIDE: StandardFieldItem[] = [
   {
     name: 'Dependencies',
     badge: 'Graph',
-    desc: 'Predecessor task IDs required before this task can begin. Tasks with unfinished predecessors display an alert lock (🔒).',
+    desc: 'Predecessor task IDs required before this task can begin. Tasks with unfinished predecessors display an alert lock icon.',
     example: 'T-101, T-104'
   }
 ];
@@ -914,7 +914,7 @@ export const GLOBAL_SHORTCUTS: ShortcutItem[] = [
   { keys: '/', action: 'Focus Global Search bar across all tasks, defects & RAID items', category: 'Navigation' },
   { keys: 'F1 or ?', action: 'Open contextual in-app screen help & user guide', category: 'Dialogs' },
   { keys: 'Esc', action: 'Close open modal, flyout drawer, or dismiss alert', category: 'Dialogs' },
-  { keys: '⌘E / Ctrl+E', action: 'Export complete project database to Excel workbook', category: 'Actions' },
+  { keys: 'Cmd+E / Ctrl+E', action: 'Export complete project database to Excel workbook', category: 'Actions' },
   { keys: 'G O', action: 'Jump directly to Executive Overview', category: 'Navigation' },
   { keys: 'G D', action: 'Jump directly to Intelligence Dashboard', category: 'Navigation' },
   { keys: 'G T', action: 'Jump directly to Tasks Matrix', category: 'Navigation' },

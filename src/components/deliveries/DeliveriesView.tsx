@@ -424,8 +424,8 @@ export const DeliveriesView: React.FC = () => {
         <div className="flex items-center gap-1 font-mono text-xs whitespace-nowrap">
           <span>{fmtDate(item.targetDeliveryDate)}</span>
           {item.actualDeliveryDate && (
-            <span className="text-[10px] text-emerald-400" title={`Actual: ${fmtDate(item.actualDeliveryDate)}`}>
-              ✓
+            <span className="text-emerald-500" title={`Actual: ${fmtDate(item.actualDeliveryDate)}`}>
+              <Check size={12} className="stroke-[2.5]" />
             </span>
           )}
         </div>
@@ -463,7 +463,7 @@ export const DeliveriesView: React.FC = () => {
       cell: (item) => {
         const val = (item as any)[cf.name];
         if (val === undefined || val === null || val === '') return <span className="text-[10px] text-[var(--color-text-faint)] italic">—</span>;
-        if (cf.type === 'checkbox') return <span className="font-semibold text-xs text-emerald-400">{val ? '✓ Yes' : '✕ No'}</span>;
+        if (cf.type === 'checkbox') return <span className={clsx("font-semibold text-xs", val ? "text-emerald-500" : "text-[var(--color-text-muted)]")}>{val ? 'Yes' : 'No'}</span>;
         return <span className="text-xs text-[var(--color-text)] truncate max-w-[150px]">{String(val)}</span>;
       }
     });

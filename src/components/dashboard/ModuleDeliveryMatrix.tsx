@@ -499,8 +499,9 @@ export const ModuleDeliveryMatrix: React.FC = () => {
                                       </span>
                                     )}
                                     {cell.defectsCount > 0 && (
-                                      <span className={clsx("text-[10px] font-bold px-1.5 py-0.2 rounded font-mono", cell.criticalDefectsCount > 0 ? "bg-rose-500/15 text-rose-600" : "bg-amber-500/15 text-amber-600")} title={`${cell.defectsCount} open defect(s)`}>
-                                        🐞{cell.defectsCount}
+                                      <span className={clsx("text-[10px] font-bold px-1.5 py-0.2 rounded font-mono inline-flex items-center gap-0.5", cell.criticalDefectsCount > 0 ? "bg-rose-500/15 text-rose-600 dark:text-rose-400" : "bg-amber-500/15 text-amber-600 dark:text-amber-400")} title={`${cell.defectsCount} open defect(s)`}>
+                                        <Bug size={11} className={cell.criticalDefectsCount > 0 ? "text-rose-500" : "text-amber-500"} />
+                                        <span>{cell.defectsCount}</span>
                                       </span>
                                     )}
                                   </div>

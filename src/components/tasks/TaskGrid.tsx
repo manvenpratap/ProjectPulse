@@ -368,7 +368,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
         const isMilestone = (task.startDate && task.startDate === task.dueDate) || task.subtasks.some(s => s.name.toLowerCase().includes('milestone'));
         return (
           <div className="flex items-center gap-2 min-w-0 max-w-[420px]">
-            {isMilestone && <span title="Milestone" className="shrink-0">🚩</span>}
+            {isMilestone && <span title="Milestone" className="shrink-0"><Flag size={12} className="text-amber-500" /></span>}
             <span 
               className="text-xs font-semibold text-[var(--color-text)] truncate group-hover:text-[var(--color-primary-hex)] transition-colors cursor-pointer"
               title={task.screenName ? `${task.name} (Screen: ${task.screenName})` : task.name}
@@ -383,7 +383,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
             {task.subtasks.length > 0 && (
               <button
                 onClick={(e) => toggleExpand(task.id, e)}
-                className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/20 text-[10px] font-semibold text-indigo-500 transition-colors cursor-pointer"
+                className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--color-primary-highlight-hex)] hover:bg-[var(--color-primary-highlight-hex)]/80 border border-[var(--color-primary-hex)]/20 text-[10px] font-semibold text-[var(--color-primary-hex)] transition-colors cursor-pointer"
                 title="Toggle Checklist"
               >
                 <CheckSquare size={10} />
@@ -543,7 +543,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
       cell: (task) => {
         const val = (task as any)[cf.name];
         if (val === undefined || val === null || val === '') return <span className="text-[10px] text-[var(--color-text-faint)] italic">—</span>;
-        if (cf.type === 'checkbox') return <span className="font-semibold text-xs text-emerald-400">{val ? '✓ Yes' : '✕ No'}</span>;
+        if (cf.type === 'checkbox') return <span className={clsx("font-semibold text-xs", val ? "text-emerald-500" : "text-[var(--color-text-muted)]")}>{val ? 'Yes' : 'No'}</span>;
         return <span className="text-xs text-[var(--color-text)] truncate max-w-[150px]">{String(val)}</span>;
       }
     });
@@ -960,7 +960,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
                     {task.subtasks.length > 0 && (
                       <button
                         onClick={(e) => toggleExpand(task.id, e)}
-                        className="flex items-center justify-center gap-1 text-xs font-medium text-indigo-500 px-2 py-1 min-h-[32px] rounded-lg bg-indigo-500/10 cursor-pointer"
+                        className="flex items-center justify-center gap-1 text-xs font-medium text-[var(--color-primary-hex)] px-2 py-1 min-h-[32px] rounded-lg bg-[var(--color-primary-highlight-hex)] cursor-pointer"
                       >
                         <CheckSquare size={12} /> {task.subtasks.filter(s => s.done).length}/{task.subtasks.length}
                       </button>

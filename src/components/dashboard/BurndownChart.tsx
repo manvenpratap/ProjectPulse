@@ -210,7 +210,7 @@ const BurndownChart: React.FC = () => {
           <div className="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-1">
             <span className="font-bold text-slate-400">{payload[0]?.payload?.dateLabel}</span>
             {isForecast && (
-              <span className="px-1.5 py-0.5 bg-indigo-500/30 text-indigo-300 text-[10px] font-medium rounded">Forecasted</span>
+              <span className="px-1.5 py-0.5 bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] text-[10px] font-medium rounded">Forecasted</span>
             )}
           </div>
           <div className="space-y-1">
@@ -248,7 +248,7 @@ const BurndownChart: React.FC = () => {
             </div>
           </div>
           <div className="text-[10px] text-slate-500 mt-3 flex items-center gap-1.5">
-            <Info size={12} className="text-indigo-500" />
+            <Info size={12} className="text-[var(--color-primary-hex)]" />
             <span>Cumulative weight of tasks</span>
           </div>
         </div>
@@ -271,12 +271,12 @@ const BurndownChart: React.FC = () => {
         <div className="card p-6 bg-slate-50/50 hover:bg-white transition-colors duration-150 flex flex-col justify-between border border-slate-150">
           <div>
             <span className="text-xs font-medium text-[var(--color-text-muted)]">Active Backlog</span>
-            <div className="text-3xl font-display font-black text-indigo-600 mt-1">
+            <div className="text-3xl font-display font-black text-[var(--color-primary-hex)] mt-1">
               {summaryMetrics.baseRemaining} <span className="text-xs font-bold text-slate-400 font-sans">Days</span>
             </div>
           </div>
           <div className="text-[10px] text-slate-500 mt-3 flex items-center gap-1">
-            <Activity size={12} className="text-indigo-500" />
+            <Activity size={12} className="text-[var(--color-primary-hex)]" />
             <span>Remaining effort pending delivery</span>
           </div>
         </div>
@@ -291,10 +291,20 @@ const BurndownChart: React.FC = () => {
           </div>
           <div className="mt-3">
             <span className={clsx(
-              "px-2 py-0.5 rounded text-xs font-medium inline-flex items-center gap-1",
-              summaryMetrics.isAhead ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"
+              "px-2 py-0.5 rounded text-xs font-medium inline-flex items-center gap-1.5",
+              summaryMetrics.isAhead ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20" : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
             )}>
-              {summaryMetrics.isAhead ? '✓ Ahead / On Schedule' : '⚠ Action Advised'}
+              {summaryMetrics.isAhead ? (
+                <>
+                  <CheckCircle2 size={12} />
+                  <span>Ahead / On Schedule</span>
+                </>
+              ) : (
+                <>
+                  <AlertTriangle size={12} />
+                  <span>Action Advised</span>
+                </>
+              )}
             </span>
           </div>
         </div>
@@ -310,7 +320,7 @@ const BurndownChart: React.FC = () => {
           {/* Sliders Box */}
           <div className="card p-6 border border-slate-150 space-y-6">
             <div className="flex items-center gap-2 pb-4 border-b border-slate-100">
-              <Sliders size={16} className="text-indigo-500" />
+              <Sliders size={16} className="text-[var(--color-primary-hex)]" />
               <h4 className="text-sm font-semibold text-[var(--color-text-primary)]">Telemetry Simulator</h4>
             </div>
 
@@ -318,7 +328,7 @@ const BurndownChart: React.FC = () => {
             <div className="space-y-2">
               <div className="flex justify-between items-center text-xs font-bold">
                 <span className="text-slate-500">Resource Delivery Velocity</span>
-                <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">{velocityMultiplier.toFixed(1)}×</span>
+                <span className="text-xs font-semibold text-[var(--color-primary-hex)] bg-[var(--color-primary-highlight-hex)] px-2 py-0.5 rounded">{velocityMultiplier.toFixed(1)}×</span>
               </div>
               <input 
                 type="range" 
@@ -327,7 +337,7 @@ const BurndownChart: React.FC = () => {
                 step="0.1" 
                 value={velocityMultiplier} 
                 onChange={(e) => setVelocityMultiplier(parseFloat(e.target.value))}
-                className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-[var(--color-primary-hex)]"
               />
               <p className="text-[10px] text-slate-400 leading-tight">Simulates productivity gains/losses (e.g., adding developers or QA blocks).</p>
             </div>
@@ -352,16 +362,16 @@ const BurndownChart: React.FC = () => {
           </div>
 
           {/* PM Forecast AI Commentary */}
-          <div className="card p-6 bg-indigo-50/20 border border-indigo-100/60 space-y-4">
+          <div className="card p-6 bg-[var(--color-surface-2)] border border-[var(--color-divider)] space-y-4">
             <h5 className="text-sm font-semibold text-[var(--color-primary-hex)] flex items-center gap-1.5">
               <TrendingUp size={14} /> Forecast Insights
             </h5>
             
             <div className="space-y-3.5 text-xs">
               <div className="flex gap-2 items-start">
-                <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 mt-1.5 shrink-0" />
+                <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary-hex)] mt-1.5 shrink-0" />
                 <p className="text-slate-650 leading-relaxed">
-                  Based on simulated velocity of <span className="font-bold text-indigo-600">{(summaryMetrics.simulatedDailyVelocity * 5).toFixed(1)} tasks/week</span>, completion is anticipated in <span className="font-bold text-slate-900">{summaryMetrics.daysToFinish} days</span>.
+                  Based on simulated velocity of <span className="font-bold text-[var(--color-primary-hex)]">{(summaryMetrics.simulatedDailyVelocity * 5).toFixed(1)} tasks/week</span>, completion is anticipated in <span className="font-bold text-slate-900">{summaryMetrics.daysToFinish} days</span>.
                 </p>
               </div>
 
