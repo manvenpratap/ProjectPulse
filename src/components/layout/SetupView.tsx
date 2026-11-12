@@ -96,9 +96,9 @@ const SetupView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--color-bg)] select-none">
+    <div className="min-h-screen flex flex-col bg-[var(--color-bg)] select-none pb-[env(safe-area-inset-bottom,0px)]">
       {/* Lightweight Onboarding Utility Header */}
-      <header className="h-14 px-4 sm:px-6 border-b border-[var(--color-divider)] bg-[var(--color-surface)]/80 backdrop-blur-xl flex items-center justify-between shrink-0 sticky top-0 z-30">
+      <header className="h-[calc(56px+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] px-4 sm:px-6 border-b border-[var(--color-divider)] bg-[var(--color-surface)]/80 backdrop-blur-xl flex items-center justify-between shrink-0 sticky top-0 z-30">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-hex)] flex items-center justify-center text-white shadow-2xs">
             <Activity size={17} strokeWidth={2.4} aria-hidden="true" />

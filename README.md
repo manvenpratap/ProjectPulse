@@ -45,6 +45,18 @@ npm run build
 npm start
 ```
 
+### Native Mobile Builds (iOS & Android via Capacitor 8)
+```bash
+# Sync web dist/ and Capacitor plugins into native projects
+npm run mobile:sync
+
+# Build Android Debug APK (android/app/build/outputs/apk/debug/app-debug.apk)
+npm run mobile:android:apk
+
+# Build iOS Simulator .app (Swift Package Manager + Xcode)
+npm run mobile:ios:sim
+```
+
 ---
 
 ## 🛠️ Key Capabilities & Operational Modules
@@ -69,6 +81,7 @@ npm start
 18. **Mobile-First Responsive App Shell & Native Touch Ergonomics**: Zero-clipping `PageHeader` flex architecture, full-width inset mobile `ShareExportMenu`, swipe-to-dismiss `Sidebar` drawer (`inert` background shell + elevated backdrop), draggable bottom-sheet `Modal` dialogs (`overscroll-contain`), `DataTable` mobile card views with Cards/Matrix toggle (`Deliveries`, `Tasks`, `RAID`), responsive single-DOM `FieldArchitect` schema cards, dynamic `<meta name="theme-color">` and OS `color-scheme` sync across all 40 themes, progressive scroll-fade tabs (`.scroll-fade-x`), and reactive `useMediaQuery` breakpoint awareness.
 19. **Tactile Design Spells & Micro-Interactions**: Physics-backed CSS `linear()` spring curves (`--ease-spring-physics`), circular iris `startViewTransition` reveals across all 40 themes and light/dark toggles, shared Framer Motion `layoutId` indicators across `Sidebar`, `MobileBottomNav`, and `ThemeGrid`, compositor-only primary CTA specular sweeps (`.btn-spell-primary`), zero-rerender radial card spotlights (`.spell-spotlight`), CSS scroll-driven reading hairlines (`.spell-scroll-hairline`), origin-anchored celebration bursts, morphing clipboard icons, Command Search spells (`magic` / `surprise`), and Shift/triple-tap pulse easter eggs under global `<MotionConfig reducedMotion="user">`.
 20. **Decluttered Surface UI & Section-Anchored Help (`SectionHelpButton` + `HelpModal`)**: All product-feature explanations, capability summaries, formula mechanics, email client compatibility specs, and architecture notes are housed cleanly in [`viewHelpData.ts`](./src/config/viewHelpData.ts) and [`HelpModal.tsx`](./src/components/shared/HelpModal.tsx), accessible from every `PageHeader` (`F1`/`?`), onboarding/auth screens (`SetupView`, `LoginView`), and individual widgets/sections via [`SectionHelpButton`](./src/components/shared/SectionHelpButton.tsx) with section focus highlighting.
+21. **Native iOS & Android Mobile Apps (`Capacitor 8`)**: Native Swift Package Manager (`ios/`) and Android Gradle (`android/`) mobile shells wrapping the production Vite bundle with safe-area notch/Dynamic Island insets (`env(safe-area-inset-*)`), branded app icons & splash assets, native OS Share Sheet exports via `@capacitor/filesystem` and `@capacitor/share` (`saveBlob`), and an offline on-device Executive Pulse telemetry fallback (`analyzeProject`).
 
 ---
 
@@ -113,6 +126,9 @@ ProjectPulse 2.0/
 │   ├── index.css                # 40 Curated theme design tokens, Design Spells & Tailwind
 │   └── App.tsx                  # Main router, MotionConfig reduced-motion & layout shell
 ├── demo_project_database.xlsx   # Full enterprise showcase workbook (24 tasks, 12 deliveries, etc.)
+├── android/                     # Native Capacitor Android Gradle project (com.projectpulse.app)
+├── ios/                         # Native Capacitor iOS Xcode + SwiftPM project (com.projectpulse.app)
+├── capacitor.config.ts          # Capacitor 8 runtime & native WebView configuration
 ├── server.ts                    # Node / Express SSR & API backend
 ├── vite.config.ts               # Vite bundler configuration
 └── package.json                 # Project dependencies & build scripts

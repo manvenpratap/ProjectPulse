@@ -8,3 +8,16 @@ graphify-out/.rebuild.lock
 graphify-out/cache/
 .env*
 !.env.example
+
+# Capacitor / Native Mobile Build Artifacts
+.capacitor/
+android/.gradle/
+android/local.properties
+android/app/build/
+android/capacitor-cordova-android-plugins/build/
+ios/DerivedData/
+ios/App/build/
+ios/App/Pods/
+*.apk
+*.aab
+*.ipa

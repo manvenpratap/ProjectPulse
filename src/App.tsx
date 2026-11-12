@@ -230,8 +230,8 @@ const MainApp: React.FC = () => {
         className="flex flex-col flex-1 min-w-0 h-full relative"
         inert={isMobile && isSidebarOpen ? true : undefined}
       >
-        <OfflineBanner />
         <Topbar toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+        <OfflineBanner />
         
         <main className="flex-1 overflow-hidden relative pb-[calc(56px+env(safe-area-inset-bottom,0px))] lg:pb-0">
           <AnimatePresence mode="wait">

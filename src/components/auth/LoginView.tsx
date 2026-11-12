@@ -62,7 +62,7 @@ export const LoginView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[100dvh] flex items-center justify-center p-4 bg-[var(--color-bg)] relative overflow-hidden select-none">
+    <div className="min-h-[100dvh] flex items-center justify-center px-4 pt-[max(1rem,env(safe-area-inset-top,0px))] pb-[max(1rem,env(safe-area-inset-bottom,0px))] bg-[var(--color-bg)] relative overflow-hidden select-none">
       {/* Clean architectural hairline grid */}
       <div className="absolute inset-0 bg-[linear-gradient(to_right,var(--color-divider)_1px,transparent_1px),linear-gradient(to_bottom,var(--color-divider)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-30 pointer-events-none" />
 

@@ -7,9 +7,813 @@
     "mtime": 1794069784.642626,
     "hash": "08f0bd5fdfd1b692badf1974f43339ac"
   },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/capacitor.config.ts": {
+    "mtime": 1794457474.603851,
+    "hash": "c7b875a415d62028191c3940ee315b4f"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/AppDelegate.swift": {
+    "mtime": 1793204073.0,
+    "hash": "66cf80b6a9ef034e815c7d0135b97e36"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/SceneDelegate.swift": {
+    "mtime": 1793204073.0,
+    "hash": "109aded755e8064cd0c2de99e039aeb5"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/public/cordova.js": {
+    "mtime": 1794457804.4988122,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/public/cordova_plugins.js": {
+    "mtime": 1794457804.4988875,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/public/assets/index-DRFPPHmZ.js": {
+    "mtime": 1794457804.4584074,
+    "hash": "027e5ddf058eef52c8a41a4dc6468c6e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/public/assets/web-DlQElDK-.js": {
+    "mtime": 1794457804.4586217,
+    "hash": "3d7528e089740aee715d74345790a9b4"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/public/assets/index-eqxnqKJD.js": {
+    "mtime": 1794457804.4617672,
+    "hash": "1be53e6ccc6569aae5af5942322c7b38"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/public/assets/index-CwBqPpwS.js": {
+    "mtime": 1794457804.4588854,
+    "hash": "3e860a67ff2bd1fac9f1e983bbbd5353"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/public/assets/index-BeHyGxJz.js": {
+    "mtime": 1794457804.4586368,
+    "hash": "34f4fe8a3807bcd1d4ff35a3059e2e7c"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/public/assets/web-CaVgogD-.js": {
+    "mtime": 1794457804.4587991,
+    "hash": "11917013014872a6250e17679c11677a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/CapApp-SPM/Package.swift": {
+    "mtime": 1794457804.5017192,
+    "hash": "bfa24a7bd6ed855bfbcc77d4bd66392f"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/CapApp-SPM/Sources/CapApp-SPM/CapApp-SPM.swift": {
+    "mtime": 1793204073.0,
+    "hash": "0d92cb44a62bc3f2d73464a2e4f9a890"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/AppDelegate.h": {
+    "mtime": 1793204217.0,
+    "hash": "1bdf4f0abd715ceed14e8e695298d42b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/CDVPluginResult.h": {
+    "mtime": 1793204217.0,
+    "hash": "b8c1c42df9a8f2fd055ab0dac07c7506"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/CDVAvailability.h": {
+    "mtime": 1793204217.0,
+    "hash": "b19cf7c60e4e5d4d33543b417e4ecc08"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/CDVViewController.h": {
+    "mtime": 1793204217.0,
+    "hash": "44b3a473e6665b095b26303e6857293a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/CDVConfigParser.h": {
+    "mtime": 1793204217.0,
+    "hash": "5b782b9036c972e9aeac2583f4515753"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/CDVAvailabilityDeprecated.h": {
+    "mtime": 1793204217.0,
+    "hash": "99c1fc10709225ddf5c5905528b3b444"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/CDVScreenOrientationDelegate.h": {
+    "mtime": 1793204217.0,
+    "hash": "299daf300158802b69475e5eef4599cd"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/CDV.h": {
+    "mtime": 1793204217.0,
+    "hash": "c90230a35569f5e1908f7d9f60c7daa1"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/CapacitorCordova.h": {
+    "mtime": 1793204217.0,
+    "hash": "6aa0427ffd94a1e218a4bec22fd0aabb"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/CDVPlugin.h": {
+    "mtime": 1793204217.0,
+    "hash": "dee668a47b9f76ed0812658d2206a53a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/NSDictionary+CordovaPreferences.h": {
+    "mtime": 1793204217.0,
+    "hash": "3d87b9b641be1eb02cc519dc3db40158"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/CDVWebViewProcessPoolFactory.h": {
+    "mtime": 1793204217.0,
+    "hash": "4fdf1f849b91fa24c363712547d803d6"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/CDVCommandDelegateImpl.h": {
+    "mtime": 1793204217.0,
+    "hash": "323c771de2c2b7695639d8e2b0fb8212"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/CDVInvokedUrlCommand.h": {
+    "mtime": 1793204217.0,
+    "hash": "c3757074c0124188f7a40ad9eeb1feec"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/CDVPlugin+Resources.h": {
+    "mtime": 1793204217.0,
+    "hash": "34d9b8d51d9c1faacb492db45d318380"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/CDVCommandDelegate.h": {
+    "mtime": 1793204217.0,
+    "hash": "bb6a9a1ebe07e69a50f0654c08552848"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/CDVPluginManager.h": {
+    "mtime": 1793204217.0,
+    "hash": "cab423dcc83fae6ca3fc88d90fe8cb29"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/Cordova.framework/Headers/CDVURLProtocol.h": {
+    "mtime": 1793204217.0,
+    "hash": "802224d4c1741de3a358ea28e6b62e4e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/AppDelegate.h": {
+    "mtime": 1793204257.0,
+    "hash": "1bdf4f0abd715ceed14e8e695298d42b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/CDVPluginResult.h": {
+    "mtime": 1793204257.0,
+    "hash": "b8c1c42df9a8f2fd055ab0dac07c7506"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/CDVAvailability.h": {
+    "mtime": 1793204257.0,
+    "hash": "b19cf7c60e4e5d4d33543b417e4ecc08"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/CDVViewController.h": {
+    "mtime": 1793204257.0,
+    "hash": "44b3a473e6665b095b26303e6857293a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/CDVConfigParser.h": {
+    "mtime": 1793204257.0,
+    "hash": "5b782b9036c972e9aeac2583f4515753"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/CDVAvailabilityDeprecated.h": {
+    "mtime": 1793204257.0,
+    "hash": "99c1fc10709225ddf5c5905528b3b444"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/CDVScreenOrientationDelegate.h": {
+    "mtime": 1793204257.0,
+    "hash": "299daf300158802b69475e5eef4599cd"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/CDV.h": {
+    "mtime": 1793204257.0,
+    "hash": "c90230a35569f5e1908f7d9f60c7daa1"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/CapacitorCordova.h": {
+    "mtime": 1793204257.0,
+    "hash": "6aa0427ffd94a1e218a4bec22fd0aabb"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/CDVPlugin.h": {
+    "mtime": 1793204257.0,
+    "hash": "dee668a47b9f76ed0812658d2206a53a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/NSDictionary+CordovaPreferences.h": {
+    "mtime": 1793204257.0,
+    "hash": "3d87b9b641be1eb02cc519dc3db40158"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/CDVWebViewProcessPoolFactory.h": {
+    "mtime": 1793204257.0,
+    "hash": "4fdf1f849b91fa24c363712547d803d6"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/CDVCommandDelegateImpl.h": {
+    "mtime": 1793204257.0,
+    "hash": "323c771de2c2b7695639d8e2b0fb8212"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/CDVInvokedUrlCommand.h": {
+    "mtime": 1793204257.0,
+    "hash": "c3757074c0124188f7a40ad9eeb1feec"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/CDVPlugin+Resources.h": {
+    "mtime": 1793204257.0,
+    "hash": "34d9b8d51d9c1faacb492db45d318380"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/CDVCommandDelegate.h": {
+    "mtime": 1793204257.0,
+    "hash": "bb6a9a1ebe07e69a50f0654c08552848"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/CDVPluginManager.h": {
+    "mtime": 1793204257.0,
+    "hash": "cab423dcc83fae6ca3fc88d90fe8cb29"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/Cordova.framework/Headers/CDVURLProtocol.h": {
+    "mtime": 1793204257.0,
+    "hash": "802224d4c1741de3a358ea28e6b62e4e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64_x86_64-simulator/Capacitor.framework/native-bridge.js": {
+    "mtime": 1793204208.0,
+    "hash": "99b141b24da483fc9bb2cc609d8ce7c2"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64_x86_64-simulator/Capacitor.framework/PrivateHeaders/CAPBridgedJSTypes.h": {
+    "mtime": 1793204180.0,
+    "hash": "f58976850e9c9d01a23ffb1921158104"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64_x86_64-simulator/Capacitor.framework/Headers/CAPPluginCall.h": {
+    "mtime": 1793204180.0,
+    "hash": "c00951debaa122fa1578dfa5bcd5ce5d"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64_x86_64-simulator/Capacitor.framework/Headers/CAPBridgedPlugin.h": {
+    "mtime": 1793204180.0,
+    "hash": "b02b5af036f407f3169fde0377683c35"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64_x86_64-simulator/Capacitor.framework/Headers/Capacitor-Swift.h": {
+    "mtime": 1793204194.0,
+    "hash": "9fe1ad29e459918df96da8da52e91c0c"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64_x86_64-simulator/Capacitor.framework/Headers/CAPInstanceDescriptor.h": {
+    "mtime": 1793204180.0,
+    "hash": "f3302d69c27c5f08b621814942ea82ee"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64_x86_64-simulator/Capacitor.framework/Headers/CAPInstanceConfiguration.h": {
+    "mtime": 1793204180.0,
+    "hash": "022ade2673e5976fdb2057d74a782b8c"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64_x86_64-simulator/Capacitor.framework/Headers/CAPPluginMethod.h": {
+    "mtime": 1793204180.0,
+    "hash": "5b46dc0cce6c520af0ba2e7cdae0b1c1"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64_x86_64-simulator/Capacitor.framework/Headers/Capacitor.h": {
+    "mtime": 1793204180.0,
+    "hash": "68ccbcfd542ee249e42379e5485ad06b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64_x86_64-simulator/Capacitor.framework/Headers/CAPPlugin.h": {
+    "mtime": 1793204180.0,
+    "hash": "1361ce6fab5fcd88ff9e898fdd3ba47d"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64/Capacitor.framework/native-bridge.js": {
+    "mtime": 1793204235.0,
+    "hash": "99b141b24da483fc9bb2cc609d8ce7c2"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64/Capacitor.framework/PrivateHeaders/CAPBridgedJSTypes.h": {
+    "mtime": 1793204226.0,
+    "hash": "f58976850e9c9d01a23ffb1921158104"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64/Capacitor.framework/Headers/CAPPluginCall.h": {
+    "mtime": 1793204226.0,
+    "hash": "c00951debaa122fa1578dfa5bcd5ce5d"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64/Capacitor.framework/Headers/CAPBridgedPlugin.h": {
+    "mtime": 1793204226.0,
+    "hash": "b02b5af036f407f3169fde0377683c35"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64/Capacitor.framework/Headers/Capacitor-Swift.h": {
+    "mtime": 1793204236.0,
+    "hash": "d9b20b4f09cf4e45b36f414d02ddf77a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64/Capacitor.framework/Headers/CAPInstanceDescriptor.h": {
+    "mtime": 1793204226.0,
+    "hash": "f3302d69c27c5f08b621814942ea82ee"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64/Capacitor.framework/Headers/CAPInstanceConfiguration.h": {
+    "mtime": 1793204226.0,
+    "hash": "022ade2673e5976fdb2057d74a782b8c"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64/Capacitor.framework/Headers/CAPPluginMethod.h": {
+    "mtime": 1793204226.0,
+    "hash": "5b46dc0cce6c520af0ba2e7cdae0b1c1"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64/Capacitor.framework/Headers/Capacitor.h": {
+    "mtime": 1793204226.0,
+    "hash": "68ccbcfd542ee249e42379e5485ad06b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64/Capacitor.framework/Headers/CAPPlugin.h": {
+    "mtime": 1793204226.0,
+    "hash": "1361ce6fab5fcd88ff9e898fdd3ba47d"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/capacitor-swift-pm/package-cap": {
+    "mtime": 1794457605.396616,
+    "hash": "8de2a221cb5a84c5a7954575ad9c21f6"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/capacitor-swift-pm/build-cap": {
+    "mtime": 1794457605.396517,
+    "hash": "464a16be300445ea6221735bf7ebd733"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/capacitor-swift-pm/Package.swift": {
+    "mtime": 1794457605.3962958,
+    "hash": "d88817657d73f89fb24d9a45c31dcab1"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/ion-ios-filesystem/Package.swift": {
+    "mtime": 1794457605.4096837,
+    "hash": "643fd3181253da0ccb690a0db0acff8d"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/ion-ios-filesystem/IONFilesystemLib/IONFILEManager+Errors.swift": {
+    "mtime": 1794457605.4083705,
+    "hash": "4f7245fa146740d967ad11ddd7241264"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/ion-ios-filesystem/IONFilesystemLib/URL+Extension.swift": {
+    "mtime": 1794457605.408722,
+    "hash": "31af03d436bce3c7a87c28bf213abe75"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/ion-ios-filesystem/IONFilesystemLib/IONFILEManager+Enums.swift": {
+    "mtime": 1794457605.4082835,
+    "hash": "6961f9f60d298eb89c164ae6b8828eb0"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/ion-ios-filesystem/IONFilesystemLib/IONFILEChunkPublisher.swift": {
+    "mtime": 1794457605.4080386,
+    "hash": "0f88c961e2e49b9211b950c8f9ba897d"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/ion-ios-filesystem/IONFilesystemLib/IONFILEManager+Protocols.swift": {
+    "mtime": 1794457605.4084795,
+    "hash": "f76d5b0a8869f819550aa3516e0d41d9"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/ion-ios-filesystem/IONFilesystemLib/IONFILEManager.swift": {
+    "mtime": 1794457605.4086142,
+    "hash": "b63c3b250ef50ff86b4631e45b11b70a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/ion-ios-filesystem/IONFilesystemLib/IONFILEItemAttributeModel.swift": {
+    "mtime": 1794457605.4081821,
+    "hash": "bb2a0f7401df7745d5ba55671fb1fa9c"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/ion-ios-filesystem/IONFilesystemLibTests/IONFILEFileManagerTests.swift": {
+    "mtime": 1794457605.4090776,
+    "hash": "a90a5d628922d8672829cfade7942701"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/ion-ios-filesystem/IONFilesystemLibTests/IONFILEDirectoryManagerTests.swift": {
+    "mtime": 1794457605.4089124,
+    "hash": "a767834e1a2a55a492f06bd2822e9927"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/ion-ios-filesystem/IONFilesystemLibTests/MockFileManager.swift": {
+    "mtime": 1794457605.4092023,
+    "hash": "cbc4d3a2589a749744c98474218fd9d0"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/IONFilesystemLib.build/Debug-iphonesimulator/IONFilesystemLib-t.build/Objects-normal/arm64/IONFilesystemLib-Swift.h": {
+    "mtime": 1794457613.747322,
+    "hash": "6123a54285463e3102b65a1b6baef8b7"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/IONFilesystemLib.build/Release-iphoneos/IONFilesystemLib-t.build/Objects-normal/arm64/IONFilesystemLib-Swift.h": {
+    "mtime": 1794457657.4135754,
+    "hash": "6123a54285463e3102b65a1b6baef8b7"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/GeneratedModuleMaps-iphoneos/CapApp-SPM-Swift.h": {
+    "mtime": 1794457659.1657655,
+    "hash": "03fccac2375699a33e93fb64631f9b2e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/GeneratedModuleMaps-iphoneos/FilesystemPlugin-Swift.h": {
+    "mtime": 1794457659.0653057,
+    "hash": "3960b92cbab485d3812ad0eca7f2dff2"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/GeneratedModuleMaps-iphoneos/IONFilesystemLib-Swift.h": {
+    "mtime": 1794457657.4265885,
+    "hash": "60f673f02203dd08eae8b2af248238de"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/GeneratedModuleMaps-iphoneos/SharePlugin-Swift.h": {
+    "mtime": 1794457658.602886,
+    "hash": "4e4a66e224b082a8359e40ed5f7e91a6"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App.build/Objects-normal/arm64/App-Swift.h": {
+    "mtime": 1794457619.6933322,
+    "hash": "e0bebcb51ec45c61995e69a8e04c559b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App.build/DerivedSources/GeneratedAssetSymbols.h": {
+    "mtime": 1794457615.9969907,
+    "hash": "672613e425dd5c8c471fc6c806121ede"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App.build/DerivedSources/GeneratedAssetSymbols.swift": {
+    "mtime": 1794457615.996653,
+    "hash": "2afcf309a6c38dea5d4aad7076f2dc5e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App.build/DerivedSources/App-Swift.h": {
+    "mtime": 1794457619.704457,
+    "hash": "e1b6dd00e402d5272fcbb7cdc2786cba"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/App.build/Release-iphoneos/App.build/Objects-normal/arm64/App-Swift.h": {
+    "mtime": 1794457665.8679757,
+    "hash": "e0bebcb51ec45c61995e69a8e04c559b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/App.build/Release-iphoneos/App.build/DerivedSources/GeneratedAssetSymbols.h": {
+    "mtime": 1794457659.1780252,
+    "hash": "672613e425dd5c8c471fc6c806121ede"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/App.build/Release-iphoneos/App.build/DerivedSources/GeneratedAssetSymbols.swift": {
+    "mtime": 1794457659.177673,
+    "hash": "2afcf309a6c38dea5d4aad7076f2dc5e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/App.build/Release-iphoneos/App.build/DerivedSources/App-Swift.h": {
+    "mtime": 1794457665.8899853,
+    "hash": "e1b6dd00e402d5272fcbb7cdc2786cba"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/CapacitorFilesystem.build/Debug-iphonesimulator/FilesystemPlugin-t.build/Objects-normal/arm64/FilesystemPlugin-Swift.h": {
+    "mtime": 1794457615.8498592,
+    "hash": "eb76d49446f7554bd569afb0ba0d4c15"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/CapacitorFilesystem.build/Release-iphoneos/FilesystemPlugin-t.build/Objects-normal/arm64/FilesystemPlugin-Swift.h": {
+    "mtime": 1794457659.0485063,
+    "hash": "eb76d49446f7554bd569afb0ba0d4c15"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/CapacitorShare.build/Debug-iphonesimulator/SharePlugin-t.build/Objects-normal/arm64/SharePlugin-Swift.h": {
+    "mtime": 1794457615.7105515,
+    "hash": "f3b9c93fb6e5ea7083f1abc79204600b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/CapacitorShare.build/Release-iphoneos/SharePlugin-t.build/Objects-normal/arm64/SharePlugin-Swift.h": {
+    "mtime": 1794457658.5882196,
+    "hash": "f3b9c93fb6e5ea7083f1abc79204600b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/CapApp-SPM.build/Debug-iphonesimulator/CapApp-SPM-t.build/Objects-normal/arm64/CapApp-SPM-Swift.h": {
+    "mtime": 1794457615.964249,
+    "hash": "f81cfdddc8d840a0d1b930b4dd40e4d5"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/CapApp-SPM.build/Release-iphoneos/CapApp-SPM-t.build/Objects-normal/arm64/CapApp-SPM-Swift.h": {
+    "mtime": 1794457659.161029,
+    "hash": "f81cfdddc8d840a0d1b930b4dd40e4d5"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/GeneratedModuleMaps-iphonesimulator/CapApp-SPM-Swift.h": {
+    "mtime": 1794457615.9712827,
+    "hash": "03fccac2375699a33e93fb64631f9b2e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/GeneratedModuleMaps-iphonesimulator/FilesystemPlugin-Swift.h": {
+    "mtime": 1794457615.8638046,
+    "hash": "3960b92cbab485d3812ad0eca7f2dff2"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/GeneratedModuleMaps-iphonesimulator/IONFilesystemLib-Swift.h": {
+    "mtime": 1794457613.770681,
+    "hash": "60f673f02203dd08eae8b2af248238de"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/GeneratedModuleMaps-iphonesimulator/SharePlugin-Swift.h": {
+    "mtime": 1794457615.7615287,
+    "hash": "4e4a66e224b082a8359e40ed5f7e91a6"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Capacitor.framework/native-bridge.js": {
+    "mtime": 1793204208.0,
+    "hash": "99b141b24da483fc9bb2cc609d8ce7c2"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Capacitor.framework/PrivateHeaders/CAPBridgedJSTypes.h": {
+    "mtime": 1793204180.0,
+    "hash": "f58976850e9c9d01a23ffb1921158104"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Capacitor.framework/Headers/CAPPluginCall.h": {
+    "mtime": 1793204180.0,
+    "hash": "c00951debaa122fa1578dfa5bcd5ce5d"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Capacitor.framework/Headers/CAPBridgedPlugin.h": {
+    "mtime": 1793204180.0,
+    "hash": "b02b5af036f407f3169fde0377683c35"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Capacitor.framework/Headers/Capacitor-Swift.h": {
+    "mtime": 1793204194.0,
+    "hash": "9fe1ad29e459918df96da8da52e91c0c"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Capacitor.framework/Headers/CAPInstanceDescriptor.h": {
+    "mtime": 1793204180.0,
+    "hash": "f3302d69c27c5f08b621814942ea82ee"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Capacitor.framework/Headers/CAPInstanceConfiguration.h": {
+    "mtime": 1793204180.0,
+    "hash": "022ade2673e5976fdb2057d74a782b8c"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Capacitor.framework/Headers/CAPPluginMethod.h": {
+    "mtime": 1793204180.0,
+    "hash": "5b46dc0cce6c520af0ba2e7cdae0b1c1"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Capacitor.framework/Headers/Capacitor.h": {
+    "mtime": 1793204180.0,
+    "hash": "68ccbcfd542ee249e42379e5485ad06b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Capacitor.framework/Headers/CAPPlugin.h": {
+    "mtime": 1793204180.0,
+    "hash": "1361ce6fab5fcd88ff9e898fdd3ba47d"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/public/cordova.js": {
+    "mtime": 1794457823.9245474,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/public/cordova_plugins.js": {
+    "mtime": 1794457823.9290805,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/public/assets/index-DRFPPHmZ.js": {
+    "mtime": 1794457823.92971,
+    "hash": "027e5ddf058eef52c8a41a4dc6468c6e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/public/assets/web-DlQElDK-.js": {
+    "mtime": 1794457823.9305449,
+    "hash": "3d7528e089740aee715d74345790a9b4"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/public/assets/index-eqxnqKJD.js": {
+    "mtime": 1794457823.9316614,
+    "hash": "1be53e6ccc6569aae5af5942322c7b38"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/public/assets/index-CwBqPpwS.js": {
+    "mtime": 1794457823.9322348,
+    "hash": "3e860a67ff2bd1fac9f1e983bbbd5353"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/public/assets/index-BeHyGxJz.js": {
+    "mtime": 1794457823.9326239,
+    "hash": "34f4fe8a3807bcd1d4ff35a3059e2e7c"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/public/assets/web-CaVgogD-.js": {
+    "mtime": 1794457823.9348483,
+    "hash": "11917013014872a6250e17679c11677a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/Frameworks/Capacitor.framework/native-bridge.js": {
+    "mtime": 1794457616.166544,
+    "hash": "99b141b24da483fc9bb2cc609d8ce7c2"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/AppDelegate.h": {
+    "mtime": 1793204217.0,
+    "hash": "1bdf4f0abd715ceed14e8e695298d42b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/CDVPluginResult.h": {
+    "mtime": 1793204217.0,
+    "hash": "b8c1c42df9a8f2fd055ab0dac07c7506"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/CDVAvailability.h": {
+    "mtime": 1793204217.0,
+    "hash": "b19cf7c60e4e5d4d33543b417e4ecc08"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/CDVViewController.h": {
+    "mtime": 1793204217.0,
+    "hash": "44b3a473e6665b095b26303e6857293a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/CDVConfigParser.h": {
+    "mtime": 1793204217.0,
+    "hash": "5b782b9036c972e9aeac2583f4515753"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/CDVAvailabilityDeprecated.h": {
+    "mtime": 1793204217.0,
+    "hash": "99c1fc10709225ddf5c5905528b3b444"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/CDVScreenOrientationDelegate.h": {
+    "mtime": 1793204217.0,
+    "hash": "299daf300158802b69475e5eef4599cd"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/CDV.h": {
+    "mtime": 1793204217.0,
+    "hash": "c90230a35569f5e1908f7d9f60c7daa1"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/CapacitorCordova.h": {
+    "mtime": 1793204217.0,
+    "hash": "6aa0427ffd94a1e218a4bec22fd0aabb"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/CDVPlugin.h": {
+    "mtime": 1793204217.0,
+    "hash": "dee668a47b9f76ed0812658d2206a53a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/NSDictionary+CordovaPreferences.h": {
+    "mtime": 1793204217.0,
+    "hash": "3d87b9b641be1eb02cc519dc3db40158"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/CDVWebViewProcessPoolFactory.h": {
+    "mtime": 1793204217.0,
+    "hash": "4fdf1f849b91fa24c363712547d803d6"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/CDVCommandDelegateImpl.h": {
+    "mtime": 1793204217.0,
+    "hash": "323c771de2c2b7695639d8e2b0fb8212"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/CDVInvokedUrlCommand.h": {
+    "mtime": 1793204217.0,
+    "hash": "c3757074c0124188f7a40ad9eeb1feec"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/CDVPlugin+Resources.h": {
+    "mtime": 1793204217.0,
+    "hash": "34d9b8d51d9c1faacb492db45d318380"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/CDVCommandDelegate.h": {
+    "mtime": 1793204217.0,
+    "hash": "bb6a9a1ebe07e69a50f0654c08552848"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/CDVPluginManager.h": {
+    "mtime": 1793204217.0,
+    "hash": "cab423dcc83fae6ca3fc88d90fe8cb29"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework/Headers/CDVURLProtocol.h": {
+    "mtime": 1793204217.0,
+    "hash": "802224d4c1741de3a358ea28e6b62e4e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Capacitor.framework/native-bridge.js": {
+    "mtime": 1793204235.0,
+    "hash": "99b141b24da483fc9bb2cc609d8ce7c2"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Capacitor.framework/PrivateHeaders/CAPBridgedJSTypes.h": {
+    "mtime": 1793204226.0,
+    "hash": "f58976850e9c9d01a23ffb1921158104"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Capacitor.framework/Headers/CAPPluginCall.h": {
+    "mtime": 1793204226.0,
+    "hash": "c00951debaa122fa1578dfa5bcd5ce5d"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Capacitor.framework/Headers/CAPBridgedPlugin.h": {
+    "mtime": 1793204226.0,
+    "hash": "b02b5af036f407f3169fde0377683c35"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Capacitor.framework/Headers/Capacitor-Swift.h": {
+    "mtime": 1793204236.0,
+    "hash": "d9b20b4f09cf4e45b36f414d02ddf77a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Capacitor.framework/Headers/CAPInstanceDescriptor.h": {
+    "mtime": 1793204226.0,
+    "hash": "f3302d69c27c5f08b621814942ea82ee"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Capacitor.framework/Headers/CAPInstanceConfiguration.h": {
+    "mtime": 1793204226.0,
+    "hash": "022ade2673e5976fdb2057d74a782b8c"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Capacitor.framework/Headers/CAPPluginMethod.h": {
+    "mtime": 1793204226.0,
+    "hash": "5b46dc0cce6c520af0ba2e7cdae0b1c1"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Capacitor.framework/Headers/Capacitor.h": {
+    "mtime": 1793204226.0,
+    "hash": "68ccbcfd542ee249e42379e5485ad06b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Capacitor.framework/Headers/CAPPlugin.h": {
+    "mtime": 1793204226.0,
+    "hash": "1361ce6fab5fcd88ff9e898fdd3ba47d"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/public/cordova.js": {
+    "mtime": 1794457826.674635,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/public/cordova_plugins.js": {
+    "mtime": 1794457826.6791277,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/public/assets/index-DRFPPHmZ.js": {
+    "mtime": 1794457826.6797636,
+    "hash": "027e5ddf058eef52c8a41a4dc6468c6e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/public/assets/web-DlQElDK-.js": {
+    "mtime": 1794457826.6806264,
+    "hash": "3d7528e089740aee715d74345790a9b4"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/public/assets/index-eqxnqKJD.js": {
+    "mtime": 1794457826.681763,
+    "hash": "1be53e6ccc6569aae5af5942322c7b38"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/public/assets/index-CwBqPpwS.js": {
+    "mtime": 1794457826.682361,
+    "hash": "3e860a67ff2bd1fac9f1e983bbbd5353"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/public/assets/index-BeHyGxJz.js": {
+    "mtime": 1794457826.6827679,
+    "hash": "34f4fe8a3807bcd1d4ff35a3059e2e7c"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/public/assets/web-CaVgogD-.js": {
+    "mtime": 1794457826.6832092,
+    "hash": "11917013014872a6250e17679c11677a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/Frameworks/Capacitor.framework/native-bridge.js": {
+    "mtime": 1794457659.2913291,
+    "hash": "99b141b24da483fc9bb2cc609d8ce7c2"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/AppDelegate.h": {
+    "mtime": 1793204257.0,
+    "hash": "1bdf4f0abd715ceed14e8e695298d42b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/CDVPluginResult.h": {
+    "mtime": 1793204257.0,
+    "hash": "b8c1c42df9a8f2fd055ab0dac07c7506"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/CDVAvailability.h": {
+    "mtime": 1793204257.0,
+    "hash": "b19cf7c60e4e5d4d33543b417e4ecc08"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/CDVViewController.h": {
+    "mtime": 1793204257.0,
+    "hash": "44b3a473e6665b095b26303e6857293a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/CDVConfigParser.h": {
+    "mtime": 1793204257.0,
+    "hash": "5b782b9036c972e9aeac2583f4515753"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/CDVAvailabilityDeprecated.h": {
+    "mtime": 1793204257.0,
+    "hash": "99c1fc10709225ddf5c5905528b3b444"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/CDVScreenOrientationDelegate.h": {
+    "mtime": 1793204257.0,
+    "hash": "299daf300158802b69475e5eef4599cd"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/CDV.h": {
+    "mtime": 1793204257.0,
+    "hash": "c90230a35569f5e1908f7d9f60c7daa1"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/CapacitorCordova.h": {
+    "mtime": 1793204257.0,
+    "hash": "6aa0427ffd94a1e218a4bec22fd0aabb"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/CDVPlugin.h": {
+    "mtime": 1793204257.0,
+    "hash": "dee668a47b9f76ed0812658d2206a53a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/NSDictionary+CordovaPreferences.h": {
+    "mtime": 1793204257.0,
+    "hash": "3d87b9b641be1eb02cc519dc3db40158"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/CDVWebViewProcessPoolFactory.h": {
+    "mtime": 1793204257.0,
+    "hash": "4fdf1f849b91fa24c363712547d803d6"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/CDVCommandDelegateImpl.h": {
+    "mtime": 1793204257.0,
+    "hash": "323c771de2c2b7695639d8e2b0fb8212"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/CDVInvokedUrlCommand.h": {
+    "mtime": 1793204257.0,
+    "hash": "c3757074c0124188f7a40ad9eeb1feec"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/CDVPlugin+Resources.h": {
+    "mtime": 1793204257.0,
+    "hash": "34d9b8d51d9c1faacb492db45d318380"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/CDVCommandDelegate.h": {
+    "mtime": 1793204257.0,
+    "hash": "bb6a9a1ebe07e69a50f0654c08552848"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/CDVPluginManager.h": {
+    "mtime": 1793204257.0,
+    "hash": "cab423dcc83fae6ca3fc88d90fe8cb29"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework/Headers/CDVURLProtocol.h": {
+    "mtime": 1793204257.0,
+    "hash": "802224d4c1741de3a358ea28e6b62e4e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/capacitor.settings.gradle": {
+    "mtime": 1794457804.40253,
+    "hash": "0f7623fa0d0b4163cb03f56f2c3c024b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/variables.gradle": {
+    "mtime": 1793204073.0,
+    "hash": "4b3fce8ea2a515a9d2e47e74757172ec"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/gradlew": {
+    "mtime": 1793204073.0,
+    "hash": "794669d78aef1dd5c7d889ef618b311a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/build.gradle": {
+    "mtime": 1793204073.0,
+    "hash": "682315a426653617c6a74fc12bef55b6"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/settings.gradle": {
+    "mtime": 1793204073.0,
+    "hash": "f6cd925b3f859e23c3d819fe2459e0e4"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/build.gradle": {
+    "mtime": 1794457483.771922,
+    "hash": "72fc122c47c62bdd2bf1340fa2445448"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/capacitor.build.gradle": {
+    "mtime": 1794457804.4029791,
+    "hash": "8aea139b9c2d569ae99534d3a3feba8b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/androidTest/java/com/getcapacitor/myapp/ExampleInstrumentedTest.java": {
+    "mtime": 1793204073.0,
+    "hash": "fbaf7cc870c663eb52dcf218531c439d"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/test/java/com/getcapacitor/myapp/ExampleUnitTest.java": {
+    "mtime": 1793204073.0,
+    "hash": "e91b4501c14da821682fa5c26a16d616"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/java/com/projectpulse/app/MainActivity.java": {
+    "mtime": 1794457483.7714298,
+    "hash": "b05ebf7667f345b6e3fec5ce3b8bd766"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/assets/public/cordova.js": {
+    "mtime": 1794457804.3993683,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/assets/public/cordova_plugins.js": {
+    "mtime": 1794457804.3994825,
+    "hash": "d41d8cd98f00b204e9800998ecf8427e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/assets/public/assets/index-DRFPPHmZ.js": {
+    "mtime": 1794457804.2675803,
+    "hash": "027e5ddf058eef52c8a41a4dc6468c6e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/assets/public/assets/web-DlQElDK-.js": {
+    "mtime": 1794457804.2676203,
+    "hash": "3d7528e089740aee715d74345790a9b4"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/assets/public/assets/index-eqxnqKJD.js": {
+    "mtime": 1794457804.2713323,
+    "hash": "1be53e6ccc6569aae5af5942322c7b38"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/assets/public/assets/index-CwBqPpwS.js": {
+    "mtime": 1794457804.268146,
+    "hash": "3e860a67ff2bd1fac9f1e983bbbd5353"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/assets/public/assets/index-BeHyGxJz.js": {
+    "mtime": 1794457804.267798,
+    "hash": "34f4fe8a3807bcd1d4ff35a3059e2e7c"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/assets/public/assets/web-CaVgogD-.js": {
+    "mtime": 1794457804.2678652,
+    "hash": "11917013014872a6250e17679c11677a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/capacitor-cordova-android-plugins/build.gradle": {
+    "mtime": 1794457804.4035563,
+    "hash": "2af61653d70c95d20802c8b5c433ba90"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/capacitor-cordova-android-plugins/cordova.variables.gradle": {
+    "mtime": 1794457804.4037027,
+    "hash": "d2372a0ae9aa60abb8d03e7f06bf9194"
+  },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/App.tsx": {
-    "mtime": 1794418981.8224862,
-    "hash": "3b27315f29b17bfbd9cc68f22830d5d6"
+    "mtime": 1794457761.8160763,
+    "hash": "8c6a6519ab0769cb0a0da2ec2d22318b"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/main.tsx": {
     "mtime": 1794069784.6498976,
@@ -32,8 +836,8 @@
     "hash": "8a5ec924ec8458bea0774fe4dde82cae"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/utils/projectUtils.ts": {
-    "mtime": 1794408004.618811,
-    "hash": "05f5a21e5243774c44f49b8558e0529d"
+    "mtime": 1794457413.694068,
+    "hash": "7446ca30b87477be4fc0d9143ce25f48"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/settings/BaselineManager.tsx": {
     "mtime": 1794445958.666925,
@@ -64,8 +868,8 @@
     "hash": "aa6f72e0370eee14c52cd83dcdfe3530"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/auth/LoginView.tsx": {
-    "mtime": 1794445956.7518702,
-    "hash": "39b74674b98f32143b287e93c9947fc4"
+    "mtime": 1794457759.5977979,
+    "hash": "cc9b33ccc26f2a57186fb253250f01fa"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/auth/AccessDenied.tsx": {
     "mtime": 1794127359.3653765,
@@ -100,8 +904,8 @@
     "hash": "3c349c453957c18a406395b85717e666"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/SetupView.tsx": {
-    "mtime": 1794445958.156708,
-    "hash": "5ed02a4f30b6980ff1b0b4b269815e50"
+    "mtime": 1794457757.6261973,
+    "hash": "8f4571c1428577a6b55d20e60d081ba8"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/shared/ThemeGrid.tsx": {
     "mtime": 1794448241.0503063,
@@ -280,8 +1084,8 @@
     "hash": "7c267351be9d26f8471d7c1a9ab89f6e"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/services/aiService.ts": {
-    "mtime": 1794069784.6500282,
-    "hash": "3831d10f9898767fec9bb04dcdd905fb"
+    "mtime": 1794457415.489277,
+    "hash": "3485771beb2157477027bf9a90ca7d83"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/services/excelService.ts": {
     "mtime": 1794280403.4509435,
@@ -312,8 +1116,8 @@
     "hash": "8b7b329ee3dfc441a85a1202de2fded5"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/README.md": {
-    "mtime": 1794455938.6300166,
-    "hash": "c67a9899373cb58856766b30f3d6b0e5"
+    "mtime": 1794457795.6655316,
+    "hash": "a4f311f876f50689f9414f50bd9f41f9"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/wiki/Architecture-and-System-Design.md": {
     "mtime": 1794070719.2984006,
@@ -331,9 +1135,273 @@
     "mtime": 1794070719.299207,
     "hash": "5b936b825cb25a9fcbb39559fb6d1a49"
   },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/public/index.html": {
+    "mtime": 1794457804.4567351,
+    "hash": "88a65ab9eb8fb499668cfe722df82466"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/CapApp-SPM/README.md": {
+    "mtime": 1793204073.0,
+    "hash": "d256f6b5922d4249607779141357d565"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/dSYMs/Cordova.framework.dSYM/Contents/Resources/Relocations/aarch64/Cordova.yml": {
+    "mtime": 1793204222.0,
+    "hash": "7bf36bee5aeb2f8b76164eeece6e7a54"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64_x86_64-simulator/dSYMs/Cordova.framework.dSYM/Contents/Resources/Relocations/x86_64/Cordova.yml": {
+    "mtime": 1793204222.0,
+    "hash": "70baf426f9dc3524a035c9328fafd135"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Cordova/Cordova.xcframework/ios-arm64/dSYMs/Cordova.framework.dSYM/Contents/Resources/Relocations/aarch64/Cordova.yml": {
+    "mtime": 1793204260.0,
+    "hash": "2594cc0b138df38fb6b6a8f07cb4455a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64_x86_64-simulator/dSYMs/Capacitor.framework.dSYM/Contents/Resources/Relocations/aarch64/Capacitor.yml": {
+    "mtime": 1793204211.0,
+    "hash": "0c90cf25a6d19f676d129c044510d43b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64_x86_64-simulator/dSYMs/Capacitor.framework.dSYM/Contents/Resources/Relocations/x86_64/Capacitor.yml": {
+    "mtime": 1793204211.0,
+    "hash": "f64c9f24c72ac390a21e854a62a80210"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/artifacts/capacitor-swift-pm/Capacitor/Capacitor.xcframework/ios-arm64/dSYMs/Capacitor.framework.dSYM/Contents/Resources/Relocations/aarch64/Capacitor.yml": {
+    "mtime": 1793204253.0,
+    "hash": "dde28c4a265a0edc31a0ce1eb056629a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/capacitor-swift-pm/LICENSE.md": {
+    "mtime": 1794457605.396002,
+    "hash": "4918c151f0901e841feacfbd191300fc"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/capacitor-swift-pm/README.md": {
+    "mtime": 1794457605.3964076,
+    "hash": "aaa4a58f89a5bc2beeb6336593bff159"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/ion-ios-filesystem/CHANGELOG.md": {
+    "mtime": 1794457605.4063551,
+    "hash": "dc4791e0cf1920a16b58262e08c6de2c"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/ion-ios-filesystem/README.md": {
+    "mtime": 1794457605.4099433,
+    "hash": "8509c0f31eb3e01d05bec5cf8ad71b9c"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/SourcePackages/checkouts/ion-ios-filesystem/IONFilesystemLibTests/file.txt": {
+    "mtime": 1794457605.409288,
+    "hash": "746308829575e17c3331bbcb00c0898b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/XCBuildData/prior-build-descriptions.txt": {
+    "mtime": 1794457826.5950832,
+    "hash": "67c48f764b4f56cd08f85533df1d1931"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/XCBuildData/2fd62ebf0787b4aed20661305b8e2869.xcbuilddata/target-graph.txt": {
+    "mtime": 1794457823.765537,
+    "hash": "c7defe7b0962af6d225ac8bec63ff548"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/XCBuildData/924422282804cb92d7f8cdacaba4a1c8.xcbuilddata/target-graph.txt": {
+    "mtime": 1794457655.760809,
+    "hash": "c7defe7b0962af6d225ac8bec63ff548"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/XCBuildData/33dc9fc2f8834044e48ce84eeba989d2.xcbuilddata/target-graph.txt": {
+    "mtime": 1794457826.6042857,
+    "hash": "c7defe7b0962af6d225ac8bec63ff548"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/XCBuildData/5a4c88bfc08b2479176b8da754c31261.xcbuilddata/target-graph.txt": {
+    "mtime": 1794457611.2353532,
+    "hash": "c7defe7b0962af6d225ac8bec63ff548"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App-0ca3007d900a678c2b4d53418799ee3d-VFS-iphonesimulator/all-product-headers.yaml": {
+    "mtime": 1794457611.0642774,
+    "hash": "8bba4233626f64a7ea772bb94a08a1a9"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App.build/App-ExecutorLinkFileList-normal-arm64.txt": {
+    "mtime": 1794457621.6037462,
+    "hash": "87a1f80998adba5918ef7ab4ac4890e4"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App.build/App-DebugDylibInstallName-normal-arm64.txt": {
+    "mtime": 1794457611.1653395,
+    "hash": "d1d261a22e1bf203a9c9a6b4f21c13eb"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App.build/App-DebugDylibPath-normal-arm64.txt": {
+    "mtime": 1794457611.164989,
+    "hash": "79eb616cfb84df379736a2789e157c55"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/App.build/Release-iphoneos/App-0ca3007d900a678c2b4d53418799ee3d-VFS-iphoneos/all-product-headers.yaml": {
+    "mtime": 1794457654.072803,
+    "hash": "8bba4233626f64a7ea772bb94a08a1a9"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework.dSYM/Contents/Resources/Relocations/aarch64/Cordova.yml": {
+    "mtime": 1793204222.0,
+    "hash": "7bf36bee5aeb2f8b76164eeece6e7a54"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Cordova.framework.dSYM/Contents/Resources/Relocations/x86_64/Cordova.yml": {
+    "mtime": 1793204222.0,
+    "hash": "70baf426f9dc3524a035c9328fafd135"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Capacitor.framework.dSYM/Contents/Resources/Relocations/aarch64/Capacitor.yml": {
+    "mtime": 1793204211.0,
+    "hash": "0c90cf25a6d19f676d129c044510d43b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/Capacitor.framework.dSYM/Contents/Resources/Relocations/x86_64/Capacitor.yml": {
+    "mtime": 1793204211.0,
+    "hash": "f64c9f24c72ac390a21e854a62a80210"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/public/index.html": {
+    "mtime": 1794457823.9241185,
+    "hash": "88a65ab9eb8fb499668cfe722df82466"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Cordova.framework.dSYM/Contents/Resources/Relocations/aarch64/Cordova.yml": {
+    "mtime": 1793204260.0,
+    "hash": "2594cc0b138df38fb6b6a8f07cb4455a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app.dSYM/Contents/Resources/Relocations/aarch64/App.yml": {
+    "mtime": 1794457666.6515052,
+    "hash": "135cefff96e56f8d0a7bb80a87674fa2"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/Capacitor.framework.dSYM/Contents/Resources/Relocations/aarch64/Capacitor.yml": {
+    "mtime": 1793204253.0,
+    "hash": "dde28c4a265a0edc31a0ce1eb056629a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/public/index.html": {
+    "mtime": 1794457826.6742764,
+    "hash": "88a65ab9eb8fb499668cfe722df82466"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/assets/public/index.html": {
+    "mtime": 1794457804.2658253,
+    "hash": "88a65ab9eb8fb499668cfe722df82466"
+  },
   "/Volumes/Study/Projects/ProjectPulse 2.0/design-system/MASTER.md": {
     "mtime": 1794072105.019147,
     "hash": "c10df4bb23cf1788cd988959b89b9ce9"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png": {
+    "mtime": 1794457545.5618553,
+    "hash": "cd35278ef006e766644e4dfe9910dc87"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732.png": {
+    "mtime": 1794457545.9795191,
+    "hash": "46e6c68b9172daacc0a510dc661bcc7a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-1.png": {
+    "mtime": 1794457545.8414125,
+    "hash": "46e6c68b9172daacc0a510dc661bcc7a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/Assets.xcassets/Splash.imageset/splash-2732x2732-2.png": {
+    "mtime": 1794457545.9119322,
+    "hash": "46e6c68b9172daacc0a510dc661bcc7a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/public/audit_tasks_desktop.png": {
+    "mtime": 1794457804.4567811,
+    "hash": "3fe88dc63a42ceb117572421d759a5fa"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/public/audit_setup_desktop.png": {
+    "mtime": 1794457804.456704,
+    "hash": "16e1ee83c0465456da6595a41eebcc39"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/public/audit_capacity_mobile.png": {
+    "mtime": 1794457804.4572992,
+    "hash": "118e7f3303056502ff6c80a6e87e2f51"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/public/audit_dash_desktop.png": {
+    "mtime": 1794457804.4573257,
+    "hash": "6acd2e2b77fa0cfa36bfb69f87e7ed8e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/public/audit_deliveries_desktop.png": {
+    "mtime": 1794457804.457507,
+    "hash": "3a6c933102720c83d80784d9fc2895bd"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/public/audit_overview_desktop.png": {
+    "mtime": 1794457804.4579368,
+    "hash": "a7236d56d4dd162eab9afc701937e756"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/App/App/public/audit_overview_mobile.png": {
+    "mtime": 1794457804.4580796,
+    "hash": "118e7f3303056502ff6c80a6e87e2f51"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App.build/assetcatalog_output/thinned/AppIcon60x60@2x.png": {
+    "mtime": 1794457616.006535,
+    "hash": "d4b32a92f69b8406a85ffec1c4643c23"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/App.build/Debug-iphonesimulator/App.build/assetcatalog_output/thinned/AppIcon76x76@2x~ipad.png": {
+    "mtime": 1794457616.0090804,
+    "hash": "b32479936cc25a8fc6be712fa7a1bb1e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/App.build/Release-iphoneos/App.build/assetcatalog_output/thinned/AppIcon60x60@2x.png": {
+    "mtime": 1794457659.2183936,
+    "hash": "2a24a84335aea0d6b94f881173b42a9a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Intermediates.noindex/App.build/Release-iphoneos/App.build/assetcatalog_output/thinned/AppIcon76x76@2x~ipad.png": {
+    "mtime": 1794457659.20558,
+    "hash": "db27c711a80fadea657fbc2510ffc4fb"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/AppIcon60x60@2x.png": {
+    "mtime": 1794457616.006535,
+    "hash": "d4b32a92f69b8406a85ffec1c4643c23"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/AppIcon76x76@2x~ipad.png": {
+    "mtime": 1794457616.0090804,
+    "hash": "b32479936cc25a8fc6be712fa7a1bb1e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/public/audit_tasks_desktop.png": {
+    "mtime": 1794457823.923532,
+    "hash": "3fe88dc63a42ceb117572421d759a5fa"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/public/audit_setup_desktop.png": {
+    "mtime": 1794457823.9250696,
+    "hash": "16e1ee83c0465456da6595a41eebcc39"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/public/audit_capacity_mobile.png": {
+    "mtime": 1794457823.9255638,
+    "hash": "118e7f3303056502ff6c80a6e87e2f51"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/public/audit_dash_desktop.png": {
+    "mtime": 1794457823.9264796,
+    "hash": "6acd2e2b77fa0cfa36bfb69f87e7ed8e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/public/audit_deliveries_desktop.png": {
+    "mtime": 1794457823.9274523,
+    "hash": "3a6c933102720c83d80784d9fc2895bd"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/public/audit_overview_desktop.png": {
+    "mtime": 1794457823.92834,
+    "hash": "a7236d56d4dd162eab9afc701937e756"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Debug-iphonesimulator/App.app/public/audit_overview_mobile.png": {
+    "mtime": 1794457823.9353895,
+    "hash": "118e7f3303056502ff6c80a6e87e2f51"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/AppIcon60x60@2x.png": {
+    "mtime": 1794457659.2183936,
+    "hash": "2a24a84335aea0d6b94f881173b42a9a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/AppIcon76x76@2x~ipad.png": {
+    "mtime": 1794457659.20558,
+    "hash": "db27c711a80fadea657fbc2510ffc4fb"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/public/audit_tasks_desktop.png": {
+    "mtime": 1794457826.6738198,
+    "hash": "3fe88dc63a42ceb117572421d759a5fa"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/public/audit_setup_desktop.png": {
+    "mtime": 1794457826.6750906,
+    "hash": "16e1ee83c0465456da6595a41eebcc39"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/public/audit_capacity_mobile.png": {
+    "mtime": 1794457826.6755266,
+    "hash": "118e7f3303056502ff6c80a6e87e2f51"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/public/audit_dash_desktop.png": {
+    "mtime": 1794457826.6763687,
+    "hash": "6acd2e2b77fa0cfa36bfb69f87e7ed8e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/public/audit_deliveries_desktop.png": {
+    "mtime": 1794457826.677209,
+    "hash": "3a6c933102720c83d80784d9fc2895bd"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/public/audit_overview_desktop.png": {
+    "mtime": 1794457826.6782994,
+    "hash": "a7236d56d4dd162eab9afc701937e756"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/ios/DerivedData/Build/Products/Release-iphoneos/App.app/public/audit_overview_mobile.png": {
+    "mtime": 1794457826.6836114,
+    "hash": "118e7f3303056502ff6c80a6e87e2f51"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/public/audit_tasks_desktop.png": {
     "mtime": 1794126720.1793845,
@@ -361,6 +1429,138 @@
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/public/audit_overview_mobile.png": {
     "mtime": 1794126726.0015957,
+    "hash": "118e7f3303056502ff6c80a6e87e2f51"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/mipmap-mdpi/ic_launcher_foreground.png": {
+    "mtime": 1794457545.5846922,
+    "hash": "69c403f242d2274bcf7814d794abb889"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/mipmap-mdpi/ic_launcher.png": {
+    "mtime": 1794457545.5804188,
+    "hash": "f67fb8c380e80c27faa8288d3e9084fc"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png": {
+    "mtime": 1794457545.5878315,
+    "hash": "53bb7323306a72e11130130ef2b7110d"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/drawable-port-xxxhdpi/splash.png": {
+    "mtime": 1794457545.7674036,
+    "hash": "7a220a4e0d6878f3f8c53e8972de8d80"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/mipmap-hdpi/ic_launcher_foreground.png": {
+    "mtime": 1794457545.5732913,
+    "hash": "3a73ce848c9b6dafc61e1685f364ba6b"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/mipmap-hdpi/ic_launcher.png": {
+    "mtime": 1794457545.5671976,
+    "hash": "f11251295777c6e0bb86730d7ae863b3"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png": {
+    "mtime": 1794457545.5772612,
+    "hash": "741d51e8d334cec82ba4ea940489e539"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/drawable-land-xhdpi/splash.png": {
+    "mtime": 1794457545.677658,
+    "hash": "cfa72e732abf3e333fb061c5ab8b66e8"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/drawable/splash.png": {
+    "mtime": 1794457545.7703502,
+    "hash": "7d95981d81bf60c6295d907736c675fb"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_foreground.png": {
+    "mtime": 1794457545.6469827,
+    "hash": "29a3e8be757932a1b9eb3c7d847287f4"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png": {
+    "mtime": 1794457545.633213,
+    "hash": "4da9154af75755f5019c47e022301d9a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png": {
+    "mtime": 1794457545.6543841,
+    "hash": "3061bc489c958bbbfc3257a3914f5cb4"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_foreground.png": {
+    "mtime": 1794457545.6201074,
+    "hash": "9787eb9052076d9f3fb79e7fb94fc10d"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png": {
+    "mtime": 1794457545.610545,
+    "hash": "368c668fb846c751c1d6852db4c27853"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png": {
+    "mtime": 1794457545.626147,
+    "hash": "877e1af5a4ff77fa433448a394018b40"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/drawable-port-hdpi/splash.png": {
+    "mtime": 1794457545.7201073,
+    "hash": "f1bbc1720d2b224e9257eed0b78a62c2"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/drawable-port-mdpi/splash.png": {
+    "mtime": 1794457545.7228594,
+    "hash": "10deb28b2d143d4e4ec1295d7123bb9a"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/drawable-land-mdpi/splash.png": {
+    "mtime": 1794457545.6685438,
+    "hash": "7d95981d81bf60c6295d907736c675fb"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/drawable-land-hdpi/splash.png": {
+    "mtime": 1794457545.6656783,
+    "hash": "fc50abf04fb7488363ef2d860cf104a6"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/drawable-land-xxhdpi/splash.png": {
+    "mtime": 1794457545.6923852,
+    "hash": "bb46b9e59c640151678fc98fb9795766"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/mipmap-xhdpi/ic_launcher_foreground.png": {
+    "mtime": 1794457545.5997252,
+    "hash": "3af3427418e9ef42520d25bcf5314d38"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/mipmap-xhdpi/ic_launcher.png": {
+    "mtime": 1794457545.592082,
+    "hash": "2587b2dcb318dcf36df2b40cfe149364"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png": {
+    "mtime": 1794457545.60424,
+    "hash": "68f9730a8b96f04d2e12629fbd7b7be5"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/drawable-port-xxhdpi/splash.png": {
+    "mtime": 1794457545.7455332,
+    "hash": "1089d644ff22850a81aba4f22f7dd700"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/drawable-port-xhdpi/splash.png": {
+    "mtime": 1794457545.731613,
+    "hash": "79e811c94e4da60c52d44967ee03a277"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/res/drawable-land-xxxhdpi/splash.png": {
+    "mtime": 1794457545.7155945,
+    "hash": "2770d187291eea93c286b9a97eb2c44e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/assets/public/audit_tasks_desktop.png": {
+    "mtime": 1794457804.2661655,
+    "hash": "3fe88dc63a42ceb117572421d759a5fa"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/assets/public/audit_setup_desktop.png": {
+    "mtime": 1794457804.2660894,
+    "hash": "16e1ee83c0465456da6595a41eebcc39"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/assets/public/audit_capacity_mobile.png": {
+    "mtime": 1794457804.2660275,
+    "hash": "118e7f3303056502ff6c80a6e87e2f51"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/assets/public/audit_dash_desktop.png": {
+    "mtime": 1794457804.2666545,
+    "hash": "6acd2e2b77fa0cfa36bfb69f87e7ed8e"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/assets/public/audit_deliveries_desktop.png": {
+    "mtime": 1794457804.2667804,
+    "hash": "3a6c933102720c83d80784d9fc2895bd"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/assets/public/audit_overview_desktop.png": {
+    "mtime": 1794457804.266849,
+    "hash": "a7236d56d4dd162eab9afc701937e756"
+  },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/android/app/src/main/assets/public/audit_overview_mobile.png": {
+    "mtime": 1794457804.2668388,
     "hash": "118e7f3303056502ff6c80a6e87e2f51"
   }
 }

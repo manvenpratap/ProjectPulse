@@ -120,8 +120,7 @@ export const getStartOfWeek = (d: Date): Date => {
   return monday;
 };
 
-export const saveBlob = (blob: Blob, filename: string): void => {
-  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+const downloadBlobInBrowser = (blob: Blob, filename: string): void => {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
@@ -130,6 +129,53 @@ export const saveBlob = (blob: Blob, filename: string): void => {
   a.click();
   document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 100);
+};
+
+const readBlobAsBase64 = (blob: Blob): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(reader.error ?? new Error('Failed to read export blob'));
+    reader.onloadend = () => {
+      const result = typeof reader.result === 'string' ? reader.result : '';
+      const commaIdx = result.indexOf(',');
+      resolve(commaIdx >= 0 ? result.slice(commaIdx + 1) : result);
+    };
+    reader.readAsDataURL(blob);
+  });
+
+const saveNativeBlob = async (blob: Blob, filename: string): Promise<void> => {
+  try {
+    const [{ Filesystem, Directory }, { Share }, base64Data] = await Promise.all([
+      import('@capacitor/filesystem'),
+      import('@capacitor/share'),
+      readBlobAsBase64(blob),
+    ]);
+    const safeName = filename.replace(/[^a-zA-Z0-9._-]/g, '_') || 'export.bin';
+    const written = await Filesystem.writeFile({
+      path: safeName,
+      data: base64Data,
+      directory: Directory.Cache,
+      recursive: true,
+    });
+    await Share.share({
+      title: filename,
+      files: [written.uri],
+      dialogTitle: `Export ${filename}`,
+    });
+  } catch (err) {
+    console.warn('[ProjectPulse] Native export/share failed, attempting browser download fallback:', err);
+    downloadBlobInBrowser(blob, filename);
+  }
+};
+
+export const saveBlob = (blob: Blob, filename: string): void => {
+  if (typeof window === 'undefined' || typeof document === 'undefined') return;
+  const cap = (window as unknown as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor;
+  if (cap?.isNativePlatform?.()) {
+    void saveNativeBlob(blob, filename);
+    return;
+  }
+  downloadBlobInBrowser(blob, filename);
 };
 
 export const normalizeSkills = (skills: string[] | string | undefined | null): string[] => {
