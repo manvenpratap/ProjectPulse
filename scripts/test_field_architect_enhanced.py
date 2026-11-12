@@ -156,22 +156,70 @@ async def run_tests():
         assert await custom_col_header.is_visible(), "Custom field column header 'CLIENT SIGNOFF' not visible in Tasks Grid!"
         print("[PASS] Custom field column 'CLIENT SIGNOFF' dynamically rendered in Tasks Grid!")
 
-        # Step 7: Reset Defaults test
-        print("[9] Testing 'Reset Defaults' action...")
+        # Step 7: Reset Defaults + Undo Toast test
+        print("[9] Testing 'Reset Defaults' & Undo restoration...")
         await page.goto(f"{BASE_URL}/#/fields", wait_until="networkidle")
         await page.wait_for_timeout(500)
         await page.get_by_role("button", name="TASKS", exact=True).click()
         await page.wait_for_timeout(500)
 
-        # Register dialog handler to auto-accept confirmation
-        page.on("dialog", lambda dialog: dialog.accept())
-        await page.locator("button:has-text('Reset Defaults')").click()
-        await page.wait_for_timeout(500)
+        # Verify Live Table Header Blueprint Preview & Customized filter before reset
+        blueprint = page.locator("section[aria-label='Live table column preview']")
+        assert await blueprint.is_visible(), "Live Table Header Blueprint preview missing!"
+        modified_filter = page.locator("button:has-text('Modified')").first
+        assert await modified_filter.is_visible(), "Modified filter pill missing!"
+        await modified_filter.click()
+        await page.wait_for_timeout(300)
+        assert await page.locator("input[value='WORK ITEM TITLE']").is_visible(), "Modified filter should display WORK ITEM TITLE!"
+        await page.locator("button:has-text('All')").first.click()
+        await page.wait_for_timeout(200)
 
-        # Verify 'TASK NAME & CHECKLIST' is restored
+        # Click Reset Defaults (immediate with non-blocking Undo toast)
+        await page.locator("button:has-text('Reset Defaults')").click()
+        await page.wait_for_timeout(400)
+
         restored_input = page.locator("input[value='TASK NAME & CHECKLIST']")
         assert await restored_input.is_visible(), "TASK NAME & CHECKLIST not restored after Reset Defaults!"
-        print("[PASS] Reset Defaults successfully restored original field definitions!")
+        undo_btn = page.locator("button:has-text('Undo')").first
+        assert await undo_btn.is_visible(), "Undo toast button should appear after Reset Defaults!"
+        await undo_btn.click()
+        await page.wait_for_timeout(300)
+        assert await page.locator("input[value='WORK ITEM TITLE']").is_visible(), "Undo should restore WORK ITEM TITLE!"
+        await page.locator("button:has-text('Reset Defaults')").click()
+        await page.wait_for_timeout(300)
+        print("[PASS] Reset Defaults & Undo restoration verified!")
+
+        # Step 8: Test 1-Click Starter Template & Modal Inline Validation + Live Preview
+        print("[10] Testing Quick Template 1-Click Add & Modal Inline Validation...")
+        await page.locator("button:has-text('Risk Score')").first.click()
+        await page.wait_for_timeout(300)
+        assert await page.locator("h4:has-text('Risk Score')").is_visible(), "Quick starter 'Risk Score' should be created on 1 click!"
+
+        await page.locator("button:has-text('Add Field')").first.click()
+        await page.wait_for_timeout(300)
+        await page.locator("button:has-text('Create Attribute')").click()
+        await page.wait_for_timeout(200)
+        err_alert = page.locator("[role='alert']:has-text('Enter an attribute display name')")
+        assert await err_alert.is_visible(), "Inline validation error should display without browser alert!"
+        await page.locator("input[placeholder='e.g. Security Classification, Client Contract ID']").fill("Security Classification")
+        await page.locator("select").first.select_option("dropdown")
+        await page.locator("#fa-manual-opts").fill("Internal; Confidential; Restricted")
+        await page.wait_for_timeout(200)
+        assert await page.locator("text=Confidential").first.is_visible(), "Live manual option pills should preview!"
+        await page.locator("button:has-text('Create Attribute')").click()
+        await page.wait_for_timeout(300)
+        assert await page.locator("h4:has-text('Security Classification')").is_visible(), "Created dropdown attribute missing!"
+        print("[PASS] Quick starters, inline validation & live option preview verified!")
+
+        # Re-capture updated Desktop & Mobile screenshots for visual inspection
+        await page.screenshot(path=fa_screenshot, full_page=False)
+        await page.set_viewport_size({"width": 393, "height": 852})
+        await page.wait_for_timeout(400)
+        overflow = await page.evaluate("() => document.documentElement.scrollWidth > window.innerWidth")
+        assert not overflow, "Mobile 393px viewport has horizontal overflow on Field Architect!"
+        mobile_shot = os.path.join(ARTIFACTS_DIR, "field_architect_mobile.png")
+        await page.screenshot(path=mobile_shot, full_page=False)
+        print(f"[SCREENSHOT] Saved Mobile Field Architect screenshot to: {mobile_shot}")
 
         await browser.close()
         print("=== ALL FIELD ARCHITECT ENHANCEMENT TESTS PASSED! ===")
