@@ -39,9 +39,12 @@ import {
   GitBranch,
   ArrowRight,
   Upload,
-  Download
+  Download,
+  LayoutGrid,
+  Flag
 } from 'lucide-react';
 import clsx from 'clsx';
+import { motion, AnimatePresence } from 'motion/react';
 import Button from '../shared/Button';
 import { toast } from '../../utils/toast';
 import PageHeader from '../shared/PageHeader';
@@ -51,7 +54,7 @@ import Modal from '../shared/Modal';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef } from '../shared/DataTable';
 
-type ViewMode = 'table' | 'kanban' | 'heatmap';
+type ViewMode = 'table' | 'cards' | 'kanban' | 'heatmap';
 type HeatmapPerspective = 'feat_screens' | 'env_pipeline' | 'del_impact';
 type AutofitStrategy = 'all' | 'content-only' | 'header-only' | 'compact' | 'comfortable';
 
@@ -624,29 +627,149 @@ export const DeliveriesView: React.FC = () => {
       <PageHeader
         icon={Package}
         title="Software Deliveries & Deployment Schedule"
-        subtitle={`${deliveries.length} Total Packages`}
+        subtitle={`${deliveries.length} Total Packages • ${telemetry.deployed} Deployed • ${telemetry.ready + telemetry.inProgress} In Flight`}
         actions={
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-nowrap">
-            {/* View Mode Switcher */}
-            <div className="flex items-center p-0.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl">
+          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar scroll-fade-x py-0.5 max-w-full">
+            {/* Quick Filters (Active in Matrix / Cards view modes) */}
+            {(viewMode === 'table' || viewMode === 'cards') && (
+              <div className="flex items-center gap-1.5 flex-nowrap md:flex-wrap">
+                {/* Environment Filter */}
+                <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-xs">
+                  <Server size={13} className="text-[var(--color-text-faint)]" />
+                  <select
+                    value={filterEnv}
+                    onChange={e => setFilterEnv(e.target.value)}
+                    className="bg-transparent font-semibold text-xs text-[var(--color-text)] outline-none cursor-pointer max-w-[110px] truncate"
+                    aria-label="Filter by environment"
+                  >
+                    <option value="all">All Envs</option>
+                    {(dropdowns.deliveryEnv && dropdowns.deliveryEnv.length > 0
+                      ? dropdowns.deliveryEnv
+                      : ['Production', 'Staging', 'UAT', 'QA', 'Dev']
+                    ).map((env: string, idx: number) => (
+                      <option key={`env-${env}-${idx}`} value={env}>{env}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Status Filter */}
+                <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-xs">
+                  <Activity size={13} className="text-[var(--color-text-faint)]" />
+                  <select
+                    value={filterStatus}
+                    onChange={e => setFilterStatus(e.target.value)}
+                    className="bg-transparent font-semibold text-xs text-[var(--color-text)] outline-none cursor-pointer max-w-[120px] truncate"
+                    aria-label="Filter by delivery status"
+                  >
+                    <option value="all">All Statuses</option>
+                    {['Scheduled', 'In Progress', 'Ready for Deployment', 'Deployed', 'Cancelled', 'Rolled Back'].map((s, idx) => (
+                      <option key={`status-${s}-${idx}`} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Release Filter */}
+                <div className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-xs">
+                  <Flag size={13} className="text-[var(--color-text-faint)]" />
+                  <select
+                    value={filterVersion}
+                    onChange={e => setFilterVersion(e.target.value)}
+                    className="bg-transparent font-semibold text-xs text-[var(--color-text)] outline-none cursor-pointer max-w-[120px] truncate"
+                    aria-label="Filter by release version"
+                  >
+                    <option value="all">All Releases</option>
+                    {state.releases && state.releases.length > 0 ? (
+                      state.releases.map((r, idx) => {
+                        const relVal = r.name || r.version || `rel-${idx}`;
+                        return (
+                          <option key={`rel-${relVal}`} value={relVal}>{relVal}</option>
+                        );
+                      })
+                    ) : (
+                      ['v1.0.0', 'v1.1.0', 'v2.0.0-Beta', 'v2.1.0'].map((v, idx) => (
+                        <option key={`rel-fallback-${v}-${idx}`} value={v}>{v}</option>
+                      ))
+                    )}
+                  </select>
+                </div>
+
+                {/* Toggle Inline Filters (for Matrix table) */}
+                {viewMode === 'table' && (
+                  <button
+                    onClick={() => setShowInlineFilters(!showInlineFilters)}
+                    className={clsx(
+                      "px-2.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all cursor-pointer min-h-[34px]",
+                      showInlineFilters 
+                        ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border-[var(--color-primary-hex)]/30"
+                        : "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:text-[var(--color-text)]"
+                    )}
+                    title="Toggle column header filter row"
+                  >
+                    <Filter size={13} />
+                    <span className="hidden md:inline">{showInlineFilters ? 'Filters Visible' : 'Show Filters'}</span>
+                  </button>
+                )}
+
+                {/* Density Toggle (for table) */}
+                {viewMode === 'table' && (
+                  <div className="hidden xl:flex items-center p-0.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                    <button
+                      onClick={() => setAutofitStrategy('compact')}
+                      className={clsx(
+                        "px-2 py-1 min-h-[28px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                        autofitStrategy === 'compact' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)]"
+                      )}
+                    >
+                      Compact
+                    </button>
+                    <button
+                      onClick={() => setAutofitStrategy('comfortable')}
+                      className={clsx(
+                        "px-2 py-1 min-h-[28px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                        autofitStrategy === 'comfortable' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)]"
+                      )}
+                    >
+                      Comfortable
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* View Mode Switcher: Matrix | Cards | Pipeline | Heatmaps */}
+            <div className="flex items-center p-0.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl mr-0.5 shrink-0">
               <button
                 onClick={() => setViewMode('table')}
                 aria-label="Table Matrix View"
                 className={clsx(
-                  "px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-95 min-h-[36px] min-w-[36px]",
-                  viewMode === 'table' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  "min-w-[34px] min-h-[34px] sm:min-w-0 p-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer",
+                  viewMode === 'table' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
+                title="Table Matrix View"
               >
                 <Columns size={13} />
                 <span className="hidden sm:inline">Matrix</span>
               </button>
               <button
+                onClick={() => setViewMode('cards')}
+                aria-label="Cards View"
+                className={clsx(
+                  "min-w-[34px] min-h-[34px] sm:min-w-0 p-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer",
+                  viewMode === 'cards' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                )}
+                title="Cards Grid View"
+              >
+                <LayoutGrid size={13} />
+                <span className="hidden sm:inline">Cards</span>
+              </button>
+              <button
                 onClick={() => setViewMode('kanban')}
                 aria-label="Pipeline Kanban View"
                 className={clsx(
-                  "px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-95 min-h-[36px] min-w-[36px]",
-                  viewMode === 'kanban' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  "min-w-[34px] min-h-[34px] sm:min-w-0 p-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer",
+                  viewMode === 'kanban' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
+                title="Pipeline Kanban View"
               >
                 <Kanban size={13} />
                 <span className="hidden sm:inline">Pipeline</span>
@@ -655,16 +778,38 @@ export const DeliveriesView: React.FC = () => {
                 onClick={() => setViewMode('heatmap')}
                 aria-label="3D Heatmaps View"
                 className={clsx(
-                  "px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-95 min-h-[36px] min-w-[36px]",
-                  viewMode === 'heatmap' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-sm" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  "min-w-[34px] min-h-[34px] sm:min-w-0 p-1.5 sm:px-3 sm:py-1.5 text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-all cursor-pointer",
+                  viewMode === 'heatmap' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
+                title="3D Heatmaps View"
               >
                 <Activity size={13} />
                 <span className="hidden sm:inline">Heatmaps</span>
               </button>
             </div>
 
-            <div className="flex items-center gap-1.5">
+            {/* Search */}
+            <div className="relative">
+              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
+              <input 
+                className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl pl-7 pr-2 py-1.5 text-xs outline-none focus:border-[var(--color-primary-hex)] w-24 sm:w-[140px] md:w-[170px] text-[var(--color-text)]"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)}
+                aria-label="Search deliveries"
+              />
+              {searchQuery && (
+                <button 
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
+                >
+                  <X size={11} />
+                </button>
+              )}
+            </div>
+
+            {/* Import Button */}
+            <div className="flex items-center">
               <input
                 type="file"
                 ref={fileInputRef}
@@ -677,11 +822,11 @@ export const DeliveriesView: React.FC = () => {
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isImporting}
                 title="Import Deliveries from Excel or CSV"
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text)] transition-colors active:scale-95 shadow-2xs h-9 cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-hover)] text-[var(--color-text)] transition-colors active:scale-95 shadow-2xs h-9 cursor-pointer"
                 data-testid="import-deliveries-button"
               >
                 <Upload size={13} className={isImporting ? "animate-spin" : "text-sky-500"} />
-                <span className="hidden sm:inline">{isImporting ? 'Importing...' : 'Import'}</span>
+                <span className="hidden lg:inline">{isImporting ? 'Importing...' : 'Import'}</span>
               </button>
             </div>
           </div>
@@ -778,187 +923,97 @@ export const DeliveriesView: React.FC = () => {
         </CollapsibleSummaryStrip>
       </div>
 
-      {/* 2. Operational Filter Toolbar */}
-      <div className="px-4 sm:px-6 lg:px-8 py-3 bg-[var(--color-surface)] border-b border-[var(--color-divider)] flex flex-wrap items-center justify-between gap-3 shrink-0">
-        <div className="flex items-center gap-2 flex-1 min-w-[260px] max-w-[420px]">
-          <div className="relative w-full">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
-            <input 
-              type="text"
-              placeholder="Search by ALM ID, PDN, scope, module, developer..."
-              value={searchQuery}
-              onChange={e => setSearchQuery(e.target.value)}
-              className="w-full bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg pl-9 pr-3 py-1.5 text-xs text-[var(--color-text)] placeholder-[var(--color-text-faint)] focus:outline-none focus:border-[var(--color-primary-hex)] transition-colors"
-            />
-            {searchQuery && (
-              <button 
-                onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
-              >
-                <X size={12} />
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-center gap-2 flex-wrap text-xs">
-          {/* Environment Filter */}
-          <select 
-            value={filterEnv}
-            onChange={e => setFilterEnv(e.target.value)}
-            className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-[var(--color-primary-hex)]"
-          >
-            <option key="all" value="all">All Envs</option>
-            {(dropdowns.deliveryEnv && dropdowns.deliveryEnv.length > 0
-              ? dropdowns.deliveryEnv
-              : ['Production', 'Staging', 'UAT', 'QA', 'Dev']
-            ).map((env: string, idx: number) => (
-              <option key={`env-${env}-${idx}`} value={env}>{env}</option>
-            ))}
-          </select>
-
-          {/* Status Filter */}
-          <select 
-            value={filterStatus}
-            onChange={e => setFilterStatus(e.target.value)}
-            className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-[var(--color-primary-hex)]"
-          >
-            <option key="all" value="all">All Statuses</option>
-            {['Scheduled', 'In Progress', 'Ready for Deployment', 'Deployed', 'Cancelled', 'Rolled Back'].map((s, idx) => (
-              <option key={`status-${s}-${idx}`} value={s}>{s}</option>
-            ))}
-          </select>
-
-          {/* Version Filter */}
-          <select 
-            value={filterVersion}
-            onChange={e => setFilterVersion(e.target.value)}
-            className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:border-[var(--color-primary-hex)]"
-          >
-            <option key="all" value="all">All Releases</option>
-            {state.releases && state.releases.length > 0 ? (
-              state.releases.map((r, idx) => {
-                const relVal = r.name || r.version || `rel-${idx}`;
-                return (
-                  <option key={`rel-${relVal}`} value={relVal}>{relVal} ({r.title || r.status})</option>
-                );
-              })
-            ) : (
-              ['v1.0.0', 'v1.1.0', 'v2.0.0-Beta', 'v2.1.0'].map((v, idx) => (
-                <option key={`rel-fallback-${v}-${idx}`} value={v}>{v}</option>
-              ))
-            )}
-          </select>
-
-          {/* Column Autofit Strategy & Filter Toggle (ProjectPulse standard) */}
-          {viewMode === 'table' && (
-            <div className="flex items-center gap-2 pl-2 border-l border-[var(--color-divider)]">
-              <button
-                onClick={() => setShowInlineFilters(!showInlineFilters)}
-                className={clsx(
-                  "px-2.5 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 border transition-all cursor-pointer",
-                  showInlineFilters 
-                    ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border-[var(--color-primary-hex)]/30"
-                    : "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:text-[var(--color-text)]"
-                )}
-                title="Toggle column header filter row"
-              >
-                <Filter size={12} />
-                <span>{showInlineFilters ? 'Filters Visible' : 'Show Filters'}</span>
-              </button>
-
-              <div className="flex items-center gap-1">
-                <span className="text-xs font-semibold text-[var(--color-text-muted)]">Autofit:</span>
-                <select 
-                  value={autofitStrategy}
-                  onChange={e => setAutofitStrategy(e.target.value as AutofitStrategy)}
-                  className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:border-[var(--color-primary-hex)]"
-                  title="Table column autofit engine layout mode"
-                >
-                  <option key="comfortable" value="comfortable">Comfortable</option>
-                  <option key="compact" value="compact">Compact Dense</option>
-                  <option key="content-only" value="content-only">Wrap Content</option>
-                  <option key="header-only" value="header-only">Header Bounds</option>
-                  <option key="all" value="all">Full Fill</option>
-                </select>
-              </div>
-            </div>
-          )}
-
-          {/* Bulk Selection Actions Bar */}
+      {/* 2. Main Workspace Body */}
+      <div className="flex-1 overflow-auto custom-scroll p-4 sm:p-6 lg:p-8 space-y-4">
+        {/* Floating Bulk Actions Bar */}
+        <AnimatePresence>
           {selectedIds.size > 0 && (
-            <div className="flex items-center gap-2 bg-[var(--color-surface-2)] border-2 border-[var(--color-primary-hex)] rounded-xl px-3 py-1.5 ml-auto flex-wrap shadow-sm">
-              <span className="font-extrabold text-xs text-[var(--color-primary-hex)] flex items-center gap-1">
-                <CheckSquare size={13} />
-                {selectedIds.size} Selected
-              </span>
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.18 }}
+              className="p-2.5 sm:p-3 bg-[var(--color-surface-2)] border-2 border-[var(--color-primary-hex)] rounded-2xl shadow-md flex flex-wrap items-center justify-between gap-3 text-xs"
+            >
+              <div className="flex items-center gap-3 flex-wrap">
+                <span className="font-extrabold text-[var(--color-primary-hex)] flex items-center gap-1.5">
+                  <CheckSquare size={14} />
+                  {selectedIds.size} package(s) selected
+                </span>
 
-              <div className="h-4 w-px bg-[var(--color-divider)] hidden sm:block" />
+                <div className="h-4 w-px bg-[var(--color-divider)] hidden sm:block" />
 
-              {/* Batch ALM Status */}
-              <select
-                onChange={(e) => {
-                  if (e.target.value) handleBatchALMStatus(e.target.value);
-                  e.target.value = '';
-                }}
-                defaultValue=""
-                className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-2 py-1 text-xs cursor-pointer"
-              >
-                <option key="placeholder-status" value="" disabled>Set ALM Status...</option>
-                {['New', 'Open', 'In Progress', 'Fixed', 'Ready for Test', 'Retest', 'Closed', 'Rejected', 'Reopened'].map(s => (
-                  <option key={s} value={s}>{s}</option>
-                ))}
-              </select>
+                {/* Batch ALM Status */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] text-[var(--color-text-muted)] font-semibold">ALM Status:</span>
+                  <select
+                    onChange={(e) => {
+                      if (e.target.value) handleBatchALMStatus(e.target.value);
+                      e.target.value = '';
+                    }}
+                    defaultValue=""
+                    className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg px-2 py-1 text-xs font-medium cursor-pointer"
+                  >
+                    <option key="placeholder-status" value="" disabled>Set Status...</option>
+                    {['New', 'Open', 'In Progress', 'Fixed', 'Ready for Test', 'Retest', 'Closed', 'Rejected', 'Reopened'].map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
 
-              {/* Batch Category */}
-              <select
-                onChange={(e) => {
-                  if (e.target.value) handleBatchCategory(e.target.value);
-                  e.target.value = '';
-                }}
-                defaultValue=""
-                className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded px-2 py-1 text-xs cursor-pointer"
-              >
-                <option key="placeholder-category" value="" disabled>Set Category...</option>
-                {['GSP++ Delivery', 'Regression/NRT Defect'].map(c => (
-                  <option key={c} value={c}>{c}</option>
-                ))}
-              </select>
+                {/* Batch Category */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] text-[var(--color-text-muted)] font-semibold">Category:</span>
+                  <select
+                    onChange={(e) => {
+                      if (e.target.value) handleBatchCategory(e.target.value);
+                      e.target.value = '';
+                    }}
+                    defaultValue=""
+                    className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-lg px-2 py-1 text-xs font-medium cursor-pointer"
+                  >
+                    <option key="placeholder-category" value="" disabled>Set Category...</option>
+                    {['GSP++ Delivery', 'Regression/NRT Defect'].map(c => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
 
-              <button 
-                onClick={handleBatchDeploy}
-                className="px-2 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded text-[11px] font-semibold transition-colors cursor-pointer"
-                title="Mark selected as Deployed"
-              >
-                Deploy
-              </button>
-              <button 
-                onClick={handleBatchSignOff}
-                className="px-2 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded text-[11px] font-semibold transition-colors cursor-pointer"
-                title="Approve sign-off"
-              >
-                Sign Off
-              </button>
-              <button 
-                onClick={handleBatchDelete}
-                className="p-1 hover:bg-rose-500/20 text-rose-500 rounded transition-colors cursor-pointer"
-                title="Delete selected packages"
-              >
-                <Trash2 size={13} />
-              </button>
-              <button
-                onClick={() => setSelectedIds(new Set())}
-                className="text-[11px] text-[var(--color-text-muted)] hover:text-[var(--color-text)] underline cursor-pointer"
-              >
-                Deselect
-              </button>
-            </div>
+                <button 
+                  onClick={handleBatchDeploy}
+                  className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                  title="Mark selected as Deployed"
+                >
+                  Deploy
+                </button>
+                <button 
+                  onClick={handleBatchSignOff}
+                  className="px-2.5 py-1 bg-sky-600 hover:bg-sky-500 text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+                  title="Approve sign-off"
+                >
+                  Sign Off
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2 ml-auto">
+                <button 
+                  onClick={handleBatchDelete}
+                  className="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                  title="Delete selected packages"
+                >
+                  <Trash2 size={13} />
+                  <span>Delete Selected</span>
+                </button>
+                <button
+                  onClick={() => setSelectedIds(new Set())}
+                  className="px-2.5 py-1 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-surface)] font-semibold transition-colors cursor-pointer"
+                >
+                  Deselect
+                </button>
+              </div>
+            </motion.div>
           )}
-        </div>
-      </div>
-
-      {/* 3. Main Workspace Body */}
-      <div className="flex-1 overflow-auto custom-scroll p-4 sm:p-6 lg:p-8">
+        </AnimatePresence>
         {/* VIEW MODE 1: MATRIX TABLE (Powered by generic DataTable + Mobile Touch Cards) */}
         {viewMode === 'table' && (
           <DataTable<Delivery>
@@ -1039,6 +1094,133 @@ export const DeliveriesView: React.FC = () => {
               return isOverdue ? "is-overdue bg-rose-500/[0.02]" : "";
             }}
           />
+        )}
+
+        {/* VIEW MODE 2: CARDS GRID (Mirroring DefectView and TaskGrid card design) */}
+        {viewMode === 'cards' && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+              {pagination.paginatedItems.map((item) => {
+                const isOverdue = daysDiff(item.targetDeliveryDate)! < 0 && item.status !== 'Deployed' && item.status !== 'Cancelled';
+                const isSelected = selectedIds.has(item.id);
+
+                return (
+                  <div
+                    key={item.id}
+                    onClick={() => handleOpenEdit(item)}
+                    className={clsx(
+                      "card p-5 group transition-all duration-150 flex flex-col cursor-pointer active:scale-[0.98] relative",
+                      isSelected && "border-2 border-[var(--color-primary-hex)] shadow-sm",
+                      isOverdue && "border-rose-500/30 bg-rose-500/[0.02]"
+                    )}
+                  >
+                    {/* Header: ID, Env badge, Status */}
+                    <div className="flex items-start justify-between gap-2 mb-3">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <div onClick={e => e.stopPropagation()} className="flex items-center">
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={(e) => {
+                              e.stopPropagation();
+                              toggleSelect(item.id);
+                            }}
+                            aria-label={`Select delivery ${item.almId || item.id}`}
+                            className="w-4 h-4 rounded border-[var(--color-divider)] text-[var(--color-primary-hex)] cursor-pointer"
+                          />
+                        </div>
+                        <span className="font-mono font-bold text-xs text-[var(--color-primary-hex)] bg-[var(--color-primary-highlight-hex)] px-2 py-0.5 rounded">
+                          {item.almId || item.id}
+                        </span>
+                        {item.pdn && (
+                          <span className="font-mono text-[10px] text-[var(--color-text-muted)] bg-[var(--color-surface-2)] border border-[var(--color-divider)] px-1.5 py-0.5 rounded">
+                            {item.pdn}
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text)]">
+                          {item.environment}
+                        </span>
+                        <span className={clsx("st-badge text-[10px]", `st-${DEL_ST_MAP[item.status] || 'not-started'}`)}>
+                          <span className="dot" />
+                          <span>{item.status}</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Title & Scope / Delivered Components */}
+                    <h3 className="font-bold text-sm text-[var(--color-text)] leading-snug line-clamp-2 mb-2 group-hover:text-[var(--color-primary-hex)] transition-colors">
+                      {item.name}
+                    </h3>
+                    {item.componentsDelivered && (
+                      <p className="text-xs text-[var(--color-text-muted)] line-clamp-2 mb-4 leading-relaxed font-mono text-[11px]">
+                        {item.componentsDelivered}
+                      </p>
+                    )}
+
+                    {/* Metadata Bento Strip */}
+                    <div className="mt-auto pt-3 border-t border-[var(--color-divider)] space-y-2.5 text-xs">
+                      <div className="flex items-center justify-between text-[11px] text-[var(--color-text-muted)]">
+                        <span className="flex items-center gap-1 font-medium">
+                          <Layers size={12} className="text-[var(--color-text-faint)]" />
+                          <span>{item.module || 'General'}</span>
+                        </span>
+                        {item.releaseVersion && (
+                          <span className="font-mono text-[10px] px-1.5 py-0.5 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                            {item.releaseVersion}
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between text-[11px] pt-1">
+                        <div className="flex items-center gap-1 text-[var(--color-text-muted)]">
+                          {renderAvatar(item.fixedBy || item.approver, 'Owner: ')}
+                        </div>
+                        <div className="flex items-center gap-1 font-mono text-[11px]">
+                          <Calendar size={11} className="text-[var(--color-text-faint)]" />
+                          <span className={isOverdue ? "text-rose-500 font-bold" : "text-[var(--color-text-muted)]"}>
+                            {item.targetDeliveryDate ? fmtDate(item.targetDeliveryDate) : 'Unscheduled'}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Smoke test & Sign-off badge */}
+                      <div className="flex items-center justify-between text-[10px] text-[var(--color-text-faint)] pt-1">
+                        <span className={clsx(
+                          "px-1.5 py-0.5 rounded font-mono font-medium",
+                          item.smokeTestStatus === 'Passed' ? "bg-emerald-500/10 text-emerald-600" :
+                          item.smokeTestStatus === 'Failed' ? "bg-rose-500/10 text-rose-600" :
+                          "bg-[var(--color-surface-2)] text-[var(--color-text-faint)]"
+                        )}>
+                          Smoke: {item.smokeTestStatus || 'Pending'}
+                        </span>
+                        <span>
+                          {item.signOffStatus === 'Approved' ? (
+                            <span className="text-emerald-500 font-medium">Signed Off</span>
+                          ) : (
+                            <span className="text-amber-500 font-medium">Sign-off: {item.signOffStatus || 'Pending'}</span>
+                          )}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Pagination Controls for Cards View */}
+            <TablePagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              pageSize={pagination.pageSize}
+              totalItems={pagination.totalItems}
+              onPageChange={pagination.setCurrentPage}
+              onPageSizeChange={pagination.setPageSize}
+              itemLabel="packages"
+            />
+          </div>
         )}
 
         {/* VIEW MODE 2: KANBAN PIPELINE BOARD */}

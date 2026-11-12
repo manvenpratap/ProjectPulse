@@ -581,34 +581,41 @@ const DefectView: React.FC = () => {
         }
       />
 
-      {/* Main Workspace */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scroll p-4 sm:p-6 lg:p-8 space-y-3.5 max-w-full">
-
-        {/* ── 1. Collapsible KPI Summary Strip ── */}
+      {/* Collapsible Defects Telemetry Cards Strip (Minimized by default) */}
+      <div className="bg-[var(--color-surface)] border-b border-[var(--color-divider)] px-3 sm:px-6 lg:px-8 py-2 shrink-0">
         <CollapsibleSummaryStrip
           summary={defectSummaryMetrics}
-          title="Defect Triage & Quality Telemetry"
+          title="Defect Triage Telemetry"
           defaultExpanded={false}
+          contentClassName="pt-2.5 pb-1"
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <div className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)]">
-              <div className="text-[11px] font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Total Defects</div>
-              <div className="text-xl font-bold text-[var(--color-text)] mt-1">{state.defects.length}</div>
+          <div className="flex sm:grid overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar scroll-fade-x sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pb-1">
+            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+              <div className="text-xs font-medium text-[var(--color-text-muted)]">Total Defects</div>
+              <div className="text-xl font-bold text-[var(--color-text)] mt-1 tracking-tight tabular-nums">{state.defects.length}</div>
+              <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">All tracked issues</div>
             </div>
-            <div className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-rose-500/20 bg-rose-500/5">
-              <div className="text-[11px] font-semibold text-rose-500 uppercase tracking-wider">S1 Blocker / Critical</div>
-              <div className="text-xl font-bold text-rose-500 mt-1">{state.defects.filter(d => d.severity?.startsWith('S1')).length}</div>
+            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-rose-500/20 bg-rose-500/5 p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+              <div className="text-xs font-medium text-rose-500">S1 Blocker / Critical</div>
+              <div className="text-xl font-bold text-rose-500 mt-1 tracking-tight tabular-nums">{state.defects.filter(d => d.severity?.startsWith('S1')).length}</div>
+              <div className="text-[10px] text-rose-500/70 mt-0.5">Highest severity gate</div>
             </div>
-            <div className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-amber-500/20 bg-amber-500/5">
-              <div className="text-[11px] font-semibold text-amber-500 uppercase tracking-wider">Active In-Flight</div>
-              <div className="text-xl font-bold text-amber-500 mt-1">{state.defects.filter(d => d.status === DefectStatus.IN_PROGRESS || d.status === DefectStatus.ASSIGNED).length}</div>
+            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-amber-500/20 bg-amber-500/5 p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+              <div className="text-xs font-medium text-amber-500">Active In-Flight</div>
+              <div className="text-xl font-bold text-amber-500 mt-1 tracking-tight tabular-nums">{state.defects.filter(d => d.status === DefectStatus.IN_PROGRESS || d.status === DefectStatus.ASSIGNED).length}</div>
+              <div className="text-[10px] text-amber-500/70 mt-0.5">Assigned & in triage</div>
             </div>
-            <div className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-emerald-500/20 bg-emerald-500/5">
-              <div className="text-[11px] font-semibold text-emerald-500 uppercase tracking-wider">Resolved & Closed</div>
-              <div className="text-xl font-bold text-emerald-500 mt-1">{state.defects.filter(d => d.status === DefectStatus.CLOSED || d.status === DefectStatus.FIXED).length}</div>
+            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-emerald-500/20 bg-emerald-500/5 p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+              <div className="text-xs font-medium text-emerald-500">Resolved & Closed</div>
+              <div className="text-xl font-bold text-emerald-500 mt-1 tracking-tight tabular-nums">{state.defects.filter(d => d.status === DefectStatus.CLOSED || d.status === DefectStatus.FIXED).length}</div>
+              <div className="text-[10px] text-emerald-500/70 mt-0.5">Verified fixes</div>
             </div>
           </div>
         </CollapsibleSummaryStrip>
+      </div>
+
+      {/* Main Workspace */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scroll p-4 sm:p-6 lg:p-8 space-y-3.5 max-w-full">
 
         {/* ── 2. Floating Bulk Actions Bar ── */}
         <AnimatePresence>
