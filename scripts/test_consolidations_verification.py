@@ -384,10 +384,10 @@ def test_consolidations_verification():
         print("✓ Mobile bottom navigation verified across 390x844 viewport")
 
         # -------------------------------------------------------------
-        # TEST 11: Collapsible Summary Card Strips Across All 8 Views
+        # TEST 11: Collapsible Summary Card Strips Across All 9 Views
         # -------------------------------------------------------------
         print("\n--- TEST 11: Collapsible Summary Strips (Minimized Default & Animated Reveal) ---")
-        for route in ("#/deliveries", "#/capacity", "#/team", "#/features", "#/releases", "#/steps", "#/dropdowns", "#/retro"):
+        for route in ("#/tasks", "#/deliveries", "#/capacity", "#/team", "#/features", "#/releases", "#/steps", "#/dropdowns", "#/retro"):
             page.goto(f"http://localhost:3000/{route}")
             page.wait_for_timeout(450)
             show_btn = page.locator("button[aria-expanded='false']:has-text('Show Cards')").first
@@ -400,15 +400,19 @@ def test_consolidations_verification():
             hide_btn = page.locator("button[aria-expanded='true']:has-text('Hide Cards')").first
             assert hide_btn.is_visible(), f"On {route}, cards did not expand on click"
             assert page.locator(f"#{panel_id}").is_visible(), f"On {route}, expanded panel #{panel_id} not visible"
-            if route == "#/deliveries":
+            if route == "#/tasks":
+                page.screenshot(path="/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/tasks_cards_expanded.png", full_page=False)
+            elif route == "#/deliveries":
                 page.screenshot(path="/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/deliveries_cards_expanded.png", full_page=False)
 
             hide_btn.click()
             page.wait_for_timeout(350)
             assert page.locator("button[aria-expanded='false']:has-text('Show Cards')").first.is_visible(), f"On {route}, cards did not collapse back"
-            if route == "#/deliveries":
+            if route == "#/tasks":
+                page.screenshot(path="/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/tasks_cards_minimized.png", full_page=False)
+            elif route == "#/deliveries":
                 page.screenshot(path="/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/deliveries_cards_minimized.png", full_page=False)
-        print("✓ All 8 summary-strip screens start minimized and animate open/closed on demand")
+        print("✓ All 9 summary-strip screens start minimized and animate open/closed on demand")
 
         # Ensure no uncaught page errors
         real_errors = [e for e in errors if "favicon" not in e.lower()]

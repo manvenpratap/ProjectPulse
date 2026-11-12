@@ -8,6 +8,9 @@ import TimelineView from '../timeline/TimelineView';
 import { ListTodo, Plus, LayoutGrid, Kanban, GanttChart, Layers, Flag, Filter } from 'lucide-react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
+import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
+import { TaskPriority, TaskStatus } from '../../types';
+import { isBlocked, isOverdue } from '../../utils/projectUtils';
 import clsx from 'clsx';
 
 export interface TaskViewProps {
@@ -77,6 +80,34 @@ const TaskView: React.FC<TaskViewProps> = ({ initialMode }) => {
     setEditingTaskId(id);
     setIsModalOpen(true);
   };
+
+  const taskTelemetry = useMemo(() => {
+    const scoped = viewMode === 'grid'
+      ? state.tasks.filter(t =>
+          (selectedModule === 'all' || t.module === selectedModule) &&
+          (selectedRelease === 'all' || t.release === selectedRelease)
+        )
+      : state.tasks;
+
+    const total = scoped.length;
+    const completed = scoped.filter(t => t.status === TaskStatus.COMPLETED).length;
+    const completionPct = total > 0 ? Math.round((completed / total) * 100) : 0;
+    const inFlight = scoped.filter(t => t.status === TaskStatus.IN_PROGRESS || t.status === TaskStatus.UNDER_REVIEW).length;
+    const blockedOrHold = scoped.filter(
+      t => t.status === TaskStatus.BLOCKED || t.status === TaskStatus.ON_HOLD || isBlocked(t, state.tasks)
+    ).length;
+    const overdue = scoped.filter(t => isOverdue(t)).length;
+    const highPriorityOpen = scoped.filter(
+      t =>
+        t.status !== TaskStatus.COMPLETED &&
+        t.status !== TaskStatus.CANCELLED &&
+        (t.priority === TaskPriority.CRITICAL || t.priority === TaskPriority.HIGH)
+    ).length;
+    const estDays = Math.round(scoped.reduce((sum, t) => sum + (t.estDays || 0), 0) * 10) / 10;
+    const actDays = Math.round(scoped.reduce((sum, t) => sum + (t.actDays || 0), 0) * 10) / 10;
+
+    return { total, completed, completionPct, inFlight, blockedOrHold, overdue, highPriorityOpen, estDays, actDays };
+  }, [state.tasks, viewMode, selectedModule, selectedRelease]);
 
   return (
     <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-hidden">
@@ -218,6 +249,83 @@ const TaskView: React.FC<TaskViewProps> = ({ initialMode }) => {
           ) : undefined
         }
       />
+
+      {/* Collapsible Tasks Telemetry Cards Strip (Minimized by default) */}
+      <div className="bg-[var(--color-surface)] border-b border-[var(--color-divider)] px-3 sm:px-6 lg:px-8 py-2 shrink-0">
+        <CollapsibleSummaryStrip
+          title="Tasks Telemetry"
+          summary={[
+            { label: 'Completed', value: `${taskTelemetry.completed}/${taskTelemetry.total}`, tone: 'emerald' },
+            { label: 'In Flight', value: taskTelemetry.inFlight, tone: 'sky' },
+            { label: 'Blocked / Hold', value: taskTelemetry.blockedOrHold, tone: taskTelemetry.blockedOrHold > 0 ? 'amber' : 'neutral' },
+            { label: 'Overdue', value: taskTelemetry.overdue, tone: taskTelemetry.overdue > 0 ? 'rose' : 'emerald' },
+            { label: 'Crit / High Open', value: taskTelemetry.highPriorityOpen, tone: taskTelemetry.highPriorityOpen > 0 ? 'purple' : 'neutral' },
+            { label: 'Effort Burned', value: `${taskTelemetry.actDays}/${taskTelemetry.estDays}d`, tone: 'primary' }
+          ]}
+          contentClassName="pt-2.5 pb-1"
+        >
+          <div className="flex sm:grid overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar scroll-fade-x sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pb-1">
+            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+              <div className="text-xs font-medium text-[var(--color-text-muted)]">Completed Scope</div>
+              <div className="text-xl font-bold text-emerald-500 mt-1 flex items-baseline gap-1.5 tracking-tight tabular-nums">
+                <span>{taskTelemetry.completed}</span>
+                <span className="text-[11px] font-normal text-[var(--color-text-muted)]">/ {taskTelemetry.total}</span>
+              </div>
+              <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5 tabular-nums">
+                {taskTelemetry.completionPct}% done
+              </div>
+            </div>
+
+            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+              <div className="text-xs font-medium text-[var(--color-text-muted)]">In Flight</div>
+              <div className="text-xl font-bold text-sky-500 mt-1 flex items-baseline gap-1.5 tracking-tight tabular-nums">
+                <span>{taskTelemetry.inFlight}</span>
+                <span className="text-[11px] font-normal text-[var(--color-text-muted)]">active</span>
+              </div>
+              <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Progress &amp; review</div>
+            </div>
+
+            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+              <div className="text-xs font-medium text-[var(--color-text-muted)]">Blocked / Hold</div>
+              <div className={clsx(
+                'text-xl font-bold mt-1 tracking-tight tabular-nums',
+                taskTelemetry.blockedOrHold > 0 ? 'text-amber-500' : 'text-[var(--color-text)]'
+              )}>
+                {taskTelemetry.blockedOrHold}
+              </div>
+              <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Prerequisite or hold</div>
+            </div>
+
+            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+              <div className="text-xs font-medium text-[var(--color-text-muted)]">Overdue Tasks</div>
+              <div className={clsx(
+                'text-xl font-bold mt-1 tracking-tight tabular-nums',
+                taskTelemetry.overdue > 0 ? 'text-rose-500' : 'text-emerald-500'
+              )}>
+                {taskTelemetry.overdue}
+              </div>
+              <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Past target due date</div>
+            </div>
+
+            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+              <div className="text-xs font-medium text-[var(--color-text-muted)]">Crit / High Open</div>
+              <div className="text-xl font-bold text-purple-500 mt-1 tracking-tight tabular-nums">
+                {taskTelemetry.highPriorityOpen}
+              </div>
+              <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Priority escalations</div>
+            </div>
+
+            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+              <div className="text-xs font-medium text-[var(--color-text-muted)]">Effort Burned</div>
+              <div className="text-xl font-bold text-[var(--color-text)] mt-1 tracking-tight tabular-nums">
+                {taskTelemetry.actDays}
+                <span className="text-xs text-[var(--color-text-muted)] ml-1 font-normal">/ {taskTelemetry.estDays}d</span>
+              </div>
+              <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Actual vs estimated</div>
+            </div>
+          </div>
+        </CollapsibleSummaryStrip>
+      </div>
 
       {/* Task Content: Table starts immediately */}
       <div className={clsx(
