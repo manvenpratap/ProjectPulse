@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { RaidItem, Decision } from '../../types';
 import { normRaidImpact, getRaidEffectiveProb, isRaidActive } from '../../utils/projectUtils';
+import { RAID_STATUSES, DECISION_STATUSES } from '../../utils/stateMachines';
 import { 
   ShieldAlert, 
   HelpCircle, 
@@ -1107,11 +1108,9 @@ const RAIDView: React.FC = () => {
                 value={selectedRaid.status}
                 onChange={(e) => setSelectedRaid({ ...selectedRaid, status: e.target.value })}
               >
-                <option value="Identified">Identified</option>
-                <option value="Active">Active</option>
-                <option value="Mitigated">Mitigated</option>
-                <option value="Closed">Closed</option>
-                <option value="Realized">Realized</option>
+                {RAID_STATUSES.map(st => (
+                  <option key={st} value={st}>{st}</option>
+                ))}
               </select>
             </div>
 
@@ -1207,10 +1206,9 @@ const RAIDView: React.FC = () => {
                   value={selectedDecision.status}
                   onChange={(e) => setSelectedDecision({ ...selectedDecision, status: e.target.value as any })}
                 >
-                  <option value="Pending Sign-off">Pending Sign-off</option>
-                  <option value="Approved">Approved</option>
-                  <option value="Rejected">Rejected</option>
-                  <option value="Appealed">Appealed</option>
+                  {DECISION_STATUSES.map(st => (
+                    <option key={st} value={st}>{st}</option>
+                  ))}
                 </select>
               </div>
               <div>

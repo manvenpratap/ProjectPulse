@@ -25,6 +25,7 @@ import clsx from 'clsx';
 import { Defect, DefectStatus } from '../../types';
 import DefectModal from './DefectModal';
 import { fmtDate, todayStr } from '../../utils/projectUtils';
+import { nextDefectQuickStatus } from '../../utils/stateMachines';
 import { motion, AnimatePresence } from 'motion/react';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef } from '../shared/DataTable';
@@ -127,15 +128,7 @@ const DefectView: React.FC = () => {
   // 1-Click Cycle Status
   const handleCycleStatus = (defect: Defect, e: React.MouseEvent) => {
     e.stopPropagation();
-    const cycle = [
-      DefectStatus.NEW,
-      DefectStatus.ASSIGNED,
-      DefectStatus.IN_PROGRESS,
-      DefectStatus.FIXED,
-      DefectStatus.CLOSED
-    ];
-    const curIdx = cycle.indexOf(defect.status);
-    const nextStatus = cycle[(curIdx + 1) % cycle.length];
+    const nextStatus = nextDefectQuickStatus(defect.status);
     saveDefect({
       ...defect,
       status: nextStatus,

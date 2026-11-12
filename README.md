@@ -114,6 +114,7 @@ ProjectPulse 2.0/
 │   │   └── viewHelpData.ts      # Contextual guides, dynamic field dictionary & shortcuts
 │   ├── hooks/
 │   │   ├── useClickOutside.ts   # Shared outside-click & Escape dismiss hook
+│   │   ├── useEntityDraft.ts    # Explicit modal draft-recovery state machine
 │   │   └── useMediaQuery.ts     # Reactive CSS media query listener hook
 │   ├── services/
 │   │   ├── aiService.ts         # Gemini AI Pulse intelligence
@@ -123,7 +124,7 @@ ProjectPulse 2.0/
 │   │   ├── ProjectContext.tsx   # Global reactive state provider
 │   │   └── defaultState.ts      # Authoritative clean schema factory (0 sample data)
 │   ├── types/                   # Unified TypeScript schemas
-│   ├── utils/                   # Domain math (projectUtils) & tactile animations (designSpells)
+│   ├── utils/                   # Domain math (projectUtils), state machines (stateMachines) & animations (designSpells)
 │   ├── index.css                # 40 Curated theme design tokens, Design Spells & Tailwind
 │   └── App.tsx                  # Main router, MotionConfig reduced-motion & layout shell
 ├── demo_project_database.xlsx   # Full enterprise showcase workbook (24 tasks, 12 deliveries, etc.)

@@ -1,5 +1,11 @@
 import { format, differenceInCalendarDays, addDays, isWeekend, parseISO } from 'date-fns';
-import { Task, TaskStatus, DefectStatus } from '../types';
+import { Task, TaskStatus } from '../types';
+import {
+  getBlockedByIds,
+  isDecisionStatusPending,
+  TERMINAL_DEFECT_STATUSES,
+  TERMINAL_RAID_STATUSES,
+} from './stateMachines';
 
 export const nowISO = () => new Date().toISOString();
 export const todayStr = () => new Date().toISOString().split('T')[0];
@@ -58,11 +64,7 @@ export const getBusinessDays = (startDate: string, endDate: string): number => {
 };
 
 export const isBlocked = (task: Task, tasks: Task[]): boolean => {
-  if (!task.dependsOn || !task.dependsOn.length) return false;
-  return task.dependsOn.some(id => {
-    const dep = tasks.find(x => x.id === id);
-    return dep && dep.status !== TaskStatus.COMPLETED;
-  });
+  return getBlockedByIds(task, tasks).length > 0;
 };
 
 export const isOverdue = (task: Task): boolean => {
@@ -223,21 +225,16 @@ export const getRaidEffectiveProb = (item: { probability?: string | null; type?:
 /** Return true for active/open RAID items across all non-terminal lifecycle labels. */
 export const isRaidActive = (status?: string | null): boolean => {
   const s = String(status || '').trim().toLowerCase();
-  return !['closed', 'resolved', 'mitigated', 'retired', 'cancelled'].includes(s);
+  return !TERMINAL_RAID_STATUSES.has(s);
 };
 
 /** Return true if a defect status represents resolved/closed terminal state. */
 export const isDefectResolved = (status?: string | null): boolean => {
   const s = String(status || '').trim().toLowerCase();
-  return s === DefectStatus.CLOSED.toLowerCase() ||
-    s === DefectStatus.FIXED.toLowerCase() ||
-    s === DefectStatus.REJECTED.toLowerCase() ||
-    s === DefectStatus.DEFERRED.toLowerCase() ||
-    s === 'resolved';
+  return TERMINAL_DEFECT_STATUSES.has(s);
 };
 
 /** Return true if a steering decision still awaits approval or sign-off review. */
 export const isDecisionPending = (status?: string | null): boolean => {
-  const s = String(status || '').trim().toLowerCase();
-  return s.includes('pending') || s.includes('review') || s.includes('appeal');
+  return isDecisionStatusPending(status);
 };

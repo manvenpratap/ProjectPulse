@@ -5,6 +5,7 @@ import {
 } from '../types';
 import { getDefaultState } from './defaultState';
 import { nowISO, todayStr, getBusinessDays, addBusDays, getNextBusDay } from '../utils/projectUtils';
+import { resolveTaskTransition, TaskTransitionResult } from '../utils/stateMachines';
 
 import { importProjectExcel } from '../services/excelService';
 import confetti from 'canvas-confetti';
@@ -20,8 +21,9 @@ export interface RouteSubTab {
 
 interface ProjectContextType {
   state: ProjectState;
+  hydrationPhase: 'hydrating' | 'unconfigured' | 'ready';
   createTask: (data: Partial<Task>) => Task;
-  updateTask: (taskId: string, data: Partial<Task>, comment?: string) => void;
+  updateTask: (taskId: string, data: Partial<Task>, comment?: string) => TaskTransitionResult;
   deleteTask: (taskId: string) => void;
   saveMember: (data: Partial<Member>, memberId?: string) => void;
   deleteMember: (memberId: string) => void;
@@ -101,7 +103,8 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     const { view, subTab } = getRouteFromURL();
     return view && subTab ? { view, tab: subTab, seq: 1 } : null;
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const [hydrationPhase, setHydrationPhase] = useState<'hydrating' | 'unconfigured' | 'ready'>('hydrating');
+  const isLoading = hydrationPhase === 'hydrating';
   const [searchTerm, setSearchTerm] = useState('');
 
   const loadSample = useCallback(async (_type?: 'web' | 'mobile') => {
@@ -197,7 +200,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         theme: 'pulse'
       });
     }
-    setIsLoading(false);
+    setHydrationPhase(savedData ? 'ready' : 'unconfigured');
   }, []);
 
   // Listen for browser Back/Forward navigation (popstate & hashchange)
@@ -239,16 +242,17 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     document.title = `${viewLabel} | ${state.name}`;
   }, [state.view, state.name]);
 
-  // Save to localStorage
+  // Keep hydration phase + localStorage synchronized explicitly
   useEffect(() => {
-    if (!isLoading) {
-      if (state.name) {
-        localStorage.setItem('pp-data', JSON.stringify(state));
-      } else {
-        localStorage.removeItem('pp-data');
-      }
+    if (hydrationPhase === 'hydrating') return;
+    if (state.name) {
+      localStorage.setItem('pp-data', JSON.stringify(state));
+      if (hydrationPhase !== 'ready') setHydrationPhase('ready');
+    } else {
+      localStorage.removeItem('pp-data');
+      if (hydrationPhase !== 'unconfigured') setHydrationPhase('unconfigured');
     }
-  }, [state, isLoading]);
+  }, [state, hydrationPhase]);
 
   const addLog = useCallback((action: string, taskId: string, taskName: string, field = '', oldVal = '', newVal = '', comment = '') => {
     const t = state.tasks.find(x => x.id === taskId);
@@ -309,45 +313,45 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return newTask;
   }, [state.nextTaskId, addLog]);
 
-  const updateTask = useCallback((taskId: string, data: Partial<Task>, comment?: string) => {
+  const updateTask = useCallback((taskId: string, data: Partial<Task>, _comment?: string): TaskTransitionResult => {
+    const existing = state.tasks.find(t => t.id === taskId);
+    if (!existing) {
+      return { ok: false, blockedBy: [], reason: `Task ${taskId} not found` };
+    }
+
+    const preflight = resolveTaskTransition(existing, data, state.tasks);
+    if (!preflight.ok) {
+      return preflight;
+    }
+
     setState(prev => {
       const taskIndex = prev.tasks.findIndex(t => t.id === taskId);
       if (taskIndex === -1) return prev;
 
       const task = prev.tasks[taskIndex];
-      const newTask = { ...task, ...data, updatedAt: nowISO() };
+      const verified = resolveTaskTransition(task, data, prev.tasks);
+      if (!verified.ok) return prev;
 
-      // Business logic migrations
-      if (data.status === TaskStatus.COMPLETED && task.status !== TaskStatus.COMPLETED) {
-        newTask.progress = 100;
-        if (!newTask.actCompletionDate) newTask.actCompletionDate = todayStr();
-        if (!prefersReducedMotion()) {
-          const origin = consumeInteractionOrigin() || { x: 0.5, y: 0.6 };
-          confetti({
-            particleCount: origin.y === 0.6 ? 120 : 48,
-            spread: 68,
-            startVelocity: 32,
-            origin,
-            colors: ['#4F46E5', '#10B981', '#F59E0B', '#38BDF8']
-          });
-        }
+      const newTask = { ...task, ...verified.patch, updatedAt: nowISO() };
+
+      if (verified.celebrated && !prefersReducedMotion()) {
+        const origin = consumeInteractionOrigin() || { x: 0.5, y: 0.6 };
+        confetti({
+          particleCount: origin.y === 0.6 ? 120 : 48,
+          spread: 68,
+          startVelocity: 32,
+          origin,
+          colors: ['#4F46E5', '#10B981', '#F59E0B', '#38BDF8']
+        });
       }
-
-      // Logging
-      Object.entries(data).forEach(([key, val]) => {
-        if (task[key] !== val) {
-          // Internal call to addLog using prev state is tricky in setState, 
-          // but we can just append to logs here if we had the logic.
-          // For now, assume updateTask is where most mutations happen.
-        }
-      });
 
       const newTasks = [...prev.tasks];
       newTasks[taskIndex] = newTask;
-      
       return { ...prev, tasks: newTasks };
     });
-  }, []);
+
+    return preflight;
+  }, [state.tasks]);
 
   const deleteTask = useCallback((taskId: string) => {
     const t = state.tasks.find(x => x.id === taskId);
@@ -623,7 +627,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   return (
     <ProjectContext.Provider value={{ 
-      state, createTask, updateTask, deleteTask, 
+      state, hydrationPhase, createTask, updateTask, deleteTask, 
       saveMember, deleteMember, saveDefect, deleteDefect,
       saveDelivery, deleteDelivery, batchUpdateDeliveries,
       addLog, setView, activeSubTab, setTheme, updateSettings, updateProject,

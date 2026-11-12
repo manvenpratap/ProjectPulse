@@ -35,9 +35,11 @@ interface ScaffoldModule {
   screens: string;
 }
 
+type ScaffolderStep = 'blueprint' | 'alignment';
+
 const ScaffolderView: React.FC = () => {
   const { state, setView, createTask, updateProject } = useProject();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState<ScaffolderStep>('blueprint');
   const [modules, setModules] = useState<ScaffoldModule[]>([
     { name: '', type: 'Server', assignee: '', priority: TaskPriority.MEDIUM, status: TaskStatus.NOT_STARTED, release: 'v1.0.0', screens: '' }
   ]);
@@ -188,17 +190,17 @@ const ScaffolderView: React.FC = () => {
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <div className={clsx(
           "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-colors duration-150",
-          step >= 1 ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-md" : "bg-[var(--color-surface-offset)] text-[var(--color-text-faint)]"
+          "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-md"
         )}>1</div>
-        <span className={clsx("text-xs sm:text-sm font-semibold", step === 1 ? "text-[var(--color-primary-hex)]" : "text-[var(--color-text-faint)]")}>Blueprint</span>
+        <span className={clsx("text-xs sm:text-sm font-semibold", step === 'blueprint' ? "text-[var(--color-primary-hex)]" : "text-[var(--color-text-faint)]")}>Blueprint</span>
       </div>
       <div className="flex-1 h-px bg-[var(--color-divider)]" />
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <div className={clsx(
           "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-colors duration-150",
-          step >= 2 ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-md" : "bg-[var(--color-surface-offset)] text-[var(--color-text-faint)]"
+          step === 'alignment' ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-md" : "bg-[var(--color-surface-offset)] text-[var(--color-text-faint)]"
         )}>2</div>
-        <span className={clsx("text-xs sm:text-sm font-semibold", step === 2 ? "text-[var(--color-primary-hex)]" : "text-[var(--color-text-faint)]")}>Alignment</span>
+        <span className={clsx("text-xs sm:text-sm font-semibold", step === 'alignment' ? "text-[var(--color-primary-hex)]" : "text-[var(--color-text-faint)]")}>Alignment</span>
       </div>
     </div>
   );
@@ -209,15 +211,15 @@ const ScaffolderView: React.FC = () => {
         icon={Blocks}
         title="Project Scaffolder"
         actions={
-          step > 1 ? (
-            <Button variant="ghost" size="sm" onClick={() => setStep(step - 1)} className="h-9 font-bold active:scale-95 flex items-center gap-1.5">
+          step === 'alignment' ? (
+            <Button variant="ghost" size="sm" onClick={() => setStep('blueprint')} className="h-9 font-bold active:scale-95 flex items-center gap-1.5">
               <ArrowLeft size={14} /> Back
             </Button>
           ) : undefined
         }
         primaryAction={
-          step === 1 ? (
-            <Button variant="primary" size="sm" onClick={() => setStep(2)} className="h-9 px-4 font-bold rounded-xl active:scale-95 shadow-xs flex items-center gap-1.5">
+          step === 'blueprint' ? (
+            <Button variant="primary" size="sm" onClick={() => setStep('alignment')} className="h-9 px-4 font-bold rounded-xl active:scale-95 shadow-xs flex items-center gap-1.5">
               <span>Next Step</span>
               <ArrowRight size={14} />
             </Button>
@@ -232,7 +234,7 @@ const ScaffolderView: React.FC = () => {
       <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full space-y-8">
         {renderStepStepper()}
 
-        {step === 1 && (
+        {step === 'blueprint' && (
           <div className="space-y-6 sm:space-y-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 duration-500">
             <div className="card p-4 sm:p-8">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 border-b border-[var(--color-divider)] pb-5 sm:pb-6">
@@ -247,7 +249,7 @@ const ScaffolderView: React.FC = () => {
                   <Button variant="outline" size="sm" onClick={addRow} className="h-10 px-4 font-bold rounded-xl border-[var(--color-divider)] bg-[var(--color-surface-2)] active:scale-[0.98]">
                     <Plus size={15} className="mr-1.5" /> Add Module
                   </Button>
-                  <Button variant="primary" size="sm" onClick={() => setStep(2)} className="h-10 px-5 sm:px-7 font-black rounded-xl active:scale-[0.98]">
+                  <Button variant="primary" size="sm" onClick={() => setStep('alignment')} className="h-10 px-5 sm:px-7 font-black rounded-xl active:scale-[0.98]">
                     Next Step <ArrowRight size={15} className="ml-1.5" />
                   </Button>
                 </div>
@@ -402,7 +404,7 @@ const ScaffolderView: React.FC = () => {
           </div>
         )}
 
-        {step === 2 && (
+        {step === 'alignment' && (
           <div className="space-y-6 sm:space-y-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-4 duration-500">
              <div className="card p-4 sm:p-8">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-10 border-b border-[var(--color-divider)] pb-5 sm:pb-6">
@@ -411,7 +413,7 @@ const ScaffolderView: React.FC = () => {
                     <SectionHelpButton view="scaffolder" section="GUI Screen Inventory" label="Interface Mapping guide" />
                   </div>
                   <div className="flex flex-wrap gap-2.5 sm:gap-4">
-                    <Button variant="ghost" className="font-bold active:scale-[0.98]" onClick={() => setStep(1)}><ArrowLeft size={16} className="mr-1.5" /> Back</Button>
+                    <Button variant="ghost" className="font-bold active:scale-[0.98]" onClick={() => setStep('blueprint')}><ArrowLeft size={16} className="mr-1.5" /> Back</Button>
                     <Button variant="primary" className="h-11 sm:h-12 px-6 sm:px-10 font-black rounded-2xl shadow-xl shadow-xs active:scale-[0.98]" onClick={handleFinish}>
                       <Zap size={16} className="mr-1.5" /> Generate Architecture
                     </Button>

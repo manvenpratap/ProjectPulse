@@ -27,6 +27,7 @@ import SectionHelpButton from '../shared/SectionHelpButton';
 import PageHeader from '../shared/PageHeader';
 import Button from '../shared/Button';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
+import { nextRetroActionStatus } from '../../utils/stateMachines';
 
 const CATEGORIES = [
   { id: 'went_well', label: 'What Went Well', color: 'emerald', icon: Smile, desc: 'Wins, accelerated velocities, and successful milestones' },
@@ -84,11 +85,11 @@ export const SprintRetroView: React.FC = () => {
   const handleCycleActionStatus = (id: string) => {
     const updated = retros.map(item => {
       if (item.id === id) {
-        const nextStatus = item.status === 'Open' ? 'In Progress' : item.status === 'In Progress' ? 'Resolved' : 'Open';
+        const nextStatus = nextRetroActionStatus(item.status);
         if (nextStatus === 'Resolved') {
           confetti({ particleCount: 35, spread: 60, origin: { y: 0.8 } });
         }
-        return { ...item, status: nextStatus as RetroItem['status'] };
+        return { ...item, status: nextStatus };
       }
       return item;
     });
@@ -106,6 +107,12 @@ export const SprintRetroView: React.FC = () => {
       estDays: 2,
       module: 'Continuous Improvement'
     });
+
+    if (item.category === 'action_item' && (!item.status || item.status === 'Open')) {
+      updateProject({
+        retros: retros.map(r => r.id === item.id ? { ...r, status: 'In Progress' } : r)
+      });
+    }
 
     addLog('Retro Action Promoted', created.id, created.name, 'Action Item', 'Retro', 'Live Task');
     alert(`Successfully converted Action Item "${item.title}" into live Task ${created.id}!`);

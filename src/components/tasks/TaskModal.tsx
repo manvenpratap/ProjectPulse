@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { Task, TaskStatus, TaskPriority } from '../../types';
-import { isBlocked } from '../../utils/projectUtils';
+import { getBlockedByIds, resolveTaskTransition } from '../../utils/stateMachines';
+import { useEntityDraft } from '../../hooks/useEntityDraft';
 import Modal from '../shared/Modal';
 import Button from '../shared/Button';
 import { 
@@ -36,36 +37,20 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
   const [formData, setFormData] = useState<Partial<Task>>({});
   const [showTemplates, setShowTemplates] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [hasDraft, setHasDraft] = useState(false);
   const [createdReceipt, setCreatedReceipt] = useState<{ id: string; name: string } | null>(null);
 
-  const blocked = formData.id ? isBlocked(formData as Task, state.tasks) : false;
-  const blockedBy = formData.dependsOn?.filter(id => {
-    const t = state.tasks.find(x => x.id === id);
-    return t && t.status !== TaskStatus.COMPLETED;
-  }) || [];
+  const blockedBy = getBlockedByIds({ dependsOn: formData.dependsOn }, state.tasks);
+  const blocked = blockedBy.length > 0;
 
-  // Check for saved draft when creating new task (State 8: In-Flight Form Auto-Draft Preservation)
-  useEffect(() => {
-    if (!taskId && isOpen) {
-      const savedDraft = localStorage.getItem('pp_draft_task');
-      if (savedDraft) {
-        try {
-          const parsed = JSON.parse(savedDraft);
-          if (parsed && parsed.name) {
-            setHasDraft(true);
-          }
-        } catch (e) {}
-      }
-    }
-  }, [taskId, isOpen]);
-
-  // Auto-save draft when editing uncommitted new task
-  useEffect(() => {
-    if (!taskId && isOpen && formData.name && formData.name.trim().length > 0) {
-      localStorage.setItem('pp_draft_task', JSON.stringify(formData));
-    }
-  }, [formData, taskId, isOpen]);
+  const { hasDraft, restoreDraft, discardDraft, clearDraft } = useEntityDraft<Task>({
+    storageKey: 'pp_draft_task',
+    isNew: !taskId,
+    isOpen,
+    hasDraftContent: (saved) => Boolean(saved.name),
+    isDirty: Boolean(formData.name && formData.name.trim().length > 0),
+    serialize: () => formData,
+    onRestore: (saved) => setFormData(saved),
+  });
 
   useEffect(() => {
     if (taskId) {
@@ -86,19 +71,46 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
   }, [taskId, state.tasks, isOpen]);
 
   const handleSave = () => {
-    if (blocked && (formData.status === TaskStatus.IN_PROGRESS || formData.status === TaskStatus.COMPLETED || (formData.progress || 0) > 0)) {
-      setError(`Cannot start or complete task while blocked by: ${blockedBy.join(', ')}`);
-      return;
-    }
-    setError(null);
-
     if (taskId) {
-      updateTask(taskId, formData);
+      const res = updateTask(taskId, formData);
+      if (!res.ok) {
+        setError(res.reason);
+        return;
+      }
+      setError(null);
       onClose();
     } else {
-      const created = createTask(formData);
-      localStorage.removeItem('pp_draft_task');
-      setHasDraft(false);
+      const syntheticTask = {
+        id: 'NEW',
+        name: '',
+        status: TaskStatus.NOT_STARTED,
+        priority: TaskPriority.MEDIUM,
+        category: 'Feature',
+        module: 'General',
+        moduleType: 'Other',
+        assignee: '',
+        release: '',
+        startDate: '',
+        dueDate: '',
+        actCompletionDate: null,
+        progress: 0,
+        estDays: 0,
+        actDays: 0,
+        dependsOn: [],
+        notes: '',
+        subtasks: [],
+        guiScreens: [],
+        updatedAt: '',
+        createdAt: '',
+      } as Task;
+      const check = resolveTaskTransition(syntheticTask, formData, state.tasks);
+      if (!check.ok) {
+        setError(check.reason);
+        return;
+      }
+      setError(null);
+      const created = createTask({ ...formData, ...check.patch });
+      clearDraft();
       setCreatedReceipt({ id: created.id, name: created.name || 'Untitled Task' });
     }
   };
@@ -339,21 +351,14 @@ const TaskModal: React.FC<TaskModalProps> = ({ isOpen, onClose, taskId }) => {
             <div className="flex items-center gap-2">
               <button 
                 type="button"
-                onClick={() => {
-                  const d = localStorage.getItem('pp_draft_task');
-                  if (d) setFormData(JSON.parse(d));
-                  setHasDraft(false);
-                }}
+                onClick={restoreDraft}
                 className="font-bold underline cursor-pointer"
               >
                 Restore
               </button>
               <button 
                 type="button"
-                onClick={() => {
-                  localStorage.removeItem('pp_draft_task');
-                  setHasDraft(false);
-                }}
+                onClick={discardDraft}
                 className="text-[11px] opacity-70 hover:opacity-100 cursor-pointer"
               >
                 Discard

@@ -2,6 +2,8 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { Delivery, TaskStatus } from '../../types';
 import { fmtDate, todayStr, daysDiff } from '../../utils/projectUtils';
+import { transitionDeliveryStage, DeliveryStageAction } from '../../utils/stateMachines';
+import { useEntityDraft } from '../../hooks/useEntityDraft';
 import { importDeliveriesFromExcel } from '../../services/excelService';
 import { 
   Package, 
@@ -1095,42 +1097,47 @@ export const DeliveriesView: React.FC = () => {
 
                         {/* Quick Advance Button */}
                         <div className="pt-2 flex justify-end">
-                          {stageStatus === 'Scheduled' && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                saveDelivery({ status: 'In Progress' }, item.id);
-                              }}
-                              className="text-[10px] flex items-center gap-1 px-2 py-0.5 bg-[var(--color-surface)] hover:text-[var(--color-primary-hex)] rounded border border-[var(--color-divider)]"
-                            >
-                              <span>Start</span>
-                              <ArrowRight size={10} />
-                            </button>
-                          )}
-                          {stageStatus === 'In Progress' && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                saveDelivery({ status: 'Ready for Deployment', almStatus: 'Ready for Test' }, item.id);
-                              }}
-                              className="text-[10px] flex items-center gap-1 px-2 py-0.5 bg-[var(--color-surface)] hover:text-sky-400 rounded border border-[var(--color-divider)]"
-                            >
-                              <span>Ready</span>
-                              <ArrowRight size={10} />
-                            </button>
-                          )}
-                          {stageStatus === 'Ready for Deployment' && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                saveDelivery({ status: 'Deployed', actualDeliveryDate: todayStr(), almStatus: 'Closed', smokeTestStatus: 'Passed' }, item.id);
-                              }}
-                              className="text-[10px] flex items-center gap-1 px-2 py-0.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold"
-                            >
-                              <span>Deploy Live</span>
-                              <Check size={10} />
-                            </button>
-                          )}
+                          {(() => {
+                            const actionMap: Partial<Record<string, { action: DeliveryStageAction; label: string; btnClass: string; icon: React.ReactNode }>> = {
+                              'Scheduled': {
+                                action: 'start',
+                                label: 'Start',
+                                btnClass: 'text-[10px] flex items-center gap-1 px-2 py-0.5 bg-[var(--color-surface)] hover:text-[var(--color-primary-hex)] rounded border border-[var(--color-divider)]',
+                                icon: <ArrowRight size={10} />,
+                              },
+                              'In Progress': {
+                                action: 'ready',
+                                label: 'Ready',
+                                btnClass: 'text-[10px] flex items-center gap-1 px-2 py-0.5 bg-[var(--color-surface)] hover:text-sky-400 rounded border border-[var(--color-divider)]',
+                                icon: <ArrowRight size={10} />,
+                              },
+                              'Ready for Deployment': {
+                                action: 'deploy',
+                                label: 'Deploy Live',
+                                btnClass: 'text-[10px] flex items-center gap-1 px-2 py-0.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-bold',
+                                icon: <Check size={10} />,
+                              },
+                            };
+                            const cfg = actionMap[stageStatus];
+                            if (!cfg) return null;
+                            return (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  const res = transitionDeliveryStage(item, cfg.action);
+                                  if (!res.ok) {
+                                    alert(res.reason);
+                                    return;
+                                  }
+                                  saveDelivery(res.patch, item.id);
+                                }}
+                                className={cfg.btnClass}
+                              >
+                                <span>{cfg.label}</span>
+                                {cfg.icon}
+                              </button>
+                            );
+                          })()}
                         </div>
                       </div>
                     ))}
@@ -1349,64 +1356,35 @@ const DeliveryModal: React.FC<DeliveryModalProps> = ({ isOpen, delivery, onClose
   const [notes, setNotes] = useState(delivery?.notes || '');
   const [selectedTasks, setSelectedTasks] = useState<string[]>(delivery?.linkedTasks || []);
   const [selectedScreens, setSelectedScreens] = useState<string[]>(delivery?.linkedScreens || []);
-  const [hasDraft, setHasDraft] = useState(false);
 
-  useEffect(() => {
-    if (!delivery && isOpen) {
-      try {
-        const saved = localStorage.getItem('pp_draft_delivery');
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          if (parsed.name && !name) {
-            setHasDraft(true);
-          }
-        }
-      } catch (e) {
-        // ignore
-      }
-    }
-  }, [delivery, isOpen]);
-
-  useEffect(() => {
-    if (!delivery && isOpen && (name || almId || pdn)) {
-      localStorage.setItem('pp_draft_delivery', JSON.stringify({
-        name, almId, pdn, module, moduleType, category, releaseVersion, environment, status, approver
-      }));
-    }
-  }, [name, almId, pdn, module, moduleType, category, releaseVersion, environment, status, approver, delivery, isOpen]);
-
-  const restoreDraft = () => {
-    try {
-      const saved = localStorage.getItem('pp_draft_delivery');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (parsed.name) setName(parsed.name);
-        if (parsed.almId) setAlmId(parsed.almId);
-        if (parsed.pdn) setPdn(parsed.pdn);
-        if (parsed.module) setModule(parsed.module);
-        if (parsed.moduleType) setModuleType(parsed.moduleType);
-        if (parsed.category) setCategory(parsed.category);
-        if (parsed.releaseVersion) setReleaseVersion(parsed.releaseVersion);
-        if (parsed.environment) setEnvironment(parsed.environment);
-        if (parsed.status) setStatus(parsed.status);
-        if (parsed.approver) setApprover(parsed.approver);
-      }
-    } catch (e) {
-      // ignore
-    }
-    setHasDraft(false);
-  };
-
-  const discardDraft = () => {
-    localStorage.removeItem('pp_draft_delivery');
-    setHasDraft(false);
-  };
+  const { hasDraft, restoreDraft, discardDraft, clearDraft } = useEntityDraft<Delivery>({
+    storageKey: 'pp_draft_delivery',
+    isNew: !delivery,
+    isOpen,
+    hasDraftContent: (parsed) => Boolean(parsed.name),
+    isDirty: Boolean(name || almId || pdn),
+    serialize: () => ({
+      name, almId, pdn, module, moduleType, category, releaseVersion, environment, status, approver,
+    }),
+    onRestore: (parsed) => {
+      if (parsed.name) setName(parsed.name);
+      if (parsed.almId) setAlmId(parsed.almId);
+      if (parsed.pdn) setPdn(parsed.pdn);
+      if (parsed.module) setModule(parsed.module);
+      if (parsed.moduleType) setModuleType(parsed.moduleType);
+      if (parsed.category) setCategory(parsed.category);
+      if (parsed.releaseVersion) setReleaseVersion(parsed.releaseVersion);
+      if (parsed.environment) setEnvironment(parsed.environment);
+      if (parsed.status) setStatus(parsed.status);
+      if (parsed.approver) setApprover(parsed.approver);
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
 
-    localStorage.removeItem('pp_draft_delivery');
+    clearDraft();
     onSave({
       name,
       almId: almId.trim() || undefined,

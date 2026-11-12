@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { Release, TaskStatus } from '../../types';
 import { fmtDate, todayStr, daysDiff } from '../../utils/projectUtils';
+import { RELEASE_CYCLE, ReleaseStatus } from '../../utils/stateMachines';
 import { 
   Flag, 
   Plus, 
@@ -470,12 +471,14 @@ export const ReleaseRoadmap: React.FC = () => {
             </label>
             <select
               value={formStatus}
-              onChange={e => setFormStatus(e.target.value as any)}
+              onChange={e => setFormStatus(e.target.value as ReleaseStatus)}
               className="w-full h-11 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-bold text-xs"
             >
-              <option value="Planned">Planned (Future)</option>
-              <option value="Active">Active (In Development)</option>
-              <option value="Released">Released (Shipped / Done)</option>
+              {RELEASE_CYCLE.map(st => (
+                <option key={st} value={st}>
+                  {st === 'Planned' ? 'Planned (Future)' : st === 'Active' ? 'Active (In Development)' : 'Released (Shipped / Done)'}
+                </option>
+              ))}
             </select>
           </div>
         </div>

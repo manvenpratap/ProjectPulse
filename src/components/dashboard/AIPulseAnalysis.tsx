@@ -6,22 +6,26 @@ import Button from '../shared/Button';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import ReactMarkdown from 'react-markdown';
 
+type PulseScanState =
+  | { status: 'idle' }
+  | { status: 'scanning' }
+  | { status: 'ready'; insight: string }
+  | { status: 'error'; message: string };
+
 const AIPulseAnalysis: React.FC = () => {
   const { state } = useProject();
-  const [insight, setInsight] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [scanState, setScanState] = useState<PulseScanState>({ status: 'idle' });
 
   const generateInsight = async () => {
-    setLoading(true);
-    setError(null);
+    setScanState({ status: 'scanning' });
     try {
       const res = await analyzeProject(state);
-      setInsight(res);
+      setScanState({ status: 'ready', insight: res });
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'AI synchronization failed');
-    } finally {
-      setLoading(false);
+      setScanState({
+        status: 'error',
+        message: e instanceof Error ? e.message : 'AI synchronization failed',
+      });
     }
   };
 
@@ -42,38 +46,38 @@ const AIPulseAnalysis: React.FC = () => {
           size="sm" 
           className="h-8 rounded-lg cursor-pointer"
           onClick={generateInsight}
-          disabled={loading}
+          disabled={scanState.status === 'scanning'}
           title="Refresh Analysis"
         >
-          <RefreshCw size={14} className={loading ? "motion-safe:animate-spin" : "text-[var(--color-primary-hex)]"} />
+          <RefreshCw size={14} className={scanState.status === 'scanning' ? "motion-safe:animate-spin" : "text-[var(--color-primary-hex)]"} />
         </Button>
       </div>
 
       <div className="flex-1 p-5 overflow-y-auto custom-scroll relative min-h-[300px]">
-        {loading && (
+        {scanState.status === 'scanning' && (
            <div className="absolute inset-0 bg-[var(--color-surface)]/80 backdrop-blur-xs flex flex-col items-center justify-center z-10">
               <div className="w-10 h-10 border-3 border-[var(--color-divider)] border-t-[var(--color-primary-hex)] rounded-full motion-safe:animate-spin mb-3" />
               <div className="text-xs font-semibold text-[var(--color-primary-hex)] motion-safe:animate-pulse">Scanning telemetry…</div>
            </div>
         )}
 
-        {error && (
+        {scanState.status === 'error' && (
            <div className="flex items-start gap-3 p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl">
               <AlertCircle size={18} className="text-rose-500 shrink-0 mt-0.5" />
               <div className="text-xs font-medium text-rose-500 leading-relaxed">
-                 {error}
+                 {scanState.message}
                  <button onClick={generateInsight} className="block mt-2 underline cursor-pointer">Retry Sync</button>
               </div>
            </div>
         )}
 
-        {insight ? (
+        {scanState.status === 'ready' ? (
            <div className="prose prose-sm max-w-none">
               <div className="text-xs leading-relaxed text-[var(--color-text)]">
-                 <ReactMarkdown>{insight}</ReactMarkdown>
+                 <ReactMarkdown>{scanState.insight}</ReactMarkdown>
               </div>
            </div>
-        ) : !loading && (
+        ) : scanState.status === 'idle' && (
            <div className="h-full flex flex-col items-center justify-center text-center px-4">
               <div className="w-14 h-14 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-2xl flex items-center justify-center text-[var(--color-text-muted)] mb-3">
                  <Brain size={28} />

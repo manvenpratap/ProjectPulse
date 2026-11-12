@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { Task, TaskStatus, TaskPriority, Subtask } from '../../types';
 import { fmtDate, daysDiff, isBlocked, todayStr } from '../../utils/projectUtils';
+import { computeSubtaskRollup, nextTaskQuickStatus } from '../../utils/stateMachines';
 import clsx from 'clsx';
 import { 
   MoreHorizontal, 
@@ -54,6 +55,7 @@ const ST_MAP: Record<string, string> = {
   [TaskStatus.IN_PROGRESS]: 'in-progress',
   [TaskStatus.UNDER_REVIEW]: 'under-review',
   [TaskStatus.COMPLETED]: 'completed',
+  [TaskStatus.BLOCKED]: 'blocked',
   [TaskStatus.ON_HOLD]: 'on-hold',
   [TaskStatus.CANCELLED]: 'cancelled',
 };
@@ -122,52 +124,28 @@ const TaskGrid: React.FC<TaskGridProps> = ({
 
   const handleCycleStatus = (task: Task, e: React.MouseEvent) => {
     e.stopPropagation();
-    const cycle = [
-      TaskStatus.NOT_STARTED,
-      TaskStatus.IN_PROGRESS,
-      TaskStatus.UNDER_REVIEW,
-      TaskStatus.COMPLETED
-    ];
-    const curIdx = cycle.indexOf(task.status);
-    const nextStatus = cycle[(curIdx + 1) % cycle.length];
-    const isDone = nextStatus === TaskStatus.COMPLETED;
-    if (isDone) markInteractionOrigin(e.currentTarget);
+    const nextStatus = nextTaskQuickStatus(task.status);
+    if (nextStatus === TaskStatus.COMPLETED) {
+      markInteractionOrigin(e.currentTarget);
+    }
 
-    updateTask(task.id, {
-      status: nextStatus,
-      progress: isDone ? 100 : (task.status === TaskStatus.NOT_STARTED && task.progress === 0) ? 25 : task.progress,
-      actCompletionDate: isDone ? todayStr() : null
-    }, `Status transitioned to ${nextStatus}`);
+    const res = updateTask(task.id, { status: nextStatus }, `Status transitioned to ${nextStatus}`);
+    if (!res.ok) {
+      alert(res.reason);
+    }
   };
 
   const handleToggleSubtask = (task: Task, subId: string, e: React.MouseEvent) => {
     e.stopPropagation();
-    const updatedSubtasks = task.subtasks.map(s => {
-      if (s.id === subId) {
-        const nextDone = !s.done;
-        return {
-          ...s,
-          done: nextDone,
-          status: nextDone ? TaskStatus.COMPLETED : TaskStatus.IN_PROGRESS,
-          progress: nextDone ? 100 : 0
-        };
-      }
-      return s;
-    });
-
-    const doneCount = updatedSubtasks.filter(s => s.done).length;
-    const newProgress = updatedSubtasks.length ? Math.round((doneCount / updatedSubtasks.length) * 100) : task.progress;
-    const allDone = doneCount === updatedSubtasks.length && updatedSubtasks.length > 0;
-    if (allDone && task.status !== TaskStatus.COMPLETED) {
+    const patch = computeSubtaskRollup(task, subId);
+    if (patch.status === TaskStatus.COMPLETED && task.status !== TaskStatus.COMPLETED) {
       markInteractionOrigin(e.currentTarget);
     }
 
-    updateTask(task.id, {
-      subtasks: updatedSubtasks,
-      progress: newProgress,
-      status: allDone ? TaskStatus.COMPLETED : (newProgress > 0 && task.status === TaskStatus.NOT_STARTED) ? TaskStatus.IN_PROGRESS : task.status,
-      actCompletionDate: allDone ? todayStr() : (task.status === TaskStatus.COMPLETED && !allDone) ? null : task.actCompletionDate
-    }, `Checklist updated: ST ${subId}`);
+    const res = updateTask(task.id, patch, `Checklist updated: ST ${subId}`);
+    if (!res.ok) {
+      alert(res.reason);
+    }
   };
 
   // Bulk Selection Handlers
@@ -191,14 +169,14 @@ const TaskGrid: React.FC<TaskGridProps> = ({
 
   const handleBatchUpdateStatus = (newStatus: TaskStatus) => {
     if (!selectedTaskIds.size) return;
-    const isDone = newStatus === TaskStatus.COMPLETED;
+    const rejected: string[] = [];
     selectedTaskIds.forEach(id => {
-      updateTask(id, {
-        status: newStatus,
-        progress: isDone ? 100 : undefined,
-        actCompletionDate: isDone ? todayStr() : null
-      }, `Batch status update: ${newStatus}`);
+      const res = updateTask(id, { status: newStatus }, `Batch status update: ${newStatus}`);
+      if (!res.ok) rejected.push(id);
     });
+    if (rejected.length > 0) {
+      alert(`Skipped dependency-blocked task(s): ${rejected.join(', ')}`);
+    }
     setSelectedTaskIds(new Set());
   };
 

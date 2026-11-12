@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useReducer } from 'react';
 import { ProjectProvider, useProject } from './store/ProjectContext';
 import { AuthProvider, useAuth } from './store/AuthContext';
 import { getAllNavItems } from './config/navigation';
+import { resolveSessionPhase } from './utils/stateMachines';
 import { exportProjectExcel } from './services/excelService';
 import Sidebar from './components/layout/Sidebar';
 import Topbar from './components/layout/Topbar';
@@ -47,6 +48,11 @@ const GO_CHORD_MAP: Record<string, { view: string; subTab?: string; label: strin
   s: { view: 'settings', label: 'Workspace Settings' },
 };
 
+const chordReducer = (
+  _state: { status: 'idle' | 'armed' },
+  action: 'ARM' | 'DISARM'
+): { status: 'idle' | 'armed' } => (action === 'ARM' ? { status: 'armed' } : { status: 'idle' });
+
 const MainApp: React.FC = () => {
   const { state, setView } = useProject();
   const { isAuthenticated, hasViewAccess, canPerform, currentUser } = useAuth();
@@ -54,8 +60,9 @@ const MainApp: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
   const [isCxoEmailOpen, setIsCxoEmailOpen] = useState(false);
-  const [isChordArmed, setIsChordArmed] = useState(false);
+  const [chordState, dispatchChord] = useReducer(chordReducer, { status: 'idle' });
   const chordTimerRef = useRef<number | null>(null);
+  const isChordArmed = chordState.status === 'armed';
 
   useEffect(() => {
     setIsSidebarOpen(!isMobile);
@@ -81,7 +88,7 @@ const MainApp: React.FC = () => {
   // Global keyboard shortcuts: G + [O/D/R/T/L/F/C/B/K/S] & Cmd/Ctrl+E (isolated from inputs and open modals)
   useEffect(() => {
     const clearChord = () => {
-      setIsChordArmed(false);
+      dispatchChord('DISARM');
       if (chordTimerRef.current !== null) {
         window.clearTimeout(chordTimerRef.current);
         chordTimerRef.current = null;
@@ -132,9 +139,9 @@ const MainApp: React.FC = () => {
       }
 
       if (key === 'g' && !e.shiftKey) {
-        setIsChordArmed(true);
+        dispatchChord('ARM');
         chordTimerRef.current = window.setTimeout(() => {
-          setIsChordArmed(false);
+          dispatchChord('DISARM');
           chordTimerRef.current = null;
         }, 1200);
       }
@@ -149,10 +156,7 @@ const MainApp: React.FC = () => {
     };
   }, [isAuthenticated, state, isChordArmed, hasViewAccess, canPerform, setView]);
 
-  // If not authenticated, prompt login
-  if (!isAuthenticated) {
-    return <LoginView />;
-  }
+  const sessionPhase = resolveSessionPhase(isAuthenticated, state.name, state.view, hasViewAccess);
 
   // Auto-close sidebar on mobile after navigation
   const handleNav = (v: any) => {
@@ -162,13 +166,16 @@ const MainApp: React.FC = () => {
     }
   };
 
-  if (!state.name) {
+  if (sessionPhase === 'unauthenticated') {
+    return <LoginView />;
+  }
+
+  if (sessionPhase === 'onboarding') {
     return <SetupView />;
   }
 
   const renderView = () => {
-    // Check role-based or custom access for the current view
-    if (!hasViewAccess(state.view)) {
+    if (sessionPhase === 'denied') {
       return (
         <AccessDenied 
           viewId={state.view} 

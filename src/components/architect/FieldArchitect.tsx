@@ -166,7 +166,8 @@ export const FieldArchitect: React.FC = () => {
   const [focusedKey, setFocusedKey] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [liveStatus, setLiveStatus] = useState('');
-  const [undoState, setUndoState] = useState<UndoSnapshot | null>(null);
+  type UndoMachine = { status: 'idle' } | { status: 'armed'; snapshot: UndoSnapshot };
+  const [undoMachine, setUndoMachine] = useState<UndoMachine>({ status: 'idle' });
 
   // Custom Field Form State (Add / Edit)
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -190,8 +191,8 @@ export const FieldArchitect: React.FC = () => {
 
   const showUndoToast = (snapshot: UndoSnapshot) => {
     if (undoTimerRef.current) window.clearTimeout(undoTimerRef.current);
-    setUndoState(snapshot);
-    undoTimerRef.current = window.setTimeout(() => setUndoState(null), 8000);
+    setUndoMachine({ status: 'armed', snapshot });
+    undoTimerRef.current = window.setTimeout(() => setUndoMachine({ status: 'idle' }), 8000);
   };
 
   // Current & factory default columns for active domain
@@ -343,12 +344,17 @@ export const FieldArchitect: React.FC = () => {
   };
 
   const handleUndo = () => {
-    if (!undoState) return;
-    if (undoState.cols) handleUpdateCols(undoState.cols, undoState.tab);
-    if (undoState.customFields) handleUpdateCustomFields(undoState.customFields, undoState.tab);
-    setActiveTab(undoState.tab);
-    setLiveStatus(`Reverted: ${undoState.message}`);
-    setUndoState(null);
+    if (undoMachine.status !== 'armed') return;
+    if (undoTimerRef.current) {
+      window.clearTimeout(undoTimerRef.current);
+      undoTimerRef.current = null;
+    }
+    const { snapshot } = undoMachine;
+    if (snapshot.cols) handleUpdateCols(snapshot.cols, snapshot.tab);
+    if (snapshot.customFields) handleUpdateCustomFields(snapshot.customFields, snapshot.tab);
+    setActiveTab(snapshot.tab);
+    setLiveStatus(`Reverted: ${snapshot.message}`);
+    setUndoMachine({ status: 'idle' });
   };
 
   const jumpToField = (selectorAttr: 'data-field-key' | 'data-custom-key', key: string) => {
@@ -1210,12 +1216,12 @@ export const FieldArchitect: React.FC = () => {
       </div>
 
       {/* ── Non-Blocking Undo Toast ── */}
-      {undoState && (
+      {undoMachine.status === 'armed' && (
         <div
           role="status"
           className="fixed bottom-20 lg:bottom-6 right-4 sm:right-6 z-40 flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xl text-xs animate-in fade-in slide-in-from-bottom-2 duration-150"
         >
-          <span className="font-semibold text-[var(--color-text)]">{undoState.message}</span>
+          <span className="font-semibold text-[var(--color-text)]">{undoMachine.snapshot.message}</span>
           <button
             type="button"
             onClick={handleUndo}
@@ -1226,7 +1232,13 @@ export const FieldArchitect: React.FC = () => {
           </button>
           <button
             type="button"
-            onClick={() => setUndoState(null)}
+            onClick={() => {
+              if (undoTimerRef.current) {
+                window.clearTimeout(undoTimerRef.current);
+                undoTimerRef.current = null;
+              }
+              setUndoMachine({ status: 'idle' });
+            }}
             aria-label="Dismiss notification"
             className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer p-0.5"
           >
