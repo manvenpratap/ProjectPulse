@@ -434,7 +434,7 @@ const StepTemplates: React.FC = () => {
               <div className="font-bold text-xs text-[var(--color-text)] hover:text-[var(--color-primary-hex)] transition-colors leading-snug truncate" title={tpl.name}>
                 {tpl.name}
               </div>
-              <div className="text-[10px] text-[var(--color-text-muted)] flex items-center gap-1.5 mt-0.5">
+              <div className="cell-secondary text-[10px] text-[var(--color-text-muted)] flex items-center gap-1.5 mt-0.5">
                 <span>{tpl.steps.length} {tpl.steps.length === 1 ? 'phase' : 'phases'}</span>
                 <span>·</span>
                 <span>{totalEffort}d total</span>
@@ -544,8 +544,8 @@ const StepTemplates: React.FC = () => {
               })}
             </div>
 
-            {/* Sequence Pills */}
-            <div className="flex items-center gap-1.5 flex-nowrap overflow-hidden py-0.5 text-[10px]">
+            {/* Sequence Pills - visible in comfortable mode, hidden in compact mode */}
+            <div className="cell-secondary flex items-center gap-1.5 flex-nowrap overflow-hidden py-0.5 text-[10px]">
               {tpl.steps.slice(0, 2).map((st, si) => (
                 <span 
                   key={si} 

@@ -317,13 +317,13 @@ const RAIDView: React.FC = () => {
       headerTitle: 'Strategic steering decision topic and context',
       width: 'min-w-[280px]',
       cell: (d) => (
-        <div className="flex items-center gap-1.5 min-w-0 max-w-[340px]">
+        <div className="flex flex-col min-w-0 max-w-[340px]">
           <span className="font-bold text-xs text-[var(--color-text)] truncate" title={d.title}>
             {d.title}
           </span>
           {d.desc && (
-            <span className="text-[10px] text-[var(--color-text-muted)] truncate hidden xl:inline max-w-[180px] shrink-0" title={d.desc}>
-              · {d.desc}
+            <span className="cell-secondary text-[10px] text-[var(--color-text-muted)] truncate" title={d.desc}>
+              {d.desc}
             </span>
           )}
         </div>
@@ -410,13 +410,13 @@ const RAIDView: React.FC = () => {
       sortable: true,
       width: 'min-w-[260px]',
       cell: (r) => (
-        <div className="flex items-center gap-1.5 min-w-0 max-w-[320px]">
+        <div className="flex flex-col min-w-0 max-w-[320px]">
           <span className="font-bold text-xs text-[var(--color-text)] truncate" title={r.title}>
             {r.title}
           </span>
           {r.desc && (
-            <span className="text-[10px] text-[var(--color-text-muted)] truncate hidden xl:inline max-w-[150px] shrink-0" title={r.desc}>
-              · {r.desc}
+            <span className="cell-secondary text-[10px] text-[var(--color-text-muted)] truncate" title={r.desc}>
+              {r.desc}
             </span>
           )}
         </div>

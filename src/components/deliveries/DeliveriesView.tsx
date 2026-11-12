@@ -222,14 +222,21 @@ export const DeliveriesView: React.FC = () => {
       width: 'w-28',
       filter: <span className="text-[10px] text-[var(--color-text-faint)] font-mono pl-1">—</span>,
       cell: (item) => (
-        <div className="flex items-center gap-1.5 whitespace-nowrap">
-          <span className="font-mono font-bold text-xs text-[var(--color-primary-hex)]">
-            {item.almId}
-          </span>
-          {item.pdn && (
-            <span className="font-mono text-[10px] text-[var(--color-text-muted)] opacity-70">
-              ({item.pdn})
+        <div className="min-w-0">
+          <div className="flex items-center gap-1.5 whitespace-nowrap">
+            <span className="font-mono font-bold text-xs text-[var(--color-primary-hex)]">
+              {item.almId}
             </span>
+            {item.pdn && (
+              <span className="compact-only font-mono text-[9px] text-[var(--color-text-muted)] opacity-70">
+                ({item.pdn})
+              </span>
+            )}
+          </div>
+          {item.pdn && (
+            <div className="cell-secondary font-mono text-[9.5px] text-[var(--color-text-muted)] opacity-70 mt-0.5 truncate">
+              {item.pdn}
+            </div>
           )}
         </div>
       )
@@ -242,18 +249,24 @@ export const DeliveriesView: React.FC = () => {
       width: 'min-w-[260px]',
       filter: <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by topbar search</span>,
       cell: (item) => (
-        <div className="flex items-center gap-1.5 min-w-0 max-w-[340px]">
-          <span className="font-bold text-xs leading-tight truncate text-[var(--color-text)]" title={item.name}>
-            {item.name}
-          </span>
-          <span className="shrink-0 text-[10px] text-[var(--color-text-muted)] font-mono">
-            ({item.module})
-          </span>
-          {item.category && (
-            <span className="shrink-0 px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[9px] font-semibold text-[var(--color-text-muted)]">
-              {item.category}
+        <div className="min-w-0 max-w-[380px] py-0.5">
+          <div className="flex items-center gap-1.5 min-w-0">
+            <span className="font-bold text-xs leading-tight truncate text-[var(--color-text)]" title={item.name}>
+              {item.name}
             </span>
-          )}
+            <span className="shrink-0 text-[10px] text-[var(--color-text-muted)] font-mono">
+              ({item.module})
+            </span>
+            {item.category && (
+              <span className="shrink-0 px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[9px] font-semibold text-[var(--color-text-muted)]">
+                {item.category}
+              </span>
+            )}
+          </div>
+          {/* Second line in comfortable view */}
+          <div className="cell-secondary text-[10px] text-[var(--color-text-muted)] font-mono truncate max-w-[360px] mt-0.5" title={item.componentsDelivered || item.notes}>
+            {item.componentsDelivered || item.notes || `${item.releaseVersion || 'Unversioned'} · ${item.environment}`}
+          </div>
         </div>
       )
     },

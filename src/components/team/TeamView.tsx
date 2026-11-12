@@ -574,8 +574,10 @@ const TeamView: React.FC = () => {
             )}>
               {initials}
             </div>
-            <span className="font-semibold text-xs text-[var(--color-text)] truncate">{m.name}</span>
-            <span className="text-[10.5px] text-[var(--color-text-muted)] truncate hidden sm:inline">· {m.role || 'Member'}</span>
+            <div className="flex flex-col min-w-0">
+              <span className="font-semibold text-xs text-[var(--color-text)] truncate">{m.name}</span>
+              <span className="cell-secondary text-[10px] text-[var(--color-text-muted)] truncate">{m.role || 'Member'}</span>
+            </div>
           </div>
         );
       }

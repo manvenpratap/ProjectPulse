@@ -434,13 +434,13 @@ export const FunctionalMatrix: React.FC = () => {
       headerTitle: 'Strategic capability name and architectural scope',
       width: 'min-w-[260px]',
       cell: (f) => (
-        <div className="flex items-center gap-1.5 min-w-0 max-w-[300px]">
+        <div className="flex flex-col min-w-0 max-w-[320px]">
           <span className="font-bold text-xs text-[var(--color-text)] truncate" title={f.name}>
             {f.name}
           </span>
           {f.desc && (
-            <span className="text-[10px] text-[var(--color-text-muted)] truncate hidden xl:inline max-w-[150px] shrink-0" title={f.desc}>
-              · {f.desc}
+            <span className="cell-secondary text-[10px] text-[var(--color-text-muted)] truncate" title={f.desc}>
+              {f.desc}
             </span>
           )}
         </div>

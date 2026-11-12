@@ -1145,6 +1145,38 @@ html[data-color-mode="dark"][data-theme="paper-editorial"] {
 }
 
 /* ═════════════════════════════════════════════════════════
+   TABLE DENSITY SYSTEM (COMPACT VS COMFORTABLE)
+   ═════════════════════════════════════════════════════════ */
+
+/* In Compact Mode: Hide secondary descriptive lines, sub-labels, and expanded progress chips */
+.density-compact .cell-secondary,
+.density-compact .table-sub-line,
+.density-compact .cell-subtext,
+.density-compact .compact-hide,
+[data-density="compact"] .cell-secondary,
+[data-density="compact"] .table-sub-line,
+[data-density="compact"] .cell-subtext,
+[data-density="compact"] .compact-hide {
+  display: none !important;
+}
+
+/* In Comfortable Mode: Hide compact-only abbreviations */
+.density-comfortable .compact-only,
+[data-density="comfortable"] .compact-only {
+  display: none !important;
+}
+
+/* Compact mode row heights & spacing: single-line dense spreadsheet mode */
+[data-density="compact"] tbody tr {
+  height: 36px !important;
+}
+
+/* Comfortable mode row heights: multi-line informative mode with generous breathing room */
+[data-density="comfortable"] tbody tr {
+  min-height: 54px;
+}
+
+/* ═════════════════════════════════════════════════════════
    ENTERPRISE TABLE & STATUS BADGE STANDARDS (HTML PARITY)
    ═════════════════════════════════════════════════════════ */
 

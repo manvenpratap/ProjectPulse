@@ -237,9 +237,14 @@ const DefectView: React.FC = () => {
       width: 'w-24',
       filter: <span className="text-[10px] text-[var(--color-text-faint)] font-mono pl-1">—</span>,
       cell: (defect) => (
-        <span className="font-mono font-bold text-[11px] text-rose-500 whitespace-nowrap">
-          {defect.id}
-        </span>
+        <div className="min-w-0">
+          <span className="font-mono font-bold text-[11px] text-rose-500 whitespace-nowrap">
+            {defect.id}
+          </span>
+          <div className="cell-secondary text-[9px] font-mono text-[var(--color-text-faint)] mt-0.5 truncate max-w-[80px]">
+            {defect.linkedTaskId || defect.category || 'Defect'}
+          </div>
+        </div>
       )
     },
     {
@@ -250,15 +255,16 @@ const DefectView: React.FC = () => {
       width: 'min-w-[280px]',
       filter: <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by search</span>,
       cell: (defect) => (
-        <div className="flex items-center gap-1.5 min-w-0 max-w-[340px]">
-          <span className="font-bold text-xs text-[var(--color-text)] leading-tight truncate" title={defect.title}>
-            {defect.title}
-          </span>
-          {defect.desc && (
-            <span className="text-[10px] text-[var(--color-text-muted)] truncate hidden xl:inline max-w-[160px] shrink-0" title={defect.desc}>
-              · {defect.desc}
+        <div className="min-w-0 max-w-[420px] py-0.5">
+          <div className="flex items-center gap-1.5">
+            <span className="font-bold text-xs text-[var(--color-text)] leading-tight truncate" title={defect.title}>
+              {defect.title}
             </span>
-          )}
+          </div>
+          {/* Second line with smaller text in comfortable view */}
+          <div className="cell-secondary text-[10px] text-[var(--color-text-muted)] truncate max-w-[380px] mt-0.5" title={defect.desc || defect.module}>
+            {defect.desc ? defect.desc : (defect.module ? `Module: ${defect.module}` : 'Standard defect tracking unit')}
+          </div>
         </div>
       )
     },

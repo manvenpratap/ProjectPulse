@@ -301,13 +301,18 @@ const TaskGrid: React.FC<TaskGridProps> = ({
       cell: (task) => {
         const blocked = isBlocked(task, state.tasks);
         return (
-          <div className="flex items-center gap-1.5 font-mono font-bold text-[11px] text-[var(--color-primary-hex)] whitespace-nowrap">
-            {blocked && (
-              <span title="Blocked by dependency" className="inline-flex items-center shrink-0">
-                <Lock size={11} className="text-amber-500" />
-              </span>
-            )}
-            <span className="hover:underline">{task.id}</span>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 font-mono font-bold text-[11px] text-[var(--color-primary-hex)] whitespace-nowrap">
+              {blocked && (
+                <span title="Blocked by dependency" className="inline-flex items-center shrink-0">
+                  <Lock size={11} className="text-amber-500" />
+                </span>
+              )}
+              <span className="hover:underline">{task.id}</span>
+            </div>
+            <div className="cell-secondary text-[9px] font-mono text-[var(--color-text-faint)] mt-0.5 truncate">
+              {blocked ? 'Blocked' : (task.subtasks.length > 0 ? `${task.subtasks.length} steps` : 'Base')}
+            </div>
           </div>
         );
       }
@@ -331,15 +336,20 @@ const TaskGrid: React.FC<TaskGridProps> = ({
         </select>
       ),
       cell: (task) => (
-        <div className="flex items-center gap-1.5 truncate max-w-[170px] whitespace-nowrap">
-          <span className="text-xs font-medium text-[var(--color-text)] truncate" title={task.module}>
-            {task.module}
-          </span>
-          {task.moduleType && (
-            <span className="text-[9.5px] text-[var(--color-text-muted)] font-mono shrink-0 opacity-60">
-              ({task.moduleType})
+        <div className="min-w-0 max-w-[170px]">
+          <div className="flex items-center gap-1.5 truncate whitespace-nowrap">
+            <span className="text-xs font-medium text-[var(--color-text)] truncate" title={task.module}>
+              {task.module}
             </span>
-          )}
+            {task.moduleType && (
+              <span className="text-[9.5px] text-[var(--color-text-muted)] font-mono shrink-0 opacity-60">
+                ({task.moduleType})
+              </span>
+            )}
+          </div>
+          <div className="cell-secondary text-[9.5px] text-[var(--color-text-muted)] font-mono truncate mt-0.5 opacity-75">
+            {task.category || 'Feature'}
+          </div>
         </div>
       )
     },
@@ -352,35 +362,49 @@ const TaskGrid: React.FC<TaskGridProps> = ({
       filter: <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by search</span>,
       cell: (task) => {
         const isMilestone = (task.startDate && task.startDate === task.dueDate) || task.subtasks.some(s => s.name.toLowerCase().includes('milestone'));
+        const doneCount = task.subtasks.filter(s => s.done).length;
         return (
-          <div className="flex items-center gap-2 min-w-0 max-w-[420px]">
-            {isMilestone && <span title="Milestone" className="shrink-0"><Flag size={12} className="text-amber-500" /></span>}
-            <span 
-              className="text-xs font-semibold text-[var(--color-text)] truncate group-hover:text-[var(--color-primary-hex)] transition-colors cursor-pointer"
-              title={task.screenName ? `${task.name} (Screen: ${task.screenName})` : task.name}
-            >
-              {task.name}
-            </span>
-            {task.release && (
-              <span className="shrink-0 px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)] text-[9px] font-mono font-semibold">
-                {task.release}
-              </span>
-            )}
-            {task.subtasks.length > 0 && (
-              <button
-                onClick={(e) => toggleExpand(task.id, e)}
-                className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--color-primary-highlight-hex)] hover:bg-[var(--color-primary-highlight-hex)]/80 border border-[var(--color-primary-hex)]/20 text-[10px] font-semibold text-[var(--color-primary-hex)] transition-colors cursor-pointer"
-                title="Toggle Checklist"
+          <div className="min-w-0 max-w-[440px] py-0.5">
+            <div className="flex items-center gap-2 min-w-0">
+              {isMilestone && <span title="Milestone" className="shrink-0"><Flag size={12} className="text-amber-500" /></span>}
+              <span 
+                className="text-xs font-semibold text-[var(--color-text)] truncate group-hover:text-[var(--color-primary-hex)] transition-colors cursor-pointer"
+                title={task.screenName ? `${task.name} (Screen: ${task.screenName})` : task.name}
               >
-                <CheckSquare size={10} />
-                <span>{task.subtasks.filter(s => s.done).length}/{task.subtasks.length}</span>
-              </button>
-            )}
-            {task.screenName && (
-              <span className="shrink-0 text-[10px] text-[var(--color-text-faint)] font-mono hidden 2xl:inline truncate max-w-[120px]">
-                · {task.screenName}
+                {task.name}
               </span>
-            )}
+              {task.release && (
+                <span className="shrink-0 px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)] text-[9px] font-mono font-semibold">
+                  {task.release}
+                </span>
+              )}
+              {task.subtasks.length > 0 && (
+                <button
+                  onClick={(e) => toggleExpand(task.id, e)}
+                  className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--color-primary-highlight-hex)] hover:bg-[var(--color-primary-highlight-hex)]/80 border border-[var(--color-primary-hex)]/20 text-[10px] font-semibold text-[var(--color-primary-hex)] transition-colors cursor-pointer"
+                  title="Toggle Checklist"
+                >
+                  <CheckSquare size={10} />
+                  <span>{doneCount}/{task.subtasks.length}</span>
+                </button>
+              )}
+            </div>
+            {/* Second line in comfortable view */}
+            <div className="cell-secondary text-[10px] text-[var(--color-text-muted)] flex items-center gap-2 mt-0.5 truncate">
+              {task.screenName && (
+                <span className="font-mono text-[var(--color-text-faint)] truncate max-w-[140px]">
+                  Screen: {task.screenName}
+                </span>
+              )}
+              {task.subtasks.length > 0 && (
+                <span className="text-[var(--color-text-muted)]">
+                  {doneCount} of {task.subtasks.length} phases completed
+                </span>
+              )}
+              {task.desc && !task.screenName && (
+                <span className="truncate opacity-75">{task.desc}</span>
+              )}
+            </div>
           </div>
         );
       }

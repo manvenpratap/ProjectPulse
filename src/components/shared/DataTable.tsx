@@ -14,7 +14,7 @@ export interface ColumnDef<T> {
   sortable?: boolean;
   sortKey?: string;
   filter?: React.ReactNode;
-  cell: (item: T, index: number) => React.ReactNode;
+  cell: (item: T, index: number, meta?: { density: DensityMode }) => React.ReactNode;
   className?: string;
   headerClassName?: string;
   onClick?: (item: T, event: React.MouseEvent) => void;
@@ -128,7 +128,9 @@ export function DataTable<T>({
   // Calculate total columns for empty state colSpan
   const totalCols = (selectable ? 1 : 0) + (showRowNumbers ? 1 : 0) + (hasExpand ? 1 : 0) + columns.length;
 
-  const padY = density === 'compact' ? 'py-1.5' : 'py-2';
+  const isCompact = density === 'compact';
+  const padY = isCompact ? 'py-1' : 'py-2.5 sm:py-3';
+  const headPadY = isCompact ? 'py-1.5' : 'py-2.5';
 
   const getKey = (item: T, index: number): string => {
     if (typeof keyField === 'function') {
@@ -146,7 +148,14 @@ export function DataTable<T>({
   };
 
   return (
-    <div className={clsx("rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs overflow-hidden", containerClassName)}>
+    <div 
+      className={clsx(
+        "rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs overflow-hidden",
+        isCompact ? "density-compact" : "density-comfortable",
+        containerClassName
+      )}
+      data-density={density}
+    >
       {/* Optional Mobile Presentation Toggle (< md only when mobileCardRenderer is provided) */}
       {mobileCardRenderer && (
         <div className="md:hidden px-3 py-2 border-b border-[var(--color-divider)] bg-[var(--color-surface-2)]/60 flex items-center justify-between gap-2">
@@ -230,13 +239,21 @@ export function DataTable<T>({
           mobileCardRenderer && !showMatrixOnMobile && "hidden md:block"
         )}
       >
-        <table className={clsx("w-full text-left border-collapse", minWidth, tableClassName)}>
+        <table 
+          data-density={density}
+          className={clsx(
+            "w-full text-left border-collapse", 
+            isCompact ? "density-compact" : "density-comfortable", 
+            minWidth, 
+            tableClassName
+          )}
+        >
           <thead className="sticky top-0 z-10 bg-[var(--color-surface-offset)] shadow-[0_1px_0_0_var(--color-divider)]">
             {/* Primary Column Header Row */}
-            <tr className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)] select-none">
+            <tr className={clsx("bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)] select-none", headPadY)}>
               {/* Checkbox Header */}
               {selectable && (
-                <th className="px-2.5 py-2 w-10 text-center">
+                <th className={clsx("px-2.5 w-10 text-center", headPadY)}>
                   <input
                     type="checkbox"
                     checked={isAllSelected}
@@ -249,14 +266,14 @@ export function DataTable<T>({
 
               {/* Row Number Header (#) */}
               {showRowNumbers && (
-                <th className="px-2 py-2 w-11 text-center td-rn font-mono text-[10px]" title="Sequential row index">
+                <th className={clsx("px-2 w-11 text-center td-rn font-mono text-[10px]", headPadY)} title="Sequential row index">
                   #
                 </th>
               )}
 
               {/* Expand Toggle Header */}
               {hasExpand && (
-                <th className="px-1 py-2 w-8 text-center" title="Expand or collapse rows" />
+                <th className={clsx("px-1 w-8 text-center", headPadY)} title="Expand or collapse rows" />
               )}
 
               {/* Data Columns */}
@@ -277,7 +294,8 @@ export function DataTable<T>({
                     key={col.id}
                     onClick={col.sortable && onSort ? () => onSort(col.sortKey || col.id) : undefined}
                     className={clsx(
-                      "py-2 whitespace-nowrap transition-colors select-none",
+                      headPadY,
+                      "whitespace-nowrap transition-colors select-none",
                       alignClass,
                       col.width,
                       col.sortable && onSort && "cursor-pointer hover:bg-[var(--color-surface-2)]",
@@ -332,6 +350,7 @@ export function DataTable<T>({
               return (
                 <React.Fragment key={id}>
                   <tr
+                    data-density={density}
                     onClick={onRowClick ? (e) => onRowClick(item, e) : undefined}
                     className={clsx(
                       "group hover:bg-[var(--color-surface-2)]/70 transition-colors relative",
@@ -391,7 +410,7 @@ export function DataTable<T>({
                           className={clsx(padY, alignClass, col.className)}
                           onClick={col.onClick ? (e) => { e.stopPropagation(); col.onClick!(item, e); } : undefined}
                         >
-                          {col.cell(item, idx)}
+                          {col.cell(item, idx, { density })}
                         </td>
                       );
                     })}
