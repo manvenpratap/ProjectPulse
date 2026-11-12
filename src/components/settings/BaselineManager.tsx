@@ -19,7 +19,10 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Button from '../shared/Button';
+import Modal from '../shared/Modal';
+import ConfirmModal from '../shared/ConfirmModal';
 import SectionHelpButton from '../shared/SectionHelpButton';
+import { toast } from '../../utils/toast';
 import clsx from 'clsx';
 
 export const BaselineManager: React.FC = () => {
@@ -30,6 +33,21 @@ export const BaselineManager: React.FC = () => {
   const [baselineName, setBaselineName] = useState('');
   const [baselineDesc, setBaselineDesc] = useState('');
   const [selectedBaseline, setSelectedBaseline] = useState<string | null>(null);
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+    variant?: 'danger' | 'warning' | 'primary';
+    confirmLabel?: string;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+    variant: 'danger',
+    confirmLabel: 'Confirm'
+  });
 
   React.useEffect(() => {
     const handleOpen = () => setIsCaptureModalOpen(true);
@@ -57,7 +75,7 @@ export const BaselineManager: React.FC = () => {
 
   const handleCaptureSnapshot = () => {
     if (!baselineName.trim()) {
-      alert('Baseline name is required');
+      toast.warning('Baseline name is required before capturing snapshot.');
       return;
     }
 
@@ -93,45 +111,61 @@ export const BaselineManager: React.FC = () => {
     });
 
     addLog('Captured Baseline', nextId, baselineName.trim(), 'baselines', '', nextId, `Saved snapshot across ${tasks.length} tasks`);
+    toast.success(`Baseline snapshot "${baselineName.trim()}" captured across ${tasks.length} tasks.`);
     setIsCaptureModalOpen(false);
     setBaselineName('');
     setBaselineDesc('');
   };
 
   const handleDeleteSnapshot = (id: string, name: string) => {
-    if (confirm(`Permanently delete baseline snapshot "${name}"?`)) {
-      updateProject({
-        baselines: baselines.filter(b => b.id !== id)
-      });
-      addLog('Deleted Baseline', id, name, 'baselines', name, '', 'Baseline snapshot deleted');
-      if (selectedBaseline === id) setSelectedBaseline(null);
-    }
+    setConfirmState({
+      isOpen: true,
+      title: 'Delete Baseline Snapshot',
+      message: `Permanently delete baseline snapshot "${name}"? This will remove historical baseline variances for this snapshot point.`,
+      variant: 'danger',
+      confirmLabel: 'Delete Baseline',
+      onConfirm: () => {
+        updateProject({
+          baselines: baselines.filter(b => b.id !== id)
+        });
+        addLog('Deleted Baseline', id, name, 'baselines', name, '', 'Baseline snapshot deleted');
+        if (selectedBaseline === id) setSelectedBaseline(null);
+        toast.info(`Baseline snapshot "${name}" deleted.`);
+      }
+    });
   };
 
   const handleRestoreSnapshot = (snapshotId: string, name: string) => {
     const snapshotItems = baselines.filter(b => b.id === snapshotId);
     if (!snapshotItems.length) return;
 
-    if (confirm(`Restore schedule dates and estimated effort from "${name}" across all matching tasks? Current live schedules will be updated to baseline values.`)) {
-      const taskMap = new Map(snapshotItems.map(b => [b.taskId, b]));
-      const updatedTasks = tasks.map(t => {
-        const b = taskMap.get(t.id);
-        if (b) {
-          return {
-            ...t,
-            startDate: b.baselineStartDate || t.startDate,
-            dueDate: b.baselineDueDate || t.dueDate,
-            estDays: b.baselineEffort || t.estDays,
-            updatedAt: new Date().toISOString()
-          };
-        }
-        return t;
-      });
+    setConfirmState({
+      isOpen: true,
+      title: 'Restore Project Baseline Schedules',
+      message: `Restore schedule dates and estimated effort from "${name}" across all matching tasks? Current live schedules will be updated to baseline values.`,
+      variant: 'primary',
+      confirmLabel: 'Restore Baseline',
+      onConfirm: () => {
+        const taskMap = new Map(snapshotItems.map(b => [b.taskId, b]));
+        const updatedTasks = tasks.map(t => {
+          const b = taskMap.get(t.id);
+          if (b) {
+            return {
+              ...t,
+              startDate: b.baselineStartDate || t.startDate,
+              dueDate: b.baselineDueDate || t.dueDate,
+              estDays: b.baselineEffort || t.estDays,
+              updatedAt: new Date().toISOString()
+            };
+          }
+          return t;
+        });
 
-      updateProject({ tasks: updatedTasks });
-      addLog('Restored Baseline', snapshotId, name, 'tasks', '', snapshotId, `Aligned live tasks to baseline snapshot dates`);
-      alert(`Tasks successfully aligned to baseline "${name}".`);
-    }
+        updateProject({ tasks: updatedTasks });
+        addLog('Restored Baseline', snapshotId, name, 'tasks', '', snapshotId, `Aligned live tasks to baseline snapshot dates`);
+        toast.success(`Tasks successfully aligned to baseline "${name}".`);
+      }
+    });
   };
 
   const activeSnapshotDetails = groupedSnapshots.find(s => s.id === selectedBaseline);
@@ -333,70 +367,66 @@ export const BaselineManager: React.FC = () => {
         </motion.div>
       )}
 
-      {/* Capture Modal */}
-      <AnimatePresence>
-        {isCaptureModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-            <motion.div 
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-[var(--color-surface)] w-full max-w-md rounded-2xl border border-[var(--color-divider)] shadow-2xl overflow-hidden"
-            >
-              <div className="px-6 py-4 border-b border-[var(--color-divider)] flex justify-between items-center">
-                <h3 className="text-sm font-bold text-[var(--color-text)] flex items-center gap-2">
-                  <Camera size={16} className="text-[var(--color-primary-hex)]" />
-                  Capture Project Baseline Snapshot
-                </h3>
-                <button onClick={() => setIsCaptureModalOpen(false)} className="text-[var(--color-text-faint)] hover:text-[var(--color-text)]">
-                  <X size={18} />
-                </button>
-              </div>
-
-              <div className="p-6 space-y-4 text-xs font-semibold">
-                <div>
-                  <label className="text-xs font-medium text-[var(--color-text-faint)] block mb-1.5">
-                    Baseline Name *
-                  </label>
-                  <input 
-                    type="text"
-                    placeholder="e.g. Sprint 1 Commitment or Q3 Release Kickoff"
-                    value={baselineName}
-                    onChange={e => setBaselineName(e.target.value)}
-                    className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-bold text-sm"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-medium text-[var(--color-text-faint)] block mb-1.5">
-                    Description & Context
-                  </label>
-                  <textarea 
-                    placeholder="Why this snapshot was captured (e.g. Scope frozen after architecture sign-off)"
-                    value={baselineDesc}
-                    onChange={e => setBaselineDesc(e.target.value)}
-                    rows={3}
-                    className="w-full p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-medium text-xs resize-none"
-                  />
-                </div>
-
-                <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 text-[11px] leading-relaxed">
-                  <strong>Snapshot Scope:</strong> Captures schedule dates and effort estimates for all {tasks.length} tasks currently in the project.
-                </div>
-              </div>
-
-              <div className="px-6 py-4 bg-[var(--color-surface-2)] border-t border-[var(--color-divider)] flex justify-end gap-2">
-                <Button variant="ghost" size="sm" onClick={() => setIsCaptureModalOpen(false)}>
-                  Cancel
-                </Button>
-                <Button variant="primary" size="sm" onClick={handleCaptureSnapshot}>
-                  Save Baseline Snapshot
-                </Button>
-              </div>
-            </motion.div>
+      {/* Capture Modal (Integrated with Shared Accessible Modal) */}
+      <Modal
+        isOpen={isCaptureModalOpen}
+        onClose={() => setIsCaptureModalOpen(false)}
+        title="Capture Project Baseline Snapshot"
+        size="md"
+        footer={
+          <div className="flex justify-end gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setIsCaptureModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" size="sm" onClick={handleCaptureSnapshot}>
+              Save Baseline Snapshot
+            </Button>
           </div>
-        )}
-      </AnimatePresence>
+        }
+      >
+        <div className="space-y-4 text-xs font-semibold">
+          <div>
+            <label className="text-xs font-medium text-[var(--color-text-faint)] block mb-1.5">
+              Baseline Name *
+            </label>
+            <input 
+              type="text"
+              placeholder="e.g. Sprint 1 Commitment or Q3 Release Kickoff"
+              value={baselineName}
+              onChange={e => setBaselineName(e.target.value)}
+              className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-bold text-sm text-[var(--color-text)]"
+            />
+          </div>
+
+          <div>
+            <label className="text-xs font-medium text-[var(--color-text-faint)] block mb-1.5">
+              Description & Context
+            </label>
+            <textarea 
+              placeholder="Why this snapshot was captured (e.g. Scope frozen after architecture sign-off)"
+              value={baselineDesc}
+              onChange={e => setBaselineDesc(e.target.value)}
+              rows={3}
+              className="w-full p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-medium text-xs resize-none text-[var(--color-text)]"
+            />
+          </div>
+
+          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-[11px] leading-relaxed">
+            <strong>Snapshot Scope:</strong> Captures schedule dates and effort estimates for all {tasks.length} tasks currently in the project.
+          </div>
+        </div>
+      </Modal>
+
+      {/* Confirmation Dialog */}
+      <ConfirmModal
+        isOpen={confirmState.isOpen}
+        onClose={() => setConfirmState(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmState.onConfirm}
+        title={confirmState.title}
+        message={confirmState.message}
+        variant={confirmState.variant}
+        confirmLabel={confirmState.confirmLabel}
+      />
     </div>
   );
 };

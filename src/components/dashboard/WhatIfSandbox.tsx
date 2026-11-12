@@ -6,6 +6,7 @@ import { getHealthScore, addBusDays } from '../../utils/projectUtils';
 import { Sliders, RotateCcw, Check, Zap, DollarSign, Calendar, TrendingUp } from 'lucide-react';
 import clsx from 'clsx';
 import SectionHelpButton from '../shared/SectionHelpButton';
+import { toast } from '../../utils/toast';
 
 export const WhatIfSandbox: React.FC = () => {
   const { state, updateProject, addLog } = useProject();
@@ -108,7 +109,7 @@ export const WhatIfSandbox: React.FC = () => {
       // Log event
       addLog('Simulation Committed', 'ALL', `Committed simulation: added ${addEngineers} devs, descoped ${scopeReduction}%, shifted by ${daysDelta} days.`);
       setSimulationCommitted(true);
-      alert("Simulation successfully committed to live project state! Tasks, team allocation, and schedules have been synchronized.");
+      toast.success("Simulation committed to live project state! Tasks, team allocation, and schedules synchronized.");
     }
   };
 

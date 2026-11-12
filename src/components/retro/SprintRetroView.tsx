@@ -26,6 +26,8 @@ import confetti from 'canvas-confetti';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import PageHeader from '../shared/PageHeader';
 import Button from '../shared/Button';
+import Modal from '../shared/Modal';
+import { toast } from '../../utils/toast';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import { nextRetroActionStatus } from '../../utils/stateMachines';
 
@@ -115,7 +117,7 @@ export const SprintRetroView: React.FC = () => {
     }
 
     addLog('Retro Action Promoted', created.id, created.name, 'Action Item', 'Retro', 'Live Task');
-    alert(`Successfully converted Action Item "${item.title}" into live Task ${created.id}!`);
+    toast.success(`Successfully converted Action Item "${item.title}" into live Task ${created.id}!`);
   };
 
   const handleCreateItem = (e: React.FormEvent) => {
@@ -462,122 +464,112 @@ export const SprintRetroView: React.FC = () => {
       </div>
 
       {/* MODAL: SUBMIT RETRO ITEM */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
-          <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--color-divider)]">
-              <h2 className="text-base font-bold text-[var(--color-text)]">Add Retrospective Item</h2>
-              <button 
-                onClick={() => setIsModalOpen(false)}
-                className="p-1 text-[var(--color-text-muted)] hover:text-[var(--color-text)] rounded-lg transition-colors cursor-pointer"
-                aria-label="Close modal"
-              >
-                <X size={18} />
-              </button>
-            </div>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title="Add Retrospective Item"
+        size="md"
+      >
+        <form onSubmit={handleCreateItem} className="space-y-4">
+          {/* Category */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-[var(--color-text)]">Category</label>
+            <select
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value as any)}
+              className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs text-[var(--color-text)] focus:outline-none cursor-pointer"
+            >
+              <option value="went_well">What Went Well</option>
+              <option value="needs_improvement">Areas for Growth / Friction</option>
+              <option value="action_item">Action Commitment</option>
+              <option value="kudos">Team Kudos & Shoutout</option>
+            </select>
+          </div>
 
-            <form onSubmit={handleCreateItem} className="space-y-4">
-              {/* Category */}
+          {/* Title */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-[var(--color-text)]">Title / Core Observation</label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Automated smoke tests cut deployment latency"
+              value={newTitle}
+              onChange={(e) => setNewTitle(e.target.value)}
+              className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs text-[var(--color-text)] focus:outline-none"
+            />
+          </div>
+
+          {/* Description */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-[var(--color-text)]">Details & Context (Optional)</label>
+            <textarea
+              rows={3}
+              placeholder="Elaborate on the root cause, friction point, or praise..."
+              value={newDesc}
+              onChange={(e) => setNewDesc(e.target.value)}
+              className="w-full p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs text-[var(--color-text)] focus:outline-none resize-none"
+            />
+          </div>
+
+          {/* Author */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-[var(--color-text)]">Author</label>
+            <select
+              value={newAuthor}
+              onChange={(e) => setNewAuthor(e.target.value)}
+              className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs text-[var(--color-text)] focus:outline-none cursor-pointer"
+            >
+              {members.map(m => (
+                <option key={m.id} value={m.name}>{m.name} ({m.role})</option>
+              ))}
+              {members.length === 0 && <option value="Contributor">Contributor</option>}
+            </select>
+          </div>
+
+          {/* Action item specific fields */}
+          {newCategory === 'action_item' && (
+            <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[var(--color-divider)]">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[var(--color-text)]">Category</label>
+                <label className="text-xs font-semibold text-[var(--color-text)]">Assigned Owner</label>
                 <select
-                  value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value as any)}
-                  className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs text-[var(--color-text)] focus:outline-none cursor-pointer"
-                >
-                  <option value="went_well">What Went Well</option>
-                  <option value="needs_improvement">Areas for Growth / Friction</option>
-                  <option value="action_item">Action Commitment</option>
-                  <option value="kudos">Team Kudos & Shoutout</option>
-                </select>
-              </div>
-
-              {/* Title */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[var(--color-text)]">Title / Core Observation</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Automated smoke tests cut deployment latency"
-                  value={newTitle}
-                  onChange={(e) => setNewTitle(e.target.value)}
-                  className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs text-[var(--color-text)] focus:outline-none"
-                />
-              </div>
-
-              {/* Description */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[var(--color-text)]">Details & Context (Optional)</label>
-                <textarea
-                  rows={3}
-                  placeholder="Elaborate on the root cause, friction point, or praise..."
-                  value={newDesc}
-                  onChange={(e) => setNewDesc(e.target.value)}
-                  className="w-full p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs text-[var(--color-text)] focus:outline-none resize-none"
-                />
-              </div>
-
-              {/* Author */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[var(--color-text)]">Author</label>
-                <select
-                  value={newAuthor}
-                  onChange={(e) => setNewAuthor(e.target.value)}
+                  value={newAssignee}
+                  onChange={(e) => setNewAssignee(e.target.value)}
                   className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs text-[var(--color-text)] focus:outline-none cursor-pointer"
                 >
                   {members.map(m => (
-                    <option key={m.id} value={m.name}>{m.name} ({m.role})</option>
+                    <option key={m.id} value={m.name}>{m.name}</option>
                   ))}
-                  {members.length === 0 && <option value="Contributor">Contributor</option>}
                 </select>
               </div>
-
-              {/* Action item specific fields */}
-              {newCategory === 'action_item' && (
-                <div className="grid grid-cols-2 gap-3 pt-2 border-t border-[var(--color-divider)]">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-[var(--color-text)]">Assigned Owner</label>
-                    <select
-                      value={newAssignee}
-                      onChange={(e) => setNewAssignee(e.target.value)}
-                      className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs text-[var(--color-text)] focus:outline-none cursor-pointer"
-                    >
-                      {members.map(m => (
-                        <option key={m.id} value={m.name}>{m.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-[var(--color-text)]">Target Sprint</label>
-                    <input
-                      type="text"
-                      value={newSprint}
-                      onChange={(e) => setNewSprint(e.target.value)}
-                      className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs text-[var(--color-text)] focus:outline-none"
-                    />
-                  </div>
-                </div>
-              )}
-
-              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[var(--color-divider)]">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 border border-[var(--color-divider)] hover:bg-[var(--color-surface-2)] text-[var(--color-text)] rounded-lg text-xs font-semibold transition-colors cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] hover:opacity-95 rounded-lg text-xs font-semibold transition-opacity shadow-sm cursor-pointer"
-                >
-                  Submit Item
-                </button>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-[var(--color-text)]">Target Sprint</label>
+                <input
+                  type="text"
+                  value={newSprint}
+                  onChange={(e) => setNewSprint(e.target.value)}
+                  className="w-full h-10 px-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs text-[var(--color-text)] focus:outline-none"
+                />
               </div>
-            </form>
+            </div>
+          )}
+
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-[var(--color-divider)]">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="px-4 py-2 border border-[var(--color-divider)] hover:bg-[var(--color-surface-2)] text-[var(--color-text)] rounded-lg text-xs font-semibold transition-colors cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] hover:opacity-95 rounded-lg text-xs font-semibold transition-opacity shadow-sm cursor-pointer"
+            >
+              Submit Item
+            </button>
           </div>
-        </div>
-      )}
+        </form>
+      </Modal>
 
     </div>
   );

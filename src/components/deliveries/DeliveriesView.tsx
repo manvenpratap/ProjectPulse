@@ -43,6 +43,7 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import Button from '../shared/Button';
+import { toast } from '../../utils/toast';
 import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
@@ -92,9 +93,9 @@ export const DeliveriesView: React.FC = () => {
       const mergedDeliveries = await importDeliveriesFromExcel(file, state.deliveries || []);
       const newCount = mergedDeliveries.length - (state.deliveries || []).length;
       updateProject({ deliveries: mergedDeliveries });
-      alert(`Deliveries imported successfully! ${mergedDeliveries.length} total records (${newCount > 0 ? `${newCount} added, ` : ''}${Math.min(mergedDeliveries.length, (state.deliveries || []).length)} synced).`);
+      toast.success(`Deliveries imported successfully! ${mergedDeliveries.length} total records (${newCount > 0 ? `${newCount} added, ` : ''}${Math.min(mergedDeliveries.length, (state.deliveries || []).length)} synced).`);
     } catch (err: any) {
-      alert('Failed to import deliveries: ' + (err.message || String(err)));
+      toast.error('Failed to import deliveries: ' + (err.message || String(err)));
     } finally {
       setIsImporting(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -501,7 +502,7 @@ export const DeliveriesView: React.FC = () => {
       <div className="flex items-center justify-center gap-1 whitespace-nowrap">
         <button
           onClick={(e) => { e.stopPropagation(); handleOpenEdit(item); }}
-          className="w-7 h-7 flex items-center justify-center text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-lg transition-colors cursor-pointer"
+          className="w-7 h-7 flex items-center justify-center text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-lg transition-colors cursor-pointer touch-hit-expand"
           title="Edit delivery"
           aria-label="Edit delivery"
         >
@@ -514,7 +515,7 @@ export const DeliveriesView: React.FC = () => {
               deleteDelivery(item.id);
             }
           }}
-          className="w-7 h-7 flex items-center justify-center text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
+          className="w-7 h-7 flex items-center justify-center text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer touch-hit-expand"
           title="Delete delivery"
           aria-label="Delete delivery"
         >
@@ -1126,7 +1127,7 @@ export const DeliveriesView: React.FC = () => {
                                   e.stopPropagation();
                                   const res = transitionDeliveryStage(item, cfg.action);
                                   if (!res.ok) {
-                                    alert(res.reason);
+                                    toast.error(res.reason || 'Stage transition failed.');
                                     return;
                                   }
                                   saveDelivery(res.patch, item.id);

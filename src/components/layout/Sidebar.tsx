@@ -18,6 +18,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { exportProjectExcel, importProjectExcel } from '../../services/excelService';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
 import { castOriginConfetti } from '../../utils/designSpells';
+import { toast } from '../../utils/toast';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -51,10 +52,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
       const importedData = await importProjectExcel(file);
       updateProject(importedData);
       setProcessingLatency(null);
-      alert('Project data imported successfully from Excel.');
+      toast.success('Project data imported successfully from Excel.');
     } catch (err: any) {
       setProcessingLatency(null);
-      alert('Failed to import Excel: ' + err.message);
+      toast.error('Failed to import Excel: ' + (err.message || 'Unknown error'));
     }
     if (fileInputRef.current) fileInputRef.current.value = '';
   };

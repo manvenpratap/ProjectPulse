@@ -41,6 +41,9 @@ import SectionHelpButton from '../shared/SectionHelpButton';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef } from '../shared/DataTable';
+import Modal from '../shared/Modal';
+import ConfirmModal from '../shared/ConfirmModal';
+import { toast } from '../../utils/toast';
 import clsx from 'clsx';
 import { Feature, Task, TaskStatus } from '../../types';
 import { daysDiff, fmtDate, todayStr } from '../../utils/projectUtils';
@@ -181,6 +184,17 @@ export const FunctionalMatrix: React.FC = () => {
   // Auto-Build Modal
   const [isAutoBuildOpen, setIsAutoBuildOpen] = useState(false);
   const [autoBuildCandidates, setAutoBuildCandidates] = useState<{ name: string; desc: string; screens: string[]; module: string; selected: boolean }[]>([]);
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {}
+  });
 
   // Edit / Details Modal State & Auto-Inference Guards (HTML Parity)
   const [editingIdx, setEditingIdx] = useState<number | null>(null);
@@ -697,10 +711,17 @@ export const FunctionalMatrix: React.FC = () => {
   };
 
   const removeFeature = (idx: number) => {
-    if (confirm(`Permanently remove "${features[idx].name}" from the matrix?`)) {
-      const newFeatures = features.filter((_, i) => i !== idx);
-      updateProject({ features: newFeatures });
-    }
+    const featName = features[idx].name;
+    setConfirmState({
+      isOpen: true,
+      title: 'Remove Feature from Matrix',
+      message: `Permanently remove "${featName}" from the functional matrix? Constituent interface screens will become unmapped.`,
+      onConfirm: () => {
+        const newFeatures = features.filter((_, i) => i !== idx);
+        updateProject({ features: newFeatures });
+        toast.info(`Feature "${featName}" removed from matrix.`);
+      }
+    });
   };
 
   const startEdit = (idx: number) => {
@@ -718,7 +739,7 @@ export const FunctionalMatrix: React.FC = () => {
     if (editingIdx === null || !editForm) return;
     const cleanName = editForm.name.trim();
     if (!cleanName) {
-      alert('Please enter a feature name before saving.');
+      toast.warning('Please enter a feature name before saving.');
       return;
     }
     const finalFeature: Feature = {
@@ -733,6 +754,7 @@ export const FunctionalMatrix: React.FC = () => {
       newFeatures.push(finalFeature);
     }
     updateProject({ features: newFeatures });
+    toast.success(`Feature "${cleanName}" saved.`);
     setEditingIdx(null);
     setEditForm(null);
   };
@@ -765,7 +787,7 @@ export const FunctionalMatrix: React.FC = () => {
   const handleBatchAssignModule = (modName: string) => {
     const targetVal = batchAssignMap[modName];
     if (!targetVal) {
-      alert('Please select a target feature from the dropdown first.');
+      toast.warning('Please select a target feature from the dropdown first.');
       return;
     }
     const screensInMod = unmappedByModule[modName] || [];
@@ -794,6 +816,7 @@ export const FunctionalMatrix: React.FC = () => {
       const newFeatures = [...features];
       newFeatures[targetIdx] = updated;
       updateProject({ features: newFeatures });
+      toast.success(`Mapped ${addedCount} screen(s) to ${target.name}.`);
     }
   };
 
@@ -801,7 +824,7 @@ export const FunctionalMatrix: React.FC = () => {
   const handleAssignScreen = (scName: string) => {
     const targetVal = screenAssignMap[scName];
     if (!targetVal) {
-      alert('Please select a target feature from the dropdown first.');
+      toast.warning('Please select a target feature from the dropdown first.');
       return;
     }
     handleAssignUnmappedScreen(scName, targetVal);
@@ -1270,15 +1293,15 @@ export const FunctionalMatrix: React.FC = () => {
                 screensByModule: {}
               };
 
-              const healthColor = mObj.overdueTasks > 0 ? "border-l-rose-500" : mObj.avgProg === 100 ? "border-l-emerald-500" : mObj.avgProg > 30 ? "border-l-cyan-500" : "border-l-amber-500";
+              const healthBorder = mObj.overdueTasks > 0 ? "border-rose-500/30 hover:border-rose-500/60" : mObj.avgProg === 100 ? "border-emerald-500/30 hover:border-emerald-500/60" : mObj.avgProg > 30 ? "border-cyan-500/30 hover:border-cyan-500/60" : "border-amber-500/30 hover:border-amber-500/60";
               const accentBadgeBg = mObj.overdueTasks > 0 ? "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20" : mObj.avgProg === 100 ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20" : mObj.avgProg > 30 ? "bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border-cyan-500/20" : "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20";
 
               return (
                 <div 
                   key={f.name + idx}
                   className={clsx(
-                    "card-glass border-l-4 rounded-2xl shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col relative overflow-hidden group",
-                    healthColor
+                    "card-glass border rounded-2xl shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col relative overflow-hidden group",
+                    healthBorder
                   )}
                 >
                   <div className="p-5 sm:p-6 flex-1 flex flex-col space-y-4">
@@ -1488,81 +1511,68 @@ export const FunctionalMatrix: React.FC = () => {
         )}
       </div>
 
-      {/* ── 5. Auto-Build Feature Matrix Modal (Matches projectpulse.html) ── */}
-      {isAutoBuildOpen && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[85vh]">
-            <div className="px-6 py-4 border-b border-[var(--color-divider)] flex items-center justify-between bg-[var(--color-surface-2)]">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center font-bold">
-                  <Wand2 size={16} />
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <h3 className="font-bold text-sm text-[var(--color-text)]">Auto-Build Feature Matrix</h3>
-                  <SectionHelpButton view="features" section="Feature Readiness" label="Auto-Build guide" size={13} />
-                </div>
-              </div>
-              <button onClick={() => setIsAutoBuildOpen(false)} className="p-1 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-text)] cursor-pointer">
-                <X size={16} />
-              </button>
-            </div>
+      {/* ── 5. Auto-Build Feature Matrix Modal (Standard Accessible Modal) ── */}
+      <Modal
+        isOpen={isAutoBuildOpen}
+        onClose={() => setIsAutoBuildOpen(false)}
+        title="Auto-Build Feature Matrix"
+        size="lg"
+        footer={
+          <div className="flex items-center justify-end gap-2 w-full">
+            <Button variant="ghost" size="sm" onClick={() => setIsAutoBuildOpen(false)}>Cancel</Button>
+            <Button variant="primary" size="sm" onClick={handleApplyAutoBuild} className="font-bold">
+              Apply Generated Features to Matrix
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-3.5 text-xs">
+          <div className="p-3 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] flex items-center justify-between">
+            <span>Select which feature clusters you want to generate:</span>
+            <span className="font-bold text-[var(--color-primary-hex)]">
+              {autoBuildCandidates.filter(c => c.selected).length} selected
+            </span>
+          </div>
 
-            <div className="p-6 overflow-y-auto space-y-3.5 flex-1 custom-scroll text-xs">
-              <div className="p-3 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] flex items-center justify-between">
-                <span>Select which feature clusters you want to generate:</span>
-                <span className="font-bold text-[var(--color-primary-hex)]">
-                  {autoBuildCandidates.filter(c => c.selected).length} selected
+          {autoBuildCandidates.map((cand, ci) => (
+            <div 
+              key={ci}
+              onClick={() => {
+                const next = [...autoBuildCandidates];
+                next[ci].selected = !next[ci].selected;
+                setAutoBuildCandidates(next);
+              }}
+              className={clsx(
+                "p-3.5 rounded-xl border transition-all cursor-pointer space-y-2",
+                cand.selected ? "bg-[var(--color-primary-highlight-hex)]/30 border-[var(--color-primary-hex)]" : "bg-[var(--color-surface)] border-[var(--color-divider)] opacity-60"
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <input 
+                    type="checkbox" 
+                    checked={cand.selected} 
+                    onChange={() => {}} 
+                    className="rounded border-[var(--color-divider)] cursor-pointer" 
+                  />
+                  <h4 className="font-bold text-xs text-[var(--color-text)]">{cand.name}</h4>
+                </div>
+                <span className="px-2 py-0.5 rounded-full bg-[var(--color-surface)] border border-[var(--color-divider)] text-[10px] font-semibold text-[var(--color-text-muted)]">
+                  {cand.module} ({cand.screens.length} screens)
                 </span>
               </div>
-
-              {autoBuildCandidates.map((cand, ci) => (
-                <div 
-                  key={ci}
-                  onClick={() => {
-                    const next = [...autoBuildCandidates];
-                    next[ci].selected = !next[ci].selected;
-                    setAutoBuildCandidates(next);
-                  }}
-                  className={clsx(
-                    "p-3.5 rounded-xl border transition-all cursor-pointer space-y-2",
-                    cand.selected ? "bg-[var(--color-primary-highlight-hex)]/30 border-[var(--color-primary-hex)]" : "bg-[var(--color-surface)] border-[var(--color-divider)] opacity-60"
-                  )}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <input 
-                        type="checkbox" 
-                        checked={cand.selected} 
-                        onChange={() => {}} 
-                        className="rounded border-[var(--color-divider)] cursor-pointer" 
-                      />
-                      <h4 className="font-bold text-xs text-[var(--color-text)]">{cand.name}</h4>
-                    </div>
-                    <span className="px-2 py-0.5 rounded-full bg-[var(--color-surface)] border border-[var(--color-divider)] text-[10px] font-semibold text-[var(--color-text-muted)]">
-                      {cand.module} ({cand.screens.length} screens)
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-[var(--color-text-muted)] pl-6">{cand.desc}</p>
-                  <div className="flex flex-wrap gap-1 pl-6">
-                    {cand.screens.map(s => (
-                      <span key={s} className="px-2 py-0.5 rounded bg-[var(--color-surface)] text-[10px] font-medium border border-[var(--color-divider)]">
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
+              <p className="text-[11px] text-[var(--color-text-muted)] pl-6">{cand.desc}</p>
+              <div className="flex flex-wrap gap-1 pl-6">
+                {cand.screens.map(s => (
+                  <span key={s} className="px-2 py-0.5 rounded bg-[var(--color-surface)] text-[10px] font-medium border border-[var(--color-divider)]">
+                    {s}
+                  </span>
+                ))}
+              </div>
             </div>
-
-            <div className="p-4 bg-[var(--color-surface-2)] border-t border-[var(--color-divider)] flex items-center justify-end gap-2">
-              <Button variant="ghost" size="sm" onClick={() => setIsAutoBuildOpen(false)}>Cancel</Button>
-              <Button variant="primary" size="sm" onClick={handleApplyAutoBuild} className="font-bold">
-                Apply Generated Features to Matrix
-              </Button>
-            </div>
-          </div>
+          ))}
         </div>
-      )}
+      </Modal>
 
       {/* ── 6. Feature Detail Inspector Drawer ── */}
       {selectedFeature && (
@@ -1582,7 +1592,7 @@ export const FunctionalMatrix: React.FC = () => {
             <div className="flex-1 overflow-y-auto p-6 custom-scroll space-y-6 text-xs">
               <section className="space-y-2">
                 <h4 className="font-bold text-[var(--color-text-faint)] uppercase tracking-wider text-[10px]">Strategic Purpose</h4>
-                <p className="p-3.5 rounded-xl bg-[var(--color-surface-2)] border-l-4 border-[var(--color-primary-hex)] text-xs text-[var(--color-text)] leading-relaxed italic">
+                <p className="p-3.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-xs text-[var(--color-text)] leading-relaxed italic">
                   “{selectedFeature.desc || 'No strategic description defined.'}”
                 </p>
               </section>
@@ -1648,32 +1658,22 @@ export const FunctionalMatrix: React.FC = () => {
         </div>
       )}
 
-      {/* ── 7. Edit / Create Feature Modal (Enhanced with Module-Grouped Screen Picker & Auto-Inference) ── */}
+      {/* ── 7. Edit / Create Feature Modal (Standard Accessible Modal) ── */}
       {editForm && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-            {/* Modal Header */}
-            <div className="px-6 py-4 border-b border-[var(--color-divider)] flex justify-between items-center bg-[var(--color-surface-2)]">
-              <div>
-                <h3 className="text-base font-extrabold text-[var(--color-text)]">
-                  {editingIdx !== null && editingIdx < features.length ? 'Edit Strategic Feature' : 'Create Strategic Feature'}
-                </h3>
-                <p className="text-[11px] text-[var(--color-text-muted)] mt-0.5">
-                  Define strategic architectural scope, release targets, and mapped interface components.
-                </p>
-              </div>
-              <button 
-                onClick={() => setEditForm(null)} 
-                className="p-1 text-[var(--color-text-faint)] hover:text-[var(--color-text)] cursor-pointer"
-                aria-label="Close modal"
-              >
-                <X size={16} />
-              </button>
+        <Modal
+          isOpen={true}
+          onClose={() => setEditForm(null)}
+          title={editingIdx !== null && editingIdx < features.length ? 'Edit Strategic Feature' : 'Create Strategic Feature'}
+          size="lg"
+          footer={
+            <div className="flex justify-end gap-2 w-full">
+              <Button variant="ghost" size="sm" onClick={() => setEditForm(null)}>Cancel</Button>
+              <Button variant="primary" size="sm" onClick={saveEdit} className="font-bold">Save Changes</Button>
             </div>
-
-            {/* Modal Form Body */}
-            <div className="p-6 space-y-4 text-xs overflow-y-auto custom-scroll flex-1">
-              <div>
+          }
+        >
+          <div className="space-y-4 text-xs">
+            <div>
                 <label className="font-bold text-[var(--color-text-muted)] block mb-1">Feature Name</label>
                 <input 
                   className="w-full px-3 py-2 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl font-bold text-xs outline-none focus:border-[var(--color-primary-hex)] text-[var(--color-text)]"
@@ -1973,15 +1973,19 @@ export const FunctionalMatrix: React.FC = () => {
                 </div>
               </div>
             </div>
-
-            {/* Modal Footer */}
-            <div className="px-6 py-3.5 bg-[var(--color-surface-2)] border-t border-[var(--color-divider)] flex justify-end gap-2">
-              <Button variant="ghost" size="sm" onClick={() => setEditForm(null)}>Cancel</Button>
-              <Button variant="primary" size="sm" onClick={saveEdit} className="font-bold">Save Changes</Button>
-            </div>
-          </div>
-        </div>
+        </Modal>
       )}
+
+      {/* Confirmation Dialog */}
+      <ConfirmModal
+        isOpen={confirmState.isOpen}
+        onClose={() => setConfirmState(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmState.onConfirm}
+        title={confirmState.title}
+        message={confirmState.message}
+        variant="danger"
+        confirmLabel="Remove Feature"
+      />
     </div>
   );
 };

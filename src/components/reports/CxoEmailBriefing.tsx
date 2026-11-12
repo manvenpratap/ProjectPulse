@@ -383,7 +383,7 @@ export const CxoEmailBriefing: React.FC<CxoEmailBriefingProps> = ({
 `;
       if (execAsk.trim()) {
         h += `
-        <div style="margin-bottom: 12px; font-size: 13.5px; line-height: 1.55; color: ${textMain}; background: ${cardBg}; padding: 12px 16px; border-radius: 8px; border-left: 4px solid #8b5cf6;">
+        <div style="margin-bottom: 12px; font-size: 13.5px; line-height: 1.55; color: ${textMain}; background: ${cardBg}; padding: 12px 16px; border-radius: 8px; border: 1px solid ${borderCol}; border-top: 3px solid #8b5cf6;">
           <strong>Direct Steering Ask:</strong> ${execAsk.replace(/\n/g, '<br>')}
         </div>
 `;

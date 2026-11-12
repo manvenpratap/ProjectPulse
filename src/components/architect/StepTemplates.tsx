@@ -39,6 +39,9 @@ import { StepTemplate, Task, Subtask, TaskStatus } from '../../types';
 import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
+import Modal from '../shared/Modal';
+import ConfirmModal from '../shared/ConfirmModal';
+import { toast } from '../../utils/toast';
 import { motion, AnimatePresence } from 'motion/react';
 import { todayStr } from '../../utils/projectUtils';
 
@@ -258,6 +261,7 @@ const StepTemplates: React.FC = () => {
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [isPresetsOpen, setIsPresetsOpen] = useState<boolean>(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [deleteTargetIdx, setDeleteTargetIdx] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const templates = state.stepTemplates || [];
@@ -326,11 +330,16 @@ const StepTemplates: React.FC = () => {
   };
 
   const removeTemplate = (idx: number) => {
-    const target = templates[idx];
-    if (window.confirm(`Delete the "${target.name}" technical workflow blueprint? This action cannot be undone.`)) {
-      const updated = templates.filter((_, i) => i !== idx);
-      updateProject({ stepTemplates: updated });
-    }
+    setDeleteTargetIdx(idx);
+  };
+
+  const confirmDeleteTemplate = () => {
+    if (deleteTargetIdx === null) return;
+    const target = templates[deleteTargetIdx];
+    const updated = templates.filter((_, i) => i !== deleteTargetIdx);
+    updateProject({ stepTemplates: updated });
+    toast.success(`Deleted workflow blueprint "${target.name}".`);
+    setDeleteTargetIdx(null);
   };
 
   const duplicateTemplate = (idx: number) => {
@@ -378,14 +387,14 @@ const StepTemplates: React.FC = () => {
         const importedTemplates: StepTemplate[] = parsed.stepTemplates || (Array.isArray(parsed) ? parsed : null);
 
         if (!Array.isArray(importedTemplates) || importedTemplates.length === 0) {
-          alert('Invalid blueprint JSON format. Expected an array of step templates.');
+          toast.error('Invalid blueprint JSON format. Expected an array of step templates.');
           return;
         }
 
         // Validate structure
         const validated = importedTemplates.filter(t => t.name && Array.isArray(t.steps) && t.steps.length > 0);
         if (validated.length === 0) {
-          alert('No valid blueprint definitions found in JSON file.');
+          toast.error('No valid blueprint definitions found in JSON file.');
           return;
         }
 
@@ -403,9 +412,9 @@ const StepTemplates: React.FC = () => {
         });
 
         updateProject({ stepTemplates: merged });
-        alert(`Successfully imported ${addedCount} new blueprint(s).`);
+        toast.success(`Successfully imported ${addedCount} new blueprint(s).`);
       } catch (err: any) {
-        alert('Failed to parse blueprint JSON: ' + err.message);
+        toast.error('Failed to parse blueprint JSON: ' + err.message);
       } finally {
         if (fileInputRef.current) fileInputRef.current.value = '';
       }
@@ -416,10 +425,11 @@ const StepTemplates: React.FC = () => {
   const handleImportPreset = (preset: StepTemplate) => {
     const exists = templates.some(t => t.name.toLowerCase() === preset.name.toLowerCase());
     if (exists) {
-      alert(`A blueprint named "${preset.name}" already exists.`);
+      toast.warning(`A blueprint named "${preset.name}" already exists.`);
       return;
     }
     updateProject({ stepTemplates: [...templates, preset] });
+    toast.success(`Imported blueprint "${preset.name}".`);
     setIsPresetsOpen(false);
   };
 
@@ -439,7 +449,7 @@ const StepTemplates: React.FC = () => {
   const removeStep = (sIdx: number) => {
     if (!editForm) return;
     if (editForm.steps.length <= 1) {
-      alert('A workflow blueprint must contain at least one phase.');
+      toast.warning('A workflow blueprint must contain at least one phase.');
       return;
     }
     const updated = editForm.steps.filter((_, i) => i !== sIdx);
@@ -568,11 +578,11 @@ const StepTemplates: React.FC = () => {
   const handleFinalize = (propagate: boolean) => {
     if (!editForm) return;
     if (!editForm.name.trim()) {
-      alert('Blueprint name is required');
+      toast.error('Blueprint name is required');
       return;
     }
     if (editForm.steps.length === 0) {
-      alert('At least one phase is required in the workflow sequence');
+      toast.error('At least one phase is required in the workflow sequence');
       return;
     }
 
@@ -1150,140 +1160,97 @@ const StepTemplates: React.FC = () => {
       </div>
 
       {/* ===================================================================== */}
-      {/* 5. ALM WORKFLOW PRESETS LIBRARY DRAWER / MODAL                        */}
+      {/* 5. ALM WORKFLOW PRESETS LIBRARY MODAL                                 */}
       {/* ===================================================================== */}
-      {isPresetsOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-2xl flex flex-col overflow-hidden max-h-[85vh]">
-            <div className="px-6 py-4.5 border-b border-[var(--color-divider)] flex items-center justify-between bg-[var(--color-surface-2)]">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20">
-                  <Sparkles size={18} />
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <h3 className="text-sm sm:text-base font-bold text-[var(--color-text)]">
-                    Standard ALM Industry Workflow Presets
-                  </h3>
-                  <SectionHelpButton view="steps" section="Template Name" label="ALM Presets guide" size={13} />
-                </div>
-              </div>
-              <button 
-                onClick={() => setIsPresetsOpen(false)}
-                className="w-8 h-8 rounded-xl flex items-center justify-center text-[var(--color-text-muted)] hover:bg-[var(--color-surface-offset)] hover:text-[var(--color-text)] transition-colors cursor-pointer"
+      <Modal
+        isOpen={isPresetsOpen}
+        onClose={() => setIsPresetsOpen(false)}
+        title="Standard ALM Industry Workflow Presets"
+        size="lg"
+      >
+        <div className="space-y-3">
+          {STANDARD_BLUEPRINT_PRESETS.map((preset, idx) => {
+            const totalEffort = preset.steps.reduce((s, st) => s + st.effort, 0);
+            const isAlreadyPresent = templates.some(t => t.name.toLowerCase() === preset.name.toLowerCase());
+            const meta = getCategoryMeta(preset.category);
+
+            return (
+              <div
+                key={idx}
+                className="p-4 rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface-2)]/50 hover:border-[var(--color-primary-hex)]/40 transition-colors flex items-center justify-between gap-4"
               >
-                <X size={16} />
-              </button>
-            </div>
-
-            <div className="p-6 overflow-y-auto custom-scroll space-y-3">
-              {STANDARD_BLUEPRINT_PRESETS.map((preset, idx) => {
-                const totalEffort = preset.steps.reduce((s, st) => s + st.effort, 0);
-                const isAlreadyPresent = templates.some(t => t.name.toLowerCase() === preset.name.toLowerCase());
-                const meta = getCategoryMeta(preset.category);
-
-                return (
-                  <div
-                    key={idx}
-                    className="p-4 rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface-2)]/50 hover:border-[var(--color-primary-hex)]/40 transition-colors flex items-center justify-between gap-4"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="font-bold text-sm text-[var(--color-text)]">
-                          {preset.name}
-                        </span>
-                        <span className={clsx("text-[10px] font-bold uppercase tracking-wider px-2 py-0.2 rounded-full border", meta.bg, meta.color, meta.border)}>
-                          {preset.category}
-                        </span>
-                      </div>
-                      <div className="text-[11px] text-[var(--color-text-muted)] mb-2">
-                        {preset.steps.length} sequential phases · {totalEffort} days total estimation
-                      </div>
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        {preset.steps.map((st, si) => (
-                          <span key={si} className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-[var(--color-surface)] text-[var(--color-text-muted)] border border-[var(--color-divider)]">
-                            {st.name} ({st.effort}d)
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    <button
-                      disabled={isAlreadyPresent}
-                      onClick={() => handleImportPreset(preset)}
-                      className={clsx(
-                        "px-3.5 py-2 rounded-xl text-xs font-bold shrink-0 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-95",
-                        isAlreadyPresent
-                          ? "bg-[var(--color-surface-offset)] text-[var(--color-text-faint)] cursor-not-allowed border border-[var(--color-divider)]"
-                          : "bg-[var(--color-primary-hex)] text-white hover:opacity-95"
-                      )}
-                    >
-                      {isAlreadyPresent ? (
-                        <>
-                          <Check size={13} /> Installed
-                        </>
-                      ) : (
-                        <>
-                          <Plus size={13} /> Import Blueprint
-                        </>
-                      )}
-                    </button>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="font-bold text-sm text-[var(--color-text)]">
+                      {preset.name}
+                    </span>
+                    <span className={clsx("text-[10px] font-bold uppercase tracking-wider px-2 py-0.2 rounded-full border", meta.bg, meta.color, meta.border)}>
+                      {preset.category}
+                    </span>
                   </div>
-                );
-              })}
-            </div>
+                  <div className="text-[11px] text-[var(--color-text-muted)] mb-2">
+                    {preset.steps.length} sequential phases · {totalEffort} days total estimation
+                  </div>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    {preset.steps.map((st, si) => (
+                      <span key={si} className="text-[10px] font-medium px-2 py-0.5 rounded-md bg-[var(--color-surface)] text-[var(--color-text-muted)] border border-[var(--color-divider)]">
+                        {st.name} ({st.effort}d)
+                      </span>
+                    ))}
+                  </div>
+                </div>
 
-            <div className="px-6 py-3.5 border-t border-[var(--color-divider)] bg-[var(--color-surface-2)] flex items-center justify-end">
-              <Button variant="ghost" size="sm" onClick={() => setIsPresetsOpen(false)}>
-                Close
-              </Button>
-            </div>
-          </div>
+                <button
+                  disabled={isAlreadyPresent}
+                  onClick={() => handleImportPreset(preset)}
+                  className={clsx(
+                    "px-3.5 py-2 rounded-xl text-xs font-bold shrink-0 transition-all flex items-center gap-1.5 cursor-pointer shadow-xs active:scale-95",
+                    isAlreadyPresent
+                      ? "bg-[var(--color-surface-offset)] text-[var(--color-text-faint)] cursor-not-allowed border border-[var(--color-divider)]"
+                      : "bg-[var(--color-primary-hex)] text-white hover:opacity-95"
+                  )}
+                >
+                  {isAlreadyPresent ? (
+                    <>
+                      <Check size={13} /> Installed
+                    </>
+                  ) : (
+                    <>
+                      <Plus size={13} /> Import Blueprint
+                    </>
+                  )}
+                </button>
+              </div>
+            );
+          })}
         </div>
-      )}
+      </Modal>
 
       {/* ===================================================================== */}
       {/* 6. HIGH-END EDIT BLUEPRINT MODAL WITH AUTO-COMPUTED LIVE IMPACT       */}
       {/* ===================================================================== */}
       {editForm && impact && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/60 backdrop-blur-md overflow-y-auto">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.96, y: 14 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.96, y: 14 }}
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="bg-[var(--color-surface)] w-full max-w-5xl rounded-3xl shadow-2xl border border-[var(--color-divider)] overflow-hidden flex flex-col max-h-[92vh]"
-          >
-            {/* Modal Header */}
-            <div className="px-6 py-4.5 border-b border-[var(--color-divider)] flex items-center justify-between bg-[var(--color-surface-2)]/60">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center shadow-xs">
-                  <Zap size={20} />
-                </div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-base sm:text-lg font-bold text-[var(--color-text)]">
-                    {editingIdx !== null ? 'Edit Workflow Blueprint' : 'Create New Blueprint'}
-                  </h2>
-                  <SectionHelpButton view="steps" section="One-Click Subtask Generation" label="Blueprint impact guide" size={13} />
-                </div>
-              </div>
-
+        <Modal
+          isOpen={!!editForm}
+          onClose={() => { setEditForm(null); setConfirmPropagation(false); }}
+          title={editingIdx !== null ? 'Edit Workflow Blueprint' : 'Create New Blueprint'}
+          size="xl"
+        >
+          <div className="space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--color-divider)]">
               <div className="flex items-center gap-2">
-                <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[var(--color-surface)] border border-[var(--color-divider)] text-xs text-[var(--color-text-muted)] font-medium">
-                  <span className="font-bold text-[var(--color-text)]">{editForm.steps.length}</span> Phases
-                  <span className="text-[var(--color-divider)]">•</span>
-                  <span className="font-bold text-[var(--color-text)]">{impact.newTotalEffort}d</span> Total
-                </div>
-                <button 
-                  onClick={() => { setEditForm(null); setConfirmPropagation(false); }}
-                  className="p-1.5 text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] rounded-lg transition-colors cursor-pointer"
-                >
-                  <X size={18} />
-                </button>
+                <SectionHelpButton view="steps" section="One-Click Subtask Generation" label="Blueprint impact guide" size={13} />
+                <span className="text-xs text-[var(--color-text-muted)]">Configure phases, estimated effort, and propagate to active tasks</span>
+              </div>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-xs text-[var(--color-text-muted)] font-medium">
+                <span className="font-bold text-[var(--color-text)]">{editForm.steps.length}</span> Phases
+                <span className="text-[var(--color-divider)]">•</span>
+                <span className="font-bold text-[var(--color-text)]">{impact.newTotalEffort}d</span> Total
               </div>
             </div>
 
             {/* Modal Main Body (2-Column Grid) */}
-            <div className="flex-1 overflow-y-auto custom-scroll p-6">
+            <div className="overflow-y-auto custom-scroll">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 
                 {/* ───────────────────────────────────────────────────────────── */}
@@ -1716,10 +1683,20 @@ const StepTemplates: React.FC = () => {
                 </div>
               )}
             </div>
-
-          </motion.div>
-        </div>
+          </div>
+        </Modal>
       )}
+
+      {/* 7. Delete Blueprint Confirmation Modal */}
+      <ConfirmModal
+        isOpen={deleteTargetIdx !== null}
+        onClose={() => setDeleteTargetIdx(null)}
+        onConfirm={confirmDeleteTemplate}
+        title="Delete Technical Workflow Blueprint"
+        message={deleteTargetIdx !== null && templates[deleteTargetIdx] ? `Delete the "${templates[deleteTargetIdx].name}" technical workflow blueprint? This action cannot be undone.` : ''}
+        confirmLabel="Delete Blueprint"
+        variant="danger"
+      />
     </div>
   );
 };

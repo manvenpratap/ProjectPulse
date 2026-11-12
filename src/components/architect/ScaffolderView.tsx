@@ -21,6 +21,7 @@ import {
   Check
 } from 'lucide-react';
 import Button from '../shared/Button';
+import Modal from '../shared/Modal';
 import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import clsx from 'clsx';
@@ -463,27 +464,30 @@ const ScaffolderView: React.FC = () => {
              </div>
           </div>
         )}
-        {/* BULK IMPORT & ARCHITECTURE PRESETS MODAL */}
-        {isBulkOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm motion-safe:animate-in motion-safe:fade-in duration-150">
-            <div className="w-full max-w-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-2xl flex flex-col overflow-hidden max-h-[90vh]">
-              <div className="px-6 py-4 border-b border-[var(--color-divider)] flex items-center justify-between bg-[var(--color-surface-2)]">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center border border-[var(--color-primary-hex)]/20">
-                    <Blocks size={18} />
-                  </div>
-                  <div>
-                    <h3 className="text-base font-bold text-[var(--color-text)]">Bulk Module & Architecture Presets</h3>
-                    <p className="text-xs text-[var(--color-text-muted)]">Import TSV/CSV or choose an enterprise stack preset</p>
-                  </div>
-                </div>
-                <button 
-                  onClick={() => setIsBulkOpen(false)}
-                  className="w-8 h-8 rounded-xl flex items-center justify-center text-[var(--color-text-muted)] hover:bg-[var(--color-surface-offset)] hover:text-[var(--color-text)] transition-colors cursor-pointer"
-                >
-                  <X size={18} />
-                </button>
-              </div>
+        {/* BULK IMPORT & ARCHITECTURE PRESETS MODAL (Standard Accessible Modal) */}
+        <Modal
+          isOpen={isBulkOpen}
+          onClose={() => setIsBulkOpen(false)}
+          title="Bulk Module & Architecture Presets"
+          size="lg"
+          footer={
+            <div className="flex items-center justify-end gap-3 w-full">
+              <Button variant="ghost" size="sm" onClick={() => setIsBulkOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                variant="primary" 
+                size="sm" 
+                onClick={handleBulkImport}
+                disabled={!bulkText.trim()}
+                className="font-bold shadow-sm"
+              >
+                <Check size={14} className="mr-1.5" /> Import {bulkText.trim() ? `${bulkText.trim().split('\n').filter(Boolean).length} Module(s)` : 'Modules'}
+              </Button>
+            </div>
+          }
+        >
+          <div className="space-y-5 text-xs">
 
               <div className="p-6 overflow-y-auto custom-scroll space-y-5">
                 {/* Architecture Presets */}
@@ -554,24 +558,8 @@ const ScaffolderView: React.FC = () => {
                   </div>
                 </div>
               </div>
-
-              <div className="px-6 py-4 border-t border-[var(--color-divider)] bg-[var(--color-surface-2)] flex items-center justify-end gap-3">
-                <Button variant="ghost" size="sm" onClick={() => setIsBulkOpen(false)}>
-                  Cancel
-                </Button>
-                <Button 
-                  variant="primary" 
-                  size="sm" 
-                  onClick={handleBulkImport}
-                  disabled={!bulkText.trim()}
-                  className="font-bold shadow-sm"
-                >
-                  <Check size={14} className="mr-1.5" /> Import {bulkText.trim() ? `${bulkText.trim().split('\n').filter(Boolean).length} Module(s)` : 'Modules'}
-                </Button>
-              </div>
             </div>
-          </div>
-        )}
+        </Modal>
       </div>
     </div>
   );

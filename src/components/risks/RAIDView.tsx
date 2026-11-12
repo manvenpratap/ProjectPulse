@@ -34,6 +34,7 @@ import SectionHelpButton from '../shared/SectionHelpButton';
 import Modal from '../shared/Modal';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef } from '../shared/DataTable';
+import CollapsibleSummaryStrip, { SummaryMetricItem } from '../shared/CollapsibleSummaryStrip';
 
 const RAIDView: React.FC = () => {
   const { state, updateProject, addLog } = useProject();
@@ -256,6 +257,13 @@ const RAIDView: React.FC = () => {
   const activeFiltered = getFilteredRaids();
   const activeDecisions = getFilteredDecisions();
 
+  const raidSummaryMetrics: SummaryMetricItem[] = [
+    { label: 'Active Risks', value: raids.filter(r => r.type === 'Risk' && isRaidActive(r.status)).length, tone: raids.some(r => r.type === 'Risk' && isRaidActive(r.status)) ? 'rose' : 'emerald' },
+    { label: 'Critical (S1)', value: raids.filter(r => r.type === 'Risk' && (r.severity?.includes('Critical') || r.severity?.includes('S1'))).length, tone: raids.some(r => r.type === 'Risk' && (r.severity?.includes('Critical') || r.severity?.includes('S1'))) ? 'rose' : 'neutral' },
+    { label: 'Active Issues', value: raids.filter(r => r.type === 'Issue' && isRaidActive(r.status)).length, tone: raids.some(r => r.type === 'Issue' && isRaidActive(r.status)) ? 'amber' : 'neutral' },
+    { label: 'Pending Decisions', value: decisions.filter(d => d.status === 'Pending Sign-off').length, tone: decisions.some(d => d.status === 'Pending Sign-off') ? 'primary' : 'neutral' }
+  ];
+
   const raidPagination = usePagination<RaidItem>(activeFiltered, 10, 'pp_page_size_raid');
   const decisionPagination = usePagination<Decision>(activeDecisions, 10, 'pp_page_size_decisions');
 
@@ -364,14 +372,14 @@ const RAIDView: React.FC = () => {
         <div className="flex gap-1 justify-end whitespace-nowrap" onClick={e => e.stopPropagation()}>
           <button 
             onClick={() => handleOpenDecisionModal(d)} 
-            className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors inline-flex items-center justify-center cursor-pointer"
+            className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors inline-flex items-center justify-center cursor-pointer touch-hit-expand"
             aria-label={`Edit ${d.id}`}
           >
             <Edit2 size={13} />
           </button>
           <button 
             onClick={() => handleDeleteDecision(d.id)} 
-            className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-red-500 hover:bg-rose-500/10 transition-colors inline-flex items-center justify-center cursor-pointer"
+            className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-red-500 hover:bg-rose-500/10 transition-colors inline-flex items-center justify-center cursor-pointer touch-hit-expand"
             aria-label={`Delete ${d.id}`}
           >
             <Trash2 size={13} />
@@ -480,14 +488,14 @@ const RAIDView: React.FC = () => {
         <div className="flex gap-1 justify-end whitespace-nowrap" onClick={e => e.stopPropagation()}>
           <button 
             onClick={() => handleOpenRaidModal(r)} 
-            className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors inline-flex items-center justify-center cursor-pointer"
+            className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors inline-flex items-center justify-center cursor-pointer touch-hit-expand"
             aria-label={`Edit ${r.id}`}
           >
             <Edit2 size={13} />
           </button>
           <button 
             onClick={() => handleDeleteRaid(r.id)} 
-            className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-red-500 hover:bg-rose-500/10 transition-colors inline-flex items-center justify-center cursor-pointer"
+            className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-red-500 hover:bg-rose-500/10 transition-colors inline-flex items-center justify-center cursor-pointer touch-hit-expand"
             aria-label={`Delete ${r.id}`}
           >
             <Trash2 size={13} />
@@ -585,192 +593,184 @@ const RAIDView: React.FC = () => {
           </div>
         </div>
 
-        {/* Grid-Heatmap Matrix Section for Risks & Assumptions */}
+        {/* Grid-Heatmap Matrix Section for Risks & Assumptions in Collapsible Strip */}
         {activeTab !== 'decisions' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-            <div className="lg:col-span-2 card p-4 sm:p-6">
-              <div className="flex justify-between items-center mb-4">
-                <div 
-                  className="flex items-center gap-2 cursor-pointer sm:cursor-default"
-                  onClick={() => setIsMatrixExpandedMobile(!isMatrixExpandedMobile)}
-                >
+          <CollapsibleSummaryStrip
+            summary={raidSummaryMetrics}
+            title="RAID Priority Heatmap & Risk Posture"
+            defaultExpanded={false}
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="lg:col-span-2 card p-4 sm:p-6">
+                <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center gap-1.5">
                     <h3 className="font-bold text-sm flex items-center gap-1.5">
                       RAID Priority Matrix
-                      <span className="sm:hidden text-xs text-[var(--color-text-faint)]">
-                        {isMatrixExpandedMobile ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                      </span>
                     </h3>
-                    <span onClick={(e) => e.stopPropagation()}>
-                      <SectionHelpButton view="risks" section="Impact Matrix Heatmap" label="RAID Matrix guide" size={13} />
-                    </span>
+                    <SectionHelpButton view="risks" section="Impact Matrix Heatmap" label="RAID Matrix guide" size={13} />
+                  </div>
+                  {matrixFilter && (
+                    <button 
+                      onClick={() => setMatrixFilter(null)}
+                      className="min-h-[32px] px-2.5 rounded-lg text-xs font-semibold text-rose-500 bg-rose-500/10 hover:bg-rose-500/20 transition-colors cursor-pointer"
+                    >
+                      Clear Filter
+                    </button>
+                  )}
+                </div>
+
+                <div>
+                  <div className="flex gap-2 sm:gap-4 items-stretch">
+                    {/* Y-Axis Label */}
+                    <div className="w-5 text-[11px] font-semibold text-[var(--color-text-muted)] text-center flex items-center justify-center border-r border-[var(--color-divider)] pr-1 [writing-mode:vertical-lr] rotate-180 shrink-0">
+                      Impact
+                    </div>
+
+                    {/* Main Grid + Probability Labels Container */}
+                    <div className="flex-1 flex flex-col">
+                      <div className="flex gap-2 items-stretch">
+                        {/* Impact Row Labels */}
+                        <div className="grid grid-rows-3 gap-2 text-[11px] sm:text-xs font-semibold text-[var(--color-text-muted)] text-right w-8 sm:w-12 pr-1 shrink-0">
+                          <div className="flex items-center justify-end h-11 sm:h-12">High</div>
+                          <div className="flex items-center justify-end h-11 sm:h-12">Med</div>
+                          <div className="flex items-center justify-end h-11 sm:h-12">Low</div>
+                        </div>
+                        
+                        {/* 3x3 Heatmap Grid */}
+                        <div className="grid grid-cols-3 grid-rows-3 gap-2 flex-1">
+                          {/* High-Risk Row */}
+                          <button 
+                            type="button"
+                            onClick={() => selectMatrixCell('High', 'Low')}
+                            className={clsx(
+                              "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-200/40 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
+                              matrixFilter?.impact === 'High' && matrixFilter.prob === 'Low' && "ring-2 ring-[var(--color-primary-hex)] bg-amber-500/25"
+                            )}
+                            aria-label={`High Impact, Low Probability: ${getCellCount('High', 'Low')} items`}
+                          >{getCellCount('High', 'Low')}</button>
+                          <button 
+                            type="button"
+                            onClick={() => selectMatrixCell('High', 'Medium')}
+                            className={clsx(
+                              "bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-200/40 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
+                              matrixFilter?.impact === 'High' && matrixFilter.prob === 'Medium' && "ring-2 ring-[var(--color-primary-hex)] bg-orange-500/25"
+                            )}
+                            aria-label={`High Impact, Medium Probability: ${getCellCount('High', 'Medium')} items`}
+                          >{getCellCount('High', 'Medium')}</button>
+                          <button 
+                            type="button"
+                            onClick={() => selectMatrixCell('High', 'High')}
+                            className={clsx(
+                              "bg-rose-500/25 text-rose-600 dark:text-rose-400 border border-rose-200/50 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
+                              matrixFilter?.impact === 'High' && matrixFilter.prob === 'High' && "ring-2 ring-[var(--color-primary-hex)] bg-rose-500/40"
+                            )}
+                            aria-label={`High Impact, High Probability: ${getCellCount('High', 'High')} items`}
+                          >{getCellCount('High', 'High')}</button>
+
+                          {/* Medium-Risk Row */}
+                          <button 
+                            type="button"
+                            onClick={() => selectMatrixCell('Medium', 'Low')}
+                            className={clsx(
+                              "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-100/50 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
+                              matrixFilter?.impact === 'Medium' && matrixFilter.prob === 'Low' && "ring-2 ring-[var(--color-primary-hex)] bg-yellow-500/20"
+                            )}
+                            aria-label={`Medium Impact, Low Probability: ${getCellCount('Medium', 'Low')} items`}
+                          >{getCellCount('Medium', 'Low')}</button>
+                          <button 
+                            type="button"
+                            onClick={() => selectMatrixCell('Medium', 'Medium')}
+                            className={clsx(
+                              "bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-200/50 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
+                              matrixFilter?.impact === 'Medium' && matrixFilter.prob === 'Medium' && "ring-2 ring-[var(--color-primary-hex)] bg-amber-500/25"
+                            )}
+                            aria-label={`Medium Impact, Medium Probability: ${getCellCount('Medium', 'Medium')} items`}
+                          >{getCellCount('Medium', 'Medium')}</button>
+                          <button 
+                            type="button"
+                            onClick={() => selectMatrixCell('Medium', 'High')}
+                            className={clsx(
+                              "bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-200/50 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
+                              matrixFilter?.impact === 'Medium' && matrixFilter.prob === 'High' && "ring-2 ring-[var(--color-primary-hex)] bg-orange-500/35"
+                            )}
+                            aria-label={`Medium Impact, High Probability: ${getCellCount('Medium', 'High')} items`}
+                          >{getCellCount('Medium', 'High')}</button>
+
+                          {/* Low-Risk Row */}
+                          <button 
+                            type="button"
+                            onClick={() => selectMatrixCell('Low', 'Low')}
+                            className={clsx(
+                              "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100/50 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
+                              matrixFilter?.impact === 'Low' && matrixFilter.prob === 'Low' && "ring-2 ring-[var(--color-primary-hex)] bg-emerald-500/20"
+                            )}
+                            aria-label={`Low Impact, Low Probability: ${getCellCount('Low', 'Low')} items`}
+                          >{getCellCount('Low', 'Low')}</button>
+                          <button 
+                            type="button"
+                            onClick={() => selectMatrixCell('Low', 'Medium')}
+                            className={clsx(
+                              "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-100/50 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
+                              matrixFilter?.impact === 'Low' && matrixFilter.prob === 'Medium' && "ring-2 ring-[var(--color-primary-hex)] bg-yellow-500/20"
+                            )}
+                            aria-label={`Low Impact, Medium Probability: ${getCellCount('Low', 'Medium')} items`}
+                          >{getCellCount('Low', 'Medium')}</button>
+                          <button 
+                            type="button"
+                            onClick={() => selectMatrixCell('Low', 'High')}
+                            className={clsx(
+                              "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-200/50 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
+                              matrixFilter?.impact === 'Low' && matrixFilter.prob === 'High' && "ring-2 ring-[var(--color-primary-hex)] bg-amber-500/30"
+                            )}
+                            aria-label={`Low Impact, High Probability: ${getCellCount('Low', 'High')} items`}
+                          >{getCellCount('Low', 'High')}</button>
+                        </div>
+                      </div>
+
+                      {/* X-Axis Probability Column Labels directly under matrix */}
+                      <div className="flex flex-col mt-2 pl-10 sm:pl-14">
+                        <div className="grid grid-cols-3 gap-2 text-[11px] sm:text-xs font-semibold text-[var(--color-text-muted)] text-center">
+                          <div>Low</div>
+                          <div>Med</div>
+                          <div>High</div>
+                        </div>
+                        <div className="text-[11px] font-semibold text-[var(--color-text-muted)] text-center mt-1">
+                          Probability
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                {matrixFilter && (
-                  <button 
-                    onClick={() => setMatrixFilter(null)}
-                    className="min-h-[32px] px-2.5 rounded-lg text-xs font-semibold text-rose-500 bg-rose-500/10 hover:bg-rose-500/20 transition-colors cursor-pointer"
-                  >
-                    Clear Filter
-                  </button>
+              </div>
+
+              <div className="card p-4 sm:p-6 flex flex-col justify-between">
+                <div>
+                  <h3 className="text-sm font-bold flex items-center gap-2 mb-2">
+                    <ShieldAlert className="text-[var(--color-primary-hex)]" size={16} /> 
+                    <span>Active Risk Posture</span>
+                    <SectionHelpButton view="risks" section="Severity Score" label="Risk Posture guide" size={13} />
+                  </h3>
+                </div>
+                {matrixFilter ? (
+                  <div className="mt-4 p-3 bg-[var(--color-primary-highlight-hex)] border border-[var(--color-primary-hex)]/30 text-[var(--color-primary-hex)] rounded-xl text-xs font-bold flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <Zap size={14} /> Filtered: {matrixFilter.impact} Impact &times; {matrixFilter.prob} Prob
+                    </span>
+                    <button 
+                      onClick={() => setMatrixFilter(null)}
+                      className="underline text-[11px] cursor-pointer"
+                    >
+                      Reset
+                    </button>
+                  </div>
+                ) : (
+                  <div className="mt-4 text-[11px] text-[var(--color-text-faint)] flex items-center gap-1">
+                    <Info size={13} /> Showing all items
+                  </div>
                 )}
               </div>
-
-              {/* Collapsible content on mobile */}
-              <div className={clsx(
-                "transition-all",
-                isMatrixExpandedMobile ? "block" : "hidden sm:block"
-              )}>
-                <div className="flex gap-2 sm:gap-4 items-stretch">
-                  {/* Y-Axis Label */}
-                  <div className="w-5 text-[11px] font-semibold text-[var(--color-text-muted)] text-center flex items-center justify-center border-r border-[var(--color-divider)] pr-1 [writing-mode:vertical-lr] rotate-180 shrink-0">
-                    Impact
-                  </div>
-
-                  {/* Main Grid + Probability Labels Container */}
-                  <div className="flex-1 flex flex-col">
-                    <div className="flex gap-2 items-stretch">
-                      {/* Impact Row Labels */}
-                      <div className="grid grid-rows-3 gap-2 text-[11px] sm:text-xs font-semibold text-[var(--color-text-muted)] text-right w-8 sm:w-12 pr-1 shrink-0">
-                        <div className="flex items-center justify-end h-11 sm:h-12">High</div>
-                        <div className="flex items-center justify-end h-11 sm:h-12">Med</div>
-                        <div className="flex items-center justify-end h-11 sm:h-12">Low</div>
-                      </div>
-                      
-                      {/* 3x3 Heatmap Grid */}
-                      <div className="grid grid-cols-3 grid-rows-3 gap-2 flex-1">
-                        {/* High-Risk Row */}
-                        <button 
-                          type="button"
-                          onClick={() => selectMatrixCell('High', 'Low')}
-                          className={clsx(
-                            "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-200/40 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
-                            matrixFilter?.impact === 'High' && matrixFilter.prob === 'Low' && "ring-2 ring-[var(--color-primary-hex)] bg-amber-500/25"
-                          )}
-                          aria-label={`High Impact, Low Probability: ${getCellCount('High', 'Low')} items`}
-                        >{getCellCount('High', 'Low')}</button>
-                        <button 
-                          type="button"
-                          onClick={() => selectMatrixCell('High', 'Medium')}
-                          className={clsx(
-                            "bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-200/40 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
-                            matrixFilter?.impact === 'High' && matrixFilter.prob === 'Medium' && "ring-2 ring-[var(--color-primary-hex)] bg-orange-500/25"
-                          )}
-                          aria-label={`High Impact, Medium Probability: ${getCellCount('High', 'Medium')} items`}
-                        >{getCellCount('High', 'Medium')}</button>
-                        <button 
-                          type="button"
-                          onClick={() => selectMatrixCell('High', 'High')}
-                          className={clsx(
-                            "bg-rose-500/25 text-rose-600 dark:text-rose-400 border border-rose-200/50 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
-                            matrixFilter?.impact === 'High' && matrixFilter.prob === 'High' && "ring-2 ring-[var(--color-primary-hex)] bg-rose-500/40"
-                          )}
-                          aria-label={`High Impact, High Probability: ${getCellCount('High', 'High')} items`}
-                        >{getCellCount('High', 'High')}</button>
-
-                        {/* Medium-Risk Row */}
-                        <button 
-                          type="button"
-                          onClick={() => selectMatrixCell('Medium', 'Low')}
-                          className={clsx(
-                            "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-100/50 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
-                            matrixFilter?.impact === 'Medium' && matrixFilter.prob === 'Low' && "ring-2 ring-[var(--color-primary-hex)] bg-yellow-500/20"
-                          )}
-                          aria-label={`Medium Impact, Low Probability: ${getCellCount('Medium', 'Low')} items`}
-                        >{getCellCount('Medium', 'Low')}</button>
-                        <button 
-                          type="button"
-                          onClick={() => selectMatrixCell('Medium', 'Medium')}
-                          className={clsx(
-                            "bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-200/50 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
-                            matrixFilter?.impact === 'Medium' && matrixFilter.prob === 'Medium' && "ring-2 ring-[var(--color-primary-hex)] bg-amber-500/25"
-                          )}
-                          aria-label={`Medium Impact, Medium Probability: ${getCellCount('Medium', 'Medium')} items`}
-                        >{getCellCount('Medium', 'Medium')}</button>
-                        <button 
-                          type="button"
-                          onClick={() => selectMatrixCell('Medium', 'High')}
-                          className={clsx(
-                            "bg-orange-500/15 text-orange-600 dark:text-orange-400 border border-orange-200/50 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
-                            matrixFilter?.impact === 'Medium' && matrixFilter.prob === 'High' && "ring-2 ring-[var(--color-primary-hex)] bg-orange-500/35"
-                          )}
-                          aria-label={`Medium Impact, High Probability: ${getCellCount('Medium', 'High')} items`}
-                        >{getCellCount('Medium', 'High')}</button>
-
-                        {/* Low-Risk Row */}
-                        <button 
-                          type="button"
-                          onClick={() => selectMatrixCell('Low', 'Low')}
-                          className={clsx(
-                            "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-100/50 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
-                            matrixFilter?.impact === 'Low' && matrixFilter.prob === 'Low' && "ring-2 ring-[var(--color-primary-hex)] bg-emerald-500/20"
-                          )}
-                          aria-label={`Low Impact, Low Probability: ${getCellCount('Low', 'Low')} items`}
-                        >{getCellCount('Low', 'Low')}</button>
-                        <button 
-                          type="button"
-                          onClick={() => selectMatrixCell('Low', 'Medium')}
-                          className={clsx(
-                            "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border border-yellow-100/50 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
-                            matrixFilter?.impact === 'Low' && matrixFilter.prob === 'Medium' && "ring-2 ring-[var(--color-primary-hex)] bg-yellow-500/20"
-                          )}
-                          aria-label={`Low Impact, Medium Probability: ${getCellCount('Low', 'Medium')} items`}
-                        >{getCellCount('Low', 'Medium')}</button>
-                        <button 
-                          type="button"
-                          onClick={() => selectMatrixCell('Low', 'High')}
-                          className={clsx(
-                            "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-200/50 rounded-xl flex items-center justify-center font-bold text-sm cursor-pointer h-11 sm:h-12 transition-all active:scale-95",
-                            matrixFilter?.impact === 'Low' && matrixFilter.prob === 'High' && "ring-2 ring-[var(--color-primary-hex)] bg-amber-500/30"
-                          )}
-                          aria-label={`Low Impact, High Probability: ${getCellCount('Low', 'High')} items`}
-                        >{getCellCount('Low', 'High')}</button>
-                      </div>
-                    </div>
-
-                    {/* X-Axis Probability Column Labels directly under matrix */}
-                    <div className="flex flex-col mt-2 pl-10 sm:pl-14">
-                      <div className="grid grid-cols-3 gap-2 text-[11px] sm:text-xs font-semibold text-[var(--color-text-muted)] text-center">
-                        <div>Low</div>
-                        <div>Med</div>
-                        <div>High</div>
-                      </div>
-                      <div className="text-[11px] font-semibold text-[var(--color-text-muted)] text-center mt-1">
-                        Probability
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
-
-            <div className="card p-4 sm:p-6 flex flex-col justify-between">
-              <div>
-                <h3 className="text-sm font-bold flex items-center gap-2 mb-2">
-                  <ShieldAlert className="text-[var(--color-primary-hex)]" size={16} /> 
-                  <span>Active Risk Posture</span>
-                  <SectionHelpButton view="risks" section="Severity Score" label="Risk Posture guide" size={13} />
-                </h3>
-              </div>
-              {matrixFilter ? (
-                <div className="mt-4 p-3 bg-[var(--color-primary-highlight-hex)] border border-[var(--color-primary-hex)]/30 text-[var(--color-primary-hex)] rounded-xl text-xs font-bold flex items-center justify-between">
-                  <span className="flex items-center gap-1.5">
-                    <Zap size={14} /> Filtered: {matrixFilter.impact} Impact &times; {matrixFilter.prob} Prob
-                  </span>
-                  <button 
-                    onClick={() => setMatrixFilter(null)}
-                    className="underline text-[11px] cursor-pointer"
-                  >
-                    Reset
-                  </button>
-                </div>
-              ) : (
-                <div className="mt-4 text-[11px] text-[var(--color-text-faint)] flex items-center gap-1">
-                  <Info size={13} /> Showing all items
-                </div>
-              )}
-            </div>
-          </div>
+          </CollapsibleSummaryStrip>
         )}
 
         {/* Register Content: Responsive Card View on Mobile + Table on Desktop */}

@@ -9,6 +9,7 @@ import ThemeFlyout from './ThemeFlyout';
 import UserProfileFlyout from './UserProfileFlyout';
 import AccessManagerModal from '../auth/AccessManagerModal';
 import { MobileLaunchQrButton } from '../shared/MobileLaunchQrModal';
+import { toast } from '../../utils/toast';
 import {
   Activity,
   UploadCloud,
@@ -54,8 +55,9 @@ const SetupView: React.FC = () => {
       setIsImporting(true);
       const data = await importProjectExcel(file);
       updateProject(data);
+      toast.success('Workspace imported successfully from Excel.');
     } catch (err: any) {
-      alert('Failed to import Excel database: ' + (err.message || 'Unknown error'));
+      toast.error('Failed to import Excel database: ' + (err.message || 'Unknown error'));
     } finally {
       setIsImporting(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -66,8 +68,9 @@ const SetupView: React.FC = () => {
     try {
       setIsImporting(true);
       await loadSample('web');
+      toast.success('Demo database loaded successfully.');
     } catch (err: any) {
-      alert('Failed to load demo database: ' + (err.message || 'Unknown error'));
+      toast.error('Failed to load demo database: ' + (err.message || 'Unknown error'));
     } finally {
       setIsImporting(false);
     }
@@ -108,7 +111,7 @@ const SetupView: React.FC = () => {
             <span className="font-display font-bold text-sm tracking-tight text-[var(--color-text)] block leading-tight">
               ProjectPulse
             </span>
-            <span className="text-[10px] font-mono text-[var(--color-text-faint)] block">
+            <span className="text-[10px] font-mono text-[var(--color-text-muted)] font-medium block">
               Workspace Setup
             </span>
           </div>
@@ -201,7 +204,7 @@ const SetupView: React.FC = () => {
                 <label htmlFor="setup-project-name" className="text-xs font-semibold text-[var(--color-text-muted)]">Project name</label>
                 <input
                   id="setup-project-name"
-                  className="w-full px-3.5 py-2.5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg outline-none focus:border-[var(--color-primary-hex)] transition-colors text-sm"
+                  className="w-full px-3.5 py-2.5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg outline-none focus:border-[var(--color-primary-hex)] focus:ring-2 focus:ring-[var(--color-primary-hex)]/20 placeholder:text-[var(--color-text-muted)]/70 transition-all text-sm"
                   placeholder="e.g. Platform Modernization Q3"
                   value={name}
                   onChange={e => setName(e.target.value)}
@@ -212,7 +215,7 @@ const SetupView: React.FC = () => {
                 <label htmlFor="setup-project-desc" className="text-xs font-semibold text-[var(--color-text-muted)]">Mission statement & scope</label>
                 <textarea
                   id="setup-project-desc"
-                  className="w-full px-3.5 py-2.5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg outline-none focus:border-[var(--color-primary-hex)] transition-colors text-sm resize-none"
+                  className="w-full px-3.5 py-2.5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg outline-none focus:border-[var(--color-primary-hex)] focus:ring-2 focus:ring-[var(--color-primary-hex)]/20 placeholder:text-[var(--color-text-muted)]/70 transition-all text-sm resize-none"
                   placeholder="Brief project mission statement..."
                   rows={2}
                   value={desc}
@@ -224,7 +227,7 @@ const SetupView: React.FC = () => {
                 <label htmlFor="setup-project-team" className="text-xs font-semibold text-[var(--color-text-muted)]">Initial Team members (comma-separated)</label>
                 <input
                   id="setup-project-team"
-                  className="w-full px-3.5 py-2.5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg outline-none focus:border-[var(--color-primary-hex)] transition-colors text-sm"
+                  className="w-full px-3.5 py-2.5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg outline-none focus:border-[var(--color-primary-hex)] focus:ring-2 focus:ring-[var(--color-primary-hex)]/20 placeholder:text-[var(--color-text-muted)]/70 transition-all text-sm"
                   placeholder="Alex Rivera, Sarah Chen, Marcus Wong"
                   value={team}
                   onChange={e => setTeam(e.target.value)}

@@ -28,6 +28,7 @@ import clsx from 'clsx';
 import { motion, AnimatePresence } from 'motion/react';
 import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
+import { toast } from '../../utils/toast';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import { TaskStatus } from '../../types';
 import { daysDiff, getBusinessDays, addBusDays } from '../../utils/projectUtils';
@@ -216,11 +217,11 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
   // Auto-Balance Action: Shifts non-critical tasks from overloaded devs to available devs
   const handleAutoBalance = () => {
     if (conflicts.length === 0) {
-      alert("No conflicts to resolve! Workload is already balanced.");
+      toast.info("No conflicts to resolve! Workload is already balanced.");
       return;
     }
     if (underutilized.length === 0) {
-      alert("No available team members found to reallocate work to. Consider hiring or extending deadlines.");
+      toast.warning("No available team members found to reallocate work to. Consider hiring or extending deadlines.");
       return;
     }
 
@@ -247,9 +248,9 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
       if (reallocatedCount > 0) {
         updateProject({ tasks: targetTasks });
         addLog('Auto-Balance Executed', 'CAPACITY', `Reassigned ${reallocatedCount} tasks to balance workloads.`);
-        alert(`Successfully rebalanced ${reallocatedCount} task(s) across available team members!`);
+        toast.success(`Successfully rebalanced ${reallocatedCount} task(s) across available team members!`);
       } else {
-        alert("Could not reassign tasks automatically: all overloaded tasks are flagged Critical.");
+        toast.warning("Could not reassign tasks automatically: all overloaded tasks are flagged Critical.");
       }
     }
   };

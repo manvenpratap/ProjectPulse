@@ -4,6 +4,8 @@ import { History, Search, Filter, MessageSquare, Clock, Plus, X, ShieldCheck } f
 import { fmtDate } from '../../utils/projectUtils';
 import PageHeader from '../shared/PageHeader';
 import Button from '../shared/Button';
+import Modal from '../shared/Modal';
+import { toast } from '../../utils/toast';
 import clsx from 'clsx';
 import { LogEntry } from '../../types';
 
@@ -25,6 +27,7 @@ const LogView: React.FC = () => {
       '',
       noteComment.trim() || 'Manual governance audit note recorded'
     );
+    toast.success('Recorded governance audit note.');
     setNoteSubject('');
     setNoteComment('');
     setIsAddModalOpen(false);
@@ -119,8 +122,12 @@ const LogView: React.FC = () => {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center flex-wrap gap-2 mb-1">
                               <span className={clsx(
-                                "text-xs font-semibold px-1.5 py-0.5 rounded",
-                                isCreated ? "bg-emerald-100 text-emerald-700" : isStatus ? "bg-indigo-100 text-indigo-700" : "bg-blue-100 text-blue-700"
+                                "text-xs font-semibold px-2 py-0.5 rounded-md border",
+                                isCreated 
+                                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20" 
+                                  : isStatus 
+                                    ? "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20" 
+                                    : "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20"
                               )}>
                                 {entry.action}
                               </span>
@@ -136,8 +143,8 @@ const LogView: React.FC = () => {
                               <div className="text-xs text-[var(--color-text-muted)] flex items-center gap-2 mt-2">
                                 <span className="font-bold text-[var(--color-primary-hex)] underline decoration-dotted underline-offset-4">{entry.field}</span>
                                 <span className="opacity-40">changed from</span>
-                                <span className="line-through italic opacity-50 px-1 bg-red-50 text-red-500 rounded">{entry.oldVal || 'None'}</span>
-                                <span className="font-bold opacity-100 px-1 bg-emerald-50 text-emerald-600 rounded">{entry.newVal}</span>
+                                <span className="line-through italic opacity-60 px-1.5 py-0.5 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded">{entry.oldVal || 'None'}</span>
+                                <span className="font-bold opacity-100 px-1.5 py-0.5 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded">{entry.newVal}</span>
                               </div>
                             )}
 
@@ -172,78 +179,61 @@ const LogView: React.FC = () => {
       </div>
 
       {/* Manual Governance Audit Note Modal */}
-      {isAddModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl max-w-md w-full p-6 shadow-xl space-y-4 animate-in fade-in zoom-in-95 duration-150">
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--color-divider)]">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center">
-                  <ShieldCheck size={16} />
-                </div>
-                <div>
-                  <h3 className="font-bold text-sm text-[var(--color-text)]">Record Governance Note</h3>
-                  <p className="text-[11px] text-[var(--color-text-muted)]">Manual audit ledger transaction</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => setIsAddModalOpen(false)}
-                className="p-1 rounded-lg hover:bg-[var(--color-surface-2)] text-[var(--color-text-muted)]"
-              >
-                <X size={16} />
-              </button>
-            </div>
-
-            <form onSubmit={handleSaveAuditNote} className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-[var(--color-text)] mb-1">
-                  Subject / Scope <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Architecture Steering Review, Security Sign-Off..."
-                  value={noteSubject}
-                  onChange={e => setNoteSubject(e.target.value)}
-                  className="w-full h-9 px-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-xs text-[var(--color-text)] outline-none focus:border-[var(--color-primary-hex)]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-[var(--color-text)] mb-1">
-                  Audit Findings & Decision Notes
-                </label>
-                <textarea
-                  rows={3}
-                  placeholder="Record steering decision, compliance approval, or audit rationale..."
-                  value={noteComment}
-                  onChange={e => setNoteComment(e.target.value)}
-                  className="w-full p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-xs text-[var(--color-text)] outline-none focus:border-[var(--color-primary-hex)] resize-none"
-                />
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--color-divider)]">
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setIsAddModalOpen(false)}
-                  className="h-9 px-4 rounded-xl text-xs font-bold"
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  type="submit" 
-                  variant="primary" 
-                  size="sm" 
-                  className="h-9 px-4 rounded-xl text-xs font-bold shadow-xs"
-                >
-                  Save Entry
-                </Button>
-              </div>
-            </form>
+      <Modal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        title="Record Governance Note"
+        size="md"
+      >
+        <form onSubmit={handleSaveAuditNote} className="space-y-4">
+          <div>
+            <label className="block text-xs font-bold text-[var(--color-text)] mb-1">
+              Subject / Scope <span className="text-rose-500">*</span>
+            </label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Architecture Steering Review, Security Sign-Off..."
+              value={noteSubject}
+              onChange={e => setNoteSubject(e.target.value)}
+              className="w-full h-9 px-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-xs text-[var(--color-text)] outline-none focus:border-[var(--color-primary-hex)]"
+            />
           </div>
-        </div>
-      )}
+
+          <div>
+            <label className="block text-xs font-bold text-[var(--color-text)] mb-1">
+              Audit Findings & Decision Notes
+            </label>
+            <textarea
+              rows={3}
+              placeholder="Record steering decision, compliance approval, or audit rationale..."
+              value={noteComment}
+              onChange={e => setNoteComment(e.target.value)}
+              className="w-full p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-xs text-[var(--color-text)] outline-none focus:border-[var(--color-primary-hex)] resize-none"
+            />
+          </div>
+
+          <div className="flex items-center justify-end gap-2 pt-2 border-t border-[var(--color-divider)]">
+            <Button 
+              type="button" 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setIsAddModalOpen(false)}
+              className="h-9 px-4 rounded-xl text-xs font-bold"
+            >
+              Cancel
+            </Button>
+            <Button 
+              type="submit" 
+              variant="primary" 
+              size="sm" 
+              className="h-9 px-4 rounded-xl text-xs font-bold shadow-xs"
+            >
+              Save Entry
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };

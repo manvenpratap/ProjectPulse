@@ -118,7 +118,7 @@ const ReportView: React.FC = () => {
         <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6 print:p-0">
           
           {/* Report Tab Selector */}
-          <div className="w-full flex p-1 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl print:hidden shadow-sm overflow-x-auto no-scrollbar scroll-fade-x">
+          <div className="w-full flex p-1 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl print:hidden shadow-sm overflow-x-auto no-scrollbar scroll-fade-x snap-x scroll-smooth">
             {[
               { id: 'status', label: 'Status Summary', icon: TrendingUp },
               { id: 'cxo', label: 'CXO Email Briefing', icon: Mail },

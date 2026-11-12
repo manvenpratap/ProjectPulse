@@ -117,7 +117,7 @@ const TaskView: React.FC<TaskViewProps> = ({ initialMode }) => {
         title="Project Tasks Matrix"
         subtitle={`${state.tasks.length} Total Tasks • ${state.tasks.filter(t => t.status === 'Completed').length} Done`}
         actions={
-          <div className="flex flex-nowrap md:flex-wrap items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar scroll-fade-x py-0.5 max-w-full">
             {/* Quick Filters (Active in Grid mode) */}
             {viewMode === 'grid' && (
               <div className="flex items-center gap-1.5 flex-nowrap md:flex-wrap">

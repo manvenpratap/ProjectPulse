@@ -27,6 +27,7 @@ import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
 import Modal from '../shared/Modal';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
+import { toast } from '../../utils/toast';
 import clsx from 'clsx';
 
 export const ReleaseRoadmap: React.FC = () => {
@@ -81,7 +82,7 @@ export const ReleaseRoadmap: React.FC = () => {
 
   const handleSaveRelease = () => {
     if (!formName.trim()) {
-      alert('Release name is required');
+      toast.error('Release name is required');
       return;
     }
 
@@ -95,6 +96,7 @@ export const ReleaseRoadmap: React.FC = () => {
       } : r);
       updateProject({ releases: updated });
       addLog('Updated Release', editingRelease.id, formName.trim(), 'status', editingRelease.status, formStatus, 'Release details modified');
+      toast.success(`Updated release "${formName.trim()}".`);
     } else {
       const newId = `rel-${Date.now().toString(36)}`;
       const newRelease: Release = {
@@ -106,6 +108,7 @@ export const ReleaseRoadmap: React.FC = () => {
       };
       updateProject({ releases: [...releases, newRelease] });
       addLog('Created Release', newId, formName.trim(), 'release', '', formName.trim(), 'New release cycle created');
+      toast.success(`Created release "${formName.trim()}".`);
     }
 
     setIsModalOpen(false);
@@ -115,6 +118,7 @@ export const ReleaseRoadmap: React.FC = () => {
     if (confirm(`Are you sure you want to delete release version "${name}"? Mapped tasks will remain intact.`)) {
       updateProject({ releases: releases.filter(r => r.id !== id) });
       addLog('Deleted Release', id, name, 'release', name, '', 'Release cycle deleted');
+      toast.success(`Deleted release "${name}".`);
     }
   };
 
@@ -122,7 +126,7 @@ export const ReleaseRoadmap: React.FC = () => {
     if (!r.startDate || !r.date) return;
     const mapped = tasks.filter(t => t.release === r.name);
     if (!mapped.length) {
-      alert(`No tasks currently mapped to ${r.name}`);
+      toast.info(`No tasks currently mapped to ${r.name}`);
       return;
     }
 

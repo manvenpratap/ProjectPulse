@@ -492,7 +492,7 @@ export const DashboardView: React.FC = () => {
 
                   {/* P50 Expected vs P90 Conservative Target */}
                   <div className="sm:col-span-8 space-y-3">
-                    <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] border-l-4 border-l-[var(--color-primary-hex)]">
+                    <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
                       <div className="flex justify-between items-center flex-wrap gap-1.5 mb-1">
                         <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-1.5">
                           <Calendar size={12} className="text-[var(--color-primary-hex)] shrink-0" /> Forecasted Finish (P50 Likely)
@@ -513,7 +513,7 @@ export const DashboardView: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="p-3.5 rounded-2xl bg-[var(--color-surface-2)]/60 border border-[var(--color-divider)] border-l-4 border-l-purple-500 flex justify-between items-center">
+                    <div className="p-3.5 rounded-2xl bg-[var(--color-surface-2)]/60 border border-[var(--color-divider)] flex justify-between items-center">
                       <div>
                         <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] flex items-center gap-1">
                           <ShieldAlert size={12} className="text-purple-500" /> Conservative Target (P90)

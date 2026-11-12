@@ -3,6 +3,7 @@ import { useProject } from '../../store/ProjectContext';
 import { Task, TaskStatus, TaskPriority, Subtask } from '../../types';
 import { fmtDate, daysDiff, isBlocked, todayStr } from '../../utils/projectUtils';
 import { computeSubtaskRollup, nextTaskQuickStatus } from '../../utils/stateMachines';
+import { toast } from '../../utils/toast';
 import clsx from 'clsx';
 import { 
   MoreHorizontal, 
@@ -131,7 +132,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
 
     const res = updateTask(task.id, { status: nextStatus }, `Status transitioned to ${nextStatus}`);
     if (!res.ok) {
-      alert(res.reason);
+      toast.error(res.reason || 'Status transition failed.');
     }
   };
 
@@ -144,7 +145,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
 
     const res = updateTask(task.id, patch, `Checklist updated: ST ${subId}`);
     if (!res.ok) {
-      alert(res.reason);
+      toast.error(res.reason || 'Checklist update failed.');
     }
   };
 
@@ -175,7 +176,9 @@ const TaskGrid: React.FC<TaskGridProps> = ({
       if (!res.ok) rejected.push(id);
     });
     if (rejected.length > 0) {
-      alert(`Skipped dependency-blocked task(s): ${rejected.join(', ')}`);
+      toast.warning(`Skipped dependency-blocked task(s): ${rejected.join(', ')}`);
+    } else {
+      toast.success(`Updated ${selectedTaskIds.size} task(s) to ${newStatus}.`);
     }
     setSelectedTaskIds(new Set());
   };
@@ -561,7 +564,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
     cell: (task) => (
       <button
         onClick={(e) => { e.stopPropagation(); onEditTask(task.id); }}
-        className="p-1 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors opacity-70 group-hover:opacity-100 cursor-pointer"
+        className="p-1 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors opacity-70 group-hover:opacity-100 cursor-pointer touch-hit-expand"
         title="Edit task"
       >
         <MoreHorizontal size={14} />
@@ -925,7 +928,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
               className={clsx(
                 "p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xs motion-safe:active:scale-[0.98] transition-colors duration-150 relative",
                 blocked && "bg-amber-500/5 border-amber-500/20",
-                overdue && "border-l-4 border-l-rose-500"
+                overdue && "border-rose-500/40 bg-rose-500/5 shadow-xs"
               )}
             >
               <div className="flex justify-between items-start mb-2">

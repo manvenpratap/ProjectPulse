@@ -29,6 +29,7 @@ import { nextDefectQuickStatus } from '../../utils/stateMachines';
 import { motion, AnimatePresence } from 'motion/react';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef } from '../shared/DataTable';
+import CollapsibleSummaryStrip, { SummaryMetricItem } from '../shared/CollapsibleSummaryStrip';
 
 type ViewMode = 'table' | 'cards';
 type DensityMode = 'comfortable' | 'compact';
@@ -75,6 +76,20 @@ const DefectView: React.FC = () => {
   const severities = useMemo(() => Array.from(new Set(state.defects.map(d => d.severity).filter(Boolean))), [state.defects]);
   const priorities = useMemo(() => Array.from(new Set(state.defects.map(d => d.priority).filter(Boolean))), [state.defects]);
   const assignees = useMemo(() => Array.from(new Set(state.defects.map(d => d.assignee).filter(Boolean))), [state.defects]);
+
+  const defectSummaryMetrics: SummaryMetricItem[] = useMemo(() => {
+    const total = state.defects.length;
+    const critical = state.defects.filter(d => d.severity?.startsWith('S1')).length;
+    const inProgress = state.defects.filter(d => d.status === DefectStatus.IN_PROGRESS || d.status === DefectStatus.ASSIGNED).length;
+    const resolved = state.defects.filter(d => d.status === DefectStatus.CLOSED || d.status === DefectStatus.FIXED).length;
+
+    return [
+      { label: 'Total Issues', value: total, tone: 'neutral' },
+      { label: 'S1 Critical', value: critical, tone: critical > 0 ? 'rose' : 'emerald' },
+      { label: 'In Progress', value: inProgress, tone: inProgress > 0 ? 'amber' : 'neutral' },
+      { label: 'Resolved', value: resolved, tone: 'emerald' }
+    ];
+  }, [state.defects]);
 
   // Bulk Handlers
   const toggleSelect = (id: string, e: React.MouseEvent) => {
@@ -207,7 +222,7 @@ const DefectView: React.FC = () => {
       cell: (defect) => (
         <button
           onClick={(e) => { e.stopPropagation(); handleEdit(defect.id); }}
-          className="w-5 h-5 inline-flex items-center justify-center rounded hover:bg-[var(--color-surface-offset)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer"
+          className="w-5 h-5 inline-flex items-center justify-center rounded hover:bg-[var(--color-surface-offset)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer touch-hit-expand"
           title="Edit details"
         >
           <Edit2 size={12} />
@@ -568,6 +583,32 @@ const DefectView: React.FC = () => {
 
       {/* Main Workspace */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scroll p-4 sm:p-6 lg:p-8 space-y-3.5 max-w-full">
+
+        {/* ── 1. Collapsible KPI Summary Strip ── */}
+        <CollapsibleSummaryStrip
+          summary={defectSummaryMetrics}
+          title="Defect Triage & Quality Telemetry"
+          defaultExpanded={false}
+        >
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)]">
+              <div className="text-[11px] font-semibold text-[var(--color-text-muted)] uppercase tracking-wider">Total Defects</div>
+              <div className="text-xl font-bold text-[var(--color-text)] mt-1">{state.defects.length}</div>
+            </div>
+            <div className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-rose-500/20 bg-rose-500/5">
+              <div className="text-[11px] font-semibold text-rose-500 uppercase tracking-wider">S1 Blocker / Critical</div>
+              <div className="text-xl font-bold text-rose-500 mt-1">{state.defects.filter(d => d.severity?.startsWith('S1')).length}</div>
+            </div>
+            <div className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-amber-500/20 bg-amber-500/5">
+              <div className="text-[11px] font-semibold text-amber-500 uppercase tracking-wider">Active In-Flight</div>
+              <div className="text-xl font-bold text-amber-500 mt-1">{state.defects.filter(d => d.status === DefectStatus.IN_PROGRESS || d.status === DefectStatus.ASSIGNED).length}</div>
+            </div>
+            <div className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-emerald-500/20 bg-emerald-500/5">
+              <div className="text-[11px] font-semibold text-emerald-500 uppercase tracking-wider">Resolved & Closed</div>
+              <div className="text-xl font-bold text-emerald-500 mt-1">{state.defects.filter(d => d.status === DefectStatus.CLOSED || d.status === DefectStatus.FIXED).length}</div>
+            </div>
+          </div>
+        </CollapsibleSummaryStrip>
 
         {/* ── 2. Floating Bulk Actions Bar ── */}
         <AnimatePresence>

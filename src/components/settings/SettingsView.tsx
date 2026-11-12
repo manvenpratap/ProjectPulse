@@ -24,9 +24,11 @@ import {
   Palette
 } from 'lucide-react';
 import Button from '../shared/Button';
+import ConfirmModal from '../shared/ConfirmModal';
 import BaselineManager from './BaselineManager';
 import AccessManagerModal from '../auth/AccessManagerModal';
 import { exportProjectExcel, importProjectExcel } from '../../services/excelService';
+import { toast } from '../../utils/toast';
 import clsx from 'clsx';
 import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
@@ -51,20 +53,43 @@ const SettingsView: React.FC = () => {
   }, [activeSubTab?.seq, activeSubTab?.view, activeSubTab?.tab]);
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+    variant?: 'danger' | 'warning' | 'primary';
+    confirmLabel?: string;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+    variant: 'danger',
+    confirmLabel: 'Confirm'
+  });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleClearData = () => {
-    if (window.confirm('This will permanently delete all tasks, members, and project history. Are you absolutely certain?')) {
-      clearAllData();
-      window.location.reload();
-    }
+    setConfirmState({
+      isOpen: true,
+      title: 'Reset Project Database',
+      message: 'This will permanently delete all tasks, team members, deliverables, RAID items, and project history. Are you absolutely certain you want to proceed?',
+      variant: 'danger',
+      confirmLabel: 'Permanently Reset',
+      onConfirm: () => {
+        clearAllData();
+        window.location.reload();
+      }
+    });
   };
 
   const handleExportExcel = async () => {
     try {
       await exportProjectExcel(state);
+      toast.success('Master Project Excel workbook generated and downloaded.');
     } catch (e: any) {
-      alert('Export failed: ' + e.message);
+      toast.error('Export failed: ' + e.message);
     }
   };
 
@@ -75,28 +100,34 @@ const SettingsView: React.FC = () => {
       setIsImporting(true);
       const data = await importProjectExcel(file);
       updateProject(data);
-      alert('Project database imported successfully.');
+      toast.success('Project database imported successfully.');
     } catch (e: any) {
-      alert('Import failed: ' + e.message);
+      toast.error('Import failed: ' + e.message);
     } finally {
       setIsImporting(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
-  const handleLoadDemo = async () => {
-    if (!window.confirm('Load the comprehensive demo Excel database? This will populate 24 tasks, 12 deliveries, 10 team members, RAID items, and defect registers.')) {
-      return;
-    }
-    try {
-      setIsImporting(true);
-      await loadSample('web');
-      alert('Demo database loaded successfully.');
-    } catch (e: any) {
-      alert('Failed to load demo database: ' + e.message);
-    } finally {
-      setIsImporting(false);
-    }
+  const handleLoadDemo = () => {
+    setConfirmState({
+      isOpen: true,
+      title: 'Load Comprehensive Demo Database',
+      message: 'Load the complete Enterprise Demo Database? This will populate 24 tasks, 12 deliveries, 10 team members, RAID items, and defect registers.',
+      variant: 'primary',
+      confirmLabel: 'Load Demo',
+      onConfirm: async () => {
+        try {
+          setIsImporting(true);
+          await loadSample('web');
+          toast.success('Demo database loaded successfully.');
+        } catch (e: any) {
+          toast.error('Failed to load demo database: ' + e.message);
+        } finally {
+          setIsImporting(false);
+        }
+      }
+    });
   };
 
   const handleCreateSnapshot = () => {
@@ -493,6 +524,17 @@ const SettingsView: React.FC = () => {
       <AccessManagerModal 
         isOpen={isAccessModalOpen} 
         onClose={() => setIsAccessModalOpen(false)} 
+      />
+
+      {/* Confirmation Dialog */}
+      <ConfirmModal
+        isOpen={confirmState.isOpen}
+        onClose={() => setConfirmState(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmState.onConfirm}
+        title={confirmState.title}
+        message={confirmState.message}
+        variant={confirmState.variant}
+        confirmLabel={confirmState.confirmLabel}
       />
     </div>
   );

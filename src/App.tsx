@@ -12,6 +12,7 @@ import LoginView from './components/auth/LoginView';
 import AccessDenied from './components/auth/AccessDenied';
 import AccessManagerModal from './components/auth/AccessManagerModal';
 import CxoEmailModal from './components/reports/CxoEmailModal';
+import { ToastContainer } from './components/shared/Toast';
 import { useMediaQuery } from './hooks/useMediaQuery';
 import TaskView from './components/tasks/TaskView';
 import TimelineView from './components/timeline/TimelineView';
@@ -296,6 +297,9 @@ const MainApp: React.FC = () => {
         isOpen={isCxoEmailOpen}
         onClose={() => setIsCxoEmailOpen(false)}
       />
+
+      {/* Global Toast Notifications */}
+      <ToastContainer />
     </div>
   );
 };

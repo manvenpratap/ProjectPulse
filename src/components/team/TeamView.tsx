@@ -38,6 +38,9 @@ import {
   Star
 } from 'lucide-react';
 import Button from '../shared/Button';
+import Modal from '../shared/Modal';
+import ConfirmModal from '../shared/ConfirmModal';
+import { toast } from '../../utils/toast';
 import clsx from 'clsx';
 import MemberHierarchy from './MemberHierarchy';
 import PageHeader from '../shared/PageHeader';
@@ -494,6 +497,18 @@ const TeamView: React.FC = () => {
   // ══════════════════════════════════════════════════════════
   // ADD / EDIT MEMBER HANDLERS
   // ══════════════════════════════════════════════════════════
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {}
+  });
+
   const handleOpenAddModal = () => {
     setEditingMember({
       name: '',
@@ -519,20 +534,28 @@ const TeamView: React.FC = () => {
 
   const handleSaveMemberForm = () => {
     if (!editingMember || !editingMember.name?.trim()) {
-      alert('Please enter a valid member name.');
+      toast.warning('Please enter a valid member name.');
       return;
     }
+    const isNew = !editingMember.id;
     saveMember(editingMember, editingMember.id);
     setIsModalOpen(false);
     setEditingMember(null);
+    toast.success(isNew ? `Team member ${editingMember.name} enrolled.` : `Member ${editingMember.name} updated.`);
   };
 
   const handleDeleteMemberConfirmed = (id: string, name: string) => {
-    if (confirm(`Are you sure you want to remove ${name} from the team?`)) {
-      deleteMember(id);
-      setIsModalOpen(false);
-      setEditingMember(null);
-    }
+    setConfirmState({
+      isOpen: true,
+      title: 'Remove Team Member',
+      message: `Are you sure you want to remove ${name} from the active team roster? Assigned tasks will become unassigned.`,
+      onConfirm: () => {
+        deleteMember(id);
+        setIsModalOpen(false);
+        setEditingMember(null);
+        toast.info(`Team member ${name} removed.`);
+      }
+    });
   };
 
   const memberColumns = useMemo<ColumnDef<Member>[]>(() => [
@@ -936,7 +959,7 @@ const TeamView: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           
           {/* CARD 1: Velocity Leaderboard */}
-          <div className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs border-l-4 border-l-amber-500 flex flex-col justify-between">
+          <div className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -979,7 +1002,7 @@ const TeamView: React.FC = () => {
           </div>
 
           {/* CARD 2: Quality Champions */}
-          <div className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs border-l-4 border-l-emerald-500 flex flex-col justify-between">
+          <div className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -1018,7 +1041,7 @@ const TeamView: React.FC = () => {
           </div>
 
           {/* CARD 3: Growth Mindset */}
-          <div className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs border-l-4 border-l-sky-500 flex flex-col justify-between">
+          <div className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -1061,7 +1084,7 @@ const TeamView: React.FC = () => {
           </div>
 
           {/* CARD 4: Collaborative Pulse */}
-          <div className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs border-l-4 border-l-[var(--color-primary-hex)] flex flex-col justify-between">
+          <div className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -1801,48 +1824,52 @@ const TeamView: React.FC = () => {
       {/* ══════════════════════════════════════════════════════════
           ADD / EDIT MEMBER MODAL DIALOG
          ══════════════════════════════════════════════════════════ */}
-      <AnimatePresence>
-        {isModalOpen && editingMember && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-black/60 backdrop-blur-xs"
-              onClick={() => setIsModalOpen(false)}
-            />
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="relative w-full max-w-xl max-h-[90vh] bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-2xl flex flex-col z-10 overflow-hidden"
-            >
-              {/* Modal Header */}
-              <div className="p-5 border-b border-[var(--color-divider)] flex items-center justify-between bg-[var(--color-surface-2)]">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center">
-                    <UserPlus size={16} />
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-sm text-[var(--color-text)]">
-                      {editingMember.id ? `Edit Member: ${editingMember.name}` : 'Enroll New Team Member'}
-                    </h3>
-                    <p className="text-[11px] text-[var(--color-text-muted)]">Configure profile, skills, and reporting structure</p>
-                  </div>
-                </div>
-
-                <button 
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-offset)] cursor-pointer"
-                >
-                  <X size={16} />
-                </button>
+      {/* ══════════════════════════════════════════════════════════
+          ADD / EDIT MEMBER MODAL DIALOG (Standard Accessible Modal)
+         ══════════════════════════════════════════════════════════ */}
+      {editingMember && (
+        <Modal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title={editingMember.id ? `Edit Member: ${editingMember.name}` : 'Enroll New Team Member'}
+          size="lg"
+          footer={
+            <div className="flex items-center justify-between w-full">
+              <div>
+                {editingMember.id && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDeleteMemberConfirmed(editingMember.id!, editingMember.name || 'Member')}
+                    className="rounded-xl border border-rose-500/20 text-rose-500 hover:bg-rose-500/10 text-xs font-semibold flex items-center gap-1.5"
+                  >
+                    <Trash2 size={13} /> Delete Member
+                  </Button>
+                )}
               </div>
 
-              {/* Modal Body */}
-              <div className="flex-1 overflow-y-auto custom-scroll p-6 space-y-4">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsModalOpen(false)}
+                  className="rounded-xl"
+                >
+                  Cancel
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleSaveMemberForm}
+                  className="rounded-xl font-bold"
+                >
+                  Save Member
+                </Button>
+              </div>
+            </div>
+          }
+        >
+          <div className="space-y-4 text-xs">
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -1981,44 +2008,20 @@ const TeamView: React.FC = () => {
                   />
                 </div>
 
-              </div>
-
-              {/* Modal Footer */}
-              <div className="p-4 border-t border-[var(--color-divider)] bg-[var(--color-surface-2)] flex items-center justify-between">
-                <div>
-                  {editingMember.id && (
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteMemberConfirmed(editingMember.id!, editingMember.name || 'Member')}
-                      className="h-9 px-3 rounded-xl border border-rose-500/20 text-rose-500 hover:bg-rose-500/10 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
-                    >
-                      <Trash2 size={13} /> Delete Member
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setIsModalOpen(false)}
-                    className="h-9 px-4 rounded-xl border border-[var(--color-divider)] text-[var(--color-text)] text-xs font-semibold hover:bg-[var(--color-surface-offset)] transition-colors cursor-pointer"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSaveMemberForm}
-                    className="h-9 px-5 rounded-xl bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] text-xs font-semibold hover:opacity-95 shadow-sm transition-opacity cursor-pointer active:scale-95"
-                  >
-                    Save Member
-                  </button>
-                </div>
-              </div>
-
-            </motion.div>
           </div>
-        )}
-      </AnimatePresence>
+        </Modal>
+      )}
+
+      {/* Confirmation Dialog */}
+      <ConfirmModal
+        isOpen={confirmState.isOpen}
+        onClose={() => setConfirmState(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmState.onConfirm}
+        title={confirmState.title}
+        message={confirmState.message}
+        variant="danger"
+        confirmLabel="Remove Member"
+      />
     </div>
   );
 };

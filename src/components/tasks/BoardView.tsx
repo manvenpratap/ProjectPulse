@@ -28,10 +28,10 @@ const BoardView: React.FC<BoardViewProps> = ({ onEditTask }) => {
 
   const getPriorityColor = (p: string) => {
     switch (p) {
-      case 'Critical': return 'text-red-500 bg-red-50';
-      case 'High': return 'text-amber-500 bg-amber-50';
-      case 'Medium': return 'text-blue-500 bg-blue-50';
-      default: return 'text-slate-500 bg-slate-50';
+      case 'Critical': return 'text-rose-500 bg-rose-500/10 border border-rose-500/20';
+      case 'High': return 'text-amber-500 bg-amber-500/10 border border-amber-500/20';
+      case 'Medium': return 'text-blue-500 bg-blue-500/10 border border-blue-500/20';
+      default: return 'text-[var(--color-text-muted)] bg-[var(--color-surface-2)] border border-[var(--color-divider)]';
     }
   };
 

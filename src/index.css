@@ -101,7 +101,7 @@
 }
 
 [data-theme="pulse"] {
-  --color-display-font: 'Syne', sans-serif;
+  --color-display-font: "Plus Jakarta Sans", "Inter", sans-serif;
   --font-sans: "Inter", sans-serif;
   --font-mono: "JetBrains Mono", monospace;
   --color-bg: #0D0D0F;
@@ -549,8 +549,12 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display, var(--font-sans));
+  letter-spacing: -0.015em;
+}
+
+.font-display-hero {
   font-family: var(--color-display-font, var(--font-display));
-  letter-spacing: -0.02em;
 }
 
 .glass {
@@ -742,11 +746,17 @@ button, a, [role="button"], .tappable {
 }
 
 [data-theme="brutalist"] .card,
+[data-theme="brutalist"] .card-glass,
 [data-theme="brutalist"] .glass,
 [data-theme="brutalist"] input,
 [data-theme="brutalist"] select,
-[data-theme="brutalist"] textarea {
+[data-theme="brutalist"] textarea,
+[data-theme="brutalist"] button,
+[data-theme="brutalist"] [class*="rounded-"],
+[data-theme="brutalist"] [role="dialog"],
+[data-theme="brutalist"] .modal-surface {
   border: 2px solid var(--color-border) !important;
+  border-radius: 0px !important;
   box-shadow: var(--shadow-sm) !important;
   background-color: var(--color-surface) !important;
 }
@@ -1424,10 +1434,16 @@ html[data-color-mode="dark"] .pri-low {
   user-select: none;
 }
 tr.is-milestone td:first-child {
-  box-shadow: inset 3.5px 0 0 var(--color-primary-hex) !important;
+  box-shadow: inset 2px 0 0 var(--color-primary-hex) !important;
+}
+tr.is-milestone {
+  background-color: color-mix(in srgb, var(--color-primary-hex) 3%, transparent) !important;
 }
 tr.is-overdue td:first-child {
-  box-shadow: inset 3.5px 0 0 #ef4444 !important;
+  box-shadow: inset 2px 0 0 #f43f5e !important;
+}
+tr.is-overdue {
+  background-color: color-mix(in srgb, #f43f5e 3%, transparent) !important;
 }
 
 /* --- Design Spells: Physics Spring Easing, View Transition Iris, Button Sheen, Card Spotlight & Scroll Hairline --- */
@@ -1572,3 +1588,63 @@ tr.is-overdue td:first-child {
   .collapsible-cards-reveal > div > *:nth-child(6),
   .collapsible-cards-reveal > div > div > *:nth-child(6) { animation-delay: 175ms; }
 }
+
+/* ==========================================================================
+   Tailwindcss-Animate Compatibility Engine (Pure CSS, 60fps WAAPI-optimized)
+   ========================================================================== */
+@keyframes pp-enter {
+  from {
+    opacity: var(--tw-enter-opacity, 1);
+    transform: translate3d(var(--tw-enter-translate-x, 0), var(--tw-enter-translate-y, 0), 0) scale3d(var(--tw-enter-scale, 1), var(--tw-enter-scale, 1), var(--tw-enter-scale, 1)) rotate(var(--tw-enter-rotate, 0));
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1) rotate(0);
+  }
+}
+
+@keyframes pp-exit {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale3d(1, 1, 1) rotate(0);
+  }
+  to {
+    opacity: var(--tw-exit-opacity, 1);
+    transform: translate3d(var(--tw-exit-translate-x, 0), var(--tw-exit-translate-y, 0), 0) scale3d(var(--tw-exit-scale, 1), var(--tw-exit-scale, 1), var(--tw-exit-scale, 1)) rotate(var(--tw-exit-rotate, 0));
+  }
+}
+
+.animate-in {
+  animation-name: pp-enter;
+  animation-duration: var(--animation-duration, 180ms);
+  animation-timing-function: var(--ease-out-ui, cubic-bezier(0.23, 1, 0.32, 1));
+  animation-fill-mode: both;
+}
+
+.animate-out {
+  animation-name: pp-exit;
+  animation-duration: var(--animation-duration, 150ms);
+  animation-timing-function: var(--ease-out-ui, cubic-bezier(0.23, 1, 0.32, 1));
+  animation-fill-mode: both;
+}
+
+.fade-in { --tw-enter-opacity: 0; }
+.fade-out { --tw-exit-opacity: 0; }
+.zoom-in-95 { --tw-enter-scale: 0.95; }
+.zoom-in-98 { --tw-enter-scale: 0.98; }
+.zoom-out-95 { --tw-exit-scale: 0.95; }
+.slide-in-from-top-1 { --tw-enter-translate-y: -0.25rem; }
+.slide-in-from-top-2 { --tw-enter-translate-y: -0.5rem; }
+.slide-in-from-top-4 { --tw-enter-translate-y: -1rem; }
+.slide-in-from-bottom-2 { --tw-enter-translate-y: 0.5rem; }
+.slide-in-from-bottom-4 { --tw-enter-translate-y: 1rem; }
+.slide-in-from-left-4 { --tw-enter-translate-x: -1rem; }
+.slide-in-from-right-4 { --tw-enter-translate-x: 1rem; }
+.slide-out-to-top-2 { --tw-exit-translate-y: -0.5rem; }
+.slide-out-to-bottom-2 { --tw-exit-translate-y: 0.5rem; }
+.duration-100 { animation-duration: 100ms !important; }
+.duration-150 { animation-duration: 150ms !important; }
+.duration-200 { animation-duration: 200ms !important; }
+.duration-300 { animation-duration: 300ms !important; }
+.duration-500 { animation-duration: 500ms !important; }
+

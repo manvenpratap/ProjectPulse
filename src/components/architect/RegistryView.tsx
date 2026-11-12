@@ -25,9 +25,12 @@ import {
   FolderPlus
 } from 'lucide-react';
 import Button from '../shared/Button';
+import Modal from '../shared/Modal';
+import ConfirmModal from '../shared/ConfirmModal';
 import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
+import { toast } from '../../utils/toast';
 import clsx from 'clsx';
 import { todayStr } from '../../utils/projectUtils';
 
@@ -114,6 +117,21 @@ const RegistryView: React.FC = () => {
   const [isNewLibModalOpen, setIsNewLibModalOpen] = useState<boolean>(false);
   const [newLibKey, setNewLibKey] = useState<string>('');
   const [newLibInitialValues, setNewLibInitialValues] = useState<string>('');
+  const [confirmState, setConfirmState] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+    variant?: 'danger' | 'warning' | 'primary';
+    confirmLabel?: string;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {},
+    variant: 'danger',
+    confirmLabel: 'Confirm'
+  });
 
   const dropdowns = state.dropdowns || {};
   const defaults = state.dropdownDefaults || {};
@@ -185,7 +203,7 @@ const RegistryView: React.FC = () => {
     const trimmed = newValue.trim();
     if (!trimmed) return;
     if (values.includes(trimmed)) {
-      alert(`Value "${trimmed}" already exists in the "${formatLibraryName(selectedKey)}" library.`);
+      toast.warning(`Value "${trimmed}" already exists in the "${formatLibraryName(selectedKey)}" library.`);
       return;
     }
     const updated = [...values, trimmed];
@@ -197,22 +215,32 @@ const RegistryView: React.FC = () => {
     });
     setNewValue('');
     addInputRef.current?.focus();
+    toast.success(`Option "${trimmed}" added.`);
   };
 
   const handleRemoveValue = (idx: number) => {
     const target = values[idx];
-    if (!window.confirm(`Remove option "${target}" from ${formatLibraryName(selectedKey)}?`)) return;
-    const updated = values.filter((_, i) => i !== idx);
-    const updatedDefaults = { ...defaults };
-    if (updatedDefaults[selectedKey] === target) {
-      delete updatedDefaults[selectedKey];
-    }
-    updateProject({
-      dropdowns: {
-        ...state.dropdowns,
-        [selectedKey]: updated
-      },
-      dropdownDefaults: updatedDefaults
+    setConfirmState({
+      isOpen: true,
+      title: 'Remove Option',
+      message: `Remove option "${target}" from ${formatLibraryName(selectedKey)}? Existing entities with this value will keep it until changed.`,
+      variant: 'danger',
+      confirmLabel: 'Remove Option',
+      onConfirm: () => {
+        const updated = values.filter((_, i) => i !== idx);
+        const updatedDefaults = { ...defaults };
+        if (updatedDefaults[selectedKey] === target) {
+          delete updatedDefaults[selectedKey];
+        }
+        updateProject({
+          dropdowns: {
+            ...state.dropdowns,
+            [selectedKey]: updated
+          },
+          dropdownDefaults: updatedDefaults
+        });
+        toast.info(`Option "${target}" removed.`);
+      }
     });
   };
 
@@ -265,7 +293,7 @@ const RegistryView: React.FC = () => {
     }
     const oldVal = values[idx];
     if (trimmed !== oldVal && values.includes(trimmed)) {
-      alert(`Value "${trimmed}" already exists in this library.`);
+      toast.warning(`Value "${trimmed}" already exists in this library.`);
       return;
     }
     const nextValues = [...values];
@@ -284,6 +312,7 @@ const RegistryView: React.FC = () => {
       dropdownDefaults: updatedDefaults
     });
     setEditingIdx(null);
+    toast.success('Option updated.');
   };
 
   const handleOpenBulk = () => {
@@ -308,16 +337,17 @@ const RegistryView: React.FC = () => {
       dropdownDefaults: updatedDefaults
     });
     setIsBulkOpen(false);
+    toast.success(`Updated ${formatLibraryName(selectedKey)} with ${deduplicated.length} options.`);
   };
 
   const handleCreateLibrary = () => {
     const cleanKey = newLibKey.trim().replace(/[^a-zA-Z0-9_]/g, '');
     if (!cleanKey) {
-      alert('Please enter a valid alphanumeric library key (e.g. tierLevel, billingPlan).');
+      toast.warning('Please enter a valid alphanumeric library key (e.g. tierLevel, billingPlan).');
       return;
     }
     if (dropdowns[cleanKey]) {
-      alert(`An option library named "${cleanKey}" already exists.`);
+      toast.warning(`An option library named "${cleanKey}" already exists.`);
       return;
     }
     const initialItems = newLibInitialValues
@@ -337,24 +367,33 @@ const RegistryView: React.FC = () => {
     setNewLibKey('');
     setNewLibInitialValues('');
     setIsNewLibModalOpen(false);
+    toast.success(`Custom library "${cleanKey}" created with ${deduplicated.length} items.`);
   };
 
   const handleDeleteLibrary = () => {
     if (isReserved) {
-      alert('System Core libraries cannot be deleted to preserve core entity schema integrity.');
+      toast.error('System Core libraries cannot be deleted to preserve core entity schema integrity.');
       return;
     }
-    if (window.confirm(`Delete entire "${formatLibraryName(selectedKey)}" (${selectedKey}) library? Any custom fields referencing this option set will fall back to manual entry.`)) {
-      const nextDropdowns = { ...dropdowns };
-      delete nextDropdowns[selectedKey];
-      const nextDefaults = { ...defaults };
-      delete nextDefaults[selectedKey];
-      updateProject({
-        dropdowns: nextDropdowns,
-        dropdownDefaults: nextDefaults
-      });
-      setSelectedRegistryKey(Object.keys(nextDropdowns)[0] || 'status');
-    }
+    setConfirmState({
+      isOpen: true,
+      title: 'Delete Option Library',
+      message: `Delete entire "${formatLibraryName(selectedKey)}" (${selectedKey}) library? Any custom fields referencing this option set will fall back to manual entry.`,
+      variant: 'danger',
+      confirmLabel: 'Delete Library',
+      onConfirm: () => {
+        const nextDropdowns = { ...dropdowns };
+        delete nextDropdowns[selectedKey];
+        const nextDefaults = { ...defaults };
+        delete nextDefaults[selectedKey];
+        updateProject({
+          dropdowns: nextDropdowns,
+          dropdownDefaults: nextDefaults
+        });
+        setSelectedRegistryKey(Object.keys(nextDropdowns)[0] || 'status');
+        toast.info(`Library "${selectedKey}" deleted.`);
+      }
+    });
   };
 
   return (
@@ -883,134 +922,110 @@ const RegistryView: React.FC = () => {
         </div>
       </div>
 
-      {/* ── 4. Bulk Edit Options Modal ── */}
-      {isBulkOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-lg bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-2xl flex flex-col overflow-hidden max-h-[85vh]">
-            <div className="px-6 py-4 border-b border-[var(--color-divider)] flex items-center justify-between bg-[var(--color-surface-2)]">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center border border-[var(--color-primary-hex)]/20">
-                  <ListChecks size={18} />
-                </div>
-                <div>
-                  <h3 className="text-sm sm:text-base font-bold text-[var(--color-text)]">
-                    Bulk Edit: <span>{formatLibraryName(selectedKey)}</span>
-                  </h3>
-                  <p className="text-[11px] text-[var(--color-text-muted)]">One value per line. Duplicates automatically pruned upon save.</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => setIsBulkOpen(false)}
-                className="w-8 h-8 rounded-xl flex items-center justify-center text-[var(--color-text-muted)] hover:bg-[var(--color-surface-offset)] hover:text-[var(--color-text)] transition-colors cursor-pointer"
-              >
-                <X size={16} />
-              </button>
-            </div>
-
-            <div className="p-6 overflow-y-auto custom-scroll space-y-3">
-              <textarea
-                value={bulkText}
-                onChange={(e) => setBulkText(e.target.value)}
-                rows={12}
-                className="w-full text-xs font-mono p-3.5 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary-hex)] transition-all leading-relaxed shadow-inner"
-                placeholder="Option 1&#10;Option 2&#10;Option 3"
-              />
-              <div className="flex items-center justify-between text-[11px] text-[var(--color-text-faint)]">
-                <span>Empty lines excluded. Original ordering preserved.</span>
-                <span className="font-mono font-bold text-[var(--color-text)]">
-                  {bulkText.split('\n').filter(s => s.trim()).length} parsed items
-                </span>
-              </div>
-            </div>
-
-            <div className="px-6 py-4 border-t border-[var(--color-divider)] bg-[var(--color-surface-2)] flex items-center justify-end gap-2.5">
-              <Button variant="ghost" size="sm" onClick={() => setIsBulkOpen(false)}>
-                Cancel
-              </Button>
-              <Button variant="primary" size="sm" onClick={handleSaveBulk} className="font-bold shadow-sm">
-                <Check size={14} className="mr-1.5" /> Save Values ({bulkText.split('\n').filter(s => s.trim()).length})
-              </Button>
-            </div>
+      {/* ── 4. Bulk Edit Options Modal (Standard Accessible Modal) ── */}
+      <Modal
+        isOpen={isBulkOpen}
+        onClose={() => setIsBulkOpen(false)}
+        title={`Bulk Edit: ${formatLibraryName(selectedKey)}`}
+        size="md"
+        footer={
+          <div className="flex items-center justify-end gap-2.5 w-full">
+            <Button variant="ghost" size="sm" onClick={() => setIsBulkOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" size="sm" onClick={handleSaveBulk} className="font-bold shadow-sm">
+              <Check size={14} className="mr-1.5" /> Save Values ({bulkText.split('\n').filter(s => s.trim()).length})
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-3 text-xs">
+          <p className="text-[11px] text-[var(--color-text-muted)]">One value per line. Duplicates automatically pruned upon save.</p>
+          <textarea
+            value={bulkText}
+            onChange={(e) => setBulkText(e.target.value)}
+            rows={10}
+            className="w-full text-xs font-mono p-3.5 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary-hex)] transition-all leading-relaxed shadow-inner"
+            placeholder="Option 1&#10;Option 2&#10;Option 3"
+          />
+          <div className="flex items-center justify-between text-[11px] text-[var(--color-text-faint)]">
+            <span>Empty lines excluded. Original ordering preserved.</span>
+            <span className="font-mono font-bold text-[var(--color-text)]">
+              {bulkText.split('\n').filter(s => s.trim()).length} parsed items
+            </span>
           </div>
         </div>
-      )}
+      </Modal>
 
-      {/* ── 5. Create Custom Library Modal ── */}
-      {isNewLibModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="w-full max-w-md bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-2xl flex flex-col overflow-hidden max-h-[85vh]">
-            <div className="px-6 py-4 border-b border-[var(--color-divider)] flex items-center justify-between bg-[var(--color-surface-2)]">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center border border-purple-500/20">
-                  <FolderPlus size={18} />
-                </div>
-                <div>
-                  <h3 className="text-sm sm:text-base font-bold text-[var(--color-text)]">
-                    Create Custom Option Library
-                  </h3>
-                  <p className="text-[11px] text-[var(--color-text-muted)]">Define a reusable selection taxonomy for custom fields</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => setIsNewLibModalOpen(false)}
-                className="w-8 h-8 rounded-xl flex items-center justify-center text-[var(--color-text-muted)] hover:bg-[var(--color-surface-offset)] hover:text-[var(--color-text)] transition-colors cursor-pointer"
-              >
-                <X size={16} />
-              </button>
-            </div>
+      {/* ── 5. Create Custom Library Modal (Standard Accessible Modal) ── */}
+      <Modal
+        isOpen={isNewLibModalOpen}
+        onClose={() => setIsNewLibModalOpen(false)}
+        title="Create Custom Option Library"
+        size="md"
+        footer={
+          <div className="flex items-center justify-end gap-2.5 w-full">
+            <Button variant="ghost" size="sm" onClick={() => setIsNewLibModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              variant="primary" 
+              size="sm" 
+              onClick={handleCreateLibrary} 
+              disabled={!newLibKey.trim()}
+              className="font-bold shadow-sm"
+            >
+              <Plus size={14} className="mr-1.5" /> Create Library
+            </Button>
+          </div>
+        }
+      >
+        <div className="space-y-4 text-xs">
+          <div>
+            <label className="block text-xs font-bold text-[var(--color-text)] mb-1.5">
+              Library Key Identifier <span className="text-rose-500">*</span>
+            </label>
+            <input
+              type="text"
+              autoFocus
+              value={newLibKey}
+              onChange={(e) => setNewLibKey(e.target.value)}
+              placeholder="e.g. tierLevel, billingPlan, region"
+              className="w-full h-10 px-3.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs font-mono font-bold text-[var(--color-text)] outline-none focus:border-[var(--color-primary-hex)] transition-colors shadow-inner"
+            />
+            <p className="text-[11px] text-[var(--color-text-faint)] mt-1">
+              Alphanumeric identifier used across schemas and custom field lookups.
+            </p>
+          </div>
 
-            <div className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-[var(--color-text)] mb-1.5">
-                  Library Key Identifier <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  autoFocus
-                  value={newLibKey}
-                  onChange={(e) => setNewLibKey(e.target.value)}
-                  placeholder="e.g. tierLevel, billingPlan, region"
-                  className="w-full h-10 px-3.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs font-mono font-bold text-[var(--color-text)] outline-none focus:border-[var(--color-primary-hex)] transition-colors shadow-inner"
-                />
-                <p className="text-[11px] text-[var(--color-text-faint)] mt-1">
-                  Alphanumeric identifier used across schemas and custom field lookups.
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-[var(--color-text)] mb-1.5">
-                  Initial Option Values <span className="text-[var(--color-text-faint)] font-normal">(optional)</span>
-                </label>
-                <textarea
-                  value={newLibInitialValues}
-                  onChange={(e) => setNewLibInitialValues(e.target.value)}
-                  rows={4}
-                  placeholder="Tier 1 - Enterprise&#10;Tier 2 - Growth&#10;Tier 3 - Starter"
-                  className="w-full text-xs p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary-hex)] transition-colors shadow-inner leading-relaxed"
-                />
-                <p className="text-[11px] text-[var(--color-text-faint)] mt-1">
-                  Separate with new lines or commas. More can be added anytime.
-                </p>
-              </div>
-            </div>
-
-            <div className="px-6 py-4 border-t border-[var(--color-divider)] bg-[var(--color-surface-2)] flex items-center justify-end gap-2.5">
-              <Button variant="ghost" size="sm" onClick={() => setIsNewLibModalOpen(false)}>
-                Cancel
-              </Button>
-              <Button 
-                variant="primary" 
-                size="sm" 
-                onClick={handleCreateLibrary} 
-                disabled={!newLibKey.trim()}
-                className="font-bold shadow-sm"
-              >
-                <Plus size={14} className="mr-1.5" /> Create Library
-              </Button>
-            </div>
+          <div>
+            <label className="block text-xs font-bold text-[var(--color-text)] mb-1.5">
+              Initial Option Values <span className="text-[var(--color-text-faint)] font-normal">(optional)</span>
+            </label>
+            <textarea
+              value={newLibInitialValues}
+              onChange={(e) => setNewLibInitialValues(e.target.value)}
+              rows={4}
+              placeholder="Tier 1 - Enterprise&#10;Tier 2 - Growth&#10;Tier 3 - Starter"
+              className="w-full text-xs p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary-hex)] transition-colors shadow-inner leading-relaxed"
+            />
+            <p className="text-[11px] text-[var(--color-text-faint)] mt-1">
+              Separate with new lines or commas. More can be added anytime.
+            </p>
           </div>
         </div>
-      )}
+      </Modal>
+
+      {/* Confirmation Dialog */}
+      <ConfirmModal
+        isOpen={confirmState.isOpen}
+        onClose={() => setConfirmState(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmState.onConfirm}
+        title={confirmState.title}
+        message={confirmState.message}
+        variant={confirmState.variant}
+        confirmLabel={confirmState.confirmLabel}
+      />
     </div>
   );
 };

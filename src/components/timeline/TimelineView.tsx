@@ -1143,16 +1143,25 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
           </div>
 
           <div className="flex items-center gap-3 text-xs">
-            <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] border-l-2 border-l-blue-400 px-3 py-1.5 rounded-lg shadow-sm">
-              <div className="text-[10px] text-[var(--color-text-muted)] font-bold">P10 (Aggressive)</div>
+            <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] px-3 py-1.5 rounded-lg shadow-xs">
+              <div className="text-[10px] text-[var(--color-text-muted)] font-bold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                P10 (Aggressive)
+              </div>
               <div className="font-mono font-bold text-[var(--color-text)] mt-0.5">{fmtDate(mcResults.summary.p10.toISOString().slice(0, 10))}</div>
             </div>
-            <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] border-l-2 border-l-amber-400 px-3 py-1.5 rounded-lg shadow-sm">
-              <div className="text-[10px] text-[var(--color-text-muted)] font-bold">P50 (Likely)</div>
+            <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] px-3 py-1.5 rounded-lg shadow-xs">
+              <div className="text-[10px] text-[var(--color-text-muted)] font-bold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                P50 (Likely)
+              </div>
               <div className="font-mono font-bold text-[var(--color-text)] mt-0.5">{fmtDate(mcResults.summary.p50.toISOString().slice(0, 10))}</div>
             </div>
-            <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] border-l-2 border-l-purple-400 px-3 py-1.5 rounded-lg shadow-sm">
-              <div className="text-[10px] text-purple-400 font-bold">P90 (Conservative)</div>
+            <div className="bg-[var(--color-surface)] border border-[var(--color-divider)] px-3 py-1.5 rounded-lg shadow-xs">
+              <div className="text-[10px] text-purple-400 font-bold flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                P90 (Conservative)
+              </div>
               <div className="font-mono font-bold text-purple-400 mt-0.5">{fmtDate(mcResults.summary.p90.toISOString().slice(0, 10))}</div>
             </div>
           </div>

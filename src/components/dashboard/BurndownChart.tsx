@@ -341,15 +341,15 @@ const BurndownChart: React.FC = () => {
                 step="0.1" 
                 value={velocityMultiplier} 
                 onChange={(e) => setVelocityMultiplier(parseFloat(e.target.value))}
-                className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-[var(--color-primary-hex)]"
+                className="w-full h-1.5 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-lg appearance-none cursor-pointer accent-[var(--color-primary-hex)]"
               />
             </div>
 
             {/* Scope Creep Buffer Slider */}
             <div className="space-y-2 pt-2">
               <div className="flex justify-between items-center text-xs font-bold">
-                <span className="text-slate-500">Scope Expansion Buffer</span>
-                <span className="font-mono text-rose-600 bg-rose-50 px-2 py-0.5 rounded">+{scopeBuffer}%</span>
+                <span className="text-[var(--color-text-muted)]">Scope Expansion Buffer</span>
+                <span className="font-mono text-rose-500 bg-rose-500/10 border border-rose-500/20 px-2 py-0.5 rounded">+{scopeBuffer}%</span>
               </div>
               <input 
                 type="range" 
@@ -358,7 +358,7 @@ const BurndownChart: React.FC = () => {
                 step="5" 
                 value={scopeBuffer} 
                 onChange={(e) => setScopeBuffer(parseInt(e.target.value))}
-                className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-rose-500"
+                className="w-full h-1.5 bg-[var(--color-surface-offset)] border border-[var(--color-divider)] rounded-lg appearance-none cursor-pointer accent-rose-500"
               />
             </div>
           </div>
@@ -372,23 +372,23 @@ const BurndownChart: React.FC = () => {
             <div className="space-y-3.5 text-xs">
               <div className="flex gap-2 items-start">
                 <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary-hex)] mt-1.5 shrink-0" />
-                <p className="text-slate-650 leading-relaxed">
-                  Based on simulated velocity of <span className="font-bold text-[var(--color-primary-hex)]">{(summaryMetrics.simulatedDailyVelocity * 5).toFixed(1)} tasks/week</span>, completion is anticipated in <span className="font-bold text-slate-900">{summaryMetrics.daysToFinish} days</span>.
+                <p className="text-[var(--color-text-muted)] leading-relaxed">
+                  Based on simulated velocity of <span className="font-bold text-[var(--color-primary-hex)]">{(summaryMetrics.simulatedDailyVelocity * 5).toFixed(1)} tasks/week</span>, completion is anticipated in <span className="font-bold text-[var(--color-text)]">{summaryMetrics.daysToFinish} days</span>.
                 </p>
               </div>
 
               {scopeBuffer > 0 ? (
                 <div className="flex gap-2 items-start">
-                  <div className="w-1.5 h-1.5 rounded-full bg-rose-450 mt-1.5 shrink-0 motion-safe:animate-pulse" />
-                  <p className="text-slate-650 leading-relaxed">
-                    Scope expansion of <span className="font-bold text-rose-600">+{scopeBuffer}%</span> raises the ceiling by <span className="font-bold text-slate-900">{Math.round(summaryMetrics.totalScopeEffort * (scopeBuffer / 100))} Days</span> of effort, delaying original target date.
+                  <div className="w-1.5 h-1.5 rounded-full bg-rose-500 mt-1.5 shrink-0 motion-safe:animate-pulse" />
+                  <p className="text-[var(--color-text-muted)] leading-relaxed">
+                    Scope expansion of <span className="font-bold text-rose-500">+{scopeBuffer}%</span> raises the ceiling by <span className="font-bold text-[var(--color-text)]">{Math.round(summaryMetrics.totalScopeEffort * (scopeBuffer / 100))} Days</span> of effort, delaying original target date.
                   </p>
                 </div>
               ) : (
                 <div className="flex gap-2 items-start">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
-                  <p className="text-slate-650 leading-relaxed">
-                    Scope is currently locked with <span className="font-bold text-emerald-600">0% creep</span>. Standard parameters apply.
+                  <p className="text-[var(--color-text-muted)] leading-relaxed">
+                    Scope is currently locked with <span className="font-bold text-emerald-500">0% creep</span>. Standard parameters apply.
                   </p>
                 </div>
               )}
