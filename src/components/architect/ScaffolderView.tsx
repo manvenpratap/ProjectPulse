@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import clsx from 'clsx';
 
 interface ScaffoldModule {
@@ -207,7 +208,6 @@ const ScaffolderView: React.FC = () => {
       <PageHeader
         icon={Blocks}
         title="Project Scaffolder"
-        subtitle="Design modular architecture and fast-scaffold deliverable matrices and task hierarchies"
         actions={
           step > 1 ? (
             <Button variant="ghost" size="sm" onClick={() => setStep(step - 1)} className="h-9 font-bold active:scale-95 flex items-center gap-1.5">
@@ -236,9 +236,9 @@ const ScaffolderView: React.FC = () => {
           <div className="space-y-6 sm:space-y-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-4 duration-500">
             <div className="card p-4 sm:p-8">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8 border-b border-[var(--color-divider)] pb-5 sm:pb-6">
-                <div>
+                <div className="flex items-center gap-1.5">
                   <h2 className="text-lg font-bold text-[var(--color-text)]">Module Blueprint</h2>
-                  <p className="text-xs text-[var(--color-text-muted)] mt-0.5">Define core business domains and layers</p>
+                  <SectionHelpButton view="scaffolder" section="Blueprint Modules" label="Module Blueprint guide" size={14} />
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Button variant="outline" size="sm" onClick={() => setIsBulkOpen(true)} className="h-10 px-3.5 sm:px-4 font-bold rounded-xl border-[var(--color-divider)] bg-[var(--color-surface-2)] active:scale-[0.98]">
@@ -399,16 +399,6 @@ const ScaffolderView: React.FC = () => {
                 </table>
               </div>
             </div>
-            
-            <div className="flex items-start gap-4 p-6 bg-[var(--color-surface-2)] rounded-2xl border border-[var(--color-divider)] text-[var(--color-text)]">
-               <Info size={24} className="shrink-0 mt-1 opacity-60" />
-               <div>
-                  <h4 className="font-bold mb-1">Architectural Insight</h4>
-                  <p className="text-sm opacity-80 leading-relaxed">
-                    Defining your project by <strong>Modules</strong> and <strong>Layers</strong> instead of loose tasks ensures consistent reporting and strategic alignment. Modules set to <strong>GUI Interface</strong> type will allow you to map Sitemap screens in the next step.
-                  </p>
-               </div>
-            </div>
           </div>
         )}
 
@@ -416,9 +406,9 @@ const ScaffolderView: React.FC = () => {
           <div className="space-y-6 sm:space-y-8 motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-4 duration-500">
              <div className="card p-4 sm:p-8">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-10 border-b border-[var(--color-divider)] pb-5 sm:pb-6">
-                  <div>
+                  <div className="flex items-center gap-1.5">
                     <h2 className="text-xl font-black text-[var(--color-text)]">Interface Mapping</h2>
-                    <p className="text-xs text-[var(--color-text-muted)] mt-0.5">Connect architectural layers to strategic goals</p>
+                    <SectionHelpButton view="scaffolder" section="GUI Screen Inventory" label="Interface Mapping guide" />
                   </div>
                   <div className="flex flex-wrap gap-2.5 sm:gap-4">
                     <Button variant="ghost" className="font-bold active:scale-[0.98]" onClick={() => setStep(1)}><ArrowLeft size={16} className="mr-1.5" /> Back</Button>

@@ -32,19 +32,19 @@ def test_visual_overview_and_intelligence():
 
         # 1. Visual Bento Hero Elements Present
         assert page.locator("text=Composite Health Index").is_visible(), "Composite Health Index dial missing"
-        assert page.locator("text=Milestone Delivery Radar").is_visible(), "Milestone Delivery Radar missing"
-        assert page.locator("text=Early Warning Signals").is_visible(), "Early Warning Signals missing"
+        assert page.locator("text=Delivery Confidence").is_visible(), "Delivery Confidence missing"
+        assert page.locator("text=Threat Radar").is_visible(), "Threat Radar missing"
 
-        # 2. Visual Metric Tiles Present
-        assert page.locator("text=Scope Completed").is_visible(), "Scope Completed tile missing"
-        assert page.locator("text=Effort Burned").is_visible(), "Effort Burned tile missing"
-        assert page.locator("text=Team Bandwidth").is_visible(), "Team Bandwidth tile missing"
-        assert page.locator("text=Governance Index").is_visible(), "Governance Index tile missing"
+        # 2. Visual Charts & Matrices Present
+        assert page.locator("text=Delivery Velocity & Throughput Corridor").is_visible(), "Velocity Corridor chart missing"
+        assert page.locator("text=Module Architecture Mass").is_visible(), "Module Architecture Mass missing"
+        assert page.locator("text=RAID 3×3 Risk Heatmap Matrix").is_visible(), "RAID Heatmap missing"
+        assert page.locator("text=Deliverable Scope & Effort Burn").is_visible(), "Deliverable Scope & Effort Burn missing"
 
-        # 3. Visual Deliverables & Module Architecture Present
-        assert page.locator("text=Strategic Deliverables Snapshot").is_visible(), "Deliverables snapshot missing"
-        assert page.locator("text=Module Gravity").is_visible(), "Module Gravity missing"
-        assert page.locator("text=Looking for granular metrics and scenario modeling?").is_visible(), "Intelligence deep-dive banner missing"
+        # 3. Visual Deliverables & Milestones Present
+        assert page.locator("text=Milestone Delivery Horizon & Release Gates").is_visible(), "Milestone Delivery Horizon missing"
+        assert page.locator("text=Recent Deliveries & Multi-Level Accomplishments").is_visible(), "Recent Deliveries stream missing"
+        assert page.locator("text=Intelligence Cockpit Jump Links").is_visible(), "Intelligence jump links header missing"
 
         # 4. Detailed Granular Elements MUST NOT BE on Executive Overview
         assert page.locator("text=Strategic What-If Sandbox").count() == 0, "What-If Sandbox should NOT be on visual overview"
@@ -100,7 +100,7 @@ def test_visual_overview_and_intelligence():
         # STEP 5: Verify Tab 4 (Quality & Governance Detailed Metrics)
         # -------------------------------------------------------------
         print("\n--- STEP 5: Verify Detailed Metrics in Tab 4 (Quality & Governance) ---")
-        page.get_by_role("button", name="Quality & Governance", exact=True).click()
+        page.get_by_role("main").get_by_role("button", name="Quality & Governance", exact=True).click()
         page.wait_for_timeout(800)
 
         assert page.locator("text=Quality Reliability Index").is_visible(), "Quality Reliability donut missing"

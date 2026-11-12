@@ -5,6 +5,7 @@ import { TaskStatus, TaskPriority } from '../../types';
 import { getHealthScore, addBusDays } from '../../utils/projectUtils';
 import { Sliders, RotateCcw, Check, Zap, DollarSign, Calendar, TrendingUp } from 'lucide-react';
 import clsx from 'clsx';
+import SectionHelpButton from '../shared/SectionHelpButton';
 
 export const WhatIfSandbox: React.FC = () => {
   const { state, updateProject, addLog } = useProject();
@@ -114,17 +115,10 @@ export const WhatIfSandbox: React.FC = () => {
   return (
     <div className="card p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-sm space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[var(--color-divider)]">
-        <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <Sliders className="text-[var(--color-primary-hex)]" size={16} />
-            <span className="text-xs font-semibold text-[var(--color-primary-hex)]">
-              Scenario Modeler & Simulation
-            </span>
-          </div>
+        <div className="flex items-center gap-2">
+          <Sliders className="text-[var(--color-primary-hex)] shrink-0" size={18} />
           <h3 className="font-sans text-base sm:text-lg font-bold text-[var(--color-text)]">Strategic What-If Sandbox</h3>
-          <p className="text-[var(--color-text-muted)] text-xs mt-0.5">
-            Model scenario permutations in staffing, backlog scope reduction, and schedule compression to forecast risk outcomes
-          </p>
+          <SectionHelpButton view="dash" section="Strategic What-If Sandbox" label="What-If Sandbox guide" />
         </div>
         <div className="flex gap-2 shrink-0">
           <button 

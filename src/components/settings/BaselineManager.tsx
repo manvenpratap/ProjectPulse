@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Button from '../shared/Button';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import clsx from 'clsx';
 
 export const BaselineManager: React.FC = () => {
@@ -138,14 +139,10 @@ export const BaselineManager: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)]">
-        <div>
-          <div className="flex items-center gap-2">
-            <Camera size={18} className="text-[var(--color-primary-hex)]" />
-            <h3 className="text-base font-bold text-[var(--color-text)]">Project Performance Baselines</h3>
-          </div>
-          <p className="text-xs text-[var(--color-text-muted)] mt-1">
-            Capture immutable point-in-time snapshots of schedules, commitments, and effort estimates for drift analysis.
-          </p>
+        <div className="flex items-center gap-2">
+          <Camera size={18} className="text-[var(--color-primary-hex)]" />
+          <h3 className="text-base font-bold text-[var(--color-text)]">Project Performance Baselines</h3>
+          <SectionHelpButton view="settings" section="Baseline Snapshot Management" label="Baselines guide" size={14} />
         </div>
 
         <Button variant="primary" size="sm" onClick={() => setIsCaptureModalOpen(true)} className="h-9 px-4 rounded-xl font-bold">
@@ -267,15 +264,11 @@ export const BaselineManager: React.FC = () => {
           className="p-6 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm space-y-4"
         >
           <div className="flex items-center justify-between">
-            <div>
-              <h4 className="font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
-                <TrendingUp size={16} className="text-[var(--color-primary-hex)]" />
-                Baseline Comparison Table: {activeSnapshotDetails.name}
-              </h4>
-              <p className="text-xs text-[var(--color-text-muted)]">
-                Comparing Point-in-Time Baseline against Live Execution Schedules.
-              </p>
-            </div>
+            <h4 className="font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
+              <TrendingUp size={16} className="text-[var(--color-primary-hex)]" />
+              <span>Baseline Comparison Table: {activeSnapshotDetails.name}</span>
+              <SectionHelpButton view="settings" section="Project Baselines" label="Baseline variance guide" size={13} />
+            </h4>
 
             <Button variant="ghost" size="sm" onClick={() => setSelectedBaseline(null)}>
               Close

@@ -45,6 +45,7 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
 }) => {
   const { state, setView } = useProject();
   const [isOpen, setIsOpen] = useState(false);
+  const [alignFromLeft, setAlignFromLeft] = useState(false);
   const [copied, setCopied] = useState(false);
   const [exporting, setExporting] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -184,11 +185,18 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
   const viewTitle = VIEW_TITLES[activeView] || (activeView.charAt(0).toUpperCase() + activeView.slice(1));
 
   return (
-    <div className={`relative inline-block text-left ${isOpen ? 'z-[60]' : ''} ${className}`} ref={menuRef}>
+    <div className={`relative inline-block text-left ${isOpen ? 'z-[70]' : ''} ${className}`} ref={menuRef}>
       {/* Trigger Button */}
       <button
         type="button"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          if (!isOpen && menuRef.current) {
+            const rect = menuRef.current.getBoundingClientRect();
+            const leftSafeEdge = window.innerWidth >= 1024 ? 280 : 12;
+            setAlignFromLeft(rect.right - 344 < leftSafeEdge);
+          }
+          setIsOpen(!isOpen);
+        }}
         aria-haspopup="true"
         aria-expanded={isOpen}
         aria-label="Share and export data"
@@ -203,7 +211,7 @@ export const ShareExportMenu: React.FC<ShareExportMenuProps> = ({
       {/* Dropdown Menu */}
       {isOpen && (
         <div 
-          className="fixed right-3 left-3 top-[62px] sm:top-full sm:left-auto sm:right-0 sm:absolute sm:w-84 sm:mt-1.5 max-h-[calc(100dvh-120px)] overflow-y-auto custom-scroll rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xl z-[60] divide-y divide-[var(--color-divider)] animate-in fade-in zoom-in-95 duration-100 overscroll-contain"
+          className={`fixed right-3 left-3 top-[62px] sm:top-full sm:absolute sm:w-84 sm:mt-1.5 max-h-[calc(100dvh-120px)] overflow-y-auto custom-scroll rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xl z-[70] divide-y divide-[var(--color-divider)] animate-in fade-in zoom-in-95 duration-100 overscroll-contain ${alignFromLeft ? 'sm:left-0 sm:right-auto' : 'sm:left-auto sm:right-0'}`}
           role="menu"
           aria-orientation="vertical"
         >

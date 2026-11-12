@@ -41,6 +41,7 @@ import Button from '../shared/Button';
 import clsx from 'clsx';
 import MemberHierarchy from './MemberHierarchy';
 import PageHeader from '../shared/PageHeader';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import { motion, AnimatePresence } from 'motion/react';
 import { getWeekNumber, normalizeSkills } from '../../utils/projectUtils';
 import TablePagination, { usePagination } from '../shared/TablePagination';
@@ -889,7 +890,7 @@ const TeamView: React.FC = () => {
       <PageHeader
         icon={Users}
         title="Team Hub"
-        subtitle={`${members.length} Active Engineers • Strategic Capacity & Skills Matrix`}
+        subtitle={`${members.length} Active Engineers`}
         actions={
           <Button 
             variant="outline" 
@@ -959,8 +960,8 @@ const TeamView: React.FC = () => {
               </div>
             </div>
             <div className="mt-3 pt-2.5 border-t border-[var(--color-divider)] text-[10px] text-[var(--color-text-faint)] flex items-center justify-between">
-              <span>Top story throughput</span>
               <span className="font-semibold text-amber-500">{velocityLeaders.scores[0]?.name || '—'}</span>
+              <SectionHelpButton view="team" section="Velocity Leaders" label="Velocity leaderboard guide" size={12} />
             </div>
           </div>
 
@@ -998,8 +999,8 @@ const TeamView: React.FC = () => {
               </div>
             </div>
             <div className="mt-3 pt-2.5 border-t border-[var(--color-divider)] text-[10px] text-[var(--color-text-faint)] flex items-center justify-between">
-              <span>Lowest defect-to-task ratio</span>
-              <span className="font-semibold text-emerald-500">Tier 1 Active</span>
+              <span className="font-semibold text-emerald-500">{qualityChampions[0]?.name || '—'}</span>
+              <SectionHelpButton view="team" section="Skills & Role Coverage" label="Quality Champions guide" size={12} />
             </div>
           </div>
 
@@ -1041,8 +1042,8 @@ const TeamView: React.FC = () => {
               </div>
             </div>
             <div className="mt-3 pt-2.5 border-t border-[var(--color-divider)] text-[10px] text-[var(--color-text-faint)] flex items-center justify-between">
-              <span>Full-stack contributors</span>
               <span className="font-semibold text-sky-500">{growthLeaders.scores[0]?.count || 0} modules</span>
+              <SectionHelpButton view="team" section="Skills & Role Coverage" label="Growth Mindset guide" size={12} />
             </div>
           </div>
 
@@ -1092,8 +1093,8 @@ const TeamView: React.FC = () => {
               </div>
             </div>
             <div className="mt-3 pt-2.5 border-t border-[var(--color-divider)] text-[10px] text-[var(--color-text-faint)] flex items-center justify-between">
-              <span>Real-time action intensity</span>
               <span className="font-semibold text-[var(--color-primary-hex)]">{pulseMetrics.totalEvents} logged</span>
+              <SectionHelpButton view="team" section="Weekly Capacity" label="Collaborative Pulse guide" size={12} />
             </div>
           </div>
 
@@ -1559,13 +1560,11 @@ const TeamView: React.FC = () => {
            ══════════════════════════════════════════════════════════ */}
         <div className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--color-divider)] pb-3">
-            <div>
-              <h3 className="font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
-                <BarChart2 size={16} className="text-[var(--color-primary-hex)]" />
-                <span>Team Performance Scorecard</span>
-              </h3>
-              <p className="text-xs text-[var(--color-text-muted)]">Ranked leaderboard — completion, cycle time, on-time delivery & health</p>
-            </div>
+            <h3 className="font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
+              <BarChart2 size={16} className="text-[var(--color-primary-hex)]" />
+              <span>Team Performance Scorecard</span>
+              <SectionHelpButton view="team" section="Queue Depth" label="Scorecard guide" size={13} />
+            </h3>
             <span className="text-xs font-mono text-[var(--color-text-faint)]">Click headers to sort</span>
           </div>
 
@@ -1593,13 +1592,11 @@ const TeamView: React.FC = () => {
            ══════════════════════════════════════════════════════════ */}
         <div className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[var(--color-divider)] pb-3">
-            <div>
-              <h3 className="font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
-                <BarChart2 size={16} className="text-[var(--color-primary-hex)]" />
-                <span>Workload Balance & Execution Efficiency</span>
-              </h3>
-              <p className="text-xs text-[var(--color-text-muted)]">Assigned vs Completed vs Overdue effort distribution</p>
-            </div>
+            <h3 className="font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
+              <BarChart2 size={16} className="text-[var(--color-primary-hex)]" />
+              <span>Workload Balance & Execution Efficiency</span>
+              <SectionHelpButton view="team" section="Weekly Capacity" label="Workload Balance guide" size={13} />
+            </h3>
 
             <div className="flex items-center gap-2">
               <span className="text-xs font-semibold text-[var(--color-text-muted)]">Sort by:</span>
@@ -1707,13 +1704,11 @@ const TeamView: React.FC = () => {
            ══════════════════════════════════════════════════════════ */}
         <div className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs space-y-4">
           <div className="flex items-center justify-between border-b border-[var(--color-divider)] pb-3">
-            <div>
-              <h3 className="font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
-                <AlertTriangle size={16} className={clsx(capacityShortfalls.length > 0 ? "text-rose-500" : "text-emerald-500")} />
-                <span>Predictive Capacity Shortfalls (12-Week Radar)</span>
-              </h3>
-              <p className="text-xs text-[var(--color-text-muted)]">Scans upcoming weeks to identify sprints where task effort exceeds net capacity</p>
-            </div>
+            <h3 className="font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
+              <AlertTriangle size={16} className={clsx(capacityShortfalls.length > 0 ? "text-rose-500" : "text-emerald-500")} />
+              <span>Predictive Capacity Shortfalls (12-Week Radar)</span>
+              <SectionHelpButton view="team" section="Planned Leaves" label="Capacity Shortfalls guide" size={13} />
+            </h3>
             <span className="text-xs font-mono font-bold text-[var(--color-primary-hex)]">
               {capacityShortfalls.length} Deficit Sprints
             </span>
@@ -1768,8 +1763,8 @@ const TeamView: React.FC = () => {
             <h3 className="font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
               <Briefcase size={16} className="text-[var(--color-primary-hex)]" />
               <span>Skills & Role Coverage Matrix</span>
+              <SectionHelpButton view="team" section="Skills & Role Coverage" label="Skills Coverage guide" size={13} />
             </h3>
-            <p className="text-xs text-[var(--color-text-muted)]">Core architectural and framework competencies across team members</p>
           </div>
 
           <DataTable<Member>

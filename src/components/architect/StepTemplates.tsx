@@ -37,6 +37,7 @@ import Button from '../shared/Button';
 import clsx from 'clsx';
 import { StepTemplate, Task, Subtask, TaskStatus } from '../../types';
 import PageHeader from '../shared/PageHeader';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import { motion, AnimatePresence } from 'motion/react';
 import { todayStr } from '../../utils/projectUtils';
 
@@ -674,7 +675,7 @@ const StepTemplates: React.FC = () => {
       <PageHeader
         icon={BookOpen}
         title="Step Blueprints"
-        subtitle={`${templates.length} Active Templates • Automated technical workflow sequences with real-time impact propagation`}
+        subtitle={`${templates.length} Templates`}
         actions={
           <div className="flex items-center gap-2">
             <button
@@ -1147,13 +1148,11 @@ const StepTemplates: React.FC = () => {
                 <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center border border-amber-500/20">
                   <Sparkles size={18} />
                 </div>
-                <div>
+                <div className="flex items-center gap-1.5">
                   <h3 className="text-sm sm:text-base font-bold text-[var(--color-text)]">
                     Standard ALM Industry Workflow Presets
                   </h3>
-                  <p className="text-[11px] text-[var(--color-text-muted)]">
-                    Bootstrap enterprise delivery workflows with pre-configured operational sequences.
-                  </p>
+                  <SectionHelpButton view="steps" section="Template Name" label="ALM Presets guide" size={13} />
                 </div>
               </div>
               <button 
@@ -1248,18 +1247,11 @@ const StepTemplates: React.FC = () => {
                 <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center justify-center shadow-xs">
                   <Zap size={20} />
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-base sm:text-lg font-bold text-[var(--color-text)]">
-                      {editingIdx !== null ? 'Edit Workflow Blueprint' : 'Create New Blueprint'}
-                    </h2>
-                    <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                      Live Telemetry
-                    </span>
-                  </div>
-                  <p className="text-xs text-[var(--color-text-muted)]">
-                    System automatically computes live blast radius and task impact on every change.
-                  </p>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-base sm:text-lg font-bold text-[var(--color-text)]">
+                    {editingIdx !== null ? 'Edit Workflow Blueprint' : 'Create New Blueprint'}
+                  </h2>
+                  <SectionHelpButton view="steps" section="One-Click Subtask Generation" label="Blueprint impact guide" size={13} />
                 </div>
               </div>
 

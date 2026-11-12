@@ -176,7 +176,7 @@ def test_in_app_help_and_tooltips():
         # Navigate to Defects
         page.goto("http://localhost:3000/#defects")
         page.wait_for_timeout(800)
-        def_id_th = page.locator('th[title*="Unique defect tracking identifier"]')
+        def_id_th = page.locator('th[title*="Persistent defect identifier"]')
         assert def_id_th.count() > 0, "Defect ID tooltip missing"
         sev_th = page.locator('th[title*="Impact severity tier"]')
         assert sev_th.count() > 0, "Severity tooltip missing"
@@ -188,6 +188,63 @@ def test_in_app_help_and_tooltips():
         raid_th = page.locator('th[title*="Identifier and RAID category"]')
         assert raid_th.count() > 0, "RAID tooltip missing"
         print("✓ RAID register table column tooltips verified")
+
+        # -------------------------------------------------------------
+        # TEST 9: Section-Level Help Buttons & Decluttered Screens
+        # -------------------------------------------------------------
+        print("\n--- TEST 9: Section-Level Help Focus & Zero Feature Clutter ---")
+        page.goto("http://localhost:3000/#overview")
+        page.wait_for_timeout(600)
+        assert page.locator("text=Verified Stream").count() == 0, "Verified Stream badge should be hidden"
+        assert page.locator("text=Looking for granular metrics and scenario modeling?").count() == 0, "Overview promo copy should be hidden"
+        health_help = page.locator('button[aria-label="Health Index formula and guide"]')
+        assert health_help.is_visible(), "Health Index section help button missing"
+        health_help.click()
+        page.wait_for_timeout(400)
+        assert page.locator("text=Section: Health Index").is_visible(), "Section focus banner missing in HelpModal"
+        page.keyboard.press("Escape")
+        page.wait_for_timeout(300)
+
+        page.goto("http://localhost:3000/#dash")
+        page.wait_for_timeout(600)
+        assert page.locator("text=Model: Gemini 1.5 Flash").count() == 0, "Gemini model footer badge should be hidden"
+        assert page.locator("text=100 Monte Carlo runs").count() == 0, "100 Monte Carlo runs badge should be hidden"
+        mc_help = page.locator('button[aria-label="Monte Carlo completion guide"]')
+        assert mc_help.is_visible(), "Monte Carlo section help button missing"
+        mc_help.click()
+        page.wait_for_timeout(400)
+        assert page.locator("text=Intelligence Dashboard & Analytics Guide").is_visible(), "Intelligence guide should be active"
+        assert page.locator("text=Section: Monte Carlo Simulation").is_visible(), "Monte Carlo section focus missing"
+        page.keyboard.press("Escape")
+        page.wait_for_timeout(300)
+
+        page.goto("http://localhost:3000/#cxo")
+        page.wait_for_timeout(600)
+        assert page.locator("text=Outlook • Apple Mail • Gmail").count() == 0, "CXO mail client strip should be in Help"
+        assert page.locator("text=Auto-Configures").count() == 0, "Auto-Configures badge should be hidden"
+        cxo_help = page.locator('button[aria-label="CXO Email Briefing guide"]').first
+        assert cxo_help.is_visible(), "CXO section help button missing"
+        cxo_help.click()
+        page.wait_for_timeout(400)
+        assert page.locator("text=Section: CXO Email Briefing Studio").is_visible(), "CXO Help section focus missing"
+        page.keyboard.press("Escape")
+        page.wait_for_timeout(300)
+
+        page.goto("http://localhost:3000/#settings")
+        page.wait_for_timeout(600)
+        assert page.locator("text=System Architecture: Local-First Workstation").count() == 0, "Local-First explainer banner should be in Help"
+        assert page.locator('button[aria-label="Excel Portability guide"]').is_visible(), "Settings Excel section help missing"
+
+        page.goto("http://localhost:3000/#retro")
+        page.wait_for_timeout(600)
+        assert page.locator("text=Strong Psychological Safety").count() == 0, "Hardcoded retro tagline should be removed"
+        assert page.locator('button[aria-label="Team Morale guide"]').is_visible(), "Retro section help missing"
+
+        page.goto("http://localhost:3000/#fields")
+        page.wait_for_timeout(600)
+        assert page.locator("text=Enterprise Schema Synchronization").count() == 0, "Schema explainer card should be in Help"
+        assert page.locator('button[aria-label="Core Attributes guide"]').is_visible(), "Field Architect core attributes help missing"
+        print("✓ Section-level help focus & decluttered UI verified across views")
 
         browser.close()
         print("\n==========================================")

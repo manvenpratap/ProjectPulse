@@ -26,6 +26,7 @@ import {
   YAxis,
 } from 'recharts';
 import clsx from 'clsx';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import {
   Decision,
   Defect,
@@ -594,13 +595,11 @@ export const QualityGovernanceTab: React.FC<QualityGovernanceTabProps> = ({
         {/* Card 1: Quality Reliability Index (4 cols) */}
         <div className="lg:col-span-4 p-5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl flex flex-col justify-between space-y-4">
           <div className="flex items-start justify-between gap-2">
-            <div>
+            <div className="flex items-center gap-1">
               <h4 className="font-sans font-bold text-sm text-[var(--color-text)] leading-snug">
                 Quality Reliability Index
               </h4>
-              <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                Defect severity distribution & release posture
-              </p>
+              <SectionHelpButton view="dash" section="Quality Reliability" label="Quality Reliability guide" size={13} />
             </div>
             <div className="flex items-center p-0.5 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[10px] font-bold shrink-0">
               <button
@@ -715,13 +714,11 @@ export const QualityGovernanceTab: React.FC<QualityGovernanceTabProps> = ({
         {/* Card 2: Defect Pipeline Progression (4 cols) */}
         <div className="lg:col-span-4 p-5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl flex flex-col justify-between space-y-4">
           <div className="flex items-start justify-between gap-2">
-            <div>
+            <div className="flex items-center gap-1">
               <h4 className="font-sans font-bold text-sm text-[var(--color-text)] leading-snug">
                 Defect Pipeline Progression
               </h4>
-              <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                Ordered workflow stage velocity
-              </p>
+              <SectionHelpButton view="dash" section="Quality Reliability" label="Defect Pipeline guide" size={13} />
             </div>
             <button
               type="button"
@@ -809,15 +806,11 @@ export const QualityGovernanceTab: React.FC<QualityGovernanceTabProps> = ({
         {/* Card 3: Root Cause & Module Hotspots (4 cols) */}
         <div className="lg:col-span-4 p-5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl flex flex-col justify-between space-y-4">
           <div className="flex items-start justify-between gap-2">
-            <div>
+            <div className="flex items-center gap-1">
               <h4 className="font-sans font-bold text-sm text-[var(--color-text)] leading-snug">
                 {defectLensMode === 'root_cause' ? 'Defect Root Cause' : 'Module Defect Hotspots'}
               </h4>
-              <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                {defectLensMode === 'root_cause'
-                  ? 'Classification across defect categories'
-                  : 'Entity density correlated to modules'}
-              </p>
+              <SectionHelpButton view="dash" section="Quality Reliability" label="Defect Root Cause guide" size={13} />
             </div>
             <div className="flex items-center p-0.5 rounded-lg bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[10px] font-bold shrink-0">
               <button
@@ -936,13 +929,11 @@ export const QualityGovernanceTab: React.FC<QualityGovernanceTabProps> = ({
         {/* Analytics Data Quality Score (5 cols) */}
         <div className="lg:col-span-5 p-5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl flex flex-col justify-between space-y-4">
           <div className="flex items-start justify-between gap-3">
-            <div>
+            <div className="flex items-center gap-1.5">
               <h3 className="font-sans font-bold text-sm sm:text-base text-[var(--color-text)]">
                 Analytics Data Integrity
               </h3>
-              <p className="text-xs text-[var(--color-text-muted)]">
-                Task completeness powering EVM & forecast precision
-              </p>
+              <SectionHelpButton view="dash" section="Quality Reliability" label="Analytics Data Integrity guide" />
             </div>
             <div className="flex items-baseline gap-1.5 shrink-0">
               <span
@@ -1047,13 +1038,11 @@ export const QualityGovernanceTab: React.FC<QualityGovernanceTabProps> = ({
         {/* Sign-Off & Release Quality Gate (7 cols) */}
         <div className="lg:col-span-7 p-5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl flex flex-col justify-between space-y-4">
           <div className="flex items-start justify-between gap-3">
-            <div>
+            <div className="flex items-center gap-1.5">
               <h3 className="font-sans font-bold text-sm sm:text-base text-[var(--color-text)]">
                 Release Sign-Off & Smoke Quality Gate
               </h3>
-              <p className="text-xs text-[var(--color-text-muted)]">
-                Deployment authorization and verification across environments
-              </p>
+              <SectionHelpButton view="dash" section="Quality Reliability" label="Release Smoke Gate guide" />
             </div>
             <button
               type="button"
@@ -1218,13 +1207,14 @@ export const QualityGovernanceTab: React.FC<QualityGovernanceTabProps> = ({
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <div className="p-5 sm:p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
+          <div className="flex items-center gap-1.5">
             <h3 className="font-sans font-bold text-sm sm:text-base text-[var(--color-text)]">
               RAID Governance Threat Heatmap
             </h3>
-            <p className="text-xs text-[var(--color-text-muted)]">
-              Active Risks, Assumptions, Issues & Dependencies by Impact vs Probability ({raidMatrix.active.length} active)
-            </p>
+            <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded-full bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)]">
+              {raidMatrix.active.length} active
+            </span>
+            <SectionHelpButton view="risks" section="Impact Matrix Heatmap" label="RAID Heatmap guide" />
           </div>
 
           <div className="flex items-center gap-2 flex-wrap">
@@ -1399,13 +1389,11 @@ export const QualityGovernanceTab: React.FC<QualityGovernanceTabProps> = ({
               <div className="w-8 h-8 rounded-xl bg-emerald-500/12 text-emerald-500 flex items-center justify-center border border-emerald-500/20">
                 <FileText size={16} />
               </div>
-              <div>
+              <div className="flex items-center gap-1">
                 <h3 className="font-sans font-bold text-sm text-[var(--color-text)]">
                   Steering Decisions Log
                 </h3>
-                <p className="text-[11px] text-[var(--color-text-muted)]">
-                  Architecture decision records & sign-off gates
-                </p>
+                <SectionHelpButton view="risks" section="Decisions Register" label="Steering Decisions guide" size={13} />
               </div>
             </div>
 
@@ -1494,13 +1482,11 @@ export const QualityGovernanceTab: React.FC<QualityGovernanceTabProps> = ({
               <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center border border-[var(--color-primary-hex)]/20">
                 <Activity size={16} />
               </div>
-              <div>
+              <div className="flex items-center gap-1">
                 <h3 className="font-sans font-bold text-sm text-[var(--color-text)]">
                   Project History Change Delta
                 </h3>
-                <p className="text-[11px] text-[var(--color-text-muted)]">
-                  Transactional state changes and audit trail
-                </p>
+                <SectionHelpButton view="log" label="Audit log guide" size={13} />
               </div>
             </div>
             <button

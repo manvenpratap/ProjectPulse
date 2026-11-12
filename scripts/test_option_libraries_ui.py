@@ -85,43 +85,43 @@ def test_option_libraries_ui():
 
         # 4. Testing Option Reordering (Move Up / Move Down)
         print("\n--- Testing Option Reordering ---")
-        first_option_text = page.locator(".space-y-2 > div span.truncate").first.inner_text()
+        first_option_text = page.locator("main .space-y-2 > div span.truncate").first.inner_text()
         print(f"✓ Top option before move down: '{first_option_text}'")
 
         # Click Move Down on first item
-        move_down_btn = page.locator(".space-y-2 > div button[title='Move option down']").first
+        move_down_btn = page.locator("main .space-y-2 > div button[title='Move option down']").first
         move_down_btn.click()
         page.wait_for_timeout(400)
 
-        second_option_text = page.locator(".space-y-2 > div span.truncate").nth(1).inner_text()
+        second_option_text = page.locator("main .space-y-2 > div span.truncate").nth(1).inner_text()
         assert second_option_text == first_option_text, f"Expected '{first_option_text}' to move to index 1, got '{second_option_text}'"
         print(f"✓ Reorder verified: '{first_option_text}' moved down successfully")
 
         # 5. Testing Default Option Toggling (Star)
         print("\n--- Testing Default Option Star Toggling ---")
         # Star the first option
-        star_btn = page.locator(".space-y-2 > div button[title*='default']").first
+        star_btn = page.locator("main .space-y-2 > div button[title*='default']").first
         star_btn.click()
         page.wait_for_timeout(400)
 
-        default_badge = page.locator(".space-y-2 > div span:has-text('Default')").first
+        default_badge = page.locator("main .space-y-2 > div span:has-text('Default')").first
         assert default_badge.is_visible(), "Default badge not visible after clicking star"
         print("✓ Star toggle verified: Default badge active with amber indicator")
 
         # 6. Testing Inline Editing
         print("\n--- Testing Inline Editing ---")
-        edit_btn = page.locator(".space-y-2 > div button[title='Edit value']").first
+        edit_btn = page.locator("main .space-y-2 > div button[title='Edit value']").first
         edit_btn.click()
         page.wait_for_timeout(300)
 
-        edit_input = page.locator(".space-y-2 > div input[type='text']")
+        edit_input = page.locator("main .space-y-2 > div input[type='text']")
         assert edit_input.is_visible(), "Inline edit input did not appear"
         curr_val = edit_input.input_value()
         edit_input.fill(curr_val + " (Verified)")
         page.keyboard.press("Enter")
         page.wait_for_timeout(400)
 
-        edited_text = page.locator(".space-y-2 > div span.truncate").first.inner_text()
+        edited_text = page.locator("main .space-y-2 > div span.truncate").first.inner_text()
         assert "(Verified)" in edited_text, f"Expected edited text to contain '(Verified)', got '{edited_text}'"
         print(f"✓ Inline edit verified: updated to '{edited_text}'")
 
@@ -141,8 +141,8 @@ def test_option_libraries_ui():
         sort_az_btn.click()
         page.wait_for_timeout(400)
 
-        first_sorted = page.locator(".space-y-2 > div span.truncate").first.inner_text()
-        last_sorted = page.locator(".space-y-2 > div span.truncate").last.inner_text()
+        first_sorted = page.locator("main .space-y-2 > div span.truncate").first.inner_text()
+        last_sorted = page.locator("main .space-y-2 > div span.truncate").last.inner_text()
         print(f"✓ Alphabetical A→Z sort: First='{first_sorted}', Last='{last_sorted}'")
 
         # 9. Testing Bulk Edit Modal

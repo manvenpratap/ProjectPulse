@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import { updateCardSpotlight } from '../../utils/designSpells';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import PageHeader from '../shared/PageHeader';
 import Button from '../shared/Button';
 import { motion, AnimatePresence, useReducedMotion, animate } from 'motion/react';
@@ -1102,7 +1103,6 @@ export const OverviewView: React.FC = () => {
       <PageHeader
         icon={Presentation}
         title="Executive Overview"
-        subtitle="Visual high-level project telemetry, health dials, and milestone release radar"
         primaryAction={
           hasViewAccess('dash') ? (
             <button 
@@ -1133,17 +1133,13 @@ export const OverviewView: React.FC = () => {
           className="px-4 py-2.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] flex flex-wrap items-center justify-between gap-3 text-xs"
         >
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-            <div className="flex items-center gap-2">
-              <span
-                className={clsx(
-                  'w-2 h-2 rounded-full',
-                  radarLive && !shouldReduceMotion ? 'bg-emerald-500 motion-safe:animate-pulse' : 'bg-emerald-500'
-                )}
-              />
-              <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">
-                Cockpit Live
-              </span>
-            </div>
+            <span
+              className={clsx(
+                'w-2 h-2 rounded-full',
+                radarLive && !shouldReduceMotion ? 'bg-emerald-500 motion-safe:animate-pulse' : 'bg-emerald-500'
+              )}
+              title="Live cockpit telemetry"
+            />
 
             <div className="flex flex-wrap items-center gap-3 font-mono text-[11px]">
               <span className="text-[var(--color-text-muted)]">
@@ -1221,9 +1217,9 @@ export const OverviewView: React.FC = () => {
               <ArrowUpRight size={11} />
             </div>
 
-            <div className="space-y-0.5 text-center w-full relative z-[1]">
+            <div className="flex items-center justify-center gap-1 text-center w-full relative z-[1]">
               <h4 className="font-sans font-bold text-sm sm:text-base text-[var(--color-text)]">Composite Health Index</h4>
-              <p className="text-xs text-[var(--color-primary-hex)] font-semibold">Algorithmic Delivery Health</p>
+              <SectionHelpButton view="overview" section="Health Index" label="Health Index formula and guide" />
             </div>
 
             {/* Precision Tick Circular SVG Gauge */}
@@ -1370,9 +1366,9 @@ export const OverviewView: React.FC = () => {
               <ArrowUpRight size={11} />
             </div>
 
-            <div className="space-y-0.5 text-center w-full">
+            <div className="flex items-center justify-center gap-1 text-center w-full">
               <h4 className="font-sans font-bold text-sm sm:text-base text-[var(--color-text)]">Delivery Confidence</h4>
-              <p className="text-xs text-[var(--color-primary-hex)] font-semibold">Throughput vs Remaining Scope</p>
+              <SectionHelpButton view="overview" section="Delivery Confidence" label="Delivery Confidence guide" />
             </div>
 
             {/* 180° Spring-Driven Speedometer SVG Gauge */}
@@ -1468,9 +1464,9 @@ export const OverviewView: React.FC = () => {
                   {pendingDecisions.length > 0 && <circle cx="32" cy="32" r="2" fill="var(--color-primary-hex)" />}
                   <circle cx="24" cy="24" r="2" fill="var(--color-text)" />
                 </svg>
-                <div className="min-w-0">
+                <div className="min-w-0 flex items-center gap-1">
                   <h4 className="font-sans font-bold text-sm sm:text-base text-[var(--color-text)] truncate">Threat Radar</h4>
-                  <span className="text-[10px] font-mono text-[var(--color-text-muted)] block whitespace-nowrap">4-Vector Scan</span>
+                  <SectionHelpButton view="overview" section="Early Warning System" label="Threat Radar guide" />
                 </div>
               </div>
               <span className={clsx(
@@ -1570,12 +1566,10 @@ export const OverviewView: React.FC = () => {
             </div>
 
             <div className="flex flex-wrap justify-between items-center gap-2 pr-14">
-              <div>
-                <div className="flex items-center gap-2">
-                  <BarChart3 className="text-[var(--color-primary-hex)] shrink-0" size={18} />
-                  <h4 className="font-sans font-bold text-sm sm:text-base text-[var(--color-text)]">Delivery Velocity & Throughput Corridor</h4>
-                </div>
-                <p className="text-xs text-[var(--color-text-muted)]">Weekly completed deliverables vs target baseline throughput</p>
+              <div className="flex items-center gap-2">
+                <BarChart3 className="text-[var(--color-primary-hex)] shrink-0" size={18} />
+                <h4 className="font-sans font-bold text-sm sm:text-base text-[var(--color-text)]">Delivery Velocity & Throughput Corridor</h4>
+                <SectionHelpButton view="overview" section="Delivery Confidence" label="Delivery Velocity guide" />
               </div>
               <div className="flex items-center gap-2 shrink-0">
                 <div
@@ -1835,6 +1829,7 @@ export const OverviewView: React.FC = () => {
               <div className="flex items-center gap-2 min-w-0">
                 <Layers className="text-purple-500 shrink-0" size={18} />
                 <h4 className="font-sans font-bold text-sm sm:text-base text-[var(--color-text)] truncate">Module Architecture Mass</h4>
+                <SectionHelpButton view="overview" section="Module Gravity" label="Module Architecture Mass guide" />
               </div>
               <span className="text-xs font-mono font-bold text-[var(--color-text-muted)] shrink-0 whitespace-nowrap">
                 {moduleDistribution.length} Domains
@@ -1958,6 +1953,7 @@ export const OverviewView: React.FC = () => {
               <div className="flex items-center gap-2 min-w-0">
                 <ShieldCheck className="text-emerald-500 shrink-0" size={18} />
                 <h4 className="font-sans font-bold text-sm sm:text-base text-[var(--color-text)] truncate">RAID 3×3 Risk Heatmap Matrix</h4>
+                <SectionHelpButton view="overview" section="Early Warning System" label="RAID Matrix guide" />
               </div>
               <span className={clsx(
                 "text-xs font-mono font-bold px-2.5 py-0.5 rounded-full shrink-0 whitespace-nowrap",
@@ -2073,6 +2069,7 @@ export const OverviewView: React.FC = () => {
               <div className="flex items-center gap-2 min-w-0">
                 <CheckCircle2 className="text-emerald-500 shrink-0" size={18} />
                 <h4 className="font-sans font-bold text-sm sm:text-base text-[var(--color-text)] truncate">Deliverable Scope & Effort Burn</h4>
+                <SectionHelpButton view="overview" section="Strategic Deliverables" label="Scope & Effort Burn guide" />
               </div>
               <span className="text-xs font-mono font-bold text-emerald-500 bg-emerald-500/10 px-2.5 py-0.5 rounded-full shrink-0 whitespace-nowrap">
                 {doneTasks.length}/{totalTasks} Tasks Done
@@ -2218,9 +2215,9 @@ export const OverviewView: React.FC = () => {
               <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center font-bold">
                 <Milestone size={16} />
               </div>
-              <div>
+              <div className="flex items-center gap-2">
                 <h4 className="font-sans font-bold text-sm sm:text-base text-[var(--color-text)]">Milestone Delivery Horizon & Release Gates</h4>
-                <p className="text-xs text-[var(--color-text-muted)]">Progressive phase gates and scheduled launch roadmap</p>
+                <SectionHelpButton view="overview" section="Milestone Delivery Radar" label="Milestone Delivery Horizon guide" />
               </div>
             </div>
 
@@ -2336,13 +2333,13 @@ export const OverviewView: React.FC = () => {
               <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold shrink-0">
                 <Trophy size={16} />
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex items-center gap-2">
                 <h4 className="font-sans font-bold text-sm sm:text-base text-[var(--color-text)] truncate">Recent Deliveries & Multi-Level Accomplishments</h4>
-                <p className="text-xs text-[var(--color-text-muted)] truncate">Verified completion stream (Tasks › Server Sub-tasks › GUI Screens)</p>
+                <SectionHelpButton view="overview" section="Verified Delivery" label="Recent Deliveries Stream guide" />
               </div>
             </div>
-            <span className="text-xs font-mono font-bold text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded-full shrink-0 whitespace-nowrap">
-              Verified Stream
+            <span className="text-xs font-mono font-bold text-emerald-500 bg-emerald-500/10 px-2.5 py-1 rounded-full shrink-0 whitespace-nowrap tabular-nums">
+              {recentAccomplishments.length} Completed
             </span>
           </div>
 
@@ -2386,23 +2383,18 @@ export const OverviewView: React.FC = () => {
           className="p-6 sm:p-8 rounded-3xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm space-y-5 relative overflow-hidden"
         >
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div className="space-y-1.5 max-w-2xl">
-              <div className="flex items-center gap-2 text-[var(--color-primary-hex)] text-xs font-bold uppercase tracking-wider font-mono">
-                <Zap size={14} />
-                <span>Advanced Analytics & Simulation</span>
-              </div>
-              <h3 className="text-xl sm:text-2xl font-bold font-display tracking-tight text-[var(--color-text)]">
-                Looking for granular metrics and scenario modeling?
+            <div className="flex items-center gap-2">
+              <Zap size={16} className="text-[var(--color-primary-hex)] shrink-0" />
+              <h3 className="text-base sm:text-lg font-bold font-display tracking-tight text-[var(--color-text)]">
+                Intelligence Cockpit Jump Links
               </h3>
-              <p className="text-xs sm:text-sm text-[var(--color-text-muted)] leading-relaxed">
-                Explore the complete Project Intelligence Cockpit for Monte Carlo ETA simulations, What-If Staffing Sandboxes, Velocity Control Bands, Earned Value Management (EVM), and Governance Audit Ledgers.
-              </p>
+              <SectionHelpButton view="dash" label="Intelligence Cockpit guide" />
             </div>
 
             {hasViewAccess('dash') && (
               <button
                 onClick={() => setView('dash')}
-                className="btn-spell-primary h-11 px-5 rounded-2xl bg-[var(--color-primary-hex)] text-white hover:opacity-95 font-bold text-xs shrink-0 flex items-center gap-2 transition-[transform,opacity] active:scale-95 cursor-pointer shadow-xs"
+                className="btn-spell-primary h-10 px-4 rounded-xl bg-[var(--color-primary-hex)] text-white hover:opacity-95 font-bold text-xs shrink-0 flex items-center gap-2 transition-[transform,opacity] active:scale-95 cursor-pointer shadow-xs"
               >
                 <span>Launch Intelligence Cockpit</span>
                 <ArrowRight size={15} />

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../store/AuthContext';
 import { 
   Activity, 
@@ -13,6 +13,8 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import Button from '../shared/Button';
+import HelpModal from '../shared/HelpModal';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import { motion } from 'motion/react';
 
 export const LoginView: React.FC = () => {
@@ -20,6 +22,13 @@ export const LoginView: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+
+  useEffect(() => {
+    const handleOpenHelp = () => setIsHelpOpen(true);
+    window.addEventListener('open-view-help', handleOpenHelp);
+    return () => window.removeEventListener('open-view-help', handleOpenHelp);
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -63,7 +72,10 @@ export const LoginView: React.FC = () => {
         transition={{ duration: 0.35, ease: [0.23, 1, 0.32, 1] }}
         className="w-full max-w-[440px] z-10"
       >
-        <div className="card p-6 sm:p-8 bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xs rounded-2xl space-y-6">
+        <div className="card p-6 sm:p-8 bg-[var(--color-surface)] border border-[var(--color-border)] shadow-xs rounded-2xl space-y-6 relative">
+          <div className="absolute top-4 right-4">
+            <SectionHelpButton view="login" section="Persona Roles" label="Sign-in & role guide" />
+          </div>
           {/* Header */}
           <div className="text-center space-y-2">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--color-primary-hex)] text-white shadow-xs mx-auto mb-1">
@@ -72,9 +84,6 @@ export const LoginView: React.FC = () => {
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--color-text)]">
               ProjectPulse 2.0
             </h1>
-            <p className="text-xs text-[var(--color-text-muted)] font-medium">
-              Enterprise Engineering Workstation & Delivery Cockpit
-            </p>
           </div>
 
           {/* Quick Demo Personas */}
@@ -84,7 +93,7 @@ export const LoginView: React.FC = () => {
                 <UserCheck size={13} className="text-[var(--color-primary-hex)]" />
                 Select Persona Session
               </span>
-              <span className="text-[10px] text-[var(--color-text-faint)]">1-Click Switch</span>
+              <SectionHelpButton view="login" section="Persona Roles" label="Persona roles guide" size={13} />
             </div>
             <div className="grid grid-cols-2 gap-2">
               {users.map(u => (
@@ -140,7 +149,6 @@ export const LoginView: React.FC = () => {
             <div className="space-y-1.5">
               <div className="flex justify-between items-center">
                 <label className="text-xs font-semibold text-[var(--color-text-muted)] block">Password</label>
-                <span className="text-[10px] text-[var(--color-text-faint)] font-medium">Demo: any password</span>
               </div>
               <div className="relative">
                 <Lock size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
@@ -162,14 +170,10 @@ export const LoginView: React.FC = () => {
               Sign In to Workspace
             </Button>
           </form>
-
-          <div className="text-center pt-1 border-t border-[var(--color-divider)]">
-            <p className="text-[11px] text-[var(--color-text-faint)]">
-              Admin controls roles, access permissions, and team privileges.
-            </p>
-          </div>
         </div>
       </motion.div>
+
+      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} targetView="login" />
     </div>
   );
 };

@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import clsx from 'clsx';
 import confetti from 'canvas-confetti';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import PageHeader from '../shared/PageHeader';
 import Button from '../shared/Button';
 
@@ -146,7 +147,7 @@ export const SprintRetroView: React.FC = () => {
       <PageHeader
         icon={Smile}
         title="Sprint Retrospective"
-        subtitle={`Kaizen Continuous Improvement • ${selectedSprint} Telemetry`}
+        subtitle={selectedSprint}
         actions={
           <div className="flex items-center gap-2">
             <select
@@ -184,11 +185,13 @@ export const SprintRetroView: React.FC = () => {
                 <Smile size={22} />
               </div>
               <div>
-                <span className="text-xs font-medium text-[var(--color-text-muted)]">Team Morale Index</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs font-medium text-[var(--color-text-muted)]">Team Morale Index</span>
+                  <SectionHelpButton view="retro" section="Team Sentiment Score" label="Team Morale guide" size={12} />
+                </div>
                 <div className="text-xl font-mono font-bold text-emerald-500 mt-0.5">
                   {sprintMorale} <span className="text-xs font-sans text-[var(--color-text-muted)]">/ 10</span>
                 </div>
-                <span className="text-[11px] text-emerald-600 font-medium">Strong Psychological Safety</span>
               </div>
             </div>
 
@@ -198,11 +201,13 @@ export const SprintRetroView: React.FC = () => {
                 <TrendingUp size={22} />
               </div>
               <div>
-                <span className="text-xs font-medium text-[var(--color-text-muted)]">Velocity Delivered</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs font-medium text-[var(--color-text-muted)]">Velocity Delivered</span>
+                  <SectionHelpButton view="retro" section="Action Items" label="Velocity Delivered guide" size={12} />
+                </div>
                 <div className="text-xl font-mono font-bold text-sky-500 mt-0.5">
                   {sprintDeliveredPoints} <span className="text-xs font-sans text-[var(--color-text-muted)]">/ {sprintTargetPoints} pts</span>
                 </div>
-                <span className="text-[11px] text-sky-600 font-medium">96% Commitment Realization</span>
               </div>
             </div>
 
@@ -212,11 +217,13 @@ export const SprintRetroView: React.FC = () => {
                 <CheckCircle2 size={22} />
               </div>
               <div>
-                <span className="text-xs font-medium text-[var(--color-text-muted)]">Action Resolution</span>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs font-medium text-[var(--color-text-muted)]">Action Resolution</span>
+                  <SectionHelpButton view="retro" section="Action Item Tracking" label="Action Resolution guide" size={12} />
+                </div>
                 <div className="text-xl font-mono font-bold text-purple-500 mt-0.5">
                   {counts.resolved_actions} <span className="text-xs font-sans text-[var(--color-text-muted)]">/ {counts.action_item} Resolved</span>
                 </div>
-                <span className="text-[11px] text-purple-600 font-medium">Kaizen Continuous Flow</span>
               </div>
             </div>
           </div>
@@ -379,9 +386,9 @@ export const SprintRetroView: React.FC = () => {
         {/* 4. CONTINUOUS IMPROVEMENT COMMITMENT LEDGER (Information Pyramid Level 4) */}
         <div className="p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-sm space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[var(--color-divider)]">
-            <div>
+            <div className="flex items-center gap-1.5">
               <h2 className="text-sm font-bold text-[var(--color-text)]">Continuous Improvement Action Commitments</h2>
-              <p className="text-xs text-[var(--color-text-muted)]">Trackable Kaizen action items committed by the team for execution.</p>
+              <SectionHelpButton view="retro" section="Action Item Tracking" label="Action Commitments guide" size={13} />
             </div>
             <span className="text-xs font-mono text-[var(--color-primary-hex)] font-semibold">
               {retros.filter(r => r.category === 'action_item' && r.status === 'Resolved').length} / {retros.filter(r => r.category === 'action_item').length} Resolved

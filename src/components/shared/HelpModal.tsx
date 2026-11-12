@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Modal from './Modal';
 import Button from './Button';
 import { 
@@ -32,43 +32,80 @@ interface HelpModalProps {
   isOpen: boolean;
   onClose: () => void;
   targetView?: string;
+  targetSection?: string;
 }
 
-const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, targetView }) => {
+const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, targetView, targetSection }) => {
   const { state, setView } = useProject();
   const [activeTab, setActiveTab] = useState<'screen' | 'fields' | 'shortcuts'>('screen');
   const [selectedViewId, setSelectedViewId] = useState<string>(targetView || state.view || 'overview');
+  const [focusedSection, setFocusedSection] = useState<string | undefined>(targetSection);
   const [searchQuery, setSearchQuery] = useState('');
   const [fieldDomain, setFieldDomain] = useState<'all' | 'tasks' | 'defects' | 'deliveries' | 'custom'>('all');
+  const requestedViewRef = useRef<string | null>(null);
+  const requestedSectionRef = useRef<string | undefined>(undefined);
+  const sectionMatchRef = useRef<HTMLDivElement | null>(null);
 
-  // Keep selected view synchronized when opened with active view or targetView prop
+  if (isOpen) {
+    sectionMatchRef.current = null;
+  }
+
+  // Keep selected view and section synchronized when opened directly or via SectionHelpButton
   useEffect(() => {
     if (isOpen) {
-      setSelectedViewId(targetView || state.view || 'overview');
+      setSelectedViewId(requestedViewRef.current || targetView || state.view || 'overview');
+      setFocusedSection(requestedSectionRef.current ?? targetSection);
+      requestedViewRef.current = null;
+      requestedSectionRef.current = undefined;
       setSearchQuery('');
     }
-  }, [isOpen, targetView, state.view]);
+  }, [isOpen, targetView, targetSection, state.view]);
 
   // Listen for global custom event 'open-view-help'
   useEffect(() => {
     const handleOpenViewHelp = (e: any) => {
       if (e.detail?.view) {
+        requestedViewRef.current = e.detail.view;
         setSelectedViewId(e.detail.view);
       }
+      requestedSectionRef.current = e.detail?.section;
+      setFocusedSection(e.detail?.section);
       setActiveTab('screen');
     };
     window.addEventListener('open-view-help', handleOpenViewHelp);
     return () => window.removeEventListener('open-view-help', handleOpenViewHelp);
   }, []);
 
+  useEffect(() => {
+    if (isOpen && activeTab === 'screen' && focusedSection && sectionMatchRef.current) {
+      const id = window.setTimeout(() => {
+        sectionMatchRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }, 60);
+      return () => window.clearTimeout(id);
+    }
+  }, [isOpen, activeTab, focusedSection, selectedViewId]);
+
   const currentViewGuide: ViewHelpItem = VIEW_HELP_DATA[selectedViewId] || VIEW_HELP_DATA.overview;
 
-  // Flattened nav items for view switcher
+  const isSectionMatch = (text: string) => {
+    if (!focusedSection) return false;
+    const normFocus = focusedSection.toLowerCase().trim();
+    const normText = text.toLowerCase();
+    if (normText.includes(normFocus)) return true;
+    const tokens = normFocus.split(/[^a-z0-9]+/).filter(t => t.length >= 3);
+    return tokens.length > 0 && tokens.filter(t => normText.includes(t)).length >= Math.min(2, tokens.length);
+  };
+
+  // Flattened nav items for view switcher (including setup & login guides)
   const allViews = useMemo(() => {
-    return NAV_HUBS.flatMap(h => h.items.map(item => ({
-      ...item,
-      hubLabel: h.label
-    })));
+    return [
+      ...NAV_HUBS.flatMap(h => h.items.map(item => ({
+        ...item,
+        hubLabel: h.label
+      }))),
+      { id: 'setup', label: 'Workspace Setup & Import', hubLabel: 'Onboarding' },
+      { id: 'login', label: 'Sign In & Personas', hubLabel: 'Authentication' },
+    ];
   }, []);
 
   // Dynamically pull and merge field definitions from state (FieldArchitect) with fallback to STANDARD_FIELD_GUIDE
@@ -234,6 +271,21 @@ const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, targetView }) =>
               </p>
             </div>
 
+            {focusedSection && (
+              <div className="px-3.5 py-2 rounded-xl bg-[var(--color-primary-highlight-hex)]/60 border border-[var(--color-primary-hex)]/30 flex items-center justify-between gap-2 text-xs">
+                <span className="font-semibold text-[var(--color-primary-hex)]">
+                  Section: {focusedSection}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setFocusedSection(undefined)}
+                  className="text-[11px] font-semibold text-[var(--color-text-muted)] hover:text-[var(--color-text)] cursor-pointer"
+                >
+                  Show all sections
+                </button>
+              </div>
+            )}
+
             {/* Key Fields & Telemetry Calculations */}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
@@ -243,8 +295,19 @@ const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, targetView }) =>
                 </h4>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {currentViewGuide.keyMetricsAndFields.map((item, idx) => (
-                  <div key={idx} className="p-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs space-y-1.5 hover:border-[var(--color-primary-hex)]/30 transition-colors">
+                {currentViewGuide.keyMetricsAndFields.map((item, idx) => {
+                  const matched = isSectionMatch(`${item.name} ${item.desc}`);
+                  return (
+                  <div
+                    key={idx}
+                    ref={matched && !sectionMatchRef.current ? sectionMatchRef : undefined}
+                    className={clsx(
+                      'p-3 rounded-xl shadow-2xs space-y-1.5 transition-colors border',
+                      matched
+                        ? 'bg-[var(--color-primary-highlight-hex)]/35 border-[var(--color-primary-hex)] ring-1 ring-[var(--color-primary-hex)]/25'
+                        : 'bg-[var(--color-surface)] border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/30'
+                    )}
+                  >
                     <div className="text-xs font-bold text-[var(--color-text)] flex items-center justify-between">
                       <span>{item.name}</span>
                     </div>
@@ -257,7 +320,8 @@ const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, targetView }) =>
                       </div>
                     )}
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -270,8 +334,19 @@ const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, targetView }) =>
                 </h4>
               </div>
               <div className="space-y-2">
-                {currentViewGuide.capabilities.map((cap, idx) => (
-                  <div key={idx} className="p-3 rounded-xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs space-y-1">
+                {currentViewGuide.capabilities.map((cap, idx) => {
+                  const matched = isSectionMatch(`${cap.title} ${cap.desc}`);
+                  return (
+                  <div
+                    key={idx}
+                    ref={matched && !sectionMatchRef.current ? sectionMatchRef : undefined}
+                    className={clsx(
+                      'p-3 rounded-xl shadow-2xs space-y-1 border transition-colors',
+                      matched
+                        ? 'bg-[var(--color-primary-highlight-hex)]/35 border-[var(--color-primary-hex)] ring-1 ring-[var(--color-primary-hex)]/25'
+                        : 'bg-[var(--color-surface)] border-[var(--color-divider)]'
+                    )}
+                  >
                     <div className="text-xs font-bold text-[var(--color-text)] flex items-center gap-1.5">
                       <CheckCircle2 size={13} className="text-emerald-500 shrink-0" />
                       <span>{cap.title}</span>
@@ -280,7 +355,8 @@ const HelpModal: React.FC<HelpModalProps> = ({ isOpen, onClose, targetView }) =>
                       {cap.desc}
                     </p>
                   </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

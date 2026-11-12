@@ -1,9 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { useAuth } from '../../store/AuthContext';
 import { importProjectExcel } from '../../services/excelService';
 import Button from '../shared/Button';
 import HelpModal from '../shared/HelpModal';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import ThemeFlyout from './ThemeFlyout';
 import UserProfileFlyout from './UserProfileFlyout';
 import AccessManagerModal from '../auth/AccessManagerModal';
@@ -32,6 +33,12 @@ const SetupView: React.FC = () => {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isAccessManagerOpen, setIsAccessManagerOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleOpenHelp = () => setIsHelpOpen(true);
+    window.addEventListener('open-view-help', handleOpenHelp);
+    return () => window.removeEventListener('open-view-help', handleOpenHelp);
+  }, []);
 
   const handleCreate = () => {
     if (!name.trim()) return;
@@ -171,24 +178,19 @@ const SetupView: React.FC = () => {
           animate="visible"
           className="max-w-[560px] w-full text-center"
         >
-          <motion.h1 variants={itemVariants} className="font-display text-3xl sm:text-4xl font-bold tracking-tight mb-2.5">
-            Engineering Delivery Cockpit<br />
-            <span className="text-[var(--color-text-muted)] text-xl sm:text-2xl font-medium">Multi-Tier Backlog, ALM Packaging & Capacity</span>
+          <motion.h1 variants={itemVariants} className="font-display text-3xl sm:text-4xl font-bold tracking-tight mb-6">
+            ProjectPulse 2.0
           </motion.h1>
-
-          <motion.p variants={itemVariants} className="text-[var(--color-text-muted)] text-xs sm:text-sm mb-7 leading-relaxed max-w-md mx-auto">
-            Local-first engineering workstation with zero hardcoded sample data. Start fresh, import your workbook, or load the enterprise demo database.
-          </motion.p>
 
           {/* Create Fresh Project Card */}
           <motion.div variants={itemVariants} className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-2xl p-7 text-left shadow-xs mb-5">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-muted)]">
-                Create New Project
-              </h2>
-              <span className="text-[10px] px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold border border-emerald-500/20">
-                Clean Blank State
-              </span>
+              <div className="flex items-center gap-1.5">
+                <h2 className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-muted)]">
+                  Create New Project
+                </h2>
+                <SectionHelpButton view="setup" section="Clean Blank Workspace" size={13} />
+              </div>
             </div>
 
             <div className="space-y-3.5">
@@ -241,10 +243,11 @@ const SetupView: React.FC = () => {
 
           {/* Excel Import & Demo Database Options */}
           <motion.div variants={itemVariants} className="bg-[var(--color-surface)] border border-[var(--color-border)] rounded-xl p-5 text-left shadow-xs">
-            <div className="flex items-center justify-between gap-2 mb-1.5">
-              <div className="flex items-center gap-2 text-xs font-bold text-[var(--color-text)]">
+            <div className="flex items-center justify-between gap-2 mb-3.5">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-[var(--color-text)]">
                 <FileSpreadsheet size={15} className="text-indigo-500" />
                 <span>Excel Database Portability & Demo</span>
+                <SectionHelpButton view="setup" section="Excel Database Portability" size={13} />
               </div>
               <a
                 href="/demo-data.xlsx"
@@ -254,9 +257,6 @@ const SetupView: React.FC = () => {
                 <Download size={11} /> Template .xlsx
               </a>
             </div>
-            <p className="text-[11px] text-[var(--color-text-muted)] mb-3.5 leading-relaxed">
-              Import an existing `.xlsx` workbook or explore all modules using the enterprise demo database (24 tasks, 12 deliveries, 10 team members, RAID items, and defect registers).
-            </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
               <button
@@ -284,7 +284,7 @@ const SetupView: React.FC = () => {
       </div>
 
       <ThemeFlyout isOpen={isThemeOpen} onClose={() => setIsThemeOpen(false)} />
-      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} />
+      <HelpModal isOpen={isHelpOpen} onClose={() => setIsHelpOpen(false)} targetView="setup" />
       <AccessManagerModal isOpen={isAccessManagerOpen} onClose={() => setIsAccessManagerOpen(false)} />
     </div>
   );

@@ -63,6 +63,18 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
         desc: 'Zero tabular clutter: pure spatial telemetry dials and milestone progress bars tailored for CXO and Steerco presentations.'
       },
       {
+        title: 'Composite Health Index & Algorithmic Health',
+        desc: 'Evaluates active tasks using weighted deductions (-12% per overdue item) combined with blocked/on-hold penalties and a 7-week sparkline trend.'
+      },
+      {
+        title: 'Delivery Confidence & Throughput vs Remaining Scope',
+        desc: 'Computes remaining scope runway (~weeks) against recent weekly throughput and renders velocity stability corridors (e.g. +1.2σ).'
+      },
+      {
+        title: 'Verified Delivery & Accomplishments Stream',
+        desc: 'Streams completed tasks, server sub-tasks, and verified GUI screen milestones in chronological completion order.'
+      },
+      {
         title: 'One-Click Deep-Dive to Intelligence',
         desc: 'Press "G D" or click "Intelligence Cockpit" to immediately transition to granular Monte Carlo simulations, What-If Sandboxes, and EVM cost metrics.'
       },
@@ -91,7 +103,23 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
       },
       {
         name: 'Monte Carlo Simulation',
-        desc: 'Runs 1,000 statistical iterations across remaining scope using historical velocity variance to forecast P50 (expected), P80 (conservative), and P95 (high confidence) delivery dates.'
+        desc: 'Runs 100 statistical simulation iterations across remaining backlog scope using historical velocity variance to forecast P50 (expected), P80 (conservative), and P90/P95 finish horizons.'
+      },
+      {
+        name: 'Task Aging & Activity Telemetry',
+        desc: 'Distribution of calendar days elapsed since the last update or status change across active, stale, and at-risk backlog items.'
+      },
+      {
+        name: 'Dependency Bottlenecks & Critical Path Risk',
+        desc: 'Identifies assignee owners with the highest count of blocked downstream deliverables and highlights parent milestones causing launch drift.'
+      },
+      {
+        name: 'EVM 4-Quadrant Performance Matrix & Burn Simulator',
+        desc: 'Correlates Schedule Performance Index (SPI = EV/PV) against Cost Performance Index (CPI = EV/AC) alongside blended daily rate financial simulations.'
+      },
+      {
+        name: 'Quality Reliability & Governance Suite',
+        desc: 'Aggregates open defect severity index, ordered defect pipeline flow, module defect hotspots/root causes, schema integrity completeness, smoke sign-off gates, 3×3 RAID heatmap, Steering Decisions Log, and change delta audit feed.'
       },
       {
         name: 'Cumulative Flow Diagram (CFD)',
@@ -122,6 +150,14 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
       {
         title: 'Dynamic Mini-Map Jump Navigation',
         desc: 'Use the sticky mini-map index on the right to jump smoothly between telemetry sections.'
+      },
+      {
+        title: 'AI Pulse Analysis & Executive Telemetry Radar',
+        desc: 'Synthesizes active sprint tasks, overdue items, defects, and RAID signals via Gemini diagnostic models into structured executive risk advisories.'
+      },
+      {
+        title: 'Strategic What-If Sandbox Modeling',
+        desc: 'Model scenario permutations across Additional Engineering FTEs, Scope Descoping %, and Timeline Compression to simulate productivity gains/losses and risk confidence before committing changes.'
       }
     ],
     proTips: [
@@ -159,6 +195,10 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
       {
         title: 'Multi-Format Export Engine',
         desc: 'Export presentation-ready reports to formatted Excel workbooks, printer-optimized PDFs, or formatted email briefs.'
+      },
+      {
+        title: 'CXO Email Briefing Studio',
+        desc: 'Auto-configures tailored executive email digests by Audience Persona (Board/CEO condensed, CTO/Eng technical, Steering full dossier) and Weekly/Fortnightly cadence with cross-client table HTML tested for Outlook, Apple Mail, and Gmail plus Markdown & Plain Text output.'
       }
     ],
     proTips: [
@@ -702,8 +742,8 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
     ],
     capabilities: [
       {
-        title: 'Dynamic Field Injection',
-        desc: 'Custom fields automatically integrate into tables, modals, filters, and Excel exports without database migrations.'
+        title: 'Dynamic Field Injection & Schema Synchronization',
+        desc: 'Renamed core column headers, reordered column sequences, custom widths (px), visibility toggles, and proprietary custom attributes dynamically synchronize across active matrices, Kanban cards, modal editors, and Excel publication workbooks without manual migrations.'
       },
       {
         title: 'Reordering & Visibility',
@@ -818,6 +858,14 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
         desc: 'Instantly populate the workspace with the comprehensive Project Titan sample database to explore all features.'
       },
       {
+        title: 'Theme Studio & 40 Design Systems',
+        desc: 'Switch between 40 curated light and dark Swiss design systems depicting real surfaces, typography, corner radii, contrast ink pairs, and glassmorphism accents.'
+      },
+      {
+        title: 'Local-First Browser Architecture',
+        desc: 'Runs locally in your browser with automatic offline storage persistence, zero third-party telemetry, and bi-directional Excel (.xlsx) workbook portability.'
+      },
+      {
         title: 'Full Workspace Wipe (New Project)',
         desc: 'Admin capability to clear all entities and start a clean project workspace with custom metadata.'
       }
@@ -825,6 +873,70 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
     proTips: [
       'Create a baseline snapshot at the start of each release cycle to maintain historical variance records.',
       'Regularly export your project to Excel as an offline backup.'
+    ]
+  },
+
+  setup: {
+    id: 'setup',
+    title: 'Workspace Setup & Initialization Guide',
+    shortLabel: 'Setup',
+    badge: 'Onboarding & Import',
+    description: 'Initialize a clean local-first project workspace, upload an existing ProjectPulse Excel workbook (.xlsx), or launch with the full enterprise demo dataset.',
+    keyMetricsAndFields: [
+      {
+        name: 'Clean Blank Workspace',
+        desc: 'Zero pre-seeded fake records: enter a Project Name, mission statement, and comma-separated team roster to begin cleanly.'
+      },
+      {
+        name: 'Excel Database Portability',
+        desc: 'Upload any formatted .xlsx workbook (or download the ready-to-import template) containing tasks, ALM deliveries, RAID items, and team capacity.'
+      },
+      {
+        name: 'Demo Dataset Contents',
+        desc: 'One-click demo loader seeds 24 hierarchical tasks, 12 ALM deliveries, 10 team members, RAID registers, and defect logs.'
+      }
+    ],
+    capabilities: [
+      {
+        title: 'Instant Schema Reconstruction',
+        desc: 'Imported workbooks reconstruct custom columns, field widths, baselines, and relational entity links automatically.'
+      },
+      {
+        title: 'Theme & Role Access Pre-Configuration',
+        desc: 'Use top-right Appearance and Persona controls during setup to preview themes or switch RBAC personas.'
+      }
+    ],
+    proTips: [
+      'Download Template .xlsx first if preparing project data externally in Excel before uploading.',
+      'After initializing, press F1 or ? on any screen or card to open its section guide.'
+    ]
+  },
+
+  login: {
+    id: 'login',
+    title: 'Session Authentication & Role Access Guide',
+    shortLabel: 'Sign In',
+    badge: 'RBAC & Personas',
+    description: 'Authenticate into ProjectPulse using either 1-click evaluation persona sessions or email sign-in to preview strict Role-Based Access Control boundaries.',
+    keyMetricsAndFields: [
+      {
+        name: 'Persona Roles',
+        desc: 'Includes Admin (full schema & wipe governance), Project Manager, Developer, and Stakeholder (read-only roadmap/reports) visibility tiers.'
+      },
+      {
+        name: 'Demo Credentials',
+        desc: 'In local evaluation mode, any password authenticates an enrolled persona email address; 1-click persona cards switch sessions immediately.'
+      }
+    ],
+    capabilities: [
+      {
+        title: 'Admin Role & Permission Control',
+        desc: 'Administrators govern user roles, custom per-view overrides, and write permissions from User Profile -> Access Studio or Settings -> Access.'
+      }
+    ],
+    proTips: [
+      'Click Sarah Chen (Admin) for unrestricted access across all workspace hubs and schema tools.',
+      'Test Stakeholder or Developer sessions to verify route guards and read-only view enforcement.'
     ]
   }
 };

@@ -68,6 +68,7 @@ npm start
 17. **40 Curated Themes & Live Cockpit Previews**: Theme switcher (`ThemeFlyout` & `SettingsView` -> `ThemeGrid`) depicting real canvases, surface elevation, corner radii, typography, and contrast tokens across light and dark design systems.
 18. **Mobile-First Responsive App Shell & Native Touch Ergonomics**: Zero-clipping `PageHeader` flex architecture, full-width inset mobile `ShareExportMenu`, swipe-to-dismiss `Sidebar` drawer (`inert` background shell + elevated backdrop), draggable bottom-sheet `Modal` dialogs (`overscroll-contain`), `DataTable` mobile card views with Cards/Matrix toggle (`Deliveries`, `Tasks`, `RAID`), responsive single-DOM `FieldArchitect` schema cards, dynamic `<meta name="theme-color">` and OS `color-scheme` sync across all 40 themes, progressive scroll-fade tabs (`.scroll-fade-x`), and reactive `useMediaQuery` breakpoint awareness.
 19. **Tactile Design Spells & Micro-Interactions**: Physics-backed CSS `linear()` spring curves (`--ease-spring-physics`), circular iris `startViewTransition` reveals across all 40 themes and light/dark toggles, shared Framer Motion `layoutId` indicators across `Sidebar`, `MobileBottomNav`, and `ThemeGrid`, compositor-only primary CTA specular sweeps (`.btn-spell-primary`), zero-rerender radial card spotlights (`.spell-spotlight`), CSS scroll-driven reading hairlines (`.spell-scroll-hairline`), origin-anchored celebration bursts, morphing clipboard icons, Command Search spells (`magic` / `surprise`), and Shift/triple-tap pulse easter eggs under global `<MotionConfig reducedMotion="user">`.
+20. **Decluttered Surface UI & Section-Anchored Help (`SectionHelpButton` + `HelpModal`)**: All product-feature explanations, capability summaries, formula mechanics, email client compatibility specs, and architecture notes are housed cleanly in [`viewHelpData.ts`](./src/config/viewHelpData.ts) and [`HelpModal.tsx`](./src/components/shared/HelpModal.tsx), accessible from every `PageHeader` (`F1`/`?`), onboarding/auth screens (`SetupView`, `LoginView`), and individual widgets/sections via [`SectionHelpButton`](./src/components/shared/SectionHelpButton.tsx) with section focus highlighting.
 
 ---
 
@@ -90,7 +91,7 @@ ProjectPulse 2.0/
 │   │   ├── reports/             # Executive Reporting & CXO Email Generator
 │   │   ├── risks/               # Unified RAID Register & Decision Matrix
 │   │   ├── settings/            # Workspace Settings & BaselineManager
-│   │   ├── shared/              # PageHeader Breadcrumbs, ShareExportMenu, HelpModal, UI primitives
+│   │   ├── shared/              # PageHeader Breadcrumbs, ShareExportMenu, HelpModal, SectionHelpButton, UI primitives
 │   │   ├── tasks/               # TaskGrid, BoardView, TaskView, TaskModal
 │   │   ├── team/                # Team Hub, Capacity & 5-Day Scheduler, MemberHierarchy
 │   │   └── timeline/            # Interactive Gantt & Roadmap

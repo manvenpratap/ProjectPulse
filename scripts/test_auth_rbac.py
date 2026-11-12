@@ -147,8 +147,9 @@ async def run_auth_verification():
         await page.wait_for_timeout(500)
         
         # Verify LoginView is now displayed
-        await page.wait_for_selector("text=Enterprise Engineering Workstation", timeout=3000)
+        await page.wait_for_selector("h1:has-text('ProjectPulse 2.0')", timeout=3000)
         await page.wait_for_selector("text=Select Persona Session", timeout=3000)
+        await page.wait_for_selector('button[aria-label="Sign-in & role guide"]', timeout=3000)
         print("✓ Sign out succeeded: LoginView rendered with persona selector")
         
         # Test Quick Persona Login

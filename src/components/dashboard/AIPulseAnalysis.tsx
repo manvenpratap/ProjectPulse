@@ -3,6 +3,7 @@ import { useProject } from '../../store/ProjectContext';
 import { analyzeProject } from '../../services/aiService';
 import { Brain, RefreshCw, AlertCircle } from 'lucide-react';
 import Button from '../shared/Button';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import ReactMarkdown from 'react-markdown';
 
 const AIPulseAnalysis: React.FC = () => {
@@ -31,9 +32,9 @@ const AIPulseAnalysis: React.FC = () => {
            <div className="w-9 h-9 rounded-lg bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] flex items-center justify-center shadow-xs">
              <Brain size={18} />
            </div>
-           <div>
+           <div className="flex items-center gap-1.5">
              <h3 className="font-display font-bold text-sm text-[var(--color-text)] tracking-tight">Executive Telemetry Radar</h3>
-             <p className="text-xs text-[var(--color-text-muted)] font-medium">Predictive analysis &amp; risk advisory</p>
+             <SectionHelpButton view="dash" section="AI Pulse Analysis" label="AI Pulse Analysis guide" />
            </div>
         </div>
         <Button 
@@ -77,10 +78,7 @@ const AIPulseAnalysis: React.FC = () => {
               <div className="w-14 h-14 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-2xl flex items-center justify-center text-[var(--color-text-muted)] mb-3">
                  <Brain size={28} />
               </div>
-              <h4 className="font-bold text-sm text-[var(--color-text)]">Project Mind Offline</h4>
-              <p className="text-xs text-[var(--color-text-muted)] mt-1.5 max-w-[220px] leading-relaxed">
-                 Initialize diagnostic sweep to generate AI-driven status insights and risk assessment.
-              </p>
+              <h4 className="font-bold text-sm text-[var(--color-text)]">Diagnostic Sweep Idle</h4>
               <button 
                 onClick={generateInsight}
                 className="mt-5 px-5 py-2 bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] hover:opacity-95 rounded-lg text-xs font-semibold shadow-sm transition-opacity cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--color-primary-hex)]"
@@ -89,13 +87,6 @@ const AIPulseAnalysis: React.FC = () => {
               </button>
            </div>
         )}
-      </div>
-
-      <div className="p-3.5 border-t border-[var(--color-divider)] bg-[var(--color-surface-2)] flex items-center justify-between text-xs">
-         <span className="text-xs text-[var(--color-text-muted)] flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Model: Gemini 1.5 Flash
-         </span>
-         <span className="font-mono text-xs text-[var(--color-text-faint)]">v2.4.0-AI</span>
       </div>
     </div>
   );

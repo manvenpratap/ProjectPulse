@@ -49,7 +49,7 @@ def test_share_and_export_features():
         cxo_item.click()
         page.wait_for_timeout(600)
 
-        assert page.locator("text=Reporting Cadence").is_visible() or page.locator("text=Executive CXO Steering Email Brief").is_visible(), "Executive CXO Email Brief did not open from Share menu"
+        assert page.locator("text=Audience Persona").is_visible() or page.locator("text=Executive CXO Steering Email Brief").is_visible(), "Executive CXO Email Brief did not open from Share menu"
         print("✓ Executive CXO Email Brief opened successfully from Share menu")
 
         # Navigate back to Tasks Matrix to continue test suite
@@ -118,9 +118,9 @@ def test_share_and_export_features():
         print("\n--- TEST 6: Verify Absence of Separate Export Buttons Across Screens ---")
 
         # 6a. Tasks View
-        print("Checking Tasks Matrix...")
-        page.locator('button:has-text("Tasks Matrix")').first.click()
-        page.wait_for_timeout(800)
+        print("Checking Tasks & Timeline...")
+        page.goto("http://localhost:3000/#/tasks")
+        page.wait_for_timeout(600)
         task_export_btn = page.locator('button:has-text("Export Tasks")')
         assert not task_export_btn.is_visible(), "Separate 'Export Tasks' button must NOT be present!"
         assert page.locator('button[aria-label="Share and export data"]').is_visible(), "Share & Export must be visible on Tasks"
@@ -128,8 +128,8 @@ def test_share_and_export_features():
 
         # 6b. Defect Matrix View
         print("Checking Defect Workshop...")
-        page.locator('button:has-text("Defect Workshop")').first.click()
-        page.wait_for_timeout(800)
+        page.goto("http://localhost:3000/#/defects")
+        page.wait_for_timeout(600)
         defect_export_btn = page.locator('button:has-text("Export Defects")')
         assert not defect_export_btn.is_visible(), "Separate 'Export Defects' button must NOT be present!"
         assert page.locator('button[aria-label="Share and export data"]').is_visible(), "Share & Export must be visible on Defects"
@@ -137,8 +137,8 @@ def test_share_and_export_features():
 
         # 6c. Functional Matrix / Features View
         print("Checking Functional Matrix...")
-        page.locator('button:has-text("Functional Matrix")').first.click()
-        page.wait_for_timeout(800)
+        page.goto("http://localhost:3000/#/features")
+        page.wait_for_timeout(600)
         matrix_export_btn = page.locator('button:has-text("Export Matrix")')
         assert not matrix_export_btn.is_visible(), "Separate 'Export Matrix' button must NOT be present!"
         assert page.locator('button[aria-label="Share and export data"]').is_visible(), "Share & Export must be visible on Features"
@@ -146,8 +146,8 @@ def test_share_and_export_features():
 
         # 6d. RAID Register
         print("Checking RAID Register...")
-        page.locator('button:has-text("RAID Register")').first.click()
-        page.wait_for_timeout(800)
+        page.goto("http://localhost:3000/#/risks")
+        page.wait_for_timeout(600)
         raid_export_btn = page.locator('button:has-text("Export RAID")')
         assert not raid_export_btn.is_visible(), "Separate 'Export RAID' button must NOT be present!"
         assert page.locator('button[aria-label="Share and export data"]').is_visible(), "Share & Export must be visible on RAID"
@@ -155,8 +155,8 @@ def test_share_and_export_features():
 
         # 6e. Team Hub
         print("Checking Team Hub...")
-        page.locator('button:has-text("Team Hub")').first.click()
-        page.wait_for_timeout(800)
+        page.goto("http://localhost:3000/#/team")
+        page.wait_for_timeout(600)
         team_export_btn = page.locator('button:has-text("Export Team")')
         assert not team_export_btn.is_visible(), "Separate 'Export Team' button must NOT be present!"
         assert page.locator('button[aria-label="Share and export data"]').is_visible(), "Share & Export must be visible on Team"
@@ -164,8 +164,8 @@ def test_share_and_export_features():
 
         # 6f. Deliveries View
         print("Checking ALM Deliveries...")
-        page.locator('button:has-text("ALM Deliveries")').first.click()
-        page.wait_for_timeout(800)
+        page.goto("http://localhost:3000/#/deliveries")
+        page.wait_for_timeout(600)
         deliv_export_btn = page.locator('button:has-text("Export Deliveries")')
         assert not deliv_export_btn.is_visible(), "Separate 'Export Deliveries' button must NOT be present!"
         deliv_tpl_btn = page.locator('button[data-testid="download-delivery-template-button"]')
@@ -175,37 +175,37 @@ def test_share_and_export_features():
 
         # 6g. Executive Overview
         print("Checking Executive Overview...")
-        page.locator('button:has-text("Executive Overview")').first.click()
-        page.wait_for_timeout(800)
+        page.goto("http://localhost:3000/#/overview")
+        page.wait_for_timeout(600)
         overview_export_btn = page.locator('button[aria-label="Export project report to Excel"]')
         assert not overview_export_btn.is_visible(), "Separate 'Export Excel' button must NOT be present on Overview!"
         print("✓ Executive Overview has no separate export button; uses unified Share & Export")
 
         # 6h. Pulse Reports
         print("Checking Pulse Reports...")
-        page.locator('button:has-text("Pulse Reports")').first.click()
-        page.wait_for_timeout(800)
+        page.goto("http://localhost:3000/#/reports")
+        page.wait_for_timeout(600)
         report_export_btn = page.locator('button:has-text("Export Excel Pack")')
         assert not report_export_btn.is_visible(), "Separate 'Export Excel Pack' button must NOT be present on Reports!"
         print("✓ Pulse Reports has no separate export button; uses unified Share & Export")
 
         # 6i. Option Libraries
         print("Checking Option Libraries...")
-        page.locator('button:has-text("Option Libraries")').first.click()
-        page.wait_for_timeout(800)
+        page.goto("http://localhost:3000/#/dropdowns")
+        page.wait_for_timeout(600)
         reg_export_btn = page.locator('button:has-text("Export JSON")')
         assert not reg_export_btn.is_visible(), "Separate 'Export JSON' button must NOT be present on Option Libraries!"
         assert page.locator('button[aria-label="Share and export data"]').is_visible(), "Share & Export must be visible on Option Libraries"
         print("✓ Option Libraries has no separate export button; uses unified Share & Export")
 
-        # 6j. Step Templates / Workflow Blueprints
-        print("Checking Step Templates...")
-        page.locator('button:has-text("Step Templates")').first.click()
-        page.wait_for_timeout(800)
+        # 6j. Step Blueprints
+        print("Checking Step Blueprints...")
+        page.goto("http://localhost:3000/#/steps")
+        page.wait_for_timeout(600)
         # Ensure only the Share & Export button in header has the word export
-        assert page.locator('header button:has-text("Export")').count() == 1, "Separate 'Export' button must NOT be present on Step Templates!"
-        assert page.locator('button[aria-label="Share and export data"]').is_visible(), "Share & Export must be visible on Step Templates"
-        print("✓ Step Templates has no separate export button; uses unified Share & Export")
+        assert page.locator('header button:has-text("Export")').count() == 1, "Separate 'Export' button must NOT be present on Step Blueprints!"
+        assert page.locator('button[aria-label="Share and export data"]').is_visible(), "Share & Export must be visible on Step Blueprints"
+        print("✓ Step Blueprints has no separate export button; uses unified Share & Export")
 
         # -------------------------------------------------------------
         # TEST 7: Test Comprehensive Export Options Inside Share & Export
@@ -213,8 +213,8 @@ def test_share_and_export_features():
         print("\n--- TEST 7: Context-Specific & Comprehensive Options in Share & Export ---")
         
         # 7a. Test on Deliveries view: Delivery Template option & Deliveries Excel
-        page.locator('button:has-text("ALM Deliveries")').first.click()
-        page.wait_for_timeout(800)
+        page.goto("http://localhost:3000/#/deliveries")
+        page.wait_for_timeout(600)
         share_btn_del = page.locator('button[aria-label="Share and export data"]').first
         share_btn_del.click()
         page.wait_for_timeout(400)
@@ -232,8 +232,8 @@ def test_share_and_export_features():
         print(f"✓ Downloaded delivery template via Share & Export: {tpl_download.suggested_filename}")
 
         # 7b. Test on Functional Matrix / Features view: Feature Matrix Workbook
-        page.locator('button:has-text("Functional Matrix")').first.click()
-        page.wait_for_timeout(800)
+        page.goto("http://localhost:3000/#/features")
+        page.wait_for_timeout(600)
         share_btn_feat = page.locator('button[aria-label="Share and export data"]').first
         share_btn_feat.click()
         page.wait_for_timeout(400)
@@ -243,8 +243,8 @@ def test_share_and_export_features():
         assert page.locator("text=Export Full Project JSON (.json)").is_visible(), "Export Full Project JSON (.json) missing"
 
         # 7c. Test on Option Libraries view: Dedicated Option Libraries JSON Export
-        page.locator('button:has-text("Option Libraries")').first.click()
-        page.wait_for_timeout(800)
+        page.goto("http://localhost:3000/#/dropdowns")
+        page.wait_for_timeout(600)
         share_btn_reg = page.locator('button[aria-label="Share and export data"]').first
         share_btn_reg.click()
         page.wait_for_timeout(400)

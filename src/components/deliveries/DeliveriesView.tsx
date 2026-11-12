@@ -42,6 +42,7 @@ import {
 import clsx from 'clsx';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import Modal from '../shared/Modal';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef } from '../shared/DataTable';
@@ -619,7 +620,7 @@ export const DeliveriesView: React.FC = () => {
       <PageHeader
         icon={Package}
         title="Software Deliveries & Deployment Schedule"
-        subtitle={`ALM / PDN Release Workstation • ${deliveries.length} Total Packages`}
+        subtitle={`${deliveries.length} Total Packages`}
         actions={
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-nowrap">
             {/* View Mode Switcher */}
@@ -1137,11 +1138,9 @@ export const DeliveriesView: React.FC = () => {
           <div className="space-y-4">
             {/* Perspective Picker */}
             <div className="flex items-center justify-between bg-[var(--color-surface)] border border-[var(--color-divider)] p-3 rounded-xl">
-              <div>
+              <div className="flex items-center gap-1.5">
                 <h3 className="font-bold text-sm">Interactive Heatmap Perspectives</h3>
-                <p className="text-xs text-[var(--color-text-muted)]">
-                  Pivot delivery density across application modules, screen coverage, and deployment pipelines.
-                </p>
+                <SectionHelpButton view="deliveries" section="3D Heatmap" label="Heatmap Perspectives guide" size={13} />
               </div>
 
               <div className="flex items-center p-0.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs">

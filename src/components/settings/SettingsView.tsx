@@ -29,6 +29,7 @@ import AccessManagerModal from '../auth/AccessManagerModal';
 import { exportProjectExcel, importProjectExcel } from '../../services/excelService';
 import clsx from 'clsx';
 import PageHeader from '../shared/PageHeader';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import ThemeGrid, { THEMES } from '../shared/ThemeGrid';
 
 const VALID_SETTINGS_TABS = new Set(['parameters', 'theme', 'baselines', 'access']);
@@ -110,7 +111,6 @@ const SettingsView: React.FC = () => {
       <PageHeader
         icon={Settings}
         title="System Configuration & Governance"
-        subtitle="Manage operational telemetry, automated pulse alerts, and project baselines"
         actions={
           <div className="flex items-center gap-1 p-0.5 sm:p-1 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl max-w-full overflow-x-auto no-scrollbar shrink">
             <button
@@ -185,11 +185,9 @@ const SettingsView: React.FC = () => {
                   <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center">
                     <Palette size={20} />
                   </div>
-                  <div>
+                  <div className="flex items-center gap-1.5">
                     <h3 className="text-sm font-bold text-[var(--color-text)]">Theme Studio & Design System Chooser</h3>
-                    <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                      Select your operational visual aesthetic from {THEMES.length} Swiss design systems. Each preview depicts real surfaces, typography, corners, and accents.
-                    </p>
+                    <SectionHelpButton view="settings" section="Theme Studio" label="Theme Studio guide" size={13} />
                   </div>
                 </div>
               </div>
@@ -205,13 +203,11 @@ const SettingsView: React.FC = () => {
                 <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center shrink-0">
                   <ShieldCheck size={24} />
                 </div>
-                <div>
+                <div className="flex items-center gap-1.5">
                   <h3 className="text-base font-bold text-[var(--color-text)]">
                     Role-Based Access Control (RBAC) Governance
                   </h3>
-                  <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                    Configure team personas, view restrictions, and fine-grained operation privileges across ProjectPulse.
-                  </p>
+                  <SectionHelpButton view="settings" section="Role-Based Access Control" label="RBAC Access guide" />
                 </div>
               </div>
               <Button 
@@ -236,11 +232,6 @@ const SettingsView: React.FC = () => {
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20">
                       {currentUser?.role}
                     </span>
-                    {isAdmin && (
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
-                        Admin Privileges Active
-                      </span>
-                    )}
                   </div>
                   <span className="text-[11px] text-[var(--color-text-faint)] font-mono">{currentUser?.email}</span>
                 </div>
@@ -327,9 +318,12 @@ const SettingsView: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Work Parameters */}
               <div className="card p-6 space-y-6">
-                <div className="flex items-center gap-3 text-[var(--color-primary-hex)] mb-2">
-                  <Clock size={20} />
-                  <h3 className="text-sm font-bold text-[var(--color-text)]">Work Cycles & Capacity</h3>
+                <div className="flex items-center justify-between text-[var(--color-primary-hex)] mb-2">
+                  <div className="flex items-center gap-3">
+                    <Clock size={20} />
+                    <h3 className="text-sm font-bold text-[var(--color-text)]">Work Cycles & Capacity</h3>
+                  </div>
+                  <SectionHelpButton view="settings" section="Effort Tracking Unit" label="Work Cycles guide" size={13} />
                 </div>
                 <div className="space-y-4">
                   <div className="space-y-2">
@@ -359,9 +353,12 @@ const SettingsView: React.FC = () => {
 
               {/* Pulse Alerts */}
               <div className="card p-6 space-y-6">
-                <div className="flex items-center gap-3 text-amber-500 mb-2">
-                  <Bell size={20} />
-                  <h3 className="text-sm font-bold text-[var(--color-text)]">Automated EWS alerts</h3>
+                <div className="flex items-center justify-between text-amber-500 mb-2">
+                  <div className="flex items-center gap-3">
+                    <Bell size={20} />
+                    <h3 className="text-sm font-bold text-[var(--color-text)]">Automated EWS alerts</h3>
+                  </div>
+                  <SectionHelpButton view="settings" label="Automated EWS alerts guide" size={13} />
                 </div>
                 <div className="space-y-2">
                   {[
@@ -391,11 +388,9 @@ const SettingsView: React.FC = () => {
                 <div className="w-10 h-10 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center shrink-0">
                   <Palette size={20} />
                 </div>
-                <div>
+                <div className="flex items-center gap-1.5">
                   <h3 className="text-sm font-bold text-[var(--color-text)]">Active Design System: <span className="text-[var(--color-primary-hex)] capitalize">{state.theme}</span></h3>
-                  <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                    Customize typography, colors, and layout aesthetics across 26 curated themes.
-                  </p>
+                  <SectionHelpButton view="settings" section="Theme Studio" label="Theme System guide" size={13} />
                 </div>
               </div>
               <Button 
@@ -420,14 +415,10 @@ const SettingsView: React.FC = () => {
 
             <div className="card p-6 space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 text-[var(--color-primary-hex)]">
+                <div className="flex items-center gap-2 text-[var(--color-primary-hex)]">
                   <FileSpreadsheet size={20} />
-                  <div>
-                    <h3 className="text-sm font-bold text-[var(--color-text)]">Excel Database & Master Portability</h3>
-                    <p className="text-[11px] text-[var(--color-text-muted)] mt-0.5">
-                      Export state or import relational Excel workbooks (.xlsx) with tasks, ALM deliveries, RAID, and team rosters.
-                    </p>
-                  </div>
+                  <h3 className="text-sm font-bold text-[var(--color-text)]">Excel Database & Master Portability</h3>
+                  <SectionHelpButton view="settings" section="Excel Workbook Synchronization" label="Excel Portability guide" size={13} />
                 </div>
               </div>
 
@@ -492,16 +483,6 @@ const SettingsView: React.FC = () => {
                 <Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50 border border-red-200 px-4 font-black" onClick={handleClearData}>
                   <Trash2 size={15} className="mr-1.5" /> Purge Project
                 </Button>
-              </div>
-            </div>
-
-            <div className="bg-[var(--color-primary-highlight-hex)] rounded-2xl p-5 border border-[var(--color-primary-hex)]/20 flex items-start gap-3">
-              <Info className="text-[var(--color-primary-hex)] mt-0.5 shrink-0" size={20} />
-              <div>
-                <h4 className="text-xs font-bold text-[var(--color-text)] mb-0.5">System Architecture: Local-First Workstation</h4>
-                <p className="text-[11px] text-[var(--color-text-muted)] leading-relaxed">
-                  ProjectPulse runs completely locally inside your browser with offline persistence, zero third-party telemetry, and instant bi-directional Excel sync.
-                </p>
               </div>
             </div>
           </div>

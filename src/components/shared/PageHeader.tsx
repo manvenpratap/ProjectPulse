@@ -163,14 +163,14 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
         </div>
 
         {(showShareExport || primaryAction) && (
-          <div className="order-2 md:order-3 flex items-center gap-1.5 sm:gap-2 shrink-0 justify-end">
+          <div className="order-2 2xl:order-3 flex items-center gap-1.5 sm:gap-2 shrink-0 justify-end">
             {showShareExport && <ShareExportMenu />}
             {primaryAction}
           </div>
         )}
 
         {actions && (
-          <div className="order-3 md:order-2 w-full md:w-auto min-w-0 flex items-center gap-1.5 sm:gap-2 overflow-x-auto md:overflow-visible no-scrollbar max-md:pt-2 max-md:mt-0.5 max-md:border-t max-md:border-[var(--color-divider)]/60 md:flex-wrap md:justify-end">
+          <div className="order-3 2xl:order-2 w-full 2xl:w-auto min-w-0 flex items-center gap-1.5 sm:gap-2 overflow-x-auto 2xl:overflow-visible no-scrollbar max-2xl:pt-2 max-2xl:mt-0.5 max-2xl:border-t max-2xl:border-[var(--color-divider)]/60 2xl:flex-wrap 2xl:justify-end">
             {actions}
           </div>
         )}

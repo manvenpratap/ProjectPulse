@@ -199,9 +199,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
               <span className="font-bold text-sm tracking-tight text-[var(--color-text)] truncate block">
                 ProjectPulse
               </span>
-              <span className="text-[10px] text-[var(--color-text-faint)] font-mono block truncate">
-                ALM Platform 2.0
-              </span>
             </div>
           )}
         </button>

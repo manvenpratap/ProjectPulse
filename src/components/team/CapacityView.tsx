@@ -27,6 +27,7 @@ import {
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'motion/react';
 import PageHeader from '../shared/PageHeader';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import { TaskStatus } from '../../types';
 import { daysDiff, getBusinessDays, addBusDays } from '../../utils/projectUtils';
 
@@ -602,9 +603,9 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
       <div className="h-full flex flex-col justify-between space-y-4">
         <div className="space-y-4">
           <div className="flex items-center justify-between pb-2.5 border-b border-[var(--color-divider)]">
-            <div>
+            <div className="flex items-center gap-1.5">
               <h2 className="font-bold text-[var(--color-text)] text-sm sm:text-base">Allocation Advisory</h2>
-              <p className="text-[11px] text-[var(--color-text-muted)]">Workload and reserve telemetry</p>
+              <SectionHelpButton view="capacity" section="Daily Load Thresholds" label="Allocation Advisory guide" size={13} />
             </div>
             <button 
               type="button"
@@ -614,16 +615,6 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
             >
               <X size={15} />
             </button>
-          </div>
-
-          <div className="bg-[var(--color-surface-2)] p-3 rounded-xl border border-[var(--color-divider)] space-y-1 text-center shadow-2xs">
-            <div className="w-7 h-7 rounded-lg bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center mx-auto mb-1">
-              <Info size={15} />
-            </div>
-            <h3 className="font-bold text-xs text-[var(--color-text)]">Interactive Grid Mode</h3>
-            <p className="text-[11px] text-[var(--color-text-muted)] leading-relaxed">
-              Click any cell in the capacity matrix to inspect task intersections, daily burn, and leveling alternatives.
-            </p>
           </div>
 
           {/* Overload Alerts */}
@@ -692,10 +683,6 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
             )}
           </div>
         </div>
-
-        <div className="text-[10px] text-[var(--color-text-faint)] text-center p-2 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)]">
-          Advisory updates live with task timeline and capacity settings.
-        </div>
       </div>
     );
   };
@@ -705,7 +692,6 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
       <PageHeader
         icon={BarChart3}
         title="Resource Capacity & Scheduling"
-        subtitle="Strategic workload heatmaps, daily operational scheduling, and autonomous leveling"
         actions={
           <div className="flex items-center gap-2 flex-wrap justify-end">
             <div className="flex items-center gap-1">
@@ -1050,6 +1036,7 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                   <div className="flex items-center gap-2">
                     <Users size={15} className="text-[var(--color-primary-hex)]" />
                     <h2 className="font-bold text-xs sm:text-sm text-[var(--color-text)]">Team Daily Allocation Grid</h2>
+                    <SectionHelpButton view="capacity" section="Interactive Date Shifting" label="Daily Allocation Grid guide" size={13} />
                   </div>
                   <span className="text-[11px] text-[var(--color-text-muted)] font-mono">1.0 = 100% capacity (8h/day)</span>
                 </div>

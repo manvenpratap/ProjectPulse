@@ -158,7 +158,6 @@ export const ReleaseRoadmap: React.FC = () => {
       <PageHeader
         icon={Flag}
         title="Release Roadmap"
-        subtitle="Define delivery cycles, coordinate milestone rollouts, and monitor scope completion"
         primaryAction={
           <Button variant="primary" size="sm" onClick={openAddModal} className="h-9 px-4 rounded-xl font-bold active:scale-95 shadow-xs">
             <Plus size={15} className="mr-1.5" /> Add Release Version

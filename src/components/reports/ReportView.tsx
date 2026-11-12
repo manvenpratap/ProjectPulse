@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import clsx from 'clsx';
 import { TaskStatus, TaskPriority } from '../../types';
 import { getHealthScore, fmtDate } from '../../utils/projectUtils';
@@ -102,7 +103,6 @@ const ReportView: React.FC = () => {
       <PageHeader
         icon={FileText}
         title="Executive Reporting & Board Packs"
-        subtitle="Project performance, CXO briefings, and release audit deliverables"
         className="print:hidden"
         primaryAction={
           <Button variant="primary" size="sm" className="h-9 px-3.5 rounded-xl font-bold active:scale-95 shadow-xs flex items-center gap-1.5" onClick={handlePrint}>
@@ -159,11 +159,15 @@ const ReportView: React.FC = () => {
                 <div>
                   <h2 className="text-xl sm:text-3xl font-display font-black tracking-tight text-[var(--color-text)] flex flex-wrap items-center gap-2 sm:gap-3">
                     <span>{state.name}</span>
-                    <span className="text-[11px] sm:text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)]">Telemetry Report</span>
+                    <span className="print:hidden">
+                      <SectionHelpButton view="reports" section="Audit Scorecard" label="Status report guide" />
+                    </span>
                   </h2>
-                  <p className="text-xs text-[var(--color-text-muted)] mt-1 font-medium">
-                    {state.desc || 'Monolithic high-density project performance and governance dossier.'}
-                  </p>
+                  {state.desc && (
+                    <p className="text-xs text-[var(--color-text-muted)] mt-1 font-medium">
+                      {state.desc}
+                    </p>
+                  )}
                 </div>
                 <div className="text-left sm:text-right shrink-0">
                   <div className="text-xs font-medium text-[var(--color-text-faint)] mb-1">Generated at</div>

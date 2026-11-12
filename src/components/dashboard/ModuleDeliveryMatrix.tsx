@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { useAuth } from '../../store/AuthContext';
 import { Task, TaskStatus, TaskPriority, DefectStatus } from '../../types';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import { 
   Package, 
   Database, 
@@ -257,15 +258,13 @@ export const ModuleDeliveryMatrix: React.FC = () => {
       {/* ═════════════════════════════════════════════════════════════════════ */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
         <div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5">
             <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_var(--color-green)]" />
             <h2 className="text-xl font-bold font-display tracking-tight text-[var(--color-text)]">
               Module Architecture Maturity
             </h2>
+            <SectionHelpButton view="dash" section="Module Effort Breakdown" label="Module Architecture Maturity guide" />
           </div>
-          <p className="text-xs text-[var(--color-text-muted)] mt-1">
-            Cross-tier architectural readiness, technical debt risk, and domain maturity progression
-          </p>
         </div>
 
         {/* View Mode & Overlay Controls */}

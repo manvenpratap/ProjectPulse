@@ -4,6 +4,7 @@ import { useAuth } from '../../store/AuthContext';
 import { TaskStatus } from '../../types';
 import { Users, ArrowRight, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import clsx from 'clsx';
+import SectionHelpButton from '../shared/SectionHelpButton';
 
 export const ResourceUtilizationMatrix: React.FC = () => {
   const { state, setView } = useProject();
@@ -17,9 +18,9 @@ export const ResourceUtilizationMatrix: React.FC = () => {
           <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center border border-indigo-500/20">
             <Users size={20} />
           </div>
-          <div>
+          <div className="flex items-center gap-1.5">
             <h3 className="font-bold text-base text-[var(--color-text)]">Resource Utilization Matrix</h3>
-            <p className="text-xs text-[var(--color-text-muted)]">Individual engineer capacity load, active commitments, and utilization thresholds</p>
+            <SectionHelpButton view="capacity" section="Daily Load Thresholds" label="Resource Utilization guide" />
           </div>
         </div>
 

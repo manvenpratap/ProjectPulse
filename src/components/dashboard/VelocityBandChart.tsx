@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { Task, TaskStatus } from '../../types';
 import { getStartOfWeek } from '../../utils/projectUtils';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import {
   ResponsiveContainer,
   ComposedChart,
@@ -421,12 +422,10 @@ export const VelocityBandChart: React.FC = () => {
               <BarChart3 size={18} strokeWidth={2.2} />
             </div>
             <div>
-              <h3 className="font-bold text-base sm:text-lg text-[var(--color-text)] tracking-tight flex items-center gap-2">
-                Weekly Delivery Velocity Band & Benchmark
+              <h3 className="font-bold text-base sm:text-lg text-[var(--color-text)] tracking-tight flex items-center gap-1.5">
+                <span>Weekly Delivery Velocity Band & Benchmark</span>
+                <SectionHelpButton view="dash" section="Weekly Delivery Velocity Band" label="Velocity Band guide" />
               </h3>
-              <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                Rolling effort delivered per week against team average velocity benchmark line, target burn rate, and statistical control corridor
-              </p>
             </div>
           </div>
         </div>

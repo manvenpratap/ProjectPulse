@@ -34,6 +34,7 @@ import {
   ChevronRight,
   Sparkles
 } from 'lucide-react';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
 import Modal from '../shared/Modal';
@@ -248,7 +249,6 @@ export const FieldArchitect: React.FC = () => {
       <PageHeader
         icon={Database}
         title="Field Architect"
-        subtitle="Configure existing system core attributes & define proprietary custom field extensions"
         actions={
           <div className="flex items-center gap-2 sm:gap-3 flex-nowrap md:flex-wrap">
             {/* Domain Pill Switcher */}
@@ -367,16 +367,14 @@ export const FieldArchitect: React.FC = () => {
             <div className="p-4 sm:p-5 border-b border-[var(--color-divider)] bg-[var(--color-surface-2)]/60 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5">
                 <div className="w-2.5 h-2.5 rounded-full bg-[var(--color-primary-hex)] shadow-[0_0_8px_var(--color-primary-hex)]" />
-                <div>
+                <div className="flex items-center gap-2">
                   <h3 className="font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
                     System Core Attributes
                     <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[var(--color-surface-2)] text-[var(--color-primary-hex)] border border-[var(--color-divider)]">
                       {visibleStdCount} ACTIVE
                     </span>
                   </h3>
-                  <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                    Reorder fields · Edit display labels · Configure column widths (px) · Toggle grid visibility
-                  </p>
+                  <SectionHelpButton view="fields" section="Schema Synchronization" label="Core Attributes guide" size={13} />
                 </div>
               </div>
               <span className="text-[11px] font-mono font-semibold text-[var(--color-text-faint)] uppercase hidden md:inline">
@@ -513,16 +511,14 @@ export const FieldArchitect: React.FC = () => {
               <div className="p-4 sm:p-5 border-b border-[var(--color-divider)] bg-[var(--color-surface-2)]/60 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5">
                   <div className="w-2.5 h-2.5 rounded-full bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
-                  <div>
+                  <div className="flex items-center gap-1.5">
                     <h3 className="font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
                       Custom Extensions
                       <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-[var(--color-surface-2)] text-amber-500 border border-[var(--color-divider)]">
                         {customFields.length}
                       </span>
                     </h3>
-                    <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
-                      User-defined proprietary fields for {activeTab}
-                    </p>
+                    <SectionHelpButton view="fields" section="Field Types" label="Custom Fields guide" size={13} />
                   </div>
                 </div>
                 <Button 
@@ -607,7 +603,6 @@ export const FieldArchitect: React.FC = () => {
 
                       <div className="mt-3 pt-2.5 border-t border-[var(--color-divider)] flex items-center justify-between text-[10px] font-mono text-[var(--color-text-faint)]">
                         <span>ID: CF_{cf.name.replace(/\s+/g, '_').toUpperCase()}</span>
-                        <span className="text-emerald-500 font-bold">Active</span>
                       </div>
                     </div>
                   );
@@ -617,9 +612,6 @@ export const FieldArchitect: React.FC = () => {
                   <div className="p-8 text-center rounded-xl border border-dashed border-[var(--color-divider)] bg-[var(--color-surface-2)]/20">
                     <Layout size={32} className="mx-auto mb-2 text-[var(--color-text-faint)] opacity-40" />
                     <h5 className="font-bold text-xs text-[var(--color-text)]">No Custom Attributes Defined</h5>
-                    <p className="text-[11px] text-[var(--color-text-muted)] mt-1 max-w-[220px] mx-auto">
-                      Extend the system schema with proprietary properties for {activeTab}.
-                    </p>
                     <Button 
                       variant="primary" 
                       size="sm" 
@@ -632,17 +624,6 @@ export const FieldArchitect: React.FC = () => {
                   </div>
                 )}
               </div>
-            </div>
-
-            {/* Architecture Guidance Card */}
-            <div className="p-5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xs">
-              <div className="flex items-center gap-2 mb-2 font-bold text-xs text-[var(--color-text)]">
-                <Sparkles size={14} className="text-[var(--color-primary-hex)]" />
-                <span>Enterprise Schema Synchronization</span>
-              </div>
-              <p className="text-xs text-[var(--color-text-muted)] leading-relaxed">
-                Custom labels, reordered columns, and custom extensions dynamically synchronize across active matrices, Kanban cards, modal editors, and publication Excel workbooks.
-              </p>
             </div>
           </div>
 

@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import { TaskStatus } from '../../types';
 import { getWeekNumber } from '../../utils/projectUtils';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import { 
   Zap, 
   TrendingUp, 
@@ -319,9 +320,12 @@ const BurndownChart: React.FC = () => {
           
           {/* Sliders Box */}
           <div className="card p-6 border border-slate-150 space-y-6">
-            <div className="flex items-center gap-2 pb-4 border-b border-slate-100">
-              <Sliders size={16} className="text-[var(--color-primary-hex)]" />
-              <h4 className="text-sm font-semibold text-[var(--color-text-primary)]">Telemetry Simulator</h4>
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <Sliders size={16} className="text-[var(--color-primary-hex)]" />
+                <h4 className="text-sm font-semibold text-[var(--color-text-primary)]">Telemetry Simulator</h4>
+                <SectionHelpButton view="dash" section="Cumulative Flow" label="Telemetry Simulator guide" />
+              </div>
             </div>
 
             {/* Velocity Slider */}
@@ -339,7 +343,6 @@ const BurndownChart: React.FC = () => {
                 onChange={(e) => setVelocityMultiplier(parseFloat(e.target.value))}
                 className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-[var(--color-primary-hex)]"
               />
-              <p className="text-[10px] text-slate-400 leading-tight">Simulates productivity gains/losses (e.g., adding developers or QA blocks).</p>
             </div>
 
             {/* Scope Creep Buffer Slider */}
@@ -357,7 +360,6 @@ const BurndownChart: React.FC = () => {
                 onChange={(e) => setScopeBuffer(parseInt(e.target.value))}
                 className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-rose-500"
               />
-              <p className="text-[10px] text-slate-400 leading-tight">Injects scope creep buffer into remaining forecasted sprint milestones.</p>
             </div>
           </div>
 
@@ -410,9 +412,9 @@ const BurndownChart: React.FC = () => {
             
             {/* Tab selection header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-[var(--color-divider)]">
-              <div>
+              <div className="flex items-center gap-1.5">
                 <h3 className="font-bold text-base text-[var(--color-text)] leading-tight">Advanced Analytics Composites</h3>
-                <p className="text-xs text-[var(--color-text-muted)] mt-0.5">Real-time projection &amp; process flow matrices</p>
+                <SectionHelpButton view="dash" section="Cumulative Flow" label="Analytics Composites guide" />
               </div>
 
               <div className="flex bg-[var(--color-surface-2)] border border-[var(--color-divider)] p-1 rounded-xl">

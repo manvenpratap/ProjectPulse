@@ -114,14 +114,14 @@ def test_cxo_email_briefing():
         print("[10] Testing Modal View via global event...")
         page.evaluate("window.dispatchEvent(new CustomEvent('open-cxo-email'))")
         page.wait_for_timeout(600)
-        assert page.locator("text=Outlook & Gmail Certified").is_visible(), "Modal view did not open"
+        assert page.locator('h2:has-text("Executive CXO Steering Email Brief")').is_visible(), "Modal view did not open"
         page.screenshot(path=SCREENSHOT_MODAL_VIEW)
         print(f"✓ Modal View screenshot saved: {SCREENSHOT_MODAL_VIEW}")
 
         # Close Modal via ESC key
         page.keyboard.press("Escape")
         page.wait_for_timeout(400)
-        assert page.locator("text=Outlook & Gmail Certified").count() == 0, "Modal did not close on Escape"
+        assert page.locator('h2:has-text("Executive CXO Steering Email Brief")').count() == 0, "Modal did not close on Escape"
         print("✓ Modal cleanly dismissed via ESC key")
 
         fatal_errors = [e for e in console_errors if "favicon" not in e and "socket" not in e]

@@ -21,6 +21,7 @@ import { daysDiff } from '../../utils/projectUtils';
 import { TaskStatus, DefectStatus } from '../../types';
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'motion/react';
+import SectionHelpButton from '../shared/SectionHelpButton';
 
 export interface SmartAlert {
   id: string;
@@ -240,10 +241,8 @@ export const SmartAlertsCenter: React.FC<SmartAlertsCenterProps> = ({ isOpen, on
                     {activeAlerts.length}
                   </span>
                 )}
+                <SectionHelpButton view="overview" section="Early Warning System" label="Smart Alerts guide" size={13} />
               </h2>
-              <p className="text-[11px] text-[var(--color-text-muted)] mt-1">
-                Real-time operational risks, delivery blockers, and capacity warnings
-              </p>
             </div>
           </div>
           <button 

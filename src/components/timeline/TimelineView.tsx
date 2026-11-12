@@ -26,6 +26,7 @@ import { fmtDate, daysDiff, isBlocked } from '../../utils/projectUtils';
 import { Task, TaskStatus, Release } from '../../types';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import TaskModal from '../tasks/TaskModal';
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'motion/react';
@@ -855,7 +856,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
         <PageHeader
           icon={GanttIcon}
           title="Project Timeline & Gantt"
-          subtitle={`${filteredTasks.length} Scheduled Tasks • Swimlanes & Predictive Forecast`}
+          subtitle={`${filteredTasks.length} Scheduled Tasks`}
           actions={
             <div className="flex items-center gap-2 flex-nowrap md:flex-wrap">
               {/* View Mode Toggle */}
@@ -1135,16 +1136,9 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
             <div className="w-9 h-9 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-400 flex items-center justify-center shrink-0">
               <Cpu size={18} />
             </div>
-            <div>
-              <div className="text-xs font-bold text-[var(--color-text)] flex items-center gap-2">
-                <span>Algorithmic Monte Carlo Delivery Forecast</span>
-                <span className="text-[10px] font-mono font-normal text-purple-400 border border-purple-500/30 px-1.5 py-0.5 rounded">
-                  100 Passes
-                </span>
-              </div>
-              <div className="text-[11px] text-[var(--color-text-muted)]">
-                Dynamic simulation based on historical member velocities and task scope variances
-              </div>
+            <div className="text-xs font-bold text-[var(--color-text)] flex items-center gap-1.5">
+              <span>Monte Carlo Delivery Forecast</span>
+              <SectionHelpButton view="dash" section="Monte Carlo Simulation" label="Monte Carlo timeline forecast guide" size={13} />
             </div>
           </div>
 

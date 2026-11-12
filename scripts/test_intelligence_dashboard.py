@@ -71,7 +71,7 @@ def test_intelligence_dashboard():
         # MODE 4: QUALITY & GOVERNANCE
         # -----------------------------------------------------------------
         print("6. Verifying Mode 4: Quality & Governance...")
-        qual_tab = page.get_by_role("button", name="Quality & Governance", exact=True)
+        qual_tab = page.get_by_role("main").get_by_role("button", name="Quality & Governance", exact=True)
         qual_tab.click()
         page.wait_for_timeout(800)
 

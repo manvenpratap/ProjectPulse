@@ -29,6 +29,7 @@ import {
 import clsx from 'clsx';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import Modal from '../shared/Modal';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef } from '../shared/DataTable';
@@ -501,7 +502,6 @@ const RAIDView: React.FC = () => {
       <PageHeader
         icon={ShieldAlert}
         title="RAID Register"
-        subtitle="Risks, Assumptions, Issues, Dependencies & Decisions"
         actions={
           <div className="flex items-center gap-2">
             <button 
@@ -593,14 +593,16 @@ const RAIDView: React.FC = () => {
                   className="flex items-center gap-2 cursor-pointer sm:cursor-default"
                   onClick={() => setIsMatrixExpandedMobile(!isMatrixExpandedMobile)}
                 >
-                  <div>
+                  <div className="flex items-center gap-1.5">
                     <h3 className="font-bold text-sm flex items-center gap-1.5">
                       RAID Priority Matrix
                       <span className="sm:hidden text-xs text-[var(--color-text-faint)]">
                         {isMatrixExpandedMobile ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                       </span>
                     </h3>
-                    <p className="text-xs text-[var(--color-text-muted)] mt-0.5">Impact vs probability distribution</p>
+                    <span onClick={(e) => e.stopPropagation()}>
+                      <SectionHelpButton view="risks" section="Impact Matrix Heatmap" label="RAID Matrix guide" size={13} />
+                    </span>
                   </div>
                 </div>
                 {matrixFilter && (
@@ -745,11 +747,9 @@ const RAIDView: React.FC = () => {
               <div>
                 <h3 className="text-sm font-bold flex items-center gap-2 mb-2">
                   <ShieldAlert className="text-[var(--color-primary-hex)]" size={16} /> 
-                  Active Risk Posture
+                  <span>Active Risk Posture</span>
+                  <SectionHelpButton view="risks" section="Severity Score" label="Risk Posture guide" size={13} />
                 </h3>
-                <p className="text-xs text-[var(--color-text-muted)] leading-relaxed">
-                  Tap any heatmap cell to filter register items by severity. Focus resolution efforts on High Impact &times; High Probability quadrant items first.
-                </p>
               </div>
               {matrixFilter ? (
                 <div className="mt-4 p-3 bg-[var(--color-primary-highlight-hex)] border border-[var(--color-primary-hex)]/30 text-[var(--color-primary-hex)] rounded-xl text-xs font-bold flex items-center justify-between">

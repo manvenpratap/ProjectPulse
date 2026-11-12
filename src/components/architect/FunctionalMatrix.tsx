@@ -37,6 +37,7 @@ import {
 } from 'lucide-react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef } from '../shared/DataTable';
 import clsx from 'clsx';
@@ -878,7 +879,7 @@ export const FunctionalMatrix: React.FC = () => {
       <PageHeader
         icon={Layers}
         title="Functional Matrix & Architecture"
-        subtitle={`${totalFeatures} Strategic Capabilities • ${mappedScreens.length}/${allScreens.length} Screens Mapped • ${coveragePct}% Architecture Coverage`}
+        subtitle={`${totalFeatures} Features • ${mappedScreens.length}/${allScreens.length} Screens (${coveragePct}%)`}
         actions={
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0 flex-nowrap md:flex-wrap">
             {/* View Mode Switcher */}
@@ -1484,9 +1485,9 @@ export const FunctionalMatrix: React.FC = () => {
                 <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center font-bold">
                   <Wand2 size={16} />
                 </div>
-                <div>
+                <div className="flex items-center gap-1.5">
                   <h3 className="font-bold text-sm text-[var(--color-text)]">Auto-Build Feature Matrix</h3>
-                  <p className="text-[11px] text-[var(--color-text-muted)]">Algorithmically clustered features derived from screen tokens and module releases</p>
+                  <SectionHelpButton view="features" section="Feature Readiness" label="Auto-Build guide" size={13} />
                 </div>
               </div>
               <button onClick={() => setIsAutoBuildOpen(false)} className="p-1 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-text)] cursor-pointer">

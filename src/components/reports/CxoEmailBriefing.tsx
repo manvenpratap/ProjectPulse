@@ -31,6 +31,7 @@ import {
 import { getHealthScore, fmtDate, daysDiff, isOverdue } from '../../utils/projectUtils';
 import { TaskStatus, DefectStatus } from '../../types';
 import Button from '../shared/Button';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'motion/react';
 import { castOriginConfetti } from '../../utils/designSpells';
@@ -967,9 +968,9 @@ export const CxoEmailBriefing: React.FC<CxoEmailBriefingProps> = ({
               <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center border border-[var(--color-primary-hex)]/20 shadow-2xs">
                 <Mail size={15} />
               </div>
-              <div>
+              <div className="flex items-center gap-1.5">
                 <h2 className="text-xs sm:text-sm font-bold text-[var(--color-text)]">Report Configurator &amp; Options</h2>
-                <p className="text-[10px] text-[var(--color-text-muted)]">Configure and dispatch executive updates</p>
+                <SectionHelpButton view="reports" section="CXO Email Briefing Studio" label="CXO Email Briefing guide" size={13} />
               </div>
             </div>
           </div>
@@ -980,7 +981,6 @@ export const CxoEmailBriefing: React.FC<CxoEmailBriefingProps> = ({
               <label className="text-[11px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider">
                 Audience Persona
               </label>
-              <span className="text-[10px] text-[var(--color-primary-hex)] font-semibold">Auto-Configures</span>
             </div>
             <div className="grid grid-cols-3 gap-1.5 p-1 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
               <button
@@ -1179,15 +1179,6 @@ export const CxoEmailBriefing: React.FC<CxoEmailBriefingProps> = ({
               className="w-full text-xs p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text)] placeholder:text-[var(--color-text-faint)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-hex)]/20 focus:border-[var(--color-primary-hex)] transition-all resize-none font-sans"
             />
           </div>
-        </div>
-
-        {/* Live Compatibility Status Pill */}
-        <div className="pt-3 border-t border-[var(--color-divider)] flex items-center justify-between text-[11px] text-[var(--color-text-muted)]">
-          <div className="flex items-center gap-1.5 font-semibold text-[var(--color-text)]">
-            <CheckCircle2 size={13} className="text-emerald-500" />
-            <span>Format Compatibility:</span>
-          </div>
-          <span className="text-[10px] font-mono text-[var(--color-text-faint)]">Outlook • Apple Mail • Gmail</span>
         </div>
       </div>
 
@@ -1452,16 +1443,9 @@ export const CxoEmailBriefing: React.FC<CxoEmailBriefingProps> = ({
             <div className="w-9 h-9 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center border border-[var(--color-primary-hex)]/20 shadow-2xs">
               <Mail size={18} />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-base font-bold text-[var(--color-text)]">Executive CXO Steering Email Brief</h2>
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                  Outlook &amp; Gmail Certified
-                </span>
-              </div>
-              <p className="text-xs text-[var(--color-text-muted)]">
-                Automated status reporting and executive intelligence memo
-              </p>
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-bold text-[var(--color-text)]">Executive CXO Steering Email Brief</h2>
+              <SectionHelpButton view="reports" section="CXO Email Briefing Studio" label="CXO Email Briefing guide" />
             </div>
           </div>
           {onClose && (

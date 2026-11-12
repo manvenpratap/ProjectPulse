@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import clsx from 'clsx';
 import { todayStr } from '../../utils/projectUtils';
 
@@ -361,7 +362,6 @@ const RegistryView: React.FC = () => {
       <PageHeader
         icon={ListChecks}
         title="Option Libraries"
-        subtitle="Standardized selection lists, dropdown taxonomies, and custom field lookups"
         actions={
           <div className="flex items-center gap-2">
             <button
@@ -601,18 +601,8 @@ const RegistryView: React.FC = () => {
                   <span className="font-mono text-xs px-2 py-0.5 rounded-md bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text-muted)]">
                     {selectedKey}
                   </span>
-                  <span className={clsx(
-                    "text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider",
-                    isReserved 
-                      ? "bg-sky-500/10 text-sky-500 border border-sky-500/20" 
-                      : "bg-purple-500/10 text-purple-400 border border-purple-500/20"
-                  )}>
-                    {isReserved ? 'System Core' : 'Custom Extensible'}
-                  </span>
+                  <SectionHelpButton view="dropdowns" section="Taxonomy Categories" label="Option Library guide" size={14} />
                 </div>
-                <p className="text-xs text-[var(--color-text-muted)] font-medium mt-1">
-                  Standardized options list for <strong>{selectedKey}</strong>. Automatically synchronized across all entity tables and custom field dropdowns.
-                </p>
 
                 {/* Linked Custom Fields Banner */}
                 {linkedCustomFields.length > 0 && (

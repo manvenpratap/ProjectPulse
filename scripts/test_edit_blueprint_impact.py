@@ -52,8 +52,8 @@ def test_edit_blueprint_impact():
 
         # Verify modal header
         assert page.locator("text=Edit Workflow Blueprint").is_visible(), "Edit Workflow Blueprint modal missing"
-        assert page.locator("text=Live Telemetry").is_visible(), "Live Telemetry badge missing"
-        print("✓ Edit Blueprint modal opened successfully with live telemetry")
+        assert page.locator('button[aria-label="Blueprint impact guide"]').is_visible(), "Blueprint section help button missing"
+        print("✓ Edit Blueprint modal opened successfully with section help")
 
         # Verify Auto-Computed Impact Analysis Cockpit
         impact_header = page.locator("text=Impact Analysis")

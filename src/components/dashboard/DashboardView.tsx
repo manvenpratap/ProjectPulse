@@ -22,6 +22,7 @@ import {
   Lightbulb
 } from 'lucide-react';
 import clsx from 'clsx';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import { TaskStatus, TaskPriority, DefectStatus, Task } from '../../types';
 import ModuleDeliveryMatrix from './ModuleDeliveryMatrix';
 import BurndownChart from './BurndownChart';
@@ -371,7 +372,6 @@ export const DashboardView: React.FC = () => {
       <PageHeader
         icon={Compass}
         title="Project Intelligence Cockpit"
-        subtitle="Predictive delivery forecasting, Monte Carlo simulations, EVM analytics & quality dynamics"
         actions={
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs font-semibold">
@@ -447,9 +447,9 @@ export const DashboardView: React.FC = () => {
                     <div className="w-10 h-10 rounded-2xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center border border-[var(--color-primary-hex)]/20">
                       <Target size={20} />
                     </div>
-                    <div>
+                    <div className="flex items-center gap-1.5">
                       <h3 className="font-bold text-base text-[var(--color-text)]">Predictive Completion</h3>
-                      <p className="text-xs text-[var(--color-text-muted)]">AI-driven Monte Carlo timeline forecast</p>
+                      <SectionHelpButton view="dash" section="Monte Carlo Simulation" label="Monte Carlo completion guide" />
                     </div>
                   </div>
                   <span className={clsx("px-3 py-1 rounded-full text-xs font-bold border flex items-center gap-1.5", confidenceBadge.bg, confidenceBadge.color, confidenceBadge.border)}>
@@ -522,7 +522,6 @@ export const DashboardView: React.FC = () => {
                           {p90FinishDate.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                         </div>
                       </div>
-                      <span className="text-[10px] text-[var(--color-text-faint)] font-mono">100 Monte Carlo runs</span>
                     </div>
                   </div>
                 </div>
@@ -535,9 +534,9 @@ export const DashboardView: React.FC = () => {
                     <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-500/20">
                       <Gauge size={20} />
                     </div>
-                    <div>
+                    <div className="flex items-center gap-1.5">
                       <h3 className="font-bold text-base text-[var(--color-text)]">Capacity Bandwidth Projection</h3>
-                      <p className="text-xs text-[var(--color-text-muted)]">Resource bandwidth required to achieve targets</p>
+                      <SectionHelpButton view="dash" section="Capacity Bandwidth" label="Capacity Bandwidth guide" />
                     </div>
                   </div>
                   <span className={clsx("px-3 py-1 rounded-full text-xs font-bold border", capacityTelemetry.capColor, "bg-slate-500/10 border-current/20")}>
@@ -597,9 +596,9 @@ export const DashboardView: React.FC = () => {
               {/* Task Aging Histogram & Stale Tasks (HTML dash-aging parity) */}
               <div className="lg:col-span-7 card p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-sm space-y-5">
                 <div className="flex items-center justify-between">
-                  <div>
+                  <div className="flex items-center gap-1.5">
                     <h3 className="font-bold text-base text-[var(--color-text)]">Task Aging & Activity Telemetry</h3>
-                    <p className="text-xs text-[var(--color-text-muted)]">Distribution of days elapsed since last update or status change</p>
+                    <SectionHelpButton view="dash" section="Task Aging" label="Task Aging Telemetry guide" />
                   </div>
                   <div className="flex items-center gap-3 text-xs font-semibold">
                     <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
@@ -672,12 +671,10 @@ export const DashboardView: React.FC = () => {
 
               {/* Dependency Bottleneck Ranking (HTML dash-btl parity) */}
               <div className="lg:col-span-5 card p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-sm flex flex-col justify-between space-y-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <Lock size={18} className="text-amber-500" />
-                    <h3 className="font-bold text-base text-[var(--color-text)]">Dependency Bottlenecks</h3>
-                  </div>
-                  <p className="text-xs text-[var(--color-text-muted)] mt-0.5">Owners with the most downstream deliverables waiting on them</p>
+                <div className="flex items-center gap-2">
+                  <Lock size={18} className="text-amber-500" />
+                  <h3 className="font-bold text-base text-[var(--color-text)]">Dependency Bottlenecks</h3>
+                  <SectionHelpButton view="dash" section="Dependency Bottlenecks" label="Dependency Bottlenecks guide" />
                 </div>
 
                 {bottlenecks.length > 0 ? (
@@ -730,9 +727,9 @@ export const DashboardView: React.FC = () => {
                   <div className="w-10 h-10 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center border border-rose-500/20">
                     <AlertTriangle size={20} />
                   </div>
-                  <div>
+                  <div className="flex items-center gap-1.5">
                     <h3 className="font-bold text-base text-[var(--color-text)]">Critical Path Risk & Schedule Drift</h3>
-                    <p className="text-xs text-[var(--color-text-muted)]">Parent milestones with downstream impact that will directly delay project launch</p>
+                    <SectionHelpButton view="dash" section="Critical Path Risk" label="Critical Path guide" />
                   </div>
                 </div>
                 <span className={clsx("px-3 py-1 rounded-full text-xs font-bold border", criticalPathTasks.length > 0 ? "bg-rose-500/10 text-rose-600 border-rose-500/20" : "bg-emerald-500/10 text-emerald-600 border-emerald-500/20")}>
@@ -815,9 +812,9 @@ export const DashboardView: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
               {/* 4-Quadrant EVM Performance Quadrant (HTML evm_quadrant parity) */}
               <div className="lg:col-span-6 card p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-sm space-y-5">
-                <div>
+                <div className="flex items-center gap-1.5">
                   <h3 className="font-bold text-base text-[var(--color-text)]">EVM 4-Quadrant Performance Matrix</h3>
-                  <p className="text-xs text-[var(--color-text-muted)]">Correlating schedule performance (SPI) against cost efficiency (CPI)</p>
+                  <SectionHelpButton view="dash" section="EVM 4-Quadrant" label="EVM 4-Quadrant Matrix guide" />
                 </div>
 
                 <div className={clsx("p-3.5 rounded-2xl border text-xs font-bold text-center flex items-center justify-center gap-2", evmMetrics.quadrantBg, evmMetrics.quadrantColor)}>

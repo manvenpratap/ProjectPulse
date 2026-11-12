@@ -56,7 +56,7 @@ def test_visual_overview_widgets():
         
         # 2. Delivery Confidence Speedometer
         assert page.locator("text=Delivery Confidence").is_visible(), "Delivery Confidence card missing"
-        assert page.locator("text=Throughput vs Remaining Scope").is_visible(), "Delivery Confidence subtitle missing"
+        assert page.locator('button[aria-label="Delivery Confidence guide"]').is_visible(), "Delivery Confidence section help button missing"
         assert page.locator("text=Velocity Corridor:").is_visible(), "Velocity Corridor label missing"
 
         # 3. Threat Radar
@@ -88,10 +88,10 @@ def test_visual_overview_widgets():
 
         # 9. Recent Deliveries Stream
         assert page.locator("text=Recent Deliveries & Multi-Level Accomplishments").is_visible(), "Accomplishments stream missing"
-        assert page.locator("text=Verified Stream").is_visible(), "Verified stream badge missing"
+        assert page.locator("text=Completed").first.is_visible(), "Completed count pill missing"
 
-        # 10. Intelligence Deep-Dive Banner
-        assert page.locator("text=Looking for granular metrics and scenario modeling?").is_visible(), "Intelligence banner missing"
+        # 10. Intelligence Jump Links Bar
+        assert page.locator("text=Intelligence Cockpit Jump Links").is_visible(), "Intelligence jump links header missing"
         assert page.locator("button:has-text('Launch Intelligence Cockpit')").is_visible(), "Launch Intelligence button missing"
 
         print("✓ All 10 Visual Telemetry Instruments & Charts verified successfully!")
@@ -108,7 +108,7 @@ def test_visual_overview_widgets():
         print(f"✓ Matrix & Scope Rings screenshot saved to: {MIDDLE_SCREENSHOT}")
 
         # Scroll to lower (Milestone Flight Path & Accomplishments Stream)
-        page.locator("text=Looking for granular metrics").scroll_into_view_if_needed()
+        page.locator("text=Intelligence Cockpit Jump Links").scroll_into_view_if_needed()
         page.wait_for_timeout(400)
         page.screenshot(path=LOWER_SCREENSHOT)
         print(f"✓ Milestones & Stream screenshot saved to: {LOWER_SCREENSHOT}")
