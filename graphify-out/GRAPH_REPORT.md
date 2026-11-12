@@ -1,16 +1,16 @@
 # Graph Report - ProjectPulse 2.0  (2026-11-12)
 
 ## Corpus Check
-- 82 files · ~221,706 words
+- 83 files · ~222,841 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 502 nodes · 1464 edges · 19 communities (18 shown, 1 thin omitted)
+- 509 nodes · 1478 edges · 25 communities (24 shown, 1 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `bbf46814`
+- Built from commit: `a37592d5`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -31,6 +31,12 @@
 - [[_COMMUNITY_Community 13|Community 13]]
 - [[_COMMUNITY_Community 14|Community 14]]
 - [[_COMMUNITY_Community 15|Community 15]]
+- [[_COMMUNITY_Community 16|Community 16]]
+- [[_COMMUNITY_Community 17|Community 17]]
+- [[_COMMUNITY_Community 18|Community 18]]
+- [[_COMMUNITY_Community 19|Community 19]]
+- [[_COMMUNITY_Community 20|Community 20]]
+- [[_COMMUNITY_Community 21|Community 21]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `useProject()` - 102 edges
@@ -45,98 +51,122 @@
 10. `TaskPriority` - 17 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `FeatureTimelineChart()` --calls--> `fmtDate()`  [EXTRACTED]
+  src/components/architect/FeatureTimelineChart.tsx → src/utils/projectUtils.ts
 - `BoardView()` --calls--> `useProject()`  [EXTRACTED]
   src/components/tasks/BoardView.tsx → src/store/ProjectContext.tsx
 - `HelpModal()` --calls--> `useProject()`  [EXTRACTED]
   src/components/shared/HelpModal.tsx → src/store/ProjectContext.tsx
+- `AIPulseAnalysis()` --calls--> `useProject()`  [EXTRACTED]
+  src/components/dashboard/AIPulseAnalysis.tsx → src/store/ProjectContext.tsx
 - `VelocityBandChart()` --calls--> `useProject()`  [EXTRACTED]
   src/components/dashboard/VelocityBandChart.tsx → src/store/ProjectContext.tsx
-- `StepTemplates()` --calls--> `useProject()`  [EXTRACTED]
-  src/components/architect/StepTemplates.tsx → src/store/ProjectContext.tsx
-- `FieldArchitect()` --calls--> `useProject()`  [EXTRACTED]
-  src/components/architect/FieldArchitect.tsx → src/store/ProjectContext.tsx
 
-## Communities (19 total, 1 thin omitted)
+## Communities (25 total, 1 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.05
-Nodes (70): FEAT_PALETTE, FeatureSwimlaneChart(), FeatureSwimlaneChartProps, HitArea, LaneGroup, RELEASE_STATUS_COLORS, SwimlaneCategoryTrackProps, SwimlaneRow (+62 more)
-
-### Community 1 - "Community 1"
-Cohesion: 0.05
 Nodes (64): AccessDenied(), AccessDeniedProps, AccessManagerModal(), AccessManagerModalProps, LoginView(), getAllNavItems(), getHubForView(), getNavItem() (+56 more)
 
-### Community 2 - "Community 2"
+### Community 1 - "Community 1"
 Cohesion: 0.09
-Nodes (53): blendColors(), buildDeliveriesSheet(), buildDeliveriesWorkbook(), buildExecutiveDashboardSheet(), buildFeatureMatrixWorkbook(), buildFeatureRolloutsSheet(), buildFeatureScreenTraceabilitySheet(), buildUnifiedTasksSheet() (+45 more)
+Nodes (48): blendColors(), buildDeliveriesSheet(), buildDeliveriesWorkbook(), buildExecutiveDashboardSheet(), buildFeatureMatrixWorkbook(), buildFeatureRolloutsSheet(), buildFeatureScreenTraceabilitySheet(), buildUnifiedTasksSheet() (+40 more)
+
+### Community 2 - "Community 2"
+Cohesion: 0.06
+Nodes (39): ComplexityFilter, computeScreenSuggestions(), FEAT_STOP_WORDS, featTokenise(), FunctionalMatrix(), STANDARD_CATEGORIES, ViewMode, DEF_ST_MAP (+31 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.06
-Nodes (40): ScaffolderView(), ScaffoldModule, AIPulseAnalysis(), BurndownChart(), DashboardView(), SEVERITY_COLORS, STATUS_COLORS, VALID_DASH_TABS (+32 more)
+Nodes (38): ColFilter, DOMAIN_META, DOMAIN_STARTERS, DomainTab, FieldArchitect(), LOCKED_KEYS, UndoSnapshot, formatLibraryName() (+30 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.06
-Nodes (35): ComplexityFilter, computeScreenSuggestions(), FEAT_STOP_WORDS, featTokenise(), FunctionalMatrix(), STANDARD_CATEGORIES, ViewMode, DEF_ST_MAP (+27 more)
-
-### Community 5 - "Community 5"
 Cohesion: 0.12
 Nodes (24): DARK_MAP, FilterCategory, LIGHT_MAP, ThemeDef, ThemeFlyout(), ThemeFlyoutProps, THEMES, computePreviewMetrics() (+16 more)
 
+### Community 5 - "Community 5"
+Cohesion: 0.14
+Nodes (18): BurndownChart(), DashboardView(), SEVERITY_COLORS, STATUS_COLORS, VALID_DASH_TABS, OverviewView(), PredictiveIntelligence(), ResourceUtilizationMatrix() (+10 more)
+
 ### Community 6 - "Community 6"
-Cohesion: 0.11
-Nodes (16): COCKPIT_EASE, DetailCardType, CATEGORY_PALETTE, IMPACT_ROWS, PIPELINE_STAGES, PROB_COLS, QualityGovernanceTabProps, SEVERITY_META (+8 more)
+Cohesion: 0.1
+Nodes (19): COCKPIT_EASE, DetailCardType, CATEGORY_PALETTE, IMPACT_ROWS, PIPELINE_STAGES, PROB_COLS, QualityGovernanceTabProps, SEVERITY_META (+11 more)
 
 ### Community 7 - "Community 7"
-Cohesion: 0.11
-Nodes (16): ColFilter, DOMAIN_META, DOMAIN_STARTERS, DomainTab, FieldArchitect(), LOCKED_KEYS, UndoSnapshot, formatLibraryName() (+8 more)
+Cohesion: 0.12
+Nodes (15): PHASE_COLORS, STANDARD_BLUEPRINT_PRESETS, StepTemplates(), SyncStep, MatrixViewMode, ModuleDeliveryMatrix(), ModuleTierData, BoardView() (+7 more)
 
 ### Community 8 - "Community 8"
+Cohesion: 0.14
+Nodes (16): FEAT_PALETTE, FeatureSwimlaneChart(), FeatureSwimlaneChartProps, HitArea, LaneGroup, RELEASE_STATUS_COLORS, SwimlaneCategoryTrackProps, SwimlaneRow (+8 more)
+
+### Community 9 - "Community 9"
+Cohesion: 0.16
+Nodes (14): ScaffolderView(), ScaffoldModule, DefectModal(), DefectModalProps, CATEGORIES, SprintRetroView(), Defect, Feature (+6 more)
+
+### Community 10 - "Community 10"
 Cohesion: 0.12
 Nodes (16): 🏛️ 1. System Architecture, 🔄 2. Project Governance & Delivery Workflow, ⚡ 3. Bi-directional Excel Sync Sequence, 🌊 4. Project Data Flow Pipeline, ⏱️ 5. Workstation Session Lifecycle, Architectural Breakdown & Component Responsibilities, code:mermaid (flowchart TD), code:mermaid (flowchart LR) (+8 more)
 
-### Community 9 - "Community 9"
+### Community 11 - "Community 11"
+Cohesion: 0.21
+Nodes (11): AudiencePersona, CxoEmailBriefingProps, CxoEmailModalProps, SchedulerView(), CapacityView(), CapacityViewProps, VALID_CAPACITY_MODES, DefectStatus (+3 more)
+
+### Community 12 - "Community 12"
 Cohesion: 0.15
 Nodes (12): code:bash (# 1. Install dependencies), code:bash (npm run build), code:block3 (ProjectPulse 2.0/), Installation & Launch, 🛠️ Key Capabilities & Operational Modules, 📄 License, Prerequisites, Production Build (+4 more)
 
-### Community 10 - "Community 10"
+### Community 13 - "Community 13"
 Cohesion: 0.17
 Nodes (11): ⚡ Bi-directional Excel Sync Sequence, code:mermaid (flowchart TD), code:mermaid (flowchart LR), code:mermaid (sequenceDiagram), code:mermaid (flowchart LR), code:mermaid (stateDiagram-v2), 🌊 Project Data Flow Pipeline, 🔄 Project Governance & Delivery Workflow (+3 more)
 
-### Community 11 - "Community 11"
+### Community 14 - "Community 14"
 Cohesion: 0.29
 Nodes (9): getMergedFieldGuide(), GLOBAL_SHORTCUTS, ShortcutItem, STANDARD_FIELD_GUIDE, StandardFieldItem, VIEW_HELP_DATA, ViewHelpItem, HelpModal() (+1 more)
 
-### Community 12 - "Community 12"
+### Community 15 - "Community 15"
 Cohesion: 0.18
 Nodes (10): 1.1 Brand Identity & Voice, 1.2 Design Tokens & System Replacements, 1. Executive Summary & Design Direction, 2. Actionable Task Checklist, 3. Verification & Acceptance Criteria, Anti-AI-Slop Implementation Plan: ProjectPulse 2.0, Batch 1: Token Discipline & Background De-Slopping (Priority 1), Batch 2: Icon & Copy De-Slopping (Priority 1) (+2 more)
 
-### Community 13 - "Community 13"
+### Community 16 - "Community 16"
+Cohesion: 0.22
+Nodes (7): FEAT_PALETTE, FeatureTimelineChart(), FeatureTimelineChartProps, HitArea, RELEASE_STATUS_COLORS, TimelineRow, ZoomMode
+
+### Community 17 - "Community 17"
+Cohesion: 0.32
+Nodes (5): NotificationFlyout(), NotificationFlyoutProps, BaselineManager(), Baseline, TaskStatus
+
+### Community 18 - "Community 18"
 Cohesion: 0.33
 Nodes (5): 1. Product Foundations, 2. Typography & Hierarchies, 3. Surface & Border Semantics (StyleSeed Standard), 4. Interaction & Motion Rules, ProjectPulse Design System — Master Specification
 
-### Community 14 - "Community 14"
+### Community 19 - "Community 19"
+Cohesion: 0.33
+Nodes (5): VelocityBandChart(), VelocityHorizon, VelocityMetric, VelocityWeekBucket, getStartOfWeek()
+
+### Community 20 - "Community 20"
 Cohesion: 0.5
 Nodes (3): 📚 Core Documentation, ⚡ Key Highlights, Welcome to the ProjectPulse Wiki
 
 ## Knowledge Gaps
-- **169 isolated node(s):** `env`, `GO_CHORD_MAP`, `WidgetLayout`, `ProjectSettings`, `NavItem` (+164 more)
+- **174 isolated node(s):** `env`, `GO_CHORD_MAP`, `WidgetLayout`, `ProjectSettings`, `NavItem` (+169 more)
   These have ≤1 connection - possible missing edges or undocumented components.
 - **1 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `useProject()` connect `Community 3` to `Community 0`, `Community 1`, `Community 2`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 11`?**
+- **Why does `useProject()` connect `Community 5` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 11`, `Community 14`, `Community 17`, `Community 19`?**
   _High betweenness centrality (0.145) - this node is a cross-community bridge._
-- **Why does `TaskStatus` connect `Community 0` to `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`?**
-  _High betweenness centrality (0.017) - this node is a cross-community bridge._
-- **Why does `useAuth()` connect `Community 1` to `Community 0`, `Community 3`, `Community 6`?**
+- **Why does `TaskStatus` connect `Community 17` to `Community 0`, `Community 1`, `Community 2`, `Community 3`, `Community 4`, `Community 5`, `Community 6`, `Community 7`, `Community 8`, `Community 9`, `Community 11`, `Community 16`, `Community 19`?**
+  _High betweenness centrality (0.018) - this node is a cross-community bridge._
+- **Why does `useAuth()` connect `Community 0` to `Community 17`, `Community 5`, `Community 6`, `Community 7`?**
   _High betweenness centrality (0.016) - this node is a cross-community bridge._
 - **What connects `env`, `GO_CHORD_MAP`, `WidgetLayout` to the rest of the system?**
-  _169 weakly-connected nodes found - possible documentation gaps or missing edges._
+  _174 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
   _Cohesion score 0.05 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
-  _Cohesion score 0.05 - nodes in this community are weakly interconnected._
-- **Should `Community 2` be split into smaller, more focused modules?**
   _Cohesion score 0.09 - nodes in this community are weakly interconnected._
+- **Should `Community 2` be split into smaller, more focused modules?**
+  _Cohesion score 0.06 - nodes in this community are weakly interconnected._

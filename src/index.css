@@ -1433,6 +1433,7 @@ tr.is-overdue td:first-child {
 /* --- Design Spells: Physics Spring Easing, View Transition Iris, Button Sheen, Card Spotlight & Scroll Hairline --- */
 :root {
   --ease-spring-physics: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out-ui: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 @supports (transition-timing-function: linear(0, 1)) {
@@ -1542,4 +1543,32 @@ tr.is-overdue td:first-child {
       animation-timeline: scroll(nearest block);
     }
   }
+}
+
+/* On-demand KPI card cascade reveal inside CollapsibleSummaryStrip */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes pp-kpi-card-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  .collapsible-cards-reveal > div > *,
+  .collapsible-cards-reveal > div > div > * {
+    animation: pp-kpi-card-in 260ms var(--ease-out-ui) both;
+  }
+  .collapsible-cards-reveal > div > *:nth-child(2),
+  .collapsible-cards-reveal > div > div > *:nth-child(2) { animation-delay: 35ms; }
+  .collapsible-cards-reveal > div > *:nth-child(3),
+  .collapsible-cards-reveal > div > div > *:nth-child(3) { animation-delay: 70ms; }
+  .collapsible-cards-reveal > div > *:nth-child(4),
+  .collapsible-cards-reveal > div > div > *:nth-child(4) { animation-delay: 105ms; }
+  .collapsible-cards-reveal > div > *:nth-child(5),
+  .collapsible-cards-reveal > div > div > *:nth-child(5) { animation-delay: 140ms; }
+  .collapsible-cards-reveal > div > *:nth-child(6),
+  .collapsible-cards-reveal > div > div > *:nth-child(6) { animation-delay: 175ms; }
 }

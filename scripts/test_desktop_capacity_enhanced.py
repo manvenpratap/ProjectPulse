@@ -40,12 +40,20 @@ def test_desktop_capacity_enhanced():
         page.goto("http://localhost:3000/#/capacity")
         page.wait_for_timeout(1000)
 
-        # Step 1: Verify Compact Telemetry Ribbon & Controls
+        # Step 1: Verify Compact Telemetry Ribbon (minimized by default) & Animated Expand/Collapse
         print("[3] Verifying Compact Telemetry Ribbon & Toolbar...")
-        assert page.locator("text=Resources").is_visible(), "Resources stat missing"
-        assert page.locator("text=Avg Utilization").is_visible(), "Avg Utilization stat missing"
-        assert page.locator("text=Overload Alert").is_visible(), "Overload Alert stat missing"
-        assert page.locator("text=Available Reserves").is_visible(), "Available Reserves stat missing"
+        assert page.locator("text=Resources").first.is_visible(), "Resources stat missing"
+        assert page.locator("text=Avg Utilization").first.is_visible(), "Avg Utilization stat missing"
+        assert page.locator("text=Overload Alert").first.is_visible(), "Overload Alert stat missing"
+        assert page.locator("text=Available Reserves").first.is_visible(), "Available Reserves stat missing"
+
+        show_cards_btn = page.locator("button[aria-expanded]:has-text('Show Cards')").first
+        assert show_cards_btn.is_visible() and show_cards_btn.get_attribute("aria-expanded") == "false", "Cards must start minimized by default"
+        show_cards_btn.click()
+        page.wait_for_timeout(450)
+        assert page.locator("button[aria-expanded='true']:has-text('Hide Cards')").first.is_visible(), "Cards did not expand on demand"
+        page.locator("button[aria-expanded='true']:has-text('Hide Cards')").first.click()
+        page.wait_for_timeout(300)
         assert page.locator("button:has-text('Heatmap Grid')").is_visible(), "Heatmap Grid button missing"
         assert page.locator("button:has-text('Daily Scheduler')").is_visible(), "Daily Scheduler button missing"
         assert page.locator("button:has-text('Member Cards')").is_visible(), "Member Cards button missing"

@@ -35,13 +35,21 @@ def test_option_libraries_ui():
         page.goto("http://localhost:3000/#/dropdowns")
         page.wait_for_timeout(1000)
 
-        # 1. Header and Telemetry KPI Strip verification
+        # 1. Header and Collapsible Telemetry KPI Strip verification (minimized by default -> reveal on click)
         assert page.locator("h1:has-text('Option Libraries')").is_visible(), "Page header 'Option Libraries' not found"
         print("✓ Verified Page Header: 'Option Libraries'")
 
+        toggle_btn = page.locator("button[aria-expanded]:has-text('Show Cards')").first
+        assert toggle_btn.is_visible(), "Summary strip toggle 'Show Cards' should start minimized by default"
+        assert toggle_btn.get_attribute("aria-expanded") == "false", "Summary cards must be minimized by default"
+        toggle_btn.click()
+        page.wait_for_timeout(450)
         kpi_cards = page.locator("div.grid-cols-2 > div, div.md\\:grid-cols-4 > div")
-        assert kpi_cards.count() >= 4, f"Expected 4 Telemetry KPI cards, got {kpi_cards.count()}"
-        print(f"✓ Verified Telemetry KPI strip with {kpi_cards.count()} telemetry cards")
+        assert kpi_cards.count() >= 4, f"Expected 4 Telemetry KPI cards after expand, got {kpi_cards.count()}"
+        print(f"✓ Verified Telemetry KPI strip expanded on demand ({kpi_cards.count()} telemetry cards)")
+        # Collapse back cleanly so main workshop fills height
+        page.locator("button[aria-expanded='true']:has-text('Hide Cards')").first.click()
+        page.wait_for_timeout(300)
 
         # Capture initial screenshot
         screen1 = os.path.join(screenshot_dir, "option_libraries_enhanced_live.png")

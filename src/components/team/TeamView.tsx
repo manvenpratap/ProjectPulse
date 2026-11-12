@@ -42,6 +42,7 @@ import clsx from 'clsx';
 import MemberHierarchy from './MemberHierarchy';
 import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
+import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import { motion, AnimatePresence } from 'motion/react';
 import { getWeekNumber, normalizeSkills } from '../../utils/projectUtils';
 import TablePagination, { usePagination } from '../shared/TablePagination';
@@ -915,11 +916,23 @@ const TeamView: React.FC = () => {
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 space-y-8">
+      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 space-y-5 sm:space-y-6">
 
         {/* ══════════════════════════════════════════════════════════
-            SECTION 1: MOTIVATION & INSPIRATION TELEMETRY (4 CARDS)
+            COLLAPSIBLE TEAM TELEMETRY & HIGHLIGHTS (Minimized by default)
            ══════════════════════════════════════════════════════════ */}
+        <CollapsibleSummaryStrip
+          title="Team Highlights & Celebrations"
+          summary={[
+            { label: 'Active Roster', value: `${members.length} Engineers`, tone: 'primary' },
+            { label: 'Top Velocity', value: velocityLeaders.scores[0]?.name?.split(' ')[0] || '—', tone: 'amber' },
+            { label: '7d Pulse', value: `${pulseMetrics.totalEvents} events`, tone: 'purple' },
+            { label: 'Birthdays (30d)', value: upcomingBirthdays.length, tone: 'rose' },
+            { label: 'Planned Leaves', value: upcomingLeaves.length, tone: 'sky' }
+          ]}
+          contentClassName="pt-3 pb-1"
+        >
+        <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           
           {/* CARD 1: Velocity Leaderboard */}
@@ -1202,6 +1215,8 @@ const TeamView: React.FC = () => {
           </div>
 
         </div>
+        </div>
+        </CollapsibleSummaryStrip>
 
         {/* ══════════════════════════════════════════════════════════
             SECTION 3: TEAM DIRECTORY (GRID / LIST / COMPACT MODES)

@@ -25,6 +25,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
 import Modal from '../shared/Modal';
+import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import clsx from 'clsx';
 
 export const ReleaseRoadmap: React.FC = () => {
@@ -165,9 +166,19 @@ export const ReleaseRoadmap: React.FC = () => {
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full space-y-6">
+      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full space-y-4 sm:space-y-5">
 
-        {/* KPI Telemetry Cards */}
+        {/* Collapsible KPI Telemetry Cards */}
+        <CollapsibleSummaryStrip
+          title="Release Cycle Telemetry"
+          summary={[
+            { label: 'Total Cycles', value: totalReleases, tone: 'primary' },
+            { label: 'Active Cycle', value: activeReleases, tone: 'sky' },
+            { label: 'Shipped', value: releasedReleases, tone: 'emerald' },
+            { label: 'Unmapped Scope', value: unmappedTasks, tone: 'amber' }
+          ]}
+          contentClassName="pt-2.5 pb-1"
+        >
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <div className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
             <div className="flex items-center justify-between text-xs font-semibold text-[var(--color-text-muted)]">
@@ -221,6 +232,7 @@ export const ReleaseRoadmap: React.FC = () => {
             </div>
           </div>
         </div>
+        </CollapsibleSummaryStrip>
 
         {/* Filter and Search Bar */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl">

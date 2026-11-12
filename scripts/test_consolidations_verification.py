@@ -383,6 +383,33 @@ def test_consolidations_verification():
         mobile_ctx.close()
         print("✓ Mobile bottom navigation verified across 390x844 viewport")
 
+        # -------------------------------------------------------------
+        # TEST 11: Collapsible Summary Card Strips Across All 8 Views
+        # -------------------------------------------------------------
+        print("\n--- TEST 11: Collapsible Summary Strips (Minimized Default & Animated Reveal) ---")
+        for route in ("#/deliveries", "#/capacity", "#/team", "#/features", "#/releases", "#/steps", "#/dropdowns", "#/retro"):
+            page.goto(f"http://localhost:3000/{route}")
+            page.wait_for_timeout(450)
+            show_btn = page.locator("button[aria-expanded='false']:has-text('Show Cards')").first
+            assert show_btn.is_visible(), f"On {route}, summary strip must start minimized with 'Show Cards'"
+            panel_id = show_btn.get_attribute("aria-controls")
+            assert panel_id and page.locator(f"#{panel_id}").count() == 0, f"On {route}, panel #{panel_id} should be collapsed initially"
+
+            show_btn.click()
+            page.wait_for_timeout(450)
+            hide_btn = page.locator("button[aria-expanded='true']:has-text('Hide Cards')").first
+            assert hide_btn.is_visible(), f"On {route}, cards did not expand on click"
+            assert page.locator(f"#{panel_id}").is_visible(), f"On {route}, expanded panel #{panel_id} not visible"
+            if route == "#/deliveries":
+                page.screenshot(path="/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/deliveries_cards_expanded.png", full_page=False)
+
+            hide_btn.click()
+            page.wait_for_timeout(350)
+            assert page.locator("button[aria-expanded='false']:has-text('Show Cards')").first.is_visible(), f"On {route}, cards did not collapse back"
+            if route == "#/deliveries":
+                page.screenshot(path="/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/deliveries_cards_minimized.png", full_page=False)
+        print("✓ All 8 summary-strip screens start minimized and animate open/closed on demand")
+
         # Ensure no uncaught page errors
         real_errors = [e for e in errors if "favicon" not in e.lower()]
         assert len(real_errors) == 0, f"Encountered unexpected browser errors: {real_errors}"
@@ -390,7 +417,7 @@ def test_consolidations_verification():
 
         browser.close()
         print("\n==========================================================================")
-        print("🎉 ALL 10 CONSOLIDATION & OPTION A TIER 2 PLAYWRIGHT TESTS PASSED!")
+        print("🎉 ALL 11 CONSOLIDATION & COLLAPSIBLE SUMMARY TESTS PASSED!")
         print("==========================================================================")
 
 if __name__ == "__main__":

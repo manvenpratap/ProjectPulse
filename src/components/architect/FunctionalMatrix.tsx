@@ -38,6 +38,7 @@ import {
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
+import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef } from '../shared/DataTable';
 import clsx from 'clsx';
@@ -1144,8 +1145,18 @@ export const FunctionalMatrix: React.FC = () => {
       </AnimatePresence>
 
       {/* ── 3. Operational KPI Banner & Toolbar ── */}
-      <div className="px-4 sm:px-6 lg:px-8 py-3 bg-[var(--color-surface)] border-b border-[var(--color-divider)] space-y-3 shrink-0">
-        {/* KPI Strip */}
+      <div className="px-4 sm:px-6 lg:px-8 py-2.5 bg-[var(--color-surface)] border-b border-[var(--color-divider)] space-y-2.5 shrink-0">
+        {/* Collapsible KPI Strip */}
+        <CollapsibleSummaryStrip
+          title="Feature Coverage Telemetry"
+          summary={[
+            { label: 'Features', value: totalFeatures, tone: 'primary' },
+            { label: 'Mapped Screens', value: `${mappedScreens.length} / ${allScreens.length}`, tone: 'sky' },
+            { label: 'Avg Maturation', value: `${avgMaturity}%`, tone: 'emerald' },
+            { label: 'At Risk', value: totalAtRisk, tone: totalAtRisk > 0 ? 'rose' : 'emerald' }
+          ]}
+          contentClassName="pt-2.5 pb-1"
+        >
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
           <div className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-between">
             <span className="font-semibold text-[var(--color-text-muted)]">Features</span>
@@ -1166,6 +1177,7 @@ export const FunctionalMatrix: React.FC = () => {
             </span>
           </div>
         </div>
+        </CollapsibleSummaryStrip>
 
         {/* Filter Controls Row */}
         <div className="flex flex-wrap items-center justify-between gap-2.5 pt-1 text-xs">

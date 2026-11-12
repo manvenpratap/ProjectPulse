@@ -43,6 +43,7 @@ import clsx from 'clsx';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
+import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import Modal from '../shared/Modal';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef } from '../shared/DataTable';
@@ -690,8 +691,20 @@ export const DeliveriesView: React.FC = () => {
         }
       />
 
-      {/* 1. Cockpit Telemetry Banner */}
-      <div className="bg-[var(--color-surface)] border-b border-[var(--color-divider)] p-3 sm:p-6 lg:p-8 shrink-0">
+      {/* 1. Collapsible Cockpit Telemetry Banner (Minimized by default) */}
+      <div className="bg-[var(--color-surface)] border-b border-[var(--color-divider)] px-3 sm:px-6 lg:px-8 py-2 shrink-0">
+        <CollapsibleSummaryStrip
+          title="Delivery Telemetry"
+          summary={[
+            { label: 'Deployed Live', value: `${telemetry.deployed}/${telemetry.total}`, tone: 'emerald' },
+            { label: 'In Flight', value: telemetry.ready + telemetry.inProgress, tone: 'sky' },
+            { label: 'Pending Sign-Off', value: telemetry.pendingSignoff, tone: 'amber' },
+            { label: 'Smoke Gates', value: telemetry.failedSmoke > 0 ? `${telemetry.failedSmoke} Fail` : '0 Fail', tone: telemetry.failedSmoke > 0 ? 'rose' : 'emerald' },
+            { label: 'Lead Time', value: `${telemetry.avgLeadTime}d`, tone: 'neutral' },
+            { label: 'Variance', value: `${parseFloat(telemetry.avgVariance) > 0 ? `+${telemetry.avgVariance}` : telemetry.avgVariance}d`, tone: parseFloat(telemetry.avgVariance) > 0 ? 'rose' : 'emerald' }
+          ]}
+          contentClassName="pt-2.5 pb-1"
+        >
         {/* Bento Telemetry Cards (Horizontal Snap Strip on Mobile, Grid on sm+) */}
         <div className="flex sm:grid overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar scroll-fade-x sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pb-1">
           <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
@@ -759,6 +772,7 @@ export const DeliveriesView: React.FC = () => {
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Variance vs target</div>
           </div>
         </div>
+        </CollapsibleSummaryStrip>
       </div>
 
       {/* 2. Operational Filter Toolbar */}

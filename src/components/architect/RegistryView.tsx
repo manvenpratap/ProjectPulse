@@ -27,6 +27,7 @@ import {
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
+import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import clsx from 'clsx';
 import { todayStr } from '../../utils/projectUtils';
 
@@ -386,8 +387,18 @@ const RegistryView: React.FC = () => {
         }
       />
 
-      {/* ── 2. Telemetry KPI Strip ── */}
-      <div className="px-4 sm:px-6 lg:px-8 pt-4 pb-2">
+      {/* ── 2. Collapsible Telemetry KPI Strip (Minimized by default) ── */}
+      <div className="px-4 sm:px-6 lg:px-8 pt-3 pb-1 shrink-0">
+        <CollapsibleSummaryStrip
+          title="Option Library Telemetry"
+          summary={[
+            { label: 'Option Libraries', value: `${keys.length} (${coreCount} core)`, tone: 'primary' },
+            { label: 'Defined Options', value: totalValuesCount, tone: 'purple' },
+            { label: 'Fields Linked', value: totalLinkedFields, tone: 'amber' },
+            { label: 'Sync Integrity', value: '100% Live', tone: 'emerald' }
+          ]}
+          contentClassName="pt-2.5 pb-1"
+        >
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="p-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
             <div>
@@ -446,11 +457,12 @@ const RegistryView: React.FC = () => {
             </div>
           </div>
         </div>
+        </CollapsibleSummaryStrip>
       </div>
 
       {/* ── 3. Split Master/Detail Workshop Layout ── */}
-      <div className="flex-1 overflow-hidden p-4 sm:p-6 lg:p-8 pt-2">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-full max-h-[calc(100vh-210px)]">
+      <div className="flex-1 min-h-0 overflow-hidden p-4 sm:p-6 lg:p-8 pt-2">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-full min-h-0">
           {/* ── LEFT: Library Sidebar (Col 1-4) ── */}
           <div className="lg:col-span-4 flex flex-col bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs overflow-hidden h-full">
             {/* Sidebar Search & Tab Controls */}

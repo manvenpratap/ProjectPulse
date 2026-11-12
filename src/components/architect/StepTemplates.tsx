@@ -38,6 +38,7 @@ import clsx from 'clsx';
 import { StepTemplate, Task, Subtask, TaskStatus } from '../../types';
 import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
+import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import { motion, AnimatePresence } from 'motion/react';
 import { todayStr } from '../../utils/projectUtils';
 
@@ -704,8 +705,18 @@ const StepTemplates: React.FC = () => {
         }
       />
 
-      {/* ── 2. Telemetry KPI Strip ── */}
-      <div className="px-4 sm:px-6 lg:px-8 pt-4 pb-2">
+      {/* ── 2. Collapsible Telemetry KPI Strip (Minimized by default) ── */}
+      <div className="px-4 sm:px-6 lg:px-8 pt-3 pb-1 shrink-0">
+        <CollapsibleSummaryStrip
+          title="Blueprint Telemetry"
+          summary={[
+            { label: 'Workflow Blueprints', value: templates.length, tone: 'primary' },
+            { label: 'Standardized Phases', value: totalSteps, tone: 'purple' },
+            { label: 'Tasks Governed', value: tasksLinkedCount, tone: 'emerald' },
+            { label: 'Workflow Scope', value: `${totalEffortAcrossAll}d`, tone: 'amber' }
+          ]}
+          contentClassName="pt-2.5 pb-1"
+        >
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           <div className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
             <div>
@@ -764,6 +775,7 @@ const StepTemplates: React.FC = () => {
             </div>
           </div>
         </div>
+        </CollapsibleSummaryStrip>
       </div>
 
       {/* ── 3. Operational Toolbar (Filter, Search & View Modes) ── */}

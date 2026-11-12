@@ -28,6 +28,7 @@ import clsx from 'clsx';
 import { motion, AnimatePresence } from 'motion/react';
 import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
+import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import { TaskStatus } from '../../types';
 import { daysDiff, getBusinessDays, addBusDays } from '../../utils/projectUtils';
 
@@ -764,60 +765,80 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
       />
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      {/* 1. ULTRA-COMPACT TELEMETRY STATS RIBBON (Saves ~85px of vertical space) */}
+      {/* 1. COLLAPSIBLE TELEMETRY STATS RIBBON (Minimized by default)             */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 px-4 sm:px-6 pt-3 shrink-0">
-        <div className="bg-[var(--color-surface)] p-2.5 sm:px-3.5 sm:py-2 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 shadow-2xs">
-          <div className="min-w-0">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] truncate block">Resources</span>
-            <span className="text-sm sm:text-base font-bold font-mono text-[var(--color-text)] truncate block">{filteredMembers.length} Members</span>
-          </div>
-          <div className="w-7 h-7 rounded-lg bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center shrink-0">
-            <Users size={14} />
-          </div>
-        </div>
+      {(() => {
+        const avgUtil = Math.round(memberLoad.reduce((acc, m) => acc + m.utilization, 0) / (memberLoad.length || 1));
+        const overloadedCount = memberLoad.filter(m => m.utilization > 100).length;
+        const idleCount = memberLoad.filter(m => m.utilization < 30).length;
+        return (
+          <div className="px-4 sm:px-6 pt-2.5 shrink-0">
+            <CollapsibleSummaryStrip
+              title="Capacity Telemetry"
+              summary={[
+                { label: 'Resources', value: `${filteredMembers.length} Members`, tone: 'primary' },
+                { label: 'Avg Utilization', value: `${avgUtil}%`, tone: 'emerald' },
+                { label: 'Overload Alert', value: `${overloadedCount} Overloaded`, tone: overloadedCount > 0 ? 'rose' : 'emerald' },
+                { label: 'Available Reserves', value: `${idleCount} Idle`, tone: 'sky' }
+              ]}
+              contentClassName="pt-2.5 pb-0.5"
+            >
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                <div className="bg-[var(--color-surface)] p-2.5 sm:px-3.5 sm:py-2 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 shadow-2xs">
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] truncate block">Resources</span>
+                    <span className="text-sm sm:text-base font-bold font-mono text-[var(--color-text)] truncate block">{filteredMembers.length} Members</span>
+                  </div>
+                  <div className="w-7 h-7 rounded-lg bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center shrink-0">
+                    <Users size={14} />
+                  </div>
+                </div>
 
-        <div className="bg-[var(--color-surface)] p-2.5 sm:px-3.5 sm:py-2 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 shadow-2xs">
-          <div className="min-w-0">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] truncate block">Avg Utilization</span>
-            <span className="text-sm sm:text-base font-bold font-mono text-[var(--color-text)] truncate block">
-              {Math.round(memberLoad.reduce((acc, m) => acc + m.utilization, 0) / (memberLoad.length || 1))}%
-            </span>
-          </div>
-          <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
-            <TrendingUp size={14} />
-          </div>
-        </div>
+                <div className="bg-[var(--color-surface)] p-2.5 sm:px-3.5 sm:py-2 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 shadow-2xs">
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] truncate block">Avg Utilization</span>
+                    <span className="text-sm sm:text-base font-bold font-mono text-[var(--color-text)] truncate block">
+                      {avgUtil}%
+                    </span>
+                  </div>
+                  <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                    <TrendingUp size={14} />
+                  </div>
+                </div>
 
-        <div className={clsx(
-          "p-2.5 sm:px-3.5 sm:py-2 rounded-xl border flex items-center justify-between gap-2 shadow-2xs transition-colors",
-          memberLoad.filter(m => m.utilization > 100).length > 0 
-            ? "bg-rose-500/10 border-rose-500/30 text-rose-500" 
-            : "bg-[var(--color-surface)] border-[var(--color-divider)]"
-        )}>
-          <div className="min-w-0">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] truncate block">Overload Alert</span>
-            <span className={clsx("text-sm sm:text-base font-bold font-mono truncate block", memberLoad.filter(m => m.utilization > 100).length > 0 ? "text-rose-500" : "text-emerald-500")}>
-              {memberLoad.filter(m => m.utilization > 100).length} Overloaded
-            </span>
-          </div>
-          <div className={clsx("w-7 h-7 rounded-lg flex items-center justify-center shrink-0", memberLoad.filter(m => m.utilization > 100).length > 0 ? "bg-rose-500/20 text-rose-500" : "bg-emerald-500/10 text-emerald-500")}>
-            <AlertTriangle size={14} />
-          </div>
-        </div>
+                <div className={clsx(
+                  "p-2.5 sm:px-3.5 sm:py-2 rounded-xl border flex items-center justify-between gap-2 shadow-2xs transition-colors",
+                  overloadedCount > 0 
+                    ? "bg-rose-500/10 border-rose-500/30 text-rose-500" 
+                    : "bg-[var(--color-surface)] border-[var(--color-divider)]"
+                )}>
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] truncate block">Overload Alert</span>
+                    <span className={clsx("text-sm sm:text-base font-bold font-mono truncate block", overloadedCount > 0 ? "text-rose-500" : "text-emerald-500")}>
+                      {overloadedCount} Overloaded
+                    </span>
+                  </div>
+                  <div className={clsx("w-7 h-7 rounded-lg flex items-center justify-center shrink-0", overloadedCount > 0 ? "bg-rose-500/20 text-rose-500" : "bg-emerald-500/10 text-emerald-500")}>
+                    <AlertTriangle size={14} />
+                  </div>
+                </div>
 
-        <div className="bg-[var(--color-surface)] p-2.5 sm:px-3.5 sm:py-2 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 shadow-2xs">
-          <div className="min-w-0">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] truncate block">Available Reserves</span>
-            <span className="text-sm sm:text-base font-bold font-mono text-sky-500 truncate block">
-              {memberLoad.filter(m => m.utilization < 30).length} Idle
-            </span>
+                <div className="bg-[var(--color-surface)] p-2.5 sm:px-3.5 sm:py-2 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 shadow-2xs">
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] truncate block">Available Reserves</span>
+                    <span className="text-sm sm:text-base font-bold font-mono text-sky-500 truncate block">
+                      {idleCount} Idle
+                    </span>
+                  </div>
+                  <div className="w-7 h-7 rounded-lg bg-sky-500/10 text-sky-500 flex items-center justify-center shrink-0">
+                    <CheckCircle2 size={14} />
+                  </div>
+                </div>
+              </div>
+            </CollapsibleSummaryStrip>
           </div>
-          <div className="w-7 h-7 rounded-lg bg-sky-500/10 text-sky-500 flex items-center justify-center shrink-0">
-            <CheckCircle2 size={14} />
-          </div>
-        </div>
-      </div>
+        );
+      })()}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* 2. CONSOLIDATED COMMAND & CONTROL TOOLBAR (Single Row, Height ~44px)     */}

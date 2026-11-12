@@ -91,7 +91,7 @@ ProjectPulse 2.0/
 │   │   ├── reports/             # Executive Reporting & CXO Email Generator
 │   │   ├── risks/               # Unified RAID Register & Decision Matrix
 │   │   ├── settings/            # Workspace Settings & BaselineManager
-│   │   ├── shared/              # PageHeader Breadcrumbs, ShareExportMenu, HelpModal, SectionHelpButton, UI primitives
+│   │   ├── shared/              # PageHeader Breadcrumbs, ShareExportMenu, CollapsibleSummaryStrip, HelpModal, SectionHelpButton, UI primitives
 │   │   ├── tasks/               # TaskGrid, BoardView, TaskView, TaskModal
 │   │   ├── team/                # Team Hub, Capacity & 5-Day Scheduler, MemberHierarchy
 │   │   └── timeline/            # Interactive Gantt & Roadmap

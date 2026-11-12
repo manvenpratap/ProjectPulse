@@ -26,6 +26,7 @@ import confetti from 'canvas-confetti';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import PageHeader from '../shared/PageHeader';
 import Button from '../shared/Button';
+import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 
 const CATEGORIES = [
   { id: 'went_well', label: 'What Went Well', color: 'emerald', icon: Smile, desc: 'Wins, accelerated velocities, and successful milestones' },
@@ -176,8 +177,18 @@ export const SprintRetroView: React.FC = () => {
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full min-w-0 max-w-full space-y-6">
-        {/* Sprint Vital Gauges */}
+      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full min-w-0 max-w-full space-y-4 sm:space-y-5">
+        {/* Collapsible Sprint Vital Gauges (Minimized by default) */}
+        <CollapsibleSummaryStrip
+          title="Sprint Vitals"
+          help={<SectionHelpButton view="retro" section="Team Sentiment Score" label="Team Morale guide" size={12} />}
+          summary={[
+            { label: 'Team Morale Index', value: `${sprintMorale} / 10`, tone: 'emerald' },
+            { label: 'Velocity Delivered', value: `${sprintDeliveredPoints} / ${sprintTargetPoints} pts`, tone: 'sky' },
+            { label: 'Action Resolution', value: `${counts.resolved_actions} / ${counts.action_item}`, tone: 'purple' }
+          ]}
+          contentClassName="pt-2.5 pb-1"
+        >
         <div className="flex sm:grid overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar scroll-fade-x sm:grid-cols-3 gap-3 sm:gap-4 pb-1">
             {/* Morale Index */}
             <div className="min-w-[235px] sm:min-w-0 shrink-0 snap-start p-3.5 sm:p-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl flex items-center gap-3.5 sm:gap-4">
@@ -187,7 +198,6 @@ export const SprintRetroView: React.FC = () => {
               <div>
                 <div className="flex items-center gap-1">
                   <span className="text-xs font-medium text-[var(--color-text-muted)]">Team Morale Index</span>
-                  <SectionHelpButton view="retro" section="Team Sentiment Score" label="Team Morale guide" size={12} />
                 </div>
                 <div className="text-xl font-mono font-bold text-emerald-500 mt-0.5">
                   {sprintMorale} <span className="text-xs font-sans text-[var(--color-text-muted)]">/ 10</span>
@@ -227,6 +237,7 @@ export const SprintRetroView: React.FC = () => {
               </div>
             </div>
           </div>
+        </CollapsibleSummaryStrip>
 
         {/* 2. CATEGORY PILL FILTER BAR (Information Pyramid Level 2) */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar scroll-fade-x max-w-full">

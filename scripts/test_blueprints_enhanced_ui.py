@@ -30,13 +30,20 @@ def test_blueprints_enhanced_ui():
             page.goto("http://localhost:3000/#/steps")
             page.wait_for_timeout(1000)
 
-        # 1. Telemetry Strip Verification
-        print("\n--- 1. Testing Telemetry KPI Strip ---")
-        assert page.locator("text=Workflow Blueprints").is_visible()
-        assert page.locator("text=Standardized Phases").is_visible()
-        assert page.locator("text=Tasks Governed").is_visible()
-        assert page.locator("text=Workflow Scope").is_visible()
-        print("✓ Verified 4 Operational Telemetry KPI cards on main page")
+        # 1. Collapsible Telemetry Strip Verification (minimized by default -> reveal on click)
+        print("\n--- 1. Testing Collapsible Telemetry KPI Strip ---")
+        assert page.locator("text=Workflow Blueprints").first.is_visible()
+        assert page.locator("text=Standardized Phases").first.is_visible()
+        assert page.locator("text=Tasks Governed").first.is_visible()
+        assert page.locator("text=Workflow Scope").first.is_visible()
+        show_btn = page.locator("button[aria-expanded='false']:has-text('Show Cards')").first
+        assert show_btn.is_visible(), "Blueprints KPI cards must start minimized by default"
+        show_btn.click()
+        page.wait_for_timeout(450)
+        assert page.locator("button[aria-expanded='true']:has-text('Hide Cards')").first.is_visible(), "Blueprints KPI cards should expand on demand"
+        page.locator("button[aria-expanded='true']:has-text('Hide Cards')").first.click()
+        page.wait_for_timeout(300)
+        print("✓ Verified minimized-by-default summary strip & animated on-demand card reveal")
 
         # 2. Search & Category Filters
         print("\n--- 2. Testing Search & Category Filters ---")
