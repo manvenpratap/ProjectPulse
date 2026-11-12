@@ -822,10 +822,10 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* 2. CONSOLIDATED COMMAND & CONTROL TOOLBAR (Single Row, Height ~44px)     */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
-      <div className="px-4 sm:px-6 py-2.5 shrink-0 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5">
+      <div className="px-4 sm:px-6 py-2.5 shrink-0 flex flex-wrap items-center justify-between gap-2">
         
         {/* Left: View Mode Segmented Switch */}
-        <div className="flex items-center gap-1 bg-[var(--color-surface-2)] p-1 rounded-xl shrink-0 overflow-x-auto no-scrollbar border border-[var(--color-divider)]">
+        <div className="flex items-center gap-1 bg-[var(--color-surface-2)] p-1 rounded-xl shrink-0 max-w-full overflow-x-auto no-scrollbar border border-[var(--color-divider)]">
           <button
             type="button"
             onClick={() => setViewMode('heatmap')}
@@ -884,7 +884,7 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
         </div>
 
         {/* Center / Right Dynamic Controls */}
-        <div className="flex items-center gap-2 flex-wrap md:flex-nowrap justify-between md:justify-end">
+        <div className="flex items-center gap-2 flex-wrap justify-between md:justify-end min-w-0 flex-1">
           
           {/* Mode-Specific Inline Controls */}
           {viewMode === 'schedule' ? (
@@ -976,7 +976,7 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
           </div>
 
           {/* Search Input */}
-          <div className="relative w-40 lg:w-48 shrink-0">
+          <div className="relative w-40 xl:w-44 shrink-0">
             <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
             <input
               type="text"

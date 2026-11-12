@@ -51,7 +51,21 @@ def test_desktop_capacity_enhanced():
         assert page.locator("button:has-text('Member Cards')").is_visible(), "Member Cards button missing"
         assert page.locator("button:has-text('Classic')").is_visible(), "Classic button missing"
         assert page.locator("button:has-text('Balance Workload')").is_visible(), "Balance Workload primary action missing"
-        print("✓ All KPI stats, view modes, and primary actions verified")
+
+        # Verify Advisory button is completely visible within viewport bounds at 1440px and 1280px
+        for vw in (1440, 1280):
+            page.set_viewport_size({"width": vw, "height": 850})
+            page.wait_for_timeout(250)
+            adv_btn = page.locator("button[title='Toggle Allocation Advisory Dock']").first
+            assert adv_btn.is_visible(), f"Advisory button not visible at {vw}px"
+            adv_box = adv_btn.bounding_box()
+            assert adv_box and adv_box["x"] >= 0 and adv_box["x"] + adv_box["width"] <= vw, (
+                f"Advisory button clipped at {vw}px: {adv_box}"
+            )
+        page.screenshot(path="/Users/manvenpratapsingh/.gemini/antigravity/brain/e8a27929-1ddf-41c8-841f-87e3676d5e46/capacity_view_1280_advisory_visible.png")
+        page.set_viewport_size({"width": 1440, "height": 900})
+        page.wait_for_timeout(200)
+        print("✓ All KPI stats, view modes, Advisory bounds (1280px & 1440px), and primary actions verified")
 
         # Step 2: Verify Full-Width Heatmap Grid & Capture Screenshot
         print("[4] Verifying Heatmap Grid Table...")
