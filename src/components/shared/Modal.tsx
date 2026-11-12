@@ -1,4 +1,5 @@
 import React, { useEffect, useId } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence, useDragControls } from 'motion/react';
 import Button from './Button';
@@ -42,7 +43,7 @@ const Modal: React.FC<ModalProps> = ({
     full: "max-w-[95vw]",
   };
 
-  return (
+  const modalNode = (
     <AnimatePresence>
       {isOpen && (
         <div
@@ -119,6 +120,9 @@ const Modal: React.FC<ModalProps> = ({
       )}
     </AnimatePresence>
   );
+
+  if (typeof document === 'undefined') return modalNode;
+  return createPortal(modalNode, document.body);
 };
 
 export default Modal;

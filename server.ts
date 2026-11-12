@@ -1,4 +1,5 @@
 import express from "express";
+import os from "os";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
@@ -6,11 +7,43 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+function getLanUrls(port: number, protocol = "http"): string[] {
+  const ifaces = os.networkInterfaces();
+  const candidates: { name: string; address: string; score: number }[] = [];
+
+  for (const [name, list] of Object.entries(ifaces)) {
+    if (!list) continue;
+    for (const info of list) {
+      if (info.internal || info.family !== "IPv4") continue;
+      if (info.address.startsWith("169.254.")) continue;
+      const lower = name.toLowerCase();
+      let score = 0;
+      if (lower.startsWith("en0") || lower.startsWith("wlan") || lower.startsWith("eth")) score += 4;
+      if (info.address.startsWith("192.168.")) score += 2;
+      else if (info.address.startsWith("10.")) score += 1;
+      candidates.push({ name, address: info.address, score });
+    }
+  }
+
+  candidates.sort((a, b) => b.score - a.score || a.address.localeCompare(b.address));
+  return Array.from(new Set(candidates.map((c) => `${protocol}://${c.address}:${port}`)));
+}
+
 async function startServer() {
   const app = express();
   const PORT = 3000;
 
   app.use(express.json());
+
+  // Local LAN discovery for Mobile Safari QR launcher
+  app.get("/api/network-info", (req, res) => {
+    const proto = req.get("x-forwarded-proto")?.split(",")[0]?.trim() || req.protocol || "http";
+    res.json({
+      port: PORT,
+      protocol: proto,
+      lanUrls: getLanUrls(PORT, proto),
+    });
+  });
 
   // AI Analysis API
   app.post("/api/analyze", async (req, res) => {
@@ -78,6 +111,10 @@ async function startServer() {
 
   app.listen(PORT, "0.0.0.0", () => {
     console.log(`Server running on http://localhost:${PORT}`);
+    const lanUrls = getLanUrls(PORT);
+    if (lanUrls.length > 0) {
+      console.log(`Mobile Safari LAN URL(s): ${lanUrls.join(", ")}`);
+    }
   });
 }
 

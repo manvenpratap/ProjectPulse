@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { getDefaultState } from '../src/store/defaultState';
 import { analyzeProject } from '../src/services/aiService';
+import { isLoopbackHost, resolveMobileLaunchUrl } from '../src/components/shared/MobileLaunchQrModal';
 import { TaskPriority, TaskStatus } from '../src/types';
 
 async function main() {
@@ -53,7 +54,13 @@ async function main() {
     globalThis.fetch = origFetch;
   }
 
-  console.log('Mobile runtime self-check passed (native telemetry + offline fallback).');
+  assert.equal(isLoopbackHost('localhost'), true);
+  assert.equal(isLoopbackHost('127.0.0.1'), true);
+  assert.equal(isLoopbackHost('192.168.1.10'), false);
+  assert.equal(resolveMobileLaunchUrl('http://192.168.1.10:3000/', 'home', '#/dash'), 'http://192.168.1.10:3000');
+  assert.equal(resolveMobileLaunchUrl('http://192.168.1.10:3000/', 'current', '#/dash'), 'http://192.168.1.10:3000/#/dash');
+
+  console.log('Mobile runtime & Safari QR launch self-check passed.');
 }
 
 main();

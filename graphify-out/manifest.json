@@ -4,8 +4,8 @@
     "hash": "b7809b0fd88019ca58080817086d946a"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/server.ts": {
-    "mtime": 1794069784.642626,
-    "hash": "08f0bd5fdfd1b692badf1974f43339ac"
+    "mtime": 1794458802.1211545,
+    "hash": "13d4df4fb1862adefd20b394107aade0"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/capacitor.config.ts": {
     "mtime": 1794458615.2814415,
@@ -884,8 +884,8 @@
     "hash": "91807349b58d9d2e476c4fd0612059b5"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/Topbar.tsx": {
-    "mtime": 1794418982.253593,
-    "hash": "e5c77f845d3adc317132be60b7ba090a"
+    "mtime": 1794458861.7705421,
+    "hash": "290828784223652a9294031ab85d065e"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/OfflineBanner.tsx": {
     "mtime": 1794127489.5729465,
@@ -904,8 +904,8 @@
     "hash": "3c349c453957c18a406395b85717e666"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/layout/SetupView.tsx": {
-    "mtime": 1794458202.9350166,
-    "hash": "8f4571c1428577a6b55d20e60d081ba8"
+    "mtime": 1794458870.3400357,
+    "hash": "097fe5aa10cf320bb98b314d1888fc59"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/shared/ThemeGrid.tsx": {
     "mtime": 1794448241.0503063,
@@ -935,13 +935,17 @@
     "mtime": 1794417789.2904556,
     "hash": "6c11c67caac09d2e7ef83a793e723398"
   },
+  "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/shared/MobileLaunchQrModal.tsx": {
+    "mtime": 1794459056.2785504,
+    "hash": "be321fea72b97cfd94a46edf71d58680"
+  },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/shared/Button.tsx": {
     "mtime": 1794418982.4492886,
     "hash": "7e25bfce430b4757bcb85a306c338ec7"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/shared/Modal.tsx": {
-    "mtime": 1794417789.3763824,
-    "hash": "46424bf3d2f60e1077093159f05eb96b"
+    "mtime": 1794458990.7222564,
+    "hash": "c8a21b0fbae028f483b95e03cc4f524b"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/shared/HelpModal.tsx": {
     "mtime": 1794445958.7826068,
@@ -1116,8 +1120,8 @@
     "hash": "8b7b329ee3dfc441a85a1202de2fded5"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/README.md": {
-    "mtime": 1794458615.0781095,
-    "hash": "ea003c7d332d139cdd943a217b7473e4"
+    "mtime": 1794459132.5219147,
+    "hash": "d0cace699cd2f8adcb432835b736960b"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/wiki/Architecture-and-System-Design.md": {
     "mtime": 1794070719.2984006,

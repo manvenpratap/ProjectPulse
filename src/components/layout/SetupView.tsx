@@ -8,6 +8,7 @@ import SectionHelpButton from '../shared/SectionHelpButton';
 import ThemeFlyout from './ThemeFlyout';
 import UserProfileFlyout from './UserProfileFlyout';
 import AccessManagerModal from '../auth/AccessManagerModal';
+import { MobileLaunchQrButton } from '../shared/MobileLaunchQrModal';
 import {
   Activity,
   UploadCloud,
@@ -124,6 +125,8 @@ const SetupView: React.FC = () => {
           >
             <Palette size={17} />
           </Button>
+
+          <MobileLaunchQrButton iconSize={17} />
 
           <Button
             variant="ghost"

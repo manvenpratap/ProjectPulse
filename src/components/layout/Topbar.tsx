@@ -27,6 +27,7 @@ import ThemeFlyout from './ThemeFlyout';
 import SmartAlertsCenter, { computeAlerts } from './SmartAlertsCenter';
 import UserProfileFlyout from './UserProfileFlyout';
 import AccessManagerModal from '../auth/AccessManagerModal';
+import { MobileLaunchQrButton } from '../shared/MobileLaunchQrModal';
 import { useAuth } from '../../store/AuthContext';
 import { THEMES } from '../shared/ThemeGrid';
 import { runCircularThemeTransition, castOriginConfetti } from '../../utils/designSpells';
@@ -649,6 +650,8 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
           >
             <Palette size={18} />
           </Button>
+
+          <MobileLaunchQrButton />
 
           <Button
             variant="ghost"
