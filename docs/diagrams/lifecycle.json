@@ -2,35 +2,224 @@
   "schema_version": 2,
   "diagram_type": "lifecycle",
   "meta": {
-    "title": "ProjectPulse - Workstation Session Lifecycle",
-    "output": "lifecycle.html",
+    "title": "ProjectPulse 2.0 \u2014 Task & ALM Delivery Explicit State Lifecycle",
+    "output": "docs/diagrams/lifecycle.html",
     "animation": "trace",
     "visual_preset": "signal-flow",
-    "quality_profile": "showcase"
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/manvenpratap/ProjectPulse",
+      "revision": "b8d0b018d76b08d38bf5e46467efc39e5039a69c",
+      "link_mode": "local-only"
+    }
   },
   "lanes": [
-    { "id": "main", "label": "Session Lifecycle" },
-    { "id": "sync", "label": "External Synchronization" },
-    { "id": "terminal", "label": "Terminal Exits" }
+    {
+      "id": "main",
+      "label": "Task & Delivery Rail"
+    },
+    {
+      "id": "guards",
+      "label": "Blocking & Sign-Off Gates"
+    },
+    {
+      "id": "terminal",
+      "label": "Terminal & Recovery States"
+    }
   ],
   "states": [
-    { "id": "boot", "type": "start", "label": "App Boot", "sublabel": "load projectpulse.html", "lane": "main", "col": 0, "step": "01", "tag": "init" },
-    { "id": "hydrate", "type": "active", "label": "Hydrate State", "sublabel": "read localStorage (pp-data)", "lane": "main", "col": 1, "step": "02", "tag": "read" },
-    { "id": "active", "type": "success", "label": "Workstation Live", "sublabel": "Gantt, RAID & Deliveries", "lane": "main", "col": 2, "step": "03", "tag": "active" },
-    { "id": "syncing", "type": "active", "label": "Excel Reconciling", "sublabel": "importing .xlsx sheets", "lane": "sync", "col": 2, "tag": "sync" },
-    { "id": "saved", "type": "success", "label": "State Persisted", "sublabel": "flushed to IndexedDB", "lane": "main", "col": 3, "step": "04", "tag": "saved" },
-    { "id": "exported", "type": "success", "label": "Reports Generated", "sublabel": "Word / Excel export", "lane": "terminal", "col": 4, "tag": "terminal" }
+    {
+      "id": "unauth",
+      "type": "start",
+      "label": "Unauthenticated",
+      "sublabel": "LoginView / SetupView",
+      "lane": "main",
+      "col": 0,
+      "step": "01",
+      "tag": "boot",
+      "sources": [
+        {
+          "path": "src/utils/stateMachines.ts",
+          "line": 305,
+          "end_line": 319
+        }
+      ]
+    },
+    {
+      "id": "not_started",
+      "type": "waiting",
+      "label": "Not Started / Sched",
+      "sublabel": "progress: 0",
+      "lane": "main",
+      "col": 1,
+      "step": "02",
+      "tag": "queued",
+      "sources": [
+        {
+          "path": "src/utils/stateMachines.ts",
+          "line": 60,
+          "end_line": 110
+        }
+      ]
+    },
+    {
+      "id": "in_progress",
+      "type": "active",
+      "label": "In Progress",
+      "sublabel": "review & subtask rollup",
+      "lane": "main",
+      "col": 2,
+      "step": "03",
+      "tag": "active",
+      "sources": [
+        {
+          "path": "src/utils/stateMachines.ts",
+          "line": 115,
+          "end_line": 150
+        }
+      ]
+    },
+    {
+      "id": "ready_deploy",
+      "type": "decision",
+      "label": "Ready for Deploy",
+      "sublabel": "ALM Ready for Test",
+      "lane": "main",
+      "col": 3,
+      "step": "04",
+      "tag": "gate",
+      "sources": [
+        {
+          "path": "src/utils/stateMachines.ts",
+          "line": 160,
+          "end_line": 185
+        }
+      ]
+    },
+    {
+      "id": "completed",
+      "type": "success",
+      "label": "Completed / Live",
+      "sublabel": "progress: 100 + confetti",
+      "lane": "main",
+      "col": 4,
+      "step": "05",
+      "tag": "shipped",
+      "sources": [
+        {
+          "path": "src/utils/stateMachines.ts",
+          "line": 80,
+          "end_line": 100
+        }
+      ]
+    },
+    {
+      "id": "dep_blocked",
+      "type": "failure",
+      "label": "Dependency Blocked",
+      "sublabel": "dependsOn incomplete",
+      "lane": "guards",
+      "col": 2,
+      "tag": "guard",
+      "sources": [
+        {
+          "path": "src/utils/stateMachines.ts",
+          "line": 38,
+          "end_line": 68
+        }
+      ]
+    },
+    {
+      "id": "gate_denied",
+      "type": "failure",
+      "label": "Sign-Off / Smoke Fail",
+      "sublabel": "Rejected or Failed gate",
+      "lane": "guards",
+      "col": 3,
+      "tag": "blocked",
+      "sources": [
+        {
+          "path": "src/utils/stateMachines.ts",
+          "line": 175,
+          "end_line": 182
+        }
+      ]
+    },
+    {
+      "id": "rolled_back",
+      "type": "waiting",
+      "label": "Rolled Back / Reopen",
+      "sublabel": "actCompletionDate = null",
+      "lane": "terminal",
+      "col": 4,
+      "tag": "recovery",
+      "sources": [
+        {
+          "path": "src/utils/stateMachines.ts",
+          "line": 185,
+          "end_line": 202
+        }
+      ]
+    }
   ],
   "transitions": [
-    { "from": "boot", "to": "hydrate", "label": "DOM ready" },
-    { "from": "hydrate", "to": "active", "label": "render dashboard" },
-    { "from": "active", "to": "syncing", "label": "import excel", "variant": "emphasis" },
-    { "from": "syncing", "to": "saved", "label": "merge complete", "variant": "emphasis" },
-    { "from": "active", "to": "saved", "label": "user edits" },
-    { "from": "saved", "to": "active", "label": "ready" },
-    { "from": "saved", "to": "exported", "label": "export report", "variant": "emphasis" }
+    {
+      "from": "unauth",
+      "to": "not_started",
+      "label": "authorized"
+    },
+    {
+      "from": "not_started",
+      "to": "in_progress",
+      "label": "start / progress>0",
+      "variant": "emphasis"
+    },
+    {
+      "from": "in_progress",
+      "to": "ready_deploy",
+      "label": "review / ready",
+      "variant": "emphasis"
+    },
+    {
+      "from": "ready_deploy",
+      "to": "completed",
+      "label": "approved + smoke ok",
+      "variant": "emphasis"
+    },
+    {
+      "from": "not_started",
+      "to": "dep_blocked",
+      "label": "blockedBy > 0",
+      "variant": "security"
+    },
+    {
+      "from": "dep_blocked",
+      "to": "in_progress",
+      "label": "deps completed",
+      "variant": "dashed"
+    },
+    {
+      "from": "ready_deploy",
+      "to": "gate_denied",
+      "label": "rejected / fail",
+      "variant": "security"
+    },
+    {
+      "from": "completed",
+      "to": "rolled_back",
+      "label": "rollback / uncheck",
+      "variant": "dashed"
+    }
   ],
   "cards": [
-    { "dot": "cyan", "title": "Crash Resilient", "items": ["Every user keystroke or modal submission auto-persists to localStorage", "Workstation survives tab closure or power disruption without data loss"] }
+    {
+      "dot": "cyan",
+      "title": "Enforced Transition Invariants",
+      "items": [
+        "Tasks with unfinished dependencies cannot enter In Progress or Completed",
+        "Deploying a delivery package clears Pending sign-off only if not Rejected and Smoke Gate is not Failed",
+        "Unchecking a subtask from a Completed parent clears actCompletionDate automatically"
+      ]
+    }
   ]
 }

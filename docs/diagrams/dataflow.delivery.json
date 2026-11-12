@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "50b7485f-5e6e-467a-8f09-8e162b8f5381",
+  "status": "current",
+  "command": "deliver",
+  "type": "dataflow",
+  "input": "/Volumes/Study/Projects/ProjectPulse 2.0/docs/diagrams/dataflow.json",
+  "output": "/Volumes/Study/Projects/ProjectPulse 2.0/docs/diagrams/dataflow.html",
+  "specification": {
+    "sha256": "a40e1c46ef959d7c3d7e5b61e76f3d27289b5c7deca4aa713719ce0b95fc4be2",
+    "bytes": 5035
+  },
+  "artifact": {
+    "sha256": "1f171c5261b9ace79fb4e371dbd9593bd9d32f0ebb82cc47308c594d47b2d56c",
+    "bytes": 760277
+  }
+}

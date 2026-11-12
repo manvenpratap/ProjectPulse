@@ -2,40 +2,205 @@
   "schema_version": 1,
   "diagram_type": "sequence",
   "meta": {
-    "title": "ProjectPulse - Bi-directional Excel Sync Sequence",
-    "output": "sequence.html",
+    "title": "ProjectPulse 2.0 \u2014 ExcelJS Reconciliation & Native Share Sequence",
+    "output": "docs/diagrams/sequence.html",
+    "viewBox": [
+      1080,
+      620
+    ],
     "column_fit": "spread",
     "animation": "trace",
-    "quality_profile": "showcase"
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/manvenpratap/ProjectPulse",
+      "revision": "b8d0b018d76b08d38bf5e46467efc39e5039a69c",
+      "link_mode": "local-only"
+    }
   },
   "participants": [
-    { "id": "pmo", "type": "external", "label": "Project Lead", "sublabel": "Browser Session" },
-    { "id": "ui", "type": "frontend", "label": "ProjectPulse UI", "sublabel": "DOM Event Loop" },
-    { "id": "sheetjs", "type": "backend", "label": "SheetJS Engine", "sublabel": "Binary Parser" },
-    { "id": "state", "type": "database", "label": "State Store 'P'", "sublabel": "In-Memory Schema" },
-    { "id": "storage", "type": "database", "label": "LocalStorage", "sublabel": "pp-data Key" }
+    {
+      "id": "user",
+      "type": "external",
+      "label": "Project Lead",
+      "sublabel": "Web or Mobile App"
+    },
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "ShareExportMenu",
+      "sublabel": "UI & Upload Drop",
+      "sources": [
+        {
+          "path": "src/components/shared/ShareExportMenu.tsx",
+          "line": 1,
+          "end_line": 60
+        }
+      ]
+    },
+    {
+      "id": "excel",
+      "type": "backend",
+      "label": "excelService",
+      "sublabel": "ExcelJS Builder",
+      "sources": [
+        {
+          "path": "src/services/excelService.ts",
+          "line": 3735,
+          "end_line": 4275
+        }
+      ]
+    },
+    {
+      "id": "store",
+      "type": "database",
+      "label": "ProjectContext",
+      "sublabel": "State + pp-data",
+      "sources": [
+        {
+          "path": "src/store/ProjectContext.tsx",
+          "line": 245,
+          "end_line": 260
+        }
+      ]
+    },
+    {
+      "id": "bridge",
+      "type": "backend",
+      "label": "saveBlob Router",
+      "sublabel": "Browser vs Capacitor",
+      "sources": [
+        {
+          "path": "src/utils/projectUtils.ts",
+          "line": 135,
+          "end_line": 185
+        }
+      ]
+    },
+    {
+      "id": "native",
+      "type": "external",
+      "label": "OS Share Sheet",
+      "sublabel": "iOS / Android Cache"
+    }
   ],
   "segments": [
-    { "from": 150, "to": 260, "label": "Excel File Drop" },
-    { "from": 270, "to": 390, "label": "Entity Reconciliation" },
-    { "from": 400, "to": 510, "label": "View Re-render" }
+    {
+      "from": 150,
+      "to": 265,
+      "label": "Excel Workbook Import"
+    },
+    {
+      "from": 275,
+      "to": 370,
+      "label": "Reactive Persistence"
+    },
+    {
+      "from": 380,
+      "to": 500,
+      "label": "Export & Native Share"
+    }
   ],
   "messages": [
-    { "id": "m1", "from": "pmo", "to": "ui", "y": 160, "label": "Drop Project_Plan.xlsx", "variant": "emphasis" },
-    { "id": "m2", "from": "ui", "to": "sheetjs", "y": 200, "label": "Pass ArrayBuffer workbook", "variant": "emphasis" },
-    { "id": "m3", "from": "sheetjs", "to": "state", "y": 250, "label": "Parsed Tasks, Deliveries, Defects", "variant": "return" },
-    { "id": "m4", "from": "state", "to": "storage", "y": 310, "label": "Commit updated 'P' to pp-data", "variant": "emphasis" },
-    { "id": "m5", "from": "storage", "to": "state", "y": 360, "label": "Storage flushed", "variant": "return" },
-    { "id": "m6", "from": "state", "to": "ui", "y": 420, "label": "Dispatch stateChange event", "variant": "emphasis" },
-    { "id": "m7", "from": "ui", "to": "pmo", "y": 475, "label": "Gantt, Deliveries & Health gauges refreshed", "variant": "return" }
+    {
+      "id": "s1",
+      "from": "user",
+      "to": "ui",
+      "y": 165,
+      "label": "Upload .xlsx database",
+      "variant": "default"
+    },
+    {
+      "id": "s2",
+      "from": "ui",
+      "to": "excel",
+      "y": 200,
+      "label": "importProjectExcel(file)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "s3",
+      "from": "excel",
+      "to": "store",
+      "y": 240,
+      "label": "Normalized entities + schema",
+      "variant": "return"
+    },
+    {
+      "id": "s4",
+      "from": "store",
+      "to": "ui",
+      "y": 310,
+      "label": "Commit pp-data & refresh KPIs",
+      "variant": "return"
+    },
+    {
+      "id": "s5",
+      "from": "user",
+      "to": "ui",
+      "y": 385,
+      "label": "Click Export Workbook",
+      "variant": "emphasis"
+    },
+    {
+      "id": "s6",
+      "from": "ui",
+      "to": "excel",
+      "y": 415,
+      "label": "Build multi-tab .xlsx Blob",
+      "variant": "emphasis"
+    },
+    {
+      "id": "s7",
+      "from": "excel",
+      "to": "bridge",
+      "y": 445,
+      "label": "saveBlob(blob, filename)",
+      "variant": "emphasis"
+    },
+    {
+      "id": "s8",
+      "from": "bridge",
+      "to": "native",
+      "y": 470,
+      "label": "Write Cache + Share.share()",
+      "variant": "dashed"
+    }
   ],
   "activations": [
-    { "participant": "ui", "from": 160, "to": 210, "type": "frontend" },
-    { "participant": "sheetjs", "from": 200, "to": 260, "type": "backend" },
-    { "participant": "state", "from": 250, "to": 430, "type": "database" },
-    { "participant": "ui", "from": 420, "to": 485, "type": "frontend" }
+    {
+      "participant": "ui",
+      "from": 165,
+      "to": 325,
+      "type": "frontend"
+    },
+    {
+      "participant": "excel",
+      "from": 195,
+      "to": 250,
+      "type": "backend"
+    },
+    {
+      "participant": "excel",
+      "from": 410,
+      "to": 455,
+      "type": "backend"
+    },
+    {
+      "participant": "bridge",
+      "from": 440,
+      "to": 480,
+      "type": "backend"
+    }
   ],
   "cards": [
-    { "dot": "emerald", "title": "Zero Loss Sync", "items": ["Reconciles external spreadsheet edits without clobbering local audit history", "Instant local storage commit guarantees durability across page reloads"] }
+    {
+      "dot": "emerald",
+      "title": "Lossless Multi-Tab Workbooks",
+      "items": [
+        "Exports 11-tab Master, 5-tab Feature Matrix, or 2-tab Deliveries Traceability workbooks",
+        "Data Dictionary tab preserves custom field definitions and dropdown option libraries across roundtrips",
+        "Capacitor platforms automatically bypass broken anchor downloads using Directory.Cache and Share.share()"
+      ]
+    }
   ]
 }

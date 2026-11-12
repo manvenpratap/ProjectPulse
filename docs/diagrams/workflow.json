@@ -2,43 +2,241 @@
   "schema_version": 2,
   "diagram_type": "workflow",
   "meta": {
-    "title": "ProjectPulse - Project Governance & Delivery Workflow",
+    "title": "ProjectPulse 2.0 \u2014 Enterprise ALM & Governance Workflow",
+    "output": "docs/diagrams/workflow.html",
     "animation": "trace",
     "visual_preset": "signal-flow",
     "quality_profile": "showcase",
-    "output": "workflow.html"
+    "repository": {
+      "url": "https://github.com/manvenpratap/ProjectPulse",
+      "revision": "b8d0b018d76b08d38bf5e46467efc39e5039a69c",
+      "link_mode": "local-only"
+    }
   },
   "lanes": [
-    { "id": "pmo", "label": "Project Governance" },
-    { "id": "execution", "label": "Task & Defect Engine" },
-    { "id": "delivery", "label": "Software Deliveries & Releases" },
-    { "id": "sync", "label": "Excel Sync & Storage" }
+    {
+      "id": "setup",
+      "label": "Onboarding & Auth"
+    },
+    {
+      "id": "plan",
+      "label": "Planning & Schema"
+    },
+    {
+      "id": "exec",
+      "label": "Execution & QA"
+    },
+    {
+      "id": "ship",
+      "label": "Delivery & Export"
+    }
   ],
   "phases": [
-    { "id": "p1", "label": "1. Plan", "fromCol": 0, "toCol": 1 },
-    { "id": "p2", "label": "2. Track", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
-    { "id": "p3", "label": "3. Deliver & Sync", "fromCol": 4, "toCol": 5 }
+    {
+      "id": "ph1",
+      "label": "1. Bootstrap",
+      "fromCol": 0,
+      "toCol": 1
+    },
+    {
+      "id": "ph2",
+      "label": "2. Execute & Triage",
+      "fromCol": 2,
+      "toCol": 3,
+      "variant": "emphasis"
+    },
+    {
+      "id": "ph3",
+      "label": "3. Gate & Distribute",
+      "fromCol": 4,
+      "toCol": 5
+    }
   ],
   "groups": [
-    { "id": "track_group", "label": "Execution & Milestones", "lane": "execution", "fromCol": 1, "toCol": 3, "variant": "emphasis" }
+    {
+      "id": "exec_grp",
+      "label": "Guarded State Machines",
+      "lane": "exec",
+      "fromCol": 2,
+      "toCol": 4,
+      "variant": "emphasis"
+    }
   ],
-  "mainPath": ["define_milestones", "schedule_gantt", "log_defects", "stage_deliveries", "export_excel", "persist_local"],
+  "mainPath": [
+    "auth",
+    "setup",
+    "scaffold",
+    "tasks",
+    "qa",
+    "deliver",
+    "export"
+  ],
   "nodes": [
-    { "id": "define_milestones", "lane": "pmo", "col": 0, "type": "frontend", "label": "Project Setup", "sublabel": "name, team, KPIs", "width": 140 },
-    { "id": "schedule_gantt", "lane": "execution", "col": 1, "type": "backend", "label": "Gantt Scheduler", "sublabel": "WBS & dependencies", "width": 140 },
-    { "id": "log_defects", "lane": "execution", "col": 2, "type": "backend", "label": "Defects & RAID", "sublabel": "risk & issue triage", "width": 140 },
-    { "id": "stage_deliveries", "lane": "delivery", "col": 3, "type": "backend", "label": "Deliveries & PDN", "sublabel": "release packaging", "tag": "ship gate", "width": 140 },
-    { "id": "export_excel", "lane": "sync", "col": 4, "type": "backend", "label": "SheetJS Sync", "sublabel": "bi-directional .xlsx", "width": 140 },
-    { "id": "persist_local", "lane": "sync", "col": 5, "type": "database", "label": "Local Flush", "sublabel": "localStorage & IndexedDB", "tag": "saved", "width": 140 }
+    {
+      "id": "auth",
+      "lane": "setup",
+      "col": 0,
+      "type": "security",
+      "label": "RBAC Sign-In",
+      "sublabel": "4 roles + custom overrides",
+      "width": 140,
+      "sources": [
+        {
+          "path": "src/store/AuthContext.tsx",
+          "line": 4,
+          "end_line": 70
+        }
+      ]
+    },
+    {
+      "id": "setup",
+      "lane": "setup",
+      "col": 1,
+      "type": "frontend",
+      "label": "Workspace Init",
+      "sublabel": "blank / demo / .xlsx load",
+      "width": 140,
+      "sources": [
+        {
+          "path": "src/components/layout/SetupView.tsx",
+          "line": 24,
+          "end_line": 75
+        }
+      ]
+    },
+    {
+      "id": "scaffold",
+      "lane": "plan",
+      "col": 1,
+      "type": "frontend",
+      "label": "Scaffolder & Matrix",
+      "sublabel": "releases, WBS, fields",
+      "width": 140,
+      "sources": [
+        {
+          "path": "src/components/architect/ScaffolderView.tsx",
+          "line": 38,
+          "end_line": 185
+        }
+      ]
+    },
+    {
+      "id": "tasks",
+      "lane": "exec",
+      "col": 2,
+      "type": "backend",
+      "label": "Tasks & Gantt",
+      "sublabel": "grid, board & blockers",
+      "width": 140,
+      "sources": [
+        {
+          "path": "src/components/tasks/TaskGrid.tsx",
+          "line": 123,
+          "end_line": 180
+        }
+      ]
+    },
+    {
+      "id": "qa",
+      "lane": "exec",
+      "col": 3,
+      "type": "backend",
+      "label": "Defects & RAID",
+      "sublabel": "triage & sign-off log",
+      "width": 140,
+      "sources": [
+        {
+          "path": "src/components/defects/DefectView.tsx",
+          "line": 127,
+          "end_line": 144
+        }
+      ]
+    },
+    {
+      "id": "deliver",
+      "lane": "ship",
+      "col": 4,
+      "type": "security",
+      "label": "ALM Deploy Gate",
+      "sublabel": "smoke + approval check",
+      "tag": "ship gate",
+      "width": 140,
+      "sources": [
+        {
+          "path": "src/utils/stateMachines.ts",
+          "line": 154,
+          "end_line": 205
+        }
+      ]
+    },
+    {
+      "id": "export",
+      "lane": "ship",
+      "col": 5,
+      "type": "database",
+      "label": "ExcelJS & Briefs",
+      "sublabel": "11-tab .xlsx, CXO & OS Share",
+      "tag": "saved",
+      "width": 140,
+      "sources": [
+        {
+          "path": "src/services/excelService.ts",
+          "line": 3735,
+          "end_line": 4150
+        }
+      ]
+    }
   ],
   "edges": [
-    { "id": "e1", "from": "define_milestones", "to": "schedule_gantt", "variant": "emphasis" },
-    { "id": "e2", "from": "schedule_gantt", "to": "log_defects", "variant": "default" },
-    { "id": "e3", "from": "log_defects", "to": "stage_deliveries", "label": "resolved fixes", "variant": "emphasis" },
-    { "id": "e4", "from": "stage_deliveries", "to": "export_excel", "label": "milestone status", "variant": "emphasis" },
-    { "id": "e5", "from": "export_excel", "to": "persist_local", "variant": "emphasis" }
+    {
+      "id": "w1",
+      "from": "auth",
+      "to": "setup",
+      "variant": "security"
+    },
+    {
+      "id": "w2",
+      "from": "setup",
+      "to": "scaffold",
+      "variant": "emphasis"
+    },
+    {
+      "id": "w3",
+      "from": "scaffold",
+      "to": "tasks",
+      "label": "generate WBS",
+      "variant": "emphasis"
+    },
+    {
+      "id": "w4",
+      "from": "tasks",
+      "to": "qa",
+      "label": "linked items"
+    },
+    {
+      "id": "w5",
+      "from": "qa",
+      "to": "deliver",
+      "label": "resolved scope",
+      "variant": "emphasis"
+    },
+    {
+      "id": "w6",
+      "from": "deliver",
+      "to": "export",
+      "label": "PDN & reports",
+      "variant": "emphasis"
+    }
   ],
   "cards": [
-    { "dot": "emerald", "title": "Comprehensive Project Tracking", "items": ["Connects tasks, defects, RAID items, and software deliveries into unified KPIs", "Automatic export to Excel allows sharing with stakeholders without tool lock-in"] }
+    {
+      "dot": "emerald",
+      "title": "Unified Delivery Governance",
+      "items": [
+        "Every phase honors role permissions evaluated by resolveSessionPhase",
+        "Deployment pipeline requires Approved/Not Required sign-off and passing Smoke Gate",
+        "Sprint Retro action items can promote directly into live tracked engineering tasks"
+      ]
+    }
   ]
 }

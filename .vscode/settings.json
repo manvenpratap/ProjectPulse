@@ -1,4 +1,4 @@
 {
-  "typescript.tsserver.experimental.enableProjectDiagnostics": true
+  "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+  "java.configuration.updateBuildConfiguration": "automatic"
 }
-

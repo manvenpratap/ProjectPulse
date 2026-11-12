@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "ced69dc1-db03-4399-8298-119cd71c3b75",
+  "status": "current",
+  "command": "deliver",
+  "type": "sequence",
+  "input": "/Volumes/Study/Projects/ProjectPulse 2.0/docs/diagrams/sequence.json",
+  "output": "/Volumes/Study/Projects/ProjectPulse 2.0/docs/diagrams/sequence.html",
+  "specification": {
+    "sha256": "01ff1d6c08ced5608d02d7419f866cecd8d2eeec801fa6f0caeea26721708f9c",
+    "bytes": 4395
+  },
+  "artifact": {
+    "sha256": "c2d41ef75964b36a47eb2813f86274ed9aabf086ca57682ec5bf0339bd1318f8",
+    "bytes": 757026
+  }
+}

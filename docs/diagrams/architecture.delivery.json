@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "abfd4712-1b9f-4fd2-8c02-5b77b05497cb",
+  "status": "current",
+  "command": "deliver",
+  "type": "architecture",
+  "input": "/Volumes/Study/Projects/ProjectPulse 2.0/docs/diagrams/architecture.json",
+  "output": "/Volumes/Study/Projects/ProjectPulse 2.0/docs/diagrams/architecture.html",
+  "specification": {
+    "sha256": "0ee4530cac3f0d9fc4c498f36853453a45acbc2ee1d49c80fa82e5ed148c4460",
+    "bytes": 6673
+  },
+  "artifact": {
+    "sha256": "0964d949e4b880b0ab674c80cf4b627abec444cd2329cd10a478902ccea0a141",
+    "bytes": 763060
+  }
+}

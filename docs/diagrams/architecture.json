@@ -2,33 +2,307 @@
   "schema_version": 1,
   "diagram_type": "architecture",
   "meta": {
-    "title": "ProjectPulse - Monolithic Workstation Architecture",
-    "output": "architecture.html",
-    "quality_profile": "showcase"
+    "title": "ProjectPulse 2.0 \u2014 Cross-Platform Workstation Architecture",
+    "output": "docs/diagrams/architecture.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/manvenpratap/ProjectPulse",
+      "revision": "b8d0b018d76b08d38bf5e46467efc39e5039a69c",
+      "link_mode": "local-only"
+    }
   },
   "components": [
-    { "id": "pmo_user", "type": "external", "label": "Project Manager", "sublabel": "Browser Cockpit", "pos": [40, 260], "size": [140, 60] },
-    { "id": "spa_core", "type": "frontend", "label": "ProjectPulse SPA", "sublabel": "projectpulse.html (~80k LOC)", "pos": [280, 260], "size": [140, 60], "tag": "Vanilla JS" },
-    { "id": "state_p", "type": "database", "label": "Global State 'P'", "sublabel": "Tasks, Deliveries, RAID", "pos": [520, 260], "size": [140, 60], "tag": "Reactive" },
-    { "id": "views_gantt", "type": "frontend", "label": "Gantt & Deliveries", "sublabel": "Milestones & PDN Release", "pos": [520, 110], "size": [140, 60] },
-    { "id": "theme_engine", "type": "frontend", "label": "20 Curated Themes", "sublabel": "Light / Dark Overrides", "pos": [520, 410], "size": [140, 60] },
-    { "id": "excel_sync", "type": "backend", "label": "Excel Sync Engine", "sublabel": "Bi-directional SheetJS", "pos": [780, 180], "size": [140, 60] },
-    { "id": "local_storage", "type": "database", "label": "Offline Persistence", "sublabel": "localStorage & IndexedDB", "pos": [780, 340], "size": [140, 60] }
+    {
+      "id": "desktop_web",
+      "type": "external",
+      "label": "Desktop & Safari Web",
+      "sublabel": "Browser + LAN QR Launch",
+      "pos": [
+        40,
+        230
+      ],
+      "size": [
+        155,
+        64
+      ],
+      "sources": [
+        {
+          "path": "src/components/shared/MobileLaunchQrModal.tsx",
+          "line": 35,
+          "end_line": 100
+        }
+      ]
+    },
+    {
+      "id": "native_mobile",
+      "type": "external",
+      "label": "iOS & Android Shells",
+      "sublabel": "Capacitor 8 WebView",
+      "pos": [
+        40,
+        390
+      ],
+      "size": [
+        155,
+        64
+      ],
+      "tag": "SPM / Gradle",
+      "sources": [
+        {
+          "path": "capacitor.config.ts",
+          "line": 1,
+          "end_line": 19
+        }
+      ]
+    },
+    {
+      "id": "rbac_gate",
+      "type": "security",
+      "label": "Auth & Session Gate",
+      "sublabel": "4-Persona RBAC Guard",
+      "pos": [
+        320,
+        230
+      ],
+      "size": [
+        155,
+        64
+      ],
+      "sources": [
+        {
+          "path": "src/store/AuthContext.tsx",
+          "line": 4,
+          "end_line": 70
+        },
+        {
+          "path": "src/App.tsx",
+          "line": 161,
+          "end_line": 190
+        }
+      ]
+    },
+    {
+      "id": "react_ui",
+      "type": "frontend",
+      "label": "React 19 Workstation",
+      "sublabel": "19 Views \u00b7 40 Themes",
+      "pos": [
+        600,
+        230
+      ],
+      "size": [
+        165,
+        64
+      ],
+      "sources": [
+        {
+          "path": "src/config/navigation.ts",
+          "line": 54,
+          "end_line": 272
+        },
+        {
+          "path": "src/App.tsx",
+          "line": 180,
+          "end_line": 205
+        }
+      ]
+    },
+    {
+      "id": "state_engine",
+      "type": "backend",
+      "label": "State & Guard Engine",
+      "sublabel": "ProjectContext + FSMs",
+      "pos": [
+        890,
+        230
+      ],
+      "size": [
+        165,
+        64
+      ],
+      "tag": "Typed Guards",
+      "sources": [
+        {
+          "path": "src/utils/stateMachines.ts",
+          "line": 1,
+          "end_line": 319
+        },
+        {
+          "path": "src/store/ProjectContext.tsx",
+          "line": 316,
+          "end_line": 360
+        }
+      ]
+    },
+    {
+      "id": "local_db",
+      "type": "database",
+      "label": "Local Browser Store",
+      "sublabel": "localStorage (pp-data)",
+      "pos": [
+        890,
+        60
+      ],
+      "size": [
+        165,
+        60
+      ],
+      "sources": [
+        {
+          "path": "src/store/ProjectContext.tsx",
+          "line": 130,
+          "end_line": 255
+        }
+      ]
+    },
+    {
+      "id": "excel_io",
+      "type": "backend",
+      "label": "ExcelJS + Share Bridge",
+      "sublabel": ".xlsx & Native OS Share",
+      "pos": [
+        890,
+        390
+      ],
+      "size": [
+        165,
+        64
+      ],
+      "sources": [
+        {
+          "path": "src/services/excelService.ts",
+          "line": 1209,
+          "end_line": 4797
+        },
+        {
+          "path": "src/utils/projectUtils.ts",
+          "line": 135,
+          "end_line": 183
+        }
+      ]
+    },
+    {
+      "id": "express_api",
+      "type": "backend",
+      "label": "Express Node Server",
+      "sublabel": "/api/analyze & /api/network-info",
+      "pos": [
+        1180,
+        230
+      ],
+      "size": [
+        175,
+        64
+      ],
+      "tag": "On-Device Fallback",
+      "sources": [
+        {
+          "path": "server.ts",
+          "line": 36,
+          "end_line": 85
+        },
+        {
+          "path": "src/services/aiService.ts",
+          "line": 54,
+          "end_line": 82
+        }
+      ]
+    }
   ],
   "boundaries": [
-    { "kind": "region", "label": "Browser Local-First Sandbox (Zero Server Required)", "wraps": ["spa_core", "state_p", "views_gantt", "theme_engine", "excel_sync", "local_storage"] },
-    { "kind": "security-group", "label": "State & Persistence Layer", "wraps": ["state_p", "local_storage"] }
+    {
+      "kind": "region",
+      "label": "Client Runtime (Web SPA + Capacitor 8 Native WebView)",
+      "wraps": [
+        "rbac_gate",
+        "react_ui",
+        "state_engine",
+        "local_db",
+        "excel_io"
+      ]
+    },
+    {
+      "kind": "security-group",
+      "label": "RBAC & Typed State Enforcement",
+      "wraps": [
+        "rbac_gate",
+        "state_engine"
+      ]
+    }
   ],
   "connections": [
-    { "id": "c1", "from": "pmo_user", "to": "spa_core", "label": "interactive edit", "variant": "emphasis" },
-    { "id": "c2", "from": "spa_core", "to": "views_gantt", "fromSide": "top", "toSide": "left" },
-    { "id": "c3", "from": "spa_core", "to": "state_p", "label": "mutate state", "variant": "emphasis" },
-    { "id": "c4", "from": "spa_core", "to": "theme_engine", "fromSide": "bottom", "toSide": "left" },
-    { "id": "c5", "from": "state_p", "to": "excel_sync", "label": "bi-directional", "variant": "emphasis" },
-    { "id": "c6", "from": "state_p", "to": "local_storage", "fromSide": "bottom", "toSide": "left" }
+    {
+      "id": "c-web-auth",
+      "from": "desktop_web",
+      "to": "rbac_gate",
+      "label": "HTTPS / LAN HTTP",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c-mob-auth",
+      "from": "native_mobile",
+      "to": "rbac_gate",
+      "label": "Capacitor bridge",
+      "fromSide": "right",
+      "toSide": "bottom"
+    },
+    {
+      "id": "c-auth-ui",
+      "from": "rbac_gate",
+      "to": "react_ui",
+      "label": "resolveSessionPhase",
+      "variant": "security"
+    },
+    {
+      "id": "c-ui-fsm",
+      "from": "react_ui",
+      "to": "state_engine",
+      "label": "guarded mutations",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c-fsm-ls",
+      "from": "state_engine",
+      "to": "local_db",
+      "label": "sync state",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "c-fsm-excel",
+      "from": "state_engine",
+      "to": "excel_io",
+      "label": "workbook export",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "variant": "emphasis"
+    },
+    {
+      "id": "c-fsm-api",
+      "from": "state_engine",
+      "to": "express_api",
+      "label": "REST + fallback",
+      "variant": "dashed"
+    }
   ],
   "cards": [
-    { "dot": "emerald", "title": "Zero-Server Monolith", "items": ["Runs 100% in any modern browser without web server or backend API", "Single-file HTML with ~80,800 lines of Vanilla JS, CSS, and HTML5"] },
-    { "dot": "cyan", "title": "Enterprise Synchronization", "items": ["Bi-directional Excel workbook synchronization for project schedules", "Instant offline persistence to localStorage (`pp-data`) and IndexedDB"] }
+    {
+      "dot": "cyan",
+      "title": "Unified React 19 + Mobile Shell",
+      "items": [
+        "19 governance views organized into 6 workflow hubs with 40 curated themes",
+        "Capacitor 8 wraps dist/ into native iOS (ProjectPulse.app) and Android (APK) with safe-area support",
+        "Desktop QR launcher discovers LAN IPv4 addresses via /api/network-info for one-scan iPhone Safari boot"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Local-First Resilience & Guards",
+      "items": [
+        "Zero-server localStorage persistence (pp-data + draft auto-recovery) works 100% offline",
+        "Explicit stateMachines.ts validates task blockers, delivery sign-off gates, and subtask rollups",
+        "Native exports route through @capacitor/filesystem + OS Share Sheet via saveBlob"
+      ]
+    }
   ]
 }

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "a75c725b-c03b-4fad-a7b6-e0282b9efa21",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "/Volumes/Study/Projects/ProjectPulse 2.0/docs/diagrams/workflow.json",
+  "output": "/Volumes/Study/Projects/ProjectPulse 2.0/docs/diagrams/workflow.html",
+  "specification": {
+    "sha256": "57def587b0dc98ae392857094571d024d76b284b61e641dba0d0bd2f00e493d4",
+    "bytes": 5044
+  },
+  "artifact": {
+    "sha256": "a05e858d3948d48309c36c9a17da3dfc563ead515292aa436b7eef0933a21ba1",
+    "bytes": 757736
+  }
+}

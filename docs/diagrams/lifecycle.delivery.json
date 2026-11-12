@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "4afd9553-5465-4107-bd2e-07bf1d76086c",
+  "status": "current",
+  "command": "deliver",
+  "type": "lifecycle",
+  "input": "/Volumes/Study/Projects/ProjectPulse 2.0/docs/diagrams/lifecycle.json",
+  "output": "/Volumes/Study/Projects/ProjectPulse 2.0/docs/diagrams/lifecycle.html",
+  "specification": {
+    "sha256": "a86aaa9a5110ffabaf101b88d79f255ab3f1e6093791e5fdbd1579d13f6feae1",
+    "bytes": 5080
+  },
+  "artifact": {
+    "sha256": "816b91428e40ccb2d0f4eaba71e98a897e41e3e0b63fca37bc002cbb97a5a6ab",
+    "bytes": 763814
+  }
+}

@@ -1,11 +1,13 @@
 # ProjectPulse 2.0
 
 > **Enterprise Local-First Project Management Workstation**  
-> High-performance React 19 + TypeScript + Framer Motion project management cockpit. Built as an advanced, componentized upgrade to the single-HTML workstation, featuring 26+ curated themes, bi-directional multi-sheet Excel synchronization, offline local storage persistence, interactive SVG & Gantt scheduling, Release Roadmap governance, and software delivery tracking.
+> High-performance React 19 + TypeScript + Tailwind CSS v4 project management cockpit. Built as a componentized, local-first cross-platform suite featuring 40 curated themes, 13 explicit finite state machines, bi-directional multi-sheet ExcelJS synchronization, offline local storage persistence, interactive SVG & Gantt scheduling, Release Roadmap governance, native iOS/Android Capacitor 8 apps, and Desktop-to-Mobile Safari QR launching.
 
 ---
 
-## 🏛️ System Architecture & Compiled Diagrams
+## 🏛️ System Architecture, Diagrams & Enterprise Manual
+
+* 📘 **Full 3-in-1 Capability, End-User & Technical Manual (.docx)**: [**ProjectPulse 2.0 Product Capability & Specification Manual**](./docs/ProjectPulse_2.0_Product_Capability_and_Specification_Manual.docx)
 
 ProjectPulse architecture, delivery workflows, synchronization sequences, data pipelines, and workstation lifecycles are formally modeled and compiled via [Archify](https://github.com/tt-a1i/archify):
 
@@ -90,7 +92,8 @@ npm run mobile:ios:sim
 
 ```
 ProjectPulse 2.0/
-├── docs/                        # Compiled Archify diagrams, specs & manuals
+├── docs/                        # Compiled Archify diagrams, specs & Enterprise .docx Manual
+│   ├── ProjectPulse_2.0_Product_Capability_and_Specification_Manual.docx
 │   └── diagrams/                # 5 core Archify diagrams (.html + .json)
 ├── wiki/                        # Markdown wiki documentation with vector diagrams
 ├── src/

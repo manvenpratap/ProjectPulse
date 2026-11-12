@@ -1,20 +1,21 @@
-# Welcome to the ProjectPulse Wiki
+# Welcome to the ProjectPulse 2.0 Wiki
 
-> **Mission**: Local-first, zero-server project governance cockpit and Excel synchronization engine.
+> **Mission**: Local-first, offline-resilient enterprise ALM governance cockpit, ExcelJS synchronization engine, and cross-platform workstation (Web, Mobile Safari QR, iOS, Android).
 
-This wiki serves as the authoritative, zero-bloat engineering and system architecture documentation for **ProjectPulse**.
+This wiki serves as the authoritative engineering and system architecture documentation for **ProjectPulse 2.0** (`com.projectpulse.app`, React 19 + TypeScript + ExcelJS + Capacitor 8).
 
 ---
 
 ## 📚 Core Documentation
 
-* 📐 **[Architecture & System Design](Architecture-and-System-Design)**: Native embedded vector diagrams detailing System Architecture, Core Workflows, Interaction Sequences, Data Flow Pipelines, and Application Lifecycles.
-* 🚀 **[Getting Started](Home)**: Fast path for running, verifying, and developing locally.
+* 📘 **[Product Capability, End-User & Technical Specification Manual (.docx)](../docs/ProjectPulse_2.0_Product_Capability_and_Specification_Manual.docx)**: Complete 10-chapter Word manual featuring executive capabilities, screen-by-screen user walkthroughs, health & EVM formulas, RBAC permissions, all 13 finite state machines, live screenshots, charts, and mobile build verification.
+* 📐 **[Architecture & System Design](Architecture-and-System-Design)**: Native embedded Mermaid vector diagrams mirroring the 5 compiled ProjectPulse 2.0 Archify specs (`architecture`, `workflow`, `sequence`, `dataflow`, `lifecycle`).
+* 🚀 **[Repository Root & Quickstart](../README.md)**: Local development (`npm run dev`), production builds, and Capacitor mobile builds (`mobile:android:apk`, `mobile:ios:sim`).
 
 ---
 
-## ⚡ Key Highlights
+## ⚡ Key Architectural Pillars
 
-1. **Native Embedded Visualizations**: All architectural diagrams are rendered natively via GitHub-supported Mermaid syntax with zero external web view or broken link dependencies.
-2. **Offline-First & Local-First**: Engineered to run locally without cloud latency or third-party tracking.
-3. **Verified Quality**: Every layer is backed by automated deterministic test suites.
+1. **Deterministic Explicit State Machines**: Task dependency locks, ALM PDN 4-axis deploy gates, defect cycling, and session resolution (`resolveSessionPhase`) live cleanly in `src/utils/stateMachines.ts`.
+2. **Round-Trip ExcelJS Engine**: Bi-directional multi-worksheet workbook import/export (`src/services/excelService.ts`) with theme-aware formatting and native mobile Share Sheet handoff (`saveBlob`).
+3. **40 Themes & Zero-Clipping Responsive UI**: WCAG-guarded `getContrastInk`, View Transitions iris animations, collapsible KPI strips, and responsive desktop/mobile parity.
