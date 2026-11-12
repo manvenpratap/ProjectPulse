@@ -4,6 +4,8 @@ import { Check, Search, Sparkles, Palette } from 'lucide-react';
 import { motion } from 'motion/react';
 import clsx from 'clsx';
 import { runCircularThemeTransition } from '../../utils/designSpells';
+import { getHealthScore } from '../../utils/projectUtils';
+import { Task, TaskStatus } from '../../types';
 
 export type ThemeBackdropEffect = 'dots' | 'glass' | 'aura' | 'hud' | 'brutal' | 'editorial' | 'bento' | 'clean';
 
@@ -881,22 +883,67 @@ export const LIGHT_MAP: Record<string, string> = {
   'nova-dark': 'nova'
 };
 
+export interface PreviewMetrics {
+  health: number;
+  healthStatus: string;
+  completionPct: number;
+  bars: number[];
+}
+
+export const computePreviewMetrics = (tasks?: Task[]): PreviewMetrics => {
+  if (!tasks || tasks.length === 0) {
+    return {
+      health: 94,
+      healthStatus: 'Ready',
+      completionPct: 68,
+      bars: [42, 64, 52, 88, 76]
+    };
+  }
+  const health = getHealthScore(tasks);
+  const completedCount = tasks.filter(t => t.status === TaskStatus.COMPLETED).length;
+  const completionPct = Math.round((completedCount / tasks.length) * 100);
+  const healthStatus = health > 80 ? 'On Track' : health > 50 ? 'At Risk' : 'Critical';
+
+  // Compute 5 module/status bucket bars normalized between 28% and 92%
+  const modCounts = new Map<string, number>();
+  tasks.forEach(t => {
+    const key = t.module || 'Core';
+    modCounts.set(key, (modCounts.get(key) || 0) + 1);
+  });
+  const topCounts = Array.from(modCounts.values()).slice(0, 5);
+  const maxVal = Math.max(1, ...topCounts);
+  const bars = [0, 1, 2, 3, 4].map(i => {
+    const count = topCounts[i] ?? Math.max(1, Math.round(maxVal * (0.45 + (i % 3) * 0.18)));
+    return Math.max(28, Math.min(92, Math.round((count / maxVal) * 86)));
+  });
+
+  return { health, healthStatus, completionPct, bars };
+};
+
 export interface ThemePreviewStageProps {
   theme: ThemeDef;
   variant?: 'card' | 'hero';
   compact?: boolean;
+  metrics?: PreviewMetrics;
+  projectTitle?: string;
 }
 
 /**
  * Miniature ProjectPulse application viewport accurately depicting the theme's
  * real surfaces, dot-matrix/glass/HUD/brutalist chrome, border radius, shadow physics,
- * display typography, sparkline telemetry, and button contrast.
+ * display typography, live workspace telemetry, and button contrast.
  */
 export const ThemePreviewStage: React.FC<ThemePreviewStageProps> = ({
   theme: t,
   variant = 'card',
-  compact = false
+  compact = false,
+  metrics,
+  projectTitle
 }) => {
+  const m = metrics || computePreviewMetrics();
+  const stageTitle = variant === 'hero'
+    ? (projectTitle?.trim() || 'Overview')
+    : 'Overview';
   const isHero = variant === 'hero';
   const isBrutal = t.effect === 'brutal';
   const isGlass = t.effect === 'glass';
@@ -1107,7 +1154,7 @@ export const ThemePreviewStage: React.FC<ThemePreviewStageProps> = ({
               )}
               style={{ fontFamily: t.font, color: t.text }}
             >
-              Titan Q4
+              {stageTitle}
             </span>
             {isHero && (
               <span
@@ -1119,7 +1166,7 @@ export const ThemePreviewStage: React.FC<ThemePreviewStageProps> = ({
                   border: `1px solid ${t.border}`
                 }}
               >
-                Cockpit
+                Overview
               </span>
             )}
           </div>
@@ -1138,7 +1185,7 @@ export const ThemePreviewStage: React.FC<ThemePreviewStageProps> = ({
               boxShadow: isBrutal ? '1.5px 1.5px 0px #ffffff' : undefined
             }}
           >
-            {isHero ? '+ Action' : 'Sync'}
+            {isHero ? '+ New Task' : '+ New'}
           </span>
         </div>
 
@@ -1183,16 +1230,16 @@ export const ThemePreviewStage: React.FC<ThemePreviewStageProps> = ({
                     )}
                     style={{ fontFamily: t.font, color: t.text }}
                   >
-                    88%
+                    {m.health}%
                   </span>
                   <span
                     className={clsx(
-                      'font-mono font-bold leading-none',
+                      'font-mono font-bold leading-none truncate',
                       isHero ? 'text-[8px]' : 'text-[6.5px]'
                     )}
                     style={{ color: t.accent2 }}
                   >
-                    +4%
+                    {m.healthStatus}
                   </span>
                 </div>
               </div>
@@ -1215,11 +1262,11 @@ export const ThemePreviewStage: React.FC<ThemePreviewStageProps> = ({
               )}
             >
               {[
-                { h: '42%', fill: t.surface2, border: true },
-                { h: '64%', fill: t.accent2, border: false },
-                { h: '52%', fill: t.surface2, border: true },
-                { h: '88%', fill: t.primary, border: false },
-                { h: '76%', fill: t.primary, border: false, faint: true }
+                { h: `${m.bars[0]}%`, fill: t.surface2, border: true },
+                { h: `${m.bars[1]}%`, fill: t.accent2, border: false },
+                { h: `${m.bars[2]}%`, fill: t.surface2, border: true },
+                { h: `${m.bars[3]}%`, fill: t.primary, border: false },
+                { h: `${m.bars[4]}%`, fill: t.primary, border: false, faint: true }
               ].map((bar, i) => (
                 <div
                   key={i}
@@ -1236,9 +1283,9 @@ export const ThemePreviewStage: React.FC<ThemePreviewStageProps> = ({
             </div>
           </div>
 
-          {/* Right Span-5: Sprint Meter + Nested Surface2 Task Stack */}
+          {/* Right Span-5: Completion Meter + Nested Surface2 Task Stack */}
           <div className="col-span-5 flex flex-col gap-1.5 min-w-0 min-h-0">
-            {/* Sprint Velocity Meter Card */}
+            {/* Completion Meter Card */}
             <div
               className={clsx(
                 'flex-1 flex flex-col justify-between min-w-0',
@@ -1261,7 +1308,7 @@ export const ThemePreviewStage: React.FC<ThemePreviewStageProps> = ({
                   )}
                   style={{ color: t.textMuted }}
                 >
-                  Sprint
+                  Scope
                 </span>
                 <span
                   className={clsx(
@@ -1270,7 +1317,7 @@ export const ThemePreviewStage: React.FC<ThemePreviewStageProps> = ({
                   )}
                   style={{ color: t.text }}
                 >
-                  72%
+                  {m.completionPct}%
                 </span>
               </div>
 
@@ -1283,8 +1330,9 @@ export const ThemePreviewStage: React.FC<ThemePreviewStageProps> = ({
                 }}
               >
                 <div
-                  className="h-full w-[72%] transition-all duration-200 group-hover:w-[82%]"
+                  className="h-full transition-all duration-200"
                   style={{
+                    width: `${Math.max(8, m.completionPct)}%`,
                     backgroundColor: t.primary,
                     borderRadius: isBrutal ? 0 : 99
                   }}
@@ -1354,6 +1402,7 @@ export const ThemeGrid: React.FC<ThemeGridProps> = ({
 }) => {
   const { state, setTheme } = useProject();
   const currentThemeId = selectedTheme || state.theme;
+  const previewMetrics = useMemo(() => computePreviewMetrics(state.tasks), [state.tasks]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [activeFilter, setActiveFilter] = useState<ThemeFilterCategory>('all');
@@ -1431,7 +1480,13 @@ export const ThemeGrid: React.FC<ThemeGridProps> = ({
         }}
       >
         {/* Miniature Live UI Preview Stage (unobstructed) */}
-        <ThemePreviewStage theme={t} variant="card" compact={compact} />
+        <ThemePreviewStage
+          theme={t}
+          variant="card"
+          compact={compact}
+          metrics={previewMetrics}
+          projectTitle={state.projectName}
+        />
 
         {/* Theme-Native Details Footer */}
         <div

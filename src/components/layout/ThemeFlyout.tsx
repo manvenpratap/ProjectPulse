@@ -3,7 +3,7 @@ import { useProject } from '../../store/ProjectContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Check, Sun, Moon, Star, Palette } from 'lucide-react';
 import clsx from 'clsx';
-import { THEMES, ThemeDef, DARK_MAP, LIGHT_MAP, ThemeGrid, ThemePreviewStage, getContrastInk } from '../shared/ThemeGrid';
+import { THEMES, ThemeDef, DARK_MAP, LIGHT_MAP, ThemeGrid, ThemePreviewStage, getContrastInk, computePreviewMetrics } from '../shared/ThemeGrid';
 import { runCircularThemeTransition } from '../../utils/designSpells';
 
 // Re-export ThemeDef for backward compatibility with existing callers
@@ -18,6 +18,7 @@ interface ThemeFlyoutProps {
 const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
   const { state, setTheme } = useProject();
   const [hoveredTheme, setHoveredTheme] = useState<ThemeDef | null>(null);
+  const previewMetrics = useMemo(() => computePreviewMetrics(state.tasks), [state.tasks]);
 
   // Read initial color-mode
   const [colorMode, setColorMode] = useState<'light' | 'dark'>(() => {
@@ -141,7 +142,12 @@ const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
                 }}
               >
                 {/* Live interactive scaled viewport */}
-                <ThemePreviewStage theme={displayedTheme} variant="hero" />
+                <ThemePreviewStage
+                  theme={displayedTheme}
+                  variant="hero"
+                  metrics={previewMetrics}
+                  projectTitle={state.projectName}
+                />
 
                 {/* Theme Specification Footer */}
                 <div

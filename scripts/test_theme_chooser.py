@@ -51,11 +51,12 @@ def test_theme_chooser():
         search_input.fill("nova")
         time.sleep(0.3)
 
-        # Verify Nova appears with miniature cockpit preview
+        # Verify Nova appears with miniature cockpit preview (using live workspace telemetry, not hardcoded 'Titan Q4')
         nova_card = dialog.locator('div[role="button"]:has-text("Nova")').first
         assert nova_card.is_visible(), "Nova theme card should appear in search results"
         nova_text = nova_card.inner_text()
-        assert "Titan Q4" in nova_text, f"Theme card should render miniature UI preview, got: {nova_text}"
+        assert "Titan Q4" not in nova_text, f"Theme card preview must not hardcode 'Titan Q4', got: {nova_text}"
+        assert "Overview" in nova_text, f"Theme card should render miniature UI preview, got: {nova_text}"
         assert "HEALTH" in nova_text.upper(), f"Theme card should render miniature KPI widget preview, got: {nova_text}"
         print("✓ Search for 'nova' returned Nova theme with live cockpit preview")
 
