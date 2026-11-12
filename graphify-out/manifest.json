@@ -968,7 +968,7 @@
     "hash": "18994050e093ed339802aa8b0bbc1fba"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/defects/DefectView.tsx": {
-    "mtime": 1794511764.0719514,
+    "mtime": 1794512562.6833677,
     "hash": "4ba62a8a317f166f0f0343df93f41f3a"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/defects/DefectModal.tsx": {
@@ -1052,8 +1052,8 @@
     "hash": "064ed56e89905033fd1f1848523b0d60"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/StepTemplates.tsx": {
-    "mtime": 1794511259.4540744,
-    "hash": "bc18bb423e5a0e0c58cba08f70165780"
+    "mtime": 1794513934.3508942,
+    "hash": "f4576456dd0370a7f750158fecd37200"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/FieldArchitect.tsx": {
     "mtime": 1794501790.9749668,
@@ -1088,7 +1088,7 @@
     "hash": "703e3c090e68d0953c376dc8fec30bbf"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/deliveries/DeliveriesView.tsx": {
-    "mtime": 1794512118.5066745,
+    "mtime": 1794512562.8521214,
     "hash": "39045a9fe1e3c5941a63958ff5a5a8c4"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/hooks/useClickOutside.ts": {

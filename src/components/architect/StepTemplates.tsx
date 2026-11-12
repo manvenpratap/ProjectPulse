@@ -41,6 +41,8 @@ import SectionHelpButton from '../shared/SectionHelpButton';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import Modal from '../shared/Modal';
 import ConfirmModal from '../shared/ConfirmModal';
+import DataTable, { ColumnDef, DensityMode } from '../shared/DataTable';
+import TablePagination, { usePagination } from '../shared/TablePagination';
 import { toast } from '../../utils/toast';
 import { motion, AnimatePresence } from 'motion/react';
 import { todayStr } from '../../utils/projectUtils';
@@ -259,6 +261,9 @@ const StepTemplates: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
+  const [density, setDensity] = useState<DensityMode>('comfortable');
+  const [sortBy, setSortBy] = useState<string>('name');
+  const [sortAsc, setSortAsc] = useState<boolean>(true);
   const [isPresetsOpen, setIsPresetsOpen] = useState<boolean>(false);
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
   const [deleteTargetIdx, setDeleteTargetIdx] = useState<number | null>(null);
@@ -286,6 +291,39 @@ const StepTemplates: React.FC = () => {
       return matchesSearch && matchesCategory;
     });
   }, [templates, searchQuery, selectedCategory]);
+
+  // Sorted Templates for Deterministic Ordering and Table Sorting
+  const sortedTemplates = useMemo(() => {
+    return [...filteredTemplates].sort((a, b) => {
+      let aVal: any = '';
+      let bVal: any = '';
+
+      if (sortBy === 'name') {
+        aVal = a.name.toLowerCase();
+        bVal = b.name.toLowerCase();
+      } else if (sortBy === 'category') {
+        aVal = a.category.toLowerCase();
+        bVal = b.category.toLowerCase();
+      } else if (sortBy === 'steps') {
+        aVal = a.steps.length;
+        bVal = b.steps.length;
+      } else if (sortBy === 'effort') {
+        aVal = a.steps.reduce((sum, s) => sum + (Number(s.effort) || 0), 0);
+        bVal = b.steps.reduce((sum, s) => sum + (Number(s.effort) || 0), 0);
+      } else if (sortBy === 'linkedTasks') {
+        const aCount = state.tasks.filter(t => t.category === a.category || (a.category === 'GUI Screen' && ((t.subtasks && t.subtasks.some(st => st.type === 'screen')) || (t.guiScreens && t.guiScreens.length > 0)))).length;
+        const bCount = state.tasks.filter(t => t.category === b.category || (b.category === 'GUI Screen' && ((t.subtasks && t.subtasks.some(st => st.type === 'screen')) || (t.guiScreens && t.guiScreens.length > 0)))).length;
+        aVal = aCount;
+        bVal = bCount;
+      }
+
+      if (aVal < bVal) return sortAsc ? -1 : 1;
+      if (aVal > bVal) return sortAsc ? 1 : -1;
+      return 0;
+    });
+  }, [filteredTemplates, sortBy, sortAsc, state.tasks]);
+
+  const pagination = usePagination<StepTemplate>(sortedTemplates, 10, 'pp_page_size_step_blueprints');
 
   // Operational Telemetry Metrics
   const totalSteps = useMemo(() => {
@@ -374,6 +412,210 @@ const StepTemplates: React.FC = () => {
     setCopiedIndex(idx);
     setTimeout(() => setCopiedIndex(null), 2000);
   };
+
+  const columns = useMemo<ColumnDef<StepTemplate>[]>(() => [
+    {
+      id: 'name',
+      header: 'Blueprint Name',
+      headerTitle: 'Standardized operational blueprint name and scope',
+      sortable: true,
+      sortKey: 'name',
+      width: 'w-52 min-w-[180px]',
+      cell: (tpl) => {
+        const meta = getCategoryMeta(tpl.category);
+        const IconComponent = meta.icon;
+        const totalEffort = tpl.steps.reduce((s, st) => s + (Number(st.effort) || 0), 0);
+        return (
+          <div className="flex items-center gap-2.5 py-1 min-w-0">
+            <div className={clsx("w-8 h-8 rounded-xl flex items-center justify-center border shadow-2xs shrink-0", meta.bg, meta.color, meta.border)}>
+              <IconComponent size={15} />
+            </div>
+            <div className="min-w-0">
+              <div className="font-bold text-xs text-[var(--color-text)] hover:text-[var(--color-primary-hex)] transition-colors leading-snug truncate" title={tpl.name}>
+                {tpl.name}
+              </div>
+              <div className="text-[10px] text-[var(--color-text-muted)] flex items-center gap-1.5 mt-0.5">
+                <span>{tpl.steps.length} {tpl.steps.length === 1 ? 'phase' : 'phases'}</span>
+                <span>·</span>
+                <span>{totalEffort}d total</span>
+              </div>
+            </div>
+          </div>
+        );
+      }
+    },
+    {
+      id: 'category',
+      header: 'Category',
+      headerTitle: 'Task category governed by this blueprint',
+      sortable: true,
+      sortKey: 'category',
+      width: 'w-36',
+      cell: (tpl) => {
+        const meta = getCategoryMeta(tpl.category);
+        const IconComponent = meta.icon;
+        return (
+          <span className={clsx("inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-2xs", meta.bg, meta.color, meta.border)}>
+            <IconComponent size={11} />
+            <span className="truncate">{tpl.category}</span>
+          </span>
+        );
+      }
+    },
+    {
+      id: 'steps',
+      header: 'Phases',
+      headerTitle: 'Number of standardized lifecycle phases',
+      sortable: true,
+      sortKey: 'steps',
+      align: 'center',
+      width: 'w-20',
+      cell: (tpl) => (
+        <span className="font-mono font-bold text-xs bg-[var(--color-surface-2)] border border-[var(--color-divider)] px-2 py-0.5 rounded-lg text-[var(--color-text)] shadow-2xs">
+          {tpl.steps.length}
+        </span>
+      )
+    },
+    {
+      id: 'effort',
+      header: 'Effort',
+      headerTitle: 'Cumulative standard estimated effort in person-days',
+      sortable: true,
+      sortKey: 'effort',
+      align: 'center',
+      width: 'w-20',
+      cell: (tpl) => {
+        const totalEffort = tpl.steps.reduce((s, st) => s + (Number(st.effort) || 0), 0);
+        return (
+          <span className="font-mono font-bold text-xs text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-lg inline-flex items-center gap-1 shadow-2xs">
+            <Clock size={11} />
+            <span>{totalEffort}d</span>
+          </span>
+        );
+      }
+    },
+    {
+      id: 'linkedTasks',
+      header: 'Linked Tasks',
+      headerTitle: 'Active tasks governed by this blueprint definition',
+      sortable: true,
+      sortKey: 'linkedTasks',
+      align: 'center',
+      width: 'w-24',
+      cell: (tpl) => {
+        const matchingTasks = state.tasks.filter(t => 
+          t.category === tpl.category || (tpl.category === 'GUI Screen' && ((t.subtasks && t.subtasks.some(st => st.type === 'screen')) || (t.guiScreens && t.guiScreens.length > 0)))
+        );
+        const hasTasks = matchingTasks.length > 0;
+        return (
+          <span className={clsx(
+            "font-semibold text-xs px-2 py-0.5 rounded-full inline-flex items-center gap-1 shadow-2xs",
+            hasTasks 
+              ? "text-emerald-500 bg-emerald-500/10 border border-emerald-500/20" 
+              : "text-[var(--color-text-faint)] bg-[var(--color-surface-2)] border border-[var(--color-divider)]"
+          )}>
+            <CheckCircle2 size={11} />
+            <span>{matchingTasks.length}</span>
+          </span>
+        );
+      }
+    },
+    {
+      id: 'pipeline',
+      header: 'Workflow Pipeline Sequence',
+      headerTitle: 'Proportional effort distribution and phase sequence',
+      width: 'max-w-[280px]',
+      cell: (tpl) => {
+        const totalEffort = tpl.steps.reduce((s, st) => s + (Number(st.effort) || 0), 0);
+        return (
+          <div className="space-y-1.5 py-1 max-w-[280px]">
+            {/* Proportional Segmented Progress Bar */}
+            <div className="w-full h-1.5 rounded-full overflow-hidden flex gap-0.5 bg-[var(--color-surface-2)] p-0.2 border border-[var(--color-divider)]">
+              {tpl.steps.map((st, si) => {
+                const pct = totalEffort > 0 ? (Number(st.effort) / totalEffort) * 100 : 100 / tpl.steps.length;
+                return (
+                  <div 
+                    key={si}
+                    style={{ width: `${Math.max(4, pct)}%` }}
+                    className={clsx("h-full rounded-xs transition-all", PHASE_COLORS[si % PHASE_COLORS.length])}
+                    title={`${st.name}: ${st.effort}d (${Math.round(pct)}%)`}
+                  />
+                );
+              })}
+            </div>
+
+            {/* Sequence Pills */}
+            <div className="flex items-center gap-1.5 flex-nowrap overflow-hidden py-0.5 text-[10px]">
+              {tpl.steps.slice(0, 2).map((st, si) => (
+                <span 
+                  key={si} 
+                  className="font-medium px-1.5 py-0.5 rounded-md bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)] shrink-0 inline-flex items-center gap-1 max-w-[110px]"
+                  title={`${st.name} (${st.effort}d)`}
+                >
+                  <span className="w-3.5 h-3.5 rounded-full bg-[var(--color-surface)] text-[8px] font-bold text-[var(--color-text-faint)] inline-flex items-center justify-center border border-[var(--color-divider)] shrink-0">
+                    {si + 1}
+                  </span>
+                  <span className="truncate">{st.name}</span>
+                </span>
+              ))}
+              {tpl.steps.length > 2 && (
+                <span className="text-[10px] font-bold text-[var(--color-primary-hex)] px-1.5 py-0.5 rounded bg-[var(--color-primary-highlight-hex)] shrink-0">
+                  +{tpl.steps.length - 2} more
+                </span>
+              )}
+            </div>
+          </div>
+        );
+      }
+    },
+    {
+      id: 'actions',
+      header: 'Actions',
+      headerTitle: 'Manage blueprint template',
+      align: 'right',
+      width: 'w-28',
+      cell: (tpl) => {
+        const i = templates.findIndex(t => t.name === tpl.name);
+        const isCopied = copiedIndex === i;
+        return (
+          <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={() => copyBlueprintMarkdown(i)}
+              title="Copy workflow as Markdown checklist"
+              className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors cursor-pointer border border-transparent hover:border-[var(--color-divider)] touch-hit-expand"
+            >
+              {isCopied ? <Check size={14} className="text-emerald-500" /> : <Copy size={13} />}
+            </button>
+            <button
+              type="button"
+              onClick={() => duplicateTemplate(i)}
+              title="Duplicate blueprint"
+              className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-sky-400 hover:bg-sky-500/10 transition-colors cursor-pointer border border-transparent hover:border-sky-500/20 touch-hit-expand"
+            >
+              <CopyPlus size={13} />
+            </button>
+            <button
+              type="button"
+              onClick={() => startEdit(i)}
+              title="Edit blueprint"
+              className="p-1.5 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-primary-highlight-hex)] transition-colors cursor-pointer border border-transparent hover:border-[var(--color-primary-hex)]/30 touch-hit-expand"
+            >
+              <Edit2 size={13} />
+            </button>
+            <button
+              type="button"
+              onClick={() => removeTemplate(i)}
+              title="Delete blueprint"
+              className="p-1.5 rounded-lg text-rose-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors cursor-pointer border border-transparent hover:border-rose-500/20 touch-hit-expand"
+            >
+              <Trash2 size={13} />
+            </button>
+          </div>
+        );
+      }
+    }
+  ], [templates, state.tasks, copiedIndex]);
 
   const handleImportBlueprints = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -849,11 +1091,40 @@ const StepTemplates: React.FC = () => {
           {/* View Mode Toggle & Match Count */}
           <div className="flex items-center gap-3 shrink-0 ml-auto">
             <span className="text-xs font-medium text-[var(--color-text-muted)]">
-              Showing <strong className="text-[var(--color-text)]">{filteredTemplates.length}</strong> of {templates.length}
+              Showing <strong className="text-[var(--color-text)]">{sortedTemplates.length}</strong> of {templates.length}
             </span>
+
+            {/* Density Mode Switcher (Visible in Table View) */}
+            {viewMode === 'table' && (
+              <div className="hidden sm:flex items-center p-0.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-xs">
+                <button
+                  type="button"
+                  onClick={() => setDensity('compact')}
+                  className={clsx(
+                    "px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer",
+                    density === 'compact' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-2xs" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  )}
+                  title="Compact Table Density"
+                >
+                  Compact
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDensity('comfortable')}
+                  className={clsx(
+                    "px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer",
+                    density === 'comfortable' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-2xs" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  )}
+                  title="Comfortable Table Density"
+                >
+                  Comfortable
+                </button>
+              </div>
+            )}
 
             <div className="flex items-center p-0.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
               <button
+                type="button"
                 onClick={() => setViewMode('grid')}
                 className={clsx(
                   "p-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 font-semibold text-xs",
@@ -865,6 +1136,7 @@ const StepTemplates: React.FC = () => {
                 <span className="hidden sm:inline">Grid</span>
               </button>
               <button
+                type="button"
                 onClick={() => setViewMode('table')}
                 className={clsx(
                   "p-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 font-semibold text-xs",
@@ -1052,110 +1324,116 @@ const StepTemplates: React.FC = () => {
             </AnimatePresence>
           </div>
         ) : (
-          /* ── 4B. High-Density Table View ── */
-          <div className="rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs overflow-hidden">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead className="bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)]">
-                <tr>
-                  <th className="px-4 py-3 w-12 text-center font-mono">#</th>
-                  <th className="px-4 py-3">Blueprint Name</th>
-                  <th className="px-4 py-3">Category Mapping</th>
-                  <th className="px-4 py-3 text-center">Phases</th>
-                  <th className="px-4 py-3 text-center">Total Effort</th>
-                  <th className="px-4 py-3 text-center">Linked Tasks</th>
-                  <th className="px-4 py-3">Workflow Phases Sequence</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--color-divider)]/40">
-                {filteredTemplates.map((tpl, idx) => {
-                  const i = templates.findIndex(t => t.name === tpl.name);
-                  const totalEffort = tpl.steps.reduce((s, st) => s + (Number(st.effort) || 0), 0);
-                  const matchingTasks = state.tasks.filter(t => 
-                    t.category === tpl.category || (tpl.category === 'GUI Screen' && ((t.subtasks && t.subtasks.some(st => st.type === 'screen')) || (t.guiScreens && t.guiScreens.length > 0)))
-                  );
-                  const meta = getCategoryMeta(tpl.category);
+          /* ── 4B. High-Density Enterprise Table View (Powered by generic DataTable) ── */
+          <DataTable<StepTemplate>
+            data={sortedTemplates}
+            columns={columns}
+            keyField="name"
+            minWidth="w-full"
+            tableLabel="Step Blueprints and Workflow Templates"
+            density={density}
+            sortField={sortBy}
+            sortAsc={sortAsc}
+            onSort={(field) => {
+              if (sortBy === field) {
+                setSortAsc(!sortAsc);
+              } else {
+                setSortBy(field);
+                setSortAsc(true);
+              }
+            }}
+            showRowNumbers
+            pagination={pagination}
+            itemLabel="blueprints"
+            onRowClick={(tpl) => {
+              const i = templates.findIndex(t => t.name === tpl.name);
+              if (i !== -1) startEdit(i);
+            }}
+            mobileCardRenderer={(tpl) => {
+              const i = templates.findIndex(t => t.name === tpl.name);
+              const totalEffort = tpl.steps.reduce((s, st) => s + (Number(st.effort) || 0), 0);
+              const meta = getCategoryMeta(tpl.category);
+              const IconComponent = meta.icon;
+              const isCopied = copiedIndex === i;
+              const matchingTasks = state.tasks.filter(t => 
+                t.category === tpl.category || (tpl.category === 'GUI Screen' && ((t.subtasks && t.subtasks.some(st => st.type === 'screen')) || (t.guiScreens && t.guiScreens.length > 0)))
+              );
 
-                  return (
-                    <tr 
-                      key={tpl.name}
-                      onClick={() => startEdit(i)}
-                      className="hover:bg-[var(--color-surface-2)]/60 transition-colors cursor-pointer group"
-                    >
-                      <td className="px-4 py-3 text-center font-mono text-[10px] text-[var(--color-text-faint)]">
-                        {String(idx + 1).padStart(2, '0')}
-                      </td>
-                      <td className="px-4 py-3 font-bold text-[var(--color-text)] group-hover:text-[var(--color-primary-hex)] transition-colors">
-                        {tpl.name}
-                      </td>
-                      <td className="px-4 py-3">
-                        <span className={clsx("text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border", meta.bg, meta.color, meta.border)}>
+              return (
+                <div
+                  onClick={() => startEdit(i)}
+                  className="p-4 space-y-3 cursor-pointer active:bg-[var(--color-surface-2)]/70 transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className={clsx("w-8 h-8 rounded-xl flex items-center justify-center border shadow-2xs shrink-0", meta.bg, meta.color, meta.border)}>
+                        <IconComponent size={15} />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-bold text-sm text-[var(--color-text)] leading-snug truncate">{tpl.name}</div>
+                        <span className={clsx("text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border mt-1 inline-block", meta.bg, meta.color, meta.border)}>
                           {tpl.category}
                         </span>
-                      </td>
-                      <td className="px-4 py-3 text-center font-bold text-[var(--color-text)]">
-                        {tpl.steps.length}
-                      </td>
-                      <td className="px-4 py-3 text-center font-mono font-bold text-[var(--color-text)]">
-                        {totalEffort}d
-                      </td>
-                      <td className="px-4 py-3 text-center">
-                        <span className="font-semibold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-full text-[11px]">
-                          {matchingTasks.length} tasks
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-1.5 flex-wrap max-w-md">
-                          {tpl.steps.slice(0, 3).map((s, si) => (
-                            <span key={si} className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)]">
-                              {s.name} ({s.effort}d)
-                            </span>
-                          ))}
-                          {tpl.steps.length > 3 && (
-                            <span className="text-[10px] font-bold text-[var(--color-primary-hex)]">
-                              +{tpl.steps.length - 3} more
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3 text-right" onClick={(e) => e.stopPropagation()}>
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={() => copyBlueprintMarkdown(i)}
-                            title="Copy Markdown"
-                            className="p-1 rounded text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
-                          >
-                            <Copy size={13} />
-                          </button>
-                          <button
-                            onClick={() => duplicateTemplate(i)}
-                            title="Duplicate"
-                            className="p-1 rounded text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
-                          >
-                            <CopyPlus size={13} />
-                          </button>
-                          <button
-                            onClick={() => startEdit(i)}
-                            title="Edit"
-                            className="p-1 rounded text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)]"
-                          >
-                            <Edit2 size={13} />
-                          </button>
-                          <button
-                            onClick={() => removeTemplate(i)}
-                            title="Delete"
-                            className="p-1 rounded text-rose-500 hover:bg-rose-500/10"
-                          >
-                            <Trash2 size={13} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        type="button"
+                        onClick={() => copyBlueprintMarkdown(i)}
+                        title="Copy Markdown"
+                        className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-text)] touch-hit-expand cursor-pointer"
+                      >
+                        {isCopied ? <Check size={14} className="text-emerald-500" /> : <Copy size={14} />}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => duplicateTemplate(i)}
+                        title="Duplicate"
+                        className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-sky-400 touch-hit-expand cursor-pointer"
+                      >
+                        <CopyPlus size={14} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => startEdit(i)}
+                        title="Edit"
+                        className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-[var(--color-primary-hex)] touch-hit-expand cursor-pointer"
+                      >
+                        <Edit2 size={14} />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeTemplate(i)}
+                        title="Delete"
+                        className="p-2 rounded-lg text-rose-500 hover:bg-rose-500/10 touch-hit-expand cursor-pointer"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Segmented mini progress bar */}
+                  <div className="w-full h-1.5 rounded-full overflow-hidden flex gap-0.5 bg-[var(--color-surface-2)] p-0.2 border border-[var(--color-divider)]">
+                    {tpl.steps.map((st, si) => {
+                      const pct = totalEffort > 0 ? (Number(st.effort) / totalEffort) * 100 : 100 / tpl.steps.length;
+                      return (
+                        <div 
+                          key={si}
+                          style={{ width: `${Math.max(4, pct)}%` }}
+                          className={clsx("h-full rounded-xs", PHASE_COLORS[si % PHASE_COLORS.length])}
+                        />
+                      );
+                    })}
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs pt-1 border-t border-[var(--color-divider)] text-[var(--color-text-muted)]">
+                    <span className="font-mono">{tpl.steps.length} phases · {totalEffort}d effort</span>
+                    <span className="text-emerald-500 font-semibold">{matchingTasks.length} tasks linked</span>
+                  </div>
+                </div>
+              );
+            }}
+          />
         )}
       </div>
 
