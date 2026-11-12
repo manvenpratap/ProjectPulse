@@ -50,7 +50,7 @@ npm start
 # Sync web dist/ and Capacitor plugins into native projects
 npm run mobile:sync
 
-# Build Android Debug APK (android/app/build/outputs/apk/debug/app-debug.apk)
+# Build Android Debug APK (android/app/build/outputs/apk/debug/ProjectPulse-v2.0.0-debug.apk)
 npm run mobile:android:apk
 
 # Build iOS Simulator .app (Swift Package Manager + Xcode)

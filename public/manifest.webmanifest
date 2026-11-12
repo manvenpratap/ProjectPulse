@@ -1,0 +1,24 @@
+{
+  "name": "ProjectPulse 2.0",
+  "short_name": "ProjectPulse",
+  "description": "Engineering & ALM Governance Workstation",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F172A",
+  "theme_color": "#1D4ED8",
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
+
