@@ -892,9 +892,9 @@ export const DashboardView: React.FC = () => {
 
               {/* Financial Simulator & Day Rate Controls */}
               <div className="lg:col-span-6 card p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-3xl shadow-sm space-y-6">
-                <div>
+                <div className="flex items-center gap-1.5">
                   <h3 className="font-bold text-base text-[var(--color-text)]">Financial Telemetry &amp; Burn Simulator</h3>
-                  <p className="text-xs text-[var(--color-text-muted)]">Simulate blended day-rates and budget boundary impact</p>
+                  <SectionHelpButton view="dash" section="Financial Telemetry & Burn Simulator" label="Financial simulator guide" />
                 </div>
 
                 <div className="space-y-4">

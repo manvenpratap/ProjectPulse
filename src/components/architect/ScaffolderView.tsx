@@ -449,14 +449,16 @@ const ScaffolderView: React.FC = () => {
                        
                        {m.type === 'GUI' && (
                          <div className="mt-6">
-                            <label className="text-xs font-semibold text-[var(--color-primary-hex)] block mb-2">Screen Sitemap</label>
+                            <div className="flex items-center gap-1.5 mb-2">
+                              <label className="text-xs font-semibold text-[var(--color-primary-hex)] block">Screen Sitemap</label>
+                              <SectionHelpButton view="scaffolder" section="Screen Sitemap Hierarchy" label="Screen format guide" size={12} />
+                            </div>
                             <textarea 
                               className="w-full h-32 p-3 bg-[var(--color-surface-2)] text-[var(--color-text)] rounded-xl text-xs font-semibold focus:bg-[var(--color-surface)] border border-[var(--color-divider)] focus:border-[var(--color-primary-hex)]/40 transition-colors duration-150 custom-scroll focus-visible:ring-2 focus-visible:ring-[var(--color-primary-hex)]"
                               placeholder="Dashboard, AppShell, n&#10;Settings, Modal, y"
                               value={m.screens}
                               onChange={(e) => updateModule(i, 'screens', e.target.value)}
                             />
-                            <p className="text-[10px] text-[var(--color-text-faint)] mt-2 font-medium italic">Format: Name, Parent, New Window(y/n)</p>
                          </div>
                        )}
                     </div>

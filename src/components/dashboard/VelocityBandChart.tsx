@@ -26,7 +26,6 @@ import {
   Calendar,
   CheckCircle2,
   Layers,
-  Info,
   X,
   Sliders,
   ChevronRight,

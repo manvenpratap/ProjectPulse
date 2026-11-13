@@ -1538,9 +1538,6 @@ export const QualityGovernanceTab: React.FC<QualityGovernanceTabProps> = ({
                 <p className="text-xs font-semibold text-[var(--color-text)]">
                   No state transitions logged in this session
                 </p>
-                <p className="text-[11px] text-[var(--color-text-muted)] max-w-xs mx-auto">
-                  Any task edit, defect triage, delivery deployment, or RAID update records an immutable delta entry here.
-                </p>
                 <button
                   type="button"
                   onClick={() => onNavigate('log')}

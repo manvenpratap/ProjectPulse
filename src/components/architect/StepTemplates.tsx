@@ -1520,7 +1520,6 @@ const StepTemplates: React.FC = () => {
             <div className="flex items-center justify-between pb-3 border-b border-[var(--color-divider)]">
               <div className="flex items-center gap-2">
                 <SectionHelpButton view="steps" section="One-Click Subtask Generation" label="Blueprint impact guide" size={13} />
-                <span className="text-xs text-[var(--color-text-muted)]">Configure phases, estimated effort, and propagate to active tasks</span>
               </div>
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-xs text-[var(--color-text-muted)] font-medium">
                 <span className="font-bold text-[var(--color-text)]">{editForm.steps.length}</span> Phases

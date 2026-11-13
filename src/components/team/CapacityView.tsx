@@ -438,10 +438,7 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
       <div className="space-y-4 sm:space-y-5">
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-[var(--color-divider)]">
-          <div>
-            <h2 className="font-bold text-[var(--color-text)] text-base">Week {selectedActiveCell.weekIdx + 1} Analysis</h2>
-            <p className="text-xs text-[var(--color-text-muted)]">Selected allocation details</p>
-          </div>
+          <h2 className="font-bold text-[var(--color-text)] text-base">Week {selectedActiveCell.weekIdx + 1} Analysis</h2>
           <button 
             type="button"
             onClick={onClose}

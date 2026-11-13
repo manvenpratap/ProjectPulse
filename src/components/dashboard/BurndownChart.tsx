@@ -22,7 +22,6 @@ import {
   Calendar, 
   CheckCircle2, 
   Activity, 
-  Info,
   Maximize2
 } from 'lucide-react';
 import clsx from 'clsx';
@@ -243,14 +242,13 @@ const BurndownChart: React.FC = () => {
         {/* Metric 1 */}
         <div className="card p-4 sm:p-6 bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)]/70 transition-colors duration-150 flex flex-col justify-between border border-[var(--color-divider)]">
           <div>
-            <span className="text-xs font-medium text-[var(--color-text-muted)]">Baseline Effort Scope</span>
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-[var(--color-text-muted)]">Baseline Effort Scope</span>
+              <SectionHelpButton view="dash" section="Sprint Burndown & Burnup" label="Baseline Effort guide" size={12} />
+            </div>
             <div className="text-2xl sm:text-3xl font-display font-black text-[var(--color-text)] mt-1">
               {summaryMetrics.totalScopeEffort} <span className="text-xs font-bold text-[var(--color-text-faint)] font-sans">Days</span>
             </div>
-          </div>
-          <div className="text-[10px] text-[var(--color-text-muted)] mt-3 flex items-center gap-1.5">
-            <Info size={12} className="text-[var(--color-primary-hex)] shrink-0" />
-            <span>Cumulative weight of tasks</span>
           </div>
         </div>
 

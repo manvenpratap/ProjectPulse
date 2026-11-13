@@ -336,14 +336,6 @@ const SettingsView: React.FC = () => {
                 );
               })}
             </div>
-
-            {/* Quick explanation footer */}
-            <div className="bg-[var(--color-surface-2)] p-4 rounded-xl border border-[var(--color-divider)] flex items-center gap-3">
-              <Sliders className="text-[var(--color-primary-hex)] shrink-0" size={18} />
-              <p className="text-xs text-[var(--color-text-muted)]">
-                Only users with the <strong className="text-[var(--color-text)]">Admin</strong> role can modify user roles, grant view overrides, or change system access matrices.
-              </p>
-            </div>
           </div>
         ) : (
           <div className="space-y-8">
@@ -506,11 +498,9 @@ const SettingsView: React.FC = () => {
                 <h3 className="text-sm font-bold">Destructive operations</h3>
               </div>
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex-1">
-                  <p className="text-xs font-bold text-[var(--color-text)]">Clear All Project Telemetry</p>
-                  <p className="text-[11px] text-[var(--color-text-muted)] mt-0.5">
-                    This will purge the local database and reset tasks, releases, and logs to initial defaults.
-                  </p>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-[var(--color-text)]">Clear All Project Telemetry</span>
+                  <SectionHelpButton view="settings" section="Full Workspace Wipe" label="Purge database guide" size={13} />
                 </div>
                 <Button variant="ghost" size="sm" className="text-red-600 hover:bg-red-50 border border-red-200 px-4 font-black" onClick={handleClearData}>
                   <Trash2 size={15} className="mr-1.5" /> Purge Project

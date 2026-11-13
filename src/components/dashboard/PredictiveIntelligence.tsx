@@ -12,6 +12,7 @@ import {
   Lock,
   Clock
 } from 'lucide-react';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import clsx from 'clsx';
 
 const PredictiveIntelligence: React.FC = () => {
@@ -187,12 +188,12 @@ const PredictiveIntelligence: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="card p-6">
           <div className="flex items-center justify-between mb-6">
-             <div>
+             <div className="flex items-center gap-1.5">
                 <h3 className="text-sm font-bold flex items-center gap-2">
                    <Clock size={16} className="text-indigo-500" />
                    Schedule Deviation Matrix
                 </h3>
-                <p className="text-xs text-[var(--color-text-faint)] mt-1 font-medium">Time elapsed vs actual progress</p>
+                <SectionHelpButton view="dash" section="Schedule Deviation & Priority Momentum" label="Schedule deviation guide" />
              </div>
           </div>
           
@@ -235,12 +236,12 @@ const PredictiveIntelligence: React.FC = () => {
 
         <div className="card p-6">
           <div className="flex items-center justify-between mb-6">
-             <div>
+             <div className="flex items-center gap-1.5">
                 <h3 className="text-sm font-bold flex items-center gap-2">
                    <Target size={16} className="text-indigo-500" />
                    Priority Momentum
                 </h3>
-                <p className="text-xs text-[var(--color-text-faint)] mt-1 font-medium">Completions by priority (last 30 days)</p>
+                <SectionHelpButton view="dash" section="Schedule Deviation & Priority Momentum" label="Priority momentum guide" />
              </div>
              <BarChart2 size={18} className="text-[var(--color-text-faint)]" />
           </div>

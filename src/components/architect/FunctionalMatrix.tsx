@@ -1053,6 +1053,7 @@ export const FunctionalMatrix: React.FC = () => {
                   <div>
                     <h3 className="font-bold text-xs sm:text-sm text-[var(--color-text)] flex items-center gap-2">
                       <span>Screen Coverage Audit</span>
+                      <SectionHelpButton view="features" section="Screen Coverage Audit" label="Screen Coverage Audit guide" size={13} />
                       <span className={clsx(
                         "text-[10px] font-mono px-2 py-0.5 rounded-full font-bold",
                         unmappedScreens.length === 0 ? "bg-emerald-500/15 text-emerald-600" : "bg-amber-500/15 text-amber-600"
@@ -1060,12 +1061,6 @@ export const FunctionalMatrix: React.FC = () => {
                         {coveragePct}% Covered ({mappedScreens.length} of {allScreens.length} mapped)
                       </span>
                     </h3>
-                    <p className="text-[11px] text-[var(--color-text-muted)]">
-                      {unmappedScreens.length === 0 
-                        ? "100% of architectural screens are connected to strategic feature nodes."
-                        : `${unmappedScreens.length} screen(s) remain unassigned to any strategic feature.`
-                      }
-                    </p>
                   </div>
                 </div>
 

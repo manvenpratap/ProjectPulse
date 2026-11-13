@@ -794,11 +794,7 @@ const RAIDView: React.FC = () => {
                       Reset
                     </button>
                   </div>
-                ) : (
-                  <div className="mt-4 text-[11px] text-[var(--color-text-faint)] flex items-center gap-1">
-                    <Info size={13} /> Showing all items
-                  </div>
-                )}
+                ) : null}
               </StaggerItem>
             </StaggerContainer>
           </CollapsibleSummaryStrip>

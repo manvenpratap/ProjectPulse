@@ -158,6 +158,14 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
       {
         title: 'Strategic What-If Sandbox Modeling',
         desc: 'Model scenario permutations across Additional Engineering FTEs, Scope Descoping %, and Timeline Compression to simulate productivity gains/losses and risk confidence before committing changes.'
+      },
+      {
+        title: 'Financial Telemetry & Burn Simulator',
+        desc: 'Simulate blended developer day-rates and budget boundary impacts in real-time against remaining effort days to project financial runway and cost overruns.'
+      },
+      {
+        title: 'Schedule Deviation & Priority Momentum',
+        desc: 'Evaluates planned time elapsed versus actual delivery progress curves, and tracks velocity throughput grouped by priority tier over the trailing 30 days.'
       }
     ],
     proTips: [
@@ -662,12 +670,20 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
       {
         name: 'Strategic Alignment',
         desc: 'Priority tier and target release milestone for commercial readiness.'
+      },
+      {
+        name: 'Screen Coverage Audit',
+        desc: 'Evaluates architectural screen coverage across strategic feature nodes. 100% coverage ensures every GUI screen is mapped to a commercial feature deliverable.'
       }
     ],
     capabilities: [
       {
         title: 'Requirement-to-Code Traceability',
         desc: 'Inspect exactly which engineering tasks deliver each business requirement to give clear status to non-technical stakeholders.'
+      },
+      {
+        title: 'Screen Coverage Audit & Batch Assignment',
+        desc: 'Identifies unmapped screens and provides 1-click batch assignment per module or instant bundling into a new strategic feature deliverable.'
       },
       {
         title: 'Feature Readiness Index',
@@ -704,6 +720,10 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
       {
         title: 'Bulk TSV / CSV Import',
         desc: 'Copy lists of module names directly from Excel or spreadsheets and paste them into the wizard.'
+      },
+      {
+        title: 'Screen Sitemap Hierarchy & Format',
+        desc: 'When defining screen hierarchies for GUI modules, specify screens using the format: Name, Parent, New Window (y/n) (e.g. Dashboard, AppShell, n).'
       },
       {
         title: 'Architecture Presets',
@@ -811,7 +831,11 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
     capabilities: [
       {
         title: 'Bulk Options Editor',
-        desc: 'Edit or paste entire lookup lists at once (one item per line) for rapid taxonomy configuration.'
+        desc: 'Edit or paste entire lookup lists at once (one item per line) with automatic empty line pruning, duplicate removal, and preserved ordering.'
+      },
+      {
+        title: 'Library Key Identifiers',
+        desc: 'Alphanumeric identifiers used across schemas, custom field lookups, and Excel headers. Option values can be separated with commas or newlines.'
       },
       {
         title: 'Active Usage Protection',
@@ -851,7 +875,11 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
     capabilities: [
       {
         title: 'Baseline Snapshot Management',
-        desc: 'Capture approved baselines before sprint execution and compare actual progress against baseline targets.'
+        desc: 'Capture approved baselines before sprint execution and compare actual progress against baseline targets. Snapshots record planned start dates, due dates, and effort estimates across all active and backlog tasks.'
+      },
+      {
+        title: 'Role Governance & Modification Permissions',
+        desc: 'Only users assigned the Admin role can modify user roles, grant granular view overrides, or change system access matrices.'
       },
       {
         title: 'Demo Database Loader',
@@ -867,7 +895,7 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
       },
       {
         title: 'Full Workspace Wipe (New Project)',
-        desc: 'Admin capability to clear all entities and start a clean project workspace with custom metadata.'
+        desc: 'Admin capability to permanently purge local storage database records, resetting tasks, releases, RAID, defects, and activity logs to start a clean project.'
       }
     ],
     proTips: [

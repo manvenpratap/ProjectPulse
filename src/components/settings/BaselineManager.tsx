@@ -371,7 +371,12 @@ export const BaselineManager: React.FC = () => {
       <Modal
         isOpen={isCaptureModalOpen}
         onClose={() => setIsCaptureModalOpen(false)}
-        title="Capture Project Baseline Snapshot"
+        title={
+          <span className="flex items-center gap-2">
+            <span>Capture Project Baseline Snapshot</span>
+            <SectionHelpButton view="settings" section="Baseline Snapshot Management" label="Snapshot guide" size={13} />
+          </span>
+        }
         size="md"
         footer={
           <div className="flex justify-end gap-2">
@@ -409,10 +414,6 @@ export const BaselineManager: React.FC = () => {
               rows={3}
               className="w-full p-3 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl outline-none focus:border-[var(--color-primary-hex)] font-medium text-xs resize-none text-[var(--color-text)]"
             />
-          </div>
-
-          <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 dark:text-amber-400 text-[11px] leading-relaxed">
-            <strong>Snapshot Scope:</strong> Captures schedule dates and effort estimates for all {tasks.length} tasks currently in the project.
           </div>
         </div>
       </Modal>

@@ -928,7 +928,12 @@ const RegistryView: React.FC = () => {
       <Modal
         isOpen={isBulkOpen}
         onClose={() => setIsBulkOpen(false)}
-        title={`Bulk Edit: ${formatLibraryName(selectedKey)}`}
+        title={
+          <span className="flex items-center gap-2">
+            <span>Bulk Edit: {formatLibraryName(selectedKey)}</span>
+            <SectionHelpButton view="dropdowns" section="Bulk Options Editor" label="Bulk options guide" size={13} />
+          </span>
+        }
         size="md"
         footer={
           <div className="flex items-center justify-end gap-2.5 w-full">
@@ -942,7 +947,6 @@ const RegistryView: React.FC = () => {
         }
       >
         <div className="space-y-3 text-xs">
-          <p className="text-[11px] text-[var(--color-text-muted)]">One value per line. Duplicates automatically pruned upon save.</p>
           <textarea
             value={bulkText}
             onChange={(e) => setBulkText(e.target.value)}
@@ -950,8 +954,7 @@ const RegistryView: React.FC = () => {
             className="w-full text-xs font-mono p-3.5 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary-hex)] transition-all leading-relaxed shadow-inner"
             placeholder="Option 1&#10;Option 2&#10;Option 3"
           />
-          <div className="flex items-center justify-between text-[11px] text-[var(--color-text-faint)]">
-            <span>Empty lines excluded. Original ordering preserved.</span>
+          <div className="flex items-center justify-end text-[11px] text-[var(--color-text-faint)]">
             <span className="font-mono font-bold text-[var(--color-text)]">
               {bulkText.split('\n').filter(s => s.trim()).length} parsed items
             </span>
@@ -963,7 +966,12 @@ const RegistryView: React.FC = () => {
       <Modal
         isOpen={isNewLibModalOpen}
         onClose={() => setIsNewLibModalOpen(false)}
-        title="Create Custom Option Library"
+        title={
+          <span className="flex items-center gap-2">
+            <span>Create Custom Option Library</span>
+            <SectionHelpButton view="dropdowns" section="Library Key Identifiers" label="Custom library guide" size={13} />
+          </span>
+        }
         size="md"
         footer={
           <div className="flex items-center justify-end gap-2.5 w-full">
@@ -995,9 +1003,6 @@ const RegistryView: React.FC = () => {
               placeholder="e.g. tierLevel, billingPlan, region"
               className="w-full h-10 px-3.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs font-mono font-bold text-[var(--color-text)] outline-none focus:border-[var(--color-primary-hex)] transition-colors shadow-inner"
             />
-            <p className="text-[11px] text-[var(--color-text-faint)] mt-1">
-              Alphanumeric identifier used across schemas and custom field lookups.
-            </p>
           </div>
 
           <div>
@@ -1011,9 +1016,6 @@ const RegistryView: React.FC = () => {
               placeholder="Tier 1 - Enterprise&#10;Tier 2 - Growth&#10;Tier 3 - Starter"
               className="w-full text-xs p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text)] focus:outline-none focus:border-[var(--color-primary-hex)] transition-colors shadow-inner leading-relaxed"
             />
-            <p className="text-[11px] text-[var(--color-text-faint)] mt-1">
-              Separate with new lines or commas. More can be added anytime.
-            </p>
           </div>
         </div>
       </Modal>
