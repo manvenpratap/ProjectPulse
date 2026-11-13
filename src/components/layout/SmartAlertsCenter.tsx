@@ -212,192 +212,205 @@ export const SmartAlertsCenter: React.FC<SmartAlertsCenterProps> = ({ isOpen, on
     onClose();
   };
 
-  if (!isOpen) return null;
-
   return (
-    <div className="fixed inset-0 z-[120] flex motion-safe:animate-in motion-safe:fade-in duration-200">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-2xs" onClick={onClose} />
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[120] flex">
+          {/* Backdrop with solid blur to eliminate background distractions */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2, ease: 'easeOut' }}
+            className="absolute inset-0 bg-black/65 backdrop-blur-md" 
+            onClick={onClose} 
+          />
 
-      {/* Flyout Drawer */}
-      <motion.div 
-        initial={{ x: '100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: '100%' }}
-        transition={{ duration: 0.24, ease: [0.23, 1, 0.32, 1] }}
-        className="ml-auto w-full max-w-md bg-[var(--color-surface)] h-full relative shadow-2xl flex flex-col border-l border-[var(--color-divider)] text-[var(--color-text)] z-10"
-      >
-        {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-[var(--color-divider)] bg-[var(--color-surface-2)] flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-rose-500/15 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold">
-              <Bell size={16} />
-            </div>
-            <div>
-              <h2 className="font-bold text-sm sm:text-base leading-none flex items-center gap-2">
-                <span>Smart Alerts Center</span>
-                {activeAlerts.length > 0 && (
-                  <span className="px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-400 font-mono font-bold text-[10px]">
-                    {activeAlerts.length}
-                  </span>
-                )}
-                <SectionHelpButton view="overview" section="Early Warning System" label="Smart Alerts guide" size={13} />
-              </h2>
-            </div>
-          </div>
-          <button 
-            onClick={onClose}
-            className="p-1.5 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface)] cursor-pointer"
-            aria-label="Close Smart Alerts Center"
+          {/* Flyout Drawer with 100% opaque background */}
+          <motion.div 
+            initial={{ x: '100%' }}
+            animate={{ x: 0 }}
+            exit={{ x: '100%' }}
+            transition={{ duration: 0.24, ease: [0.23, 1, 0.32, 1] }}
+            className="ml-auto w-full max-w-md bg-[var(--color-bg)] h-full relative shadow-2xl flex flex-col border-l border-[var(--color-divider)] text-[var(--color-text)] z-10 overflow-hidden"
           >
-            <X size={16} />
-          </button>
-        </div>
-
-        {/* Operational Filter Tabs */}
-        <div className="p-2 border-b border-[var(--color-divider)] bg-[var(--color-surface)] flex items-center justify-between gap-1 text-xs shrink-0 overflow-x-auto">
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setActiveTab('all')}
-              className={clsx(
-                "px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer",
-                activeTab === 'all' ? "bg-[var(--color-surface-2)] text-[var(--color-text)]" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-              )}
-            >
-              All ({activeAlerts.length})
-            </button>
-            <button
-              onClick={() => setActiveTab('critical')}
-              className={clsx(
-                "px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer flex items-center gap-1",
-                activeTab === 'critical' ? "bg-rose-500/15 text-rose-600 dark:text-rose-400 font-bold" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-              )}
-            >
-              <AlertCircle size={12} className="text-rose-500" />
-              <span>Critical ({criticalCount})</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('warning')}
-              className={clsx(
-                "px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer flex items-center gap-1",
-                activeTab === 'warning' ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
-              )}
-            >
-              <AlertTriangle size={12} className="text-amber-500" />
-              <span>Warnings ({warningCount})</span>
-            </button>
-            <button
-              onClick={() => setActiveTab('dismissed')}
-              className={clsx(
-                "px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer",
-                activeTab === 'dismissed' ? "bg-[var(--color-surface-2)] text-[var(--color-text)]" : "text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
-              )}
-            >
-              Dismissed ({dismissedAlerts.length})
-            </button>
-          </div>
-
-          {activeAlerts.length > 0 && activeTab !== 'dismissed' && (
-            <button 
-              onClick={handleDismissAll}
-              className="text-[11px] font-semibold text-[var(--color-primary-hex)] hover:underline whitespace-nowrap px-1 cursor-pointer"
-            >
-              Dismiss All
-            </button>
-          )}
-        </div>
-
-        {/* Alerts List */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-2.5 custom-scroll">
-          {displayedAlerts.map(alert => {
-            const isCritical = alert.severity === 'critical';
-            return (
-              <div
-                key={alert.id}
-                onClick={() => handleNavigate(alert)}
-                className={clsx(
-                  "p-3.5 rounded-xl border transition-all cursor-pointer relative group flex flex-col space-y-1.5 shadow-2xs hover:shadow-xs",
-                  isCritical 
-                    ? "bg-rose-500/5 hover:bg-rose-500/10 border-rose-500/25" 
-                    : "bg-amber-500/5 hover:bg-amber-500/10 border-amber-500/25"
-                )}
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    {isCritical ? (
-                      <AlertCircle size={15} className="text-rose-500 shrink-0 mt-0.5" />
-                    ) : (
-                      <AlertTriangle size={15} className="text-amber-500 shrink-0 mt-0.5" />
-                    )}
-                    <h4 className="font-bold text-xs text-[var(--color-text)] leading-snug">
-                      {alert.title}
-                    </h4>
-                  </div>
-
-                  {activeTab !== 'dismissed' ? (
-                    <button
-                      onClick={(e) => handleDismiss(alert.id, e)}
-                      title="Dismiss alert"
-                      className="opacity-0 group-hover:opacity-100 p-1 text-[var(--color-text-faint)] hover:text-[var(--color-text)] rounded transition-opacity cursor-pointer shrink-0"
-                    >
-                      <X size={13} />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={(e) => handleRestore(alert.id, e)}
-                      title="Restore alert"
-                      className="text-[10px] font-bold text-[var(--color-primary-hex)] hover:underline cursor-pointer"
-                    >
-                      Restore
-                    </button>
-                  )}
+            {/* Header */}
+            <div className="p-4 sm:p-5 border-b border-[var(--color-divider)] bg-[var(--color-surface)] flex items-center justify-between shrink-0 shadow-2xs">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-rose-500/15 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold">
+                  <Bell size={16} />
                 </div>
-
-                <p className="text-[11px] text-[var(--color-text-muted)] pl-6 leading-relaxed">
-                  {alert.body}
-                </p>
-
-                <div className="pl-6 pt-1 flex items-center justify-between text-[10px] font-semibold text-[var(--color-primary-hex)]">
-                  <span className="flex items-center gap-1 group-hover:underline">
-                    <span>Jump to {alert.targetView}</span>
-                    <ChevronRight size={11} />
-                  </span>
-                  <span className="text-[var(--color-text-faint)] font-mono uppercase">{alert.type.replace(/_/g, ' ')}</span>
+                <div>
+                  <h2 className="font-bold text-sm sm:text-base leading-none flex items-center gap-2">
+                    <span>Smart Alerts Center</span>
+                    {activeAlerts.length > 0 && (
+                      <span className="px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-400 font-mono font-bold text-[10px]">
+                        {activeAlerts.length}
+                      </span>
+                    )}
+                    <SectionHelpButton view="overview" section="Early Warning System" label="Smart Alerts guide" size={13} />
+                  </h2>
                 </div>
               </div>
-            );
-          })}
-
-          {displayedAlerts.length === 0 && (
-            <div className="py-20 text-center space-y-3">
-              <CheckCircle2 size={36} className="mx-auto text-emerald-500 opacity-60" />
-              <h3 className="font-bold text-sm text-[var(--color-text)]">
-                {activeTab === 'dismissed' ? 'No Dismissed Alerts' : 'All Clear — Zero Active Alerts'}
-              </h3>
-              <p className="text-xs text-[var(--color-text-muted)] max-w-xs mx-auto">
-                {activeTab === 'dismissed' 
-                  ? 'Alerts you dismiss will be cataloged here for reference.'
-                  : 'No critical delivery slippages, blocker dependencies, or capacity overloads detected.'
-                }
-              </p>
+              <button 
+                onClick={onClose}
+                className="p-1.5 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] cursor-pointer"
+                aria-label="Close Smart Alerts Center"
+              >
+                <X size={16} />
+              </button>
             </div>
-          )}
-        </div>
 
-        {/* Footer */}
-        <div className="p-3 bg-[var(--color-surface-2)] border-t border-[var(--color-divider)] flex items-center justify-between text-xs shrink-0">
-          <span className="text-[11px] text-[var(--color-text-faint)]">
-            Computed across {state.tasks.length} tasks and {state.defects?.length || 0} defects
-          </span>
-          <button 
-            onClick={onClose} 
-            className="px-3 py-1.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-divider)] font-semibold hover:bg-[var(--color-surface-2)] cursor-pointer text-xs"
-          >
-            Done
-          </button>
+            {/* Operational Filter Tabs */}
+            <div className="p-2.5 border-b border-[var(--color-divider)] bg-[var(--color-surface-offset)] flex items-center justify-between gap-1 text-xs shrink-0 overflow-x-auto">
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => setActiveTab('all')}
+                  className={clsx(
+                    "px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer",
+                    activeTab === 'all' ? "bg-[var(--color-surface)] text-[var(--color-text)] shadow-xs" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  )}
+                >
+                  All ({activeAlerts.length})
+                </button>
+                <button
+                  onClick={() => setActiveTab('critical')}
+                  className={clsx(
+                    "px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer flex items-center gap-1",
+                    activeTab === 'critical' ? "bg-rose-500/15 text-rose-600 dark:text-rose-400 font-bold" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  )}
+                >
+                  <AlertCircle size={12} className="text-rose-500" />
+                  <span>Critical ({criticalCount})</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('warning')}
+                  className={clsx(
+                    "px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer flex items-center gap-1",
+                    activeTab === 'warning' ? "bg-amber-500/15 text-amber-600 dark:text-amber-400 font-bold" : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  )}
+                >
+                  <AlertTriangle size={12} className="text-amber-500" />
+                  <span>Warnings ({warningCount})</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab('dismissed')}
+                  className={clsx(
+                    "px-2.5 py-1 rounded-lg font-semibold transition-colors cursor-pointer",
+                    activeTab === 'dismissed' ? "bg-[var(--color-surface)] text-[var(--color-text)] shadow-xs" : "text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
+                  )}
+                >
+                  Dismissed ({dismissedAlerts.length})
+                </button>
+              </div>
+
+              {activeAlerts.length > 0 && activeTab !== 'dismissed' && (
+                <button 
+                  onClick={handleDismissAll}
+                  className="text-[11px] font-semibold text-[var(--color-primary-hex)] hover:underline whitespace-nowrap px-1 cursor-pointer"
+                >
+                  Dismiss All
+                </button>
+              )}
+            </div>
+
+            {/* Alerts List */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 custom-scroll bg-[var(--color-bg)]">
+              {displayedAlerts.map(alert => {
+                const isCritical = alert.severity === 'critical';
+                return (
+                  <div
+                    key={alert.id}
+                    onClick={() => handleNavigate(alert)}
+                    className={clsx(
+                      "p-4 rounded-2xl border transition-all cursor-pointer relative group flex flex-col space-y-2 shadow-xs hover:shadow-md",
+                      isCritical 
+                        ? "bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)] border-rose-500/35 hover:border-rose-500/60" 
+                        : "bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)] border-amber-500/35 hover:border-amber-500/60"
+                    )}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        {isCritical ? (
+                          <div className="w-5 h-5 rounded-md bg-rose-500/15 flex items-center justify-center shrink-0">
+                            <AlertCircle size={14} className="text-rose-500" />
+                          </div>
+                        ) : (
+                          <div className="w-5 h-5 rounded-md bg-amber-500/15 flex items-center justify-center shrink-0">
+                            <AlertTriangle size={14} className="text-amber-500" />
+                          </div>
+                        )}
+                        <h4 className="font-bold text-xs text-[var(--color-text)] leading-snug">
+                          {alert.title}
+                        </h4>
+                      </div>
+
+                      {activeTab !== 'dismissed' ? (
+                        <button
+                          onClick={(e) => handleDismiss(alert.id, e)}
+                          title="Dismiss alert"
+                          className="opacity-0 group-hover:opacity-100 p-1 text-[var(--color-text-faint)] hover:text-[var(--color-text)] rounded transition-opacity cursor-pointer shrink-0"
+                        >
+                          <X size={13} />
+                        </button>
+                      ) : (
+                        <button
+                          onClick={(e) => handleRestore(alert.id, e)}
+                          title="Restore alert"
+                          className="text-[10px] font-bold text-[var(--color-primary-hex)] hover:underline cursor-pointer"
+                        >
+                          Restore
+                        </button>
+                      )}
+                    </div>
+
+                    <p className="text-[11px] text-[var(--color-text-muted)] pl-7 leading-relaxed font-normal">
+                      {alert.body}
+                    </p>
+
+                    <div className="pl-7 pt-1 flex items-center justify-between text-[10px] font-semibold text-[var(--color-primary-hex)]">
+                      <span className="flex items-center gap-1 group-hover:underline">
+                        <span>Jump to {alert.targetView}</span>
+                        <ChevronRight size={11} />
+                      </span>
+                      <span className="text-[var(--color-text-faint)] font-mono uppercase tracking-wider text-[9px]">{alert.type.replace(/_/g, ' ')}</span>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {displayedAlerts.length === 0 && (
+                <div className="py-20 text-center space-y-3">
+                  <CheckCircle2 size={36} className="mx-auto text-emerald-500 opacity-60" />
+                  <h3 className="font-bold text-sm text-[var(--color-text)]">
+                    {activeTab === 'dismissed' ? 'No Dismissed Alerts' : 'All Clear — Zero Active Alerts'}
+                  </h3>
+                  <p className="text-xs text-[var(--color-text-muted)] max-w-xs mx-auto">
+                    {activeTab === 'dismissed' 
+                      ? 'Alerts you dismiss will be cataloged here for reference.'
+                      : 'No critical delivery slippages, blocker dependencies, or capacity overloads detected.'
+                    }
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="p-3.5 sm:p-4 bg-[var(--color-surface)] border-t border-[var(--color-divider)] flex items-center justify-between text-xs shrink-0 shadow-2xs">
+              <span className="text-[11px] text-[var(--color-text-faint)]">
+                Computed across {state.tasks.length} tasks and {state.defects?.length || 0} defects
+              </span>
+              <button 
+                onClick={onClose} 
+                className="px-3.5 py-1.5 rounded-xl bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] border border-[var(--color-divider)] font-semibold text-[var(--color-text)] cursor-pointer text-xs transition-colors"
+              >
+                Done
+              </button>
+            </div>
+          </motion.div>
         </div>
-      </motion.div>
-    </div>
+      )}
+    </AnimatePresence>
   );
 };
 

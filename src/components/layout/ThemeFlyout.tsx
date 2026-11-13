@@ -100,7 +100,7 @@ const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ duration: 0.28, ease: [0.23, 1, 0.32, 1] }}
-            className="fixed top-0 right-0 w-full sm:w-[560px] md:w-[620px] h-[100dvh] bg-[var(--color-surface)] border-l border-[var(--color-divider)] shadow-2xl z-[101] flex flex-col overflow-hidden"
+            className="fixed top-0 right-0 w-full sm:w-[560px] md:w-[620px] h-[100dvh] bg-[var(--color-bg)] text-[var(--color-text)] border-l border-[var(--color-divider)] shadow-2xl z-[101] flex flex-col overflow-hidden"
           >
             {/* Animated accent gradient line */}
             <div className="h-[2.5px] w-full shrink-0 bg-gradient-to-r from-transparent via-[var(--color-primary-hex)] to-transparent bg-[length:300%_100%] animate-pulse" />

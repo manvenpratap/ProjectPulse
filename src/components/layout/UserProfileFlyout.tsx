@@ -55,7 +55,7 @@ export const UserProfileFlyout: React.FC<UserProfileFlyoutProps> = ({
 
       <div 
         ref={flyoutRef}
-        className="fixed sm:absolute right-3 sm:right-0 top-16 sm:top-full mt-1.5 w-[calc(100vw-24px)] sm:w-80 bg-[var(--color-surface)]/95 backdrop-blur-2xl border border-[var(--color-divider)] rounded-2xl shadow-2xl z-50 overflow-hidden ring-1 ring-black/5 motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 duration-150 origin-top-right select-none"
+        className="fixed sm:absolute right-3 sm:right-0 top-16 sm:top-full mt-1.5 w-[calc(100vw-24px)] sm:w-80 bg-[var(--color-bg)] text-[var(--color-text)] border border-[var(--color-divider)] rounded-2xl shadow-2xl z-50 overflow-hidden ring-1 ring-black/5 motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-95 duration-150 origin-top-right select-none"
       >
         {/* Header Profile Section */}
         <div className="p-4 bg-[var(--color-surface-2)]/60 border-b border-[var(--color-divider)]">

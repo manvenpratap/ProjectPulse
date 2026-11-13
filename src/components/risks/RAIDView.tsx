@@ -33,7 +33,7 @@ import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import Modal from '../shared/Modal';
 import TablePagination, { usePagination } from '../shared/TablePagination';
-import DataTable, { ColumnDef } from '../shared/DataTable';
+import DataTable, { ColumnDef, DensityMode } from '../shared/DataTable';
 import CollapsibleSummaryStrip, { SummaryMetricItem } from '../shared/CollapsibleSummaryStrip';
 
 const RAIDView: React.FC = () => {
@@ -41,6 +41,7 @@ const RAIDView: React.FC = () => {
   const { raids = [], decisions = [], members = [] } = state;
 
   const [activeTab, setActiveTab] = useState<'all' | 'risks' | 'assumptions' | 'issues' | 'dependencies' | 'decisions'>('all');
+  const [density, setDensity] = useState<DensityMode>('comfortable');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedRaid, setSelectedRaid] = useState<RaidItem | null>(null);
   const [selectedDecision, setSelectedDecision] = useState<Decision | null>(null);
@@ -573,23 +574,51 @@ const RAIDView: React.FC = () => {
             ))}
           </div>
 
-          <div className="relative w-full sm:w-64">
-            <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)] pointer-events-none" />
-            <input 
-              type="text"
-              placeholder="Search registry..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pl-9 pr-8 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs font-medium outline-none focus:border-[var(--color-primary-hex)] transition-colors"
-            />
-            {searchQuery && (
-              <button 
-                onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)] hover:text-[var(--color-text)] p-1"
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            {/* Table Density Switcher */}
+            <div className="hidden sm:flex items-center p-0.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+              <button
+                type="button"
+                onClick={() => setDensity('compact')}
+                className={clsx(
+                  "px-2.5 py-1 min-h-[28px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                  density === 'compact' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
+                )}
+                title="Compact Table Density"
               >
-                <X size={14} />
+                Compact
               </button>
-            )}
+              <button
+                type="button"
+                onClick={() => setDensity('comfortable')}
+                className={clsx(
+                  "px-2.5 py-1 min-h-[28px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                  density === 'comfortable' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
+                )}
+                title="Comfortable Table Density"
+              >
+                Comfortable
+              </button>
+            </div>
+
+            <div className="relative w-full sm:w-64">
+              <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)] pointer-events-none" />
+              <input 
+                type="text"
+                placeholder="Search registry..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full h-10 pl-9 pr-8 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs font-medium outline-none focus:border-[var(--color-primary-hex)] transition-colors"
+              />
+              {searchQuery && (
+                <button 
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)] hover:text-[var(--color-text)] p-1"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -860,6 +889,7 @@ const RAIDView: React.FC = () => {
                 showRowNumbers={false}
                 pagination={decisionPagination}
                 itemLabel="decisions"
+                density={density}
                 maxHeight="max-h-[calc(100vh-320px)]"
                 emptyMessage={<div className="py-8 text-center text-xs text-[var(--color-text-faint)]">No decisions registered.</div>}
               />
@@ -964,6 +994,7 @@ const RAIDView: React.FC = () => {
                 onSort={(f) => handleRaidSort(f as any)}
                 pagination={raidPagination}
                 itemLabel="RAID items"
+                density={density}
                 maxHeight="max-h-[calc(100vh-320px)]"
                 emptyMessage={<div className="p-12 text-center text-xs text-[var(--color-text-faint)]">No RAID items mapped.</div>}
               />

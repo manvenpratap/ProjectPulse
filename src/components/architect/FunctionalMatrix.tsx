@@ -40,7 +40,7 @@ import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import TablePagination, { usePagination } from '../shared/TablePagination';
-import DataTable, { ColumnDef } from '../shared/DataTable';
+import DataTable, { ColumnDef, DensityMode } from '../shared/DataTable';
 import Modal from '../shared/Modal';
 import ConfirmModal from '../shared/ConfirmModal';
 import { toast } from '../../utils/toast';
@@ -170,6 +170,7 @@ const STANDARD_CATEGORIES = [
 export const FunctionalMatrix: React.FC = () => {
   const { state, updateProject } = useProject();
   const [viewMode, setViewMode] = useState<ViewMode>('matrix');
+  const [density, setDensity] = useState<DensityMode>('comfortable');
   const [searchTerm, setSearchTerm] = useState('');
   const [complexityFilter, setComplexityFilter] = useState<ComplexityFilter>('all');
   const [selectedModule, setSelectedModule] = useState<string>('all');
@@ -958,6 +959,34 @@ export const FunctionalMatrix: React.FC = () => {
               </button>
             </div>
 
+            {/* Table Density Switcher (Visible in Table View) */}
+            {viewMode === 'table' && (
+              <div className="hidden sm:flex items-center p-0.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                <button
+                  type="button"
+                  onClick={() => setDensity('compact')}
+                  className={clsx(
+                    "px-2.5 py-1 min-h-[28px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                    density === 'compact' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
+                  )}
+                  title="Compact Table Density"
+                >
+                  Compact
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setDensity('comfortable')}
+                  className={clsx(
+                    "px-2.5 py-1 min-h-[28px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                    density === 'comfortable' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
+                  )}
+                  title="Comfortable Table Density"
+                >
+                  Comfortable
+                </button>
+              </div>
+            )}
+
             {/* Auto-Build Button */}
             <button
               onClick={handleOpenAutoBuild}
@@ -1468,6 +1497,7 @@ export const FunctionalMatrix: React.FC = () => {
             columns={columns}
             keyField="name"
             showRowNumbers
+            density={density}
             pagination={pagination}
             itemLabel="features"
             onRowClick={(f) => setSelectedFeature(f)}

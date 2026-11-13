@@ -49,7 +49,7 @@ import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import { motion, AnimatePresence } from 'motion/react';
 import { getWeekNumber, normalizeSkills } from '../../utils/projectUtils';
 import TablePagination, { usePagination } from '../shared/TablePagination';
-import DataTable, { ColumnDef } from '../shared/DataTable';
+import DataTable, { ColumnDef, DensityMode } from '../shared/DataTable';
 
 const AVATAR_COLORS = [
   'bg-indigo-500 text-white',
@@ -73,6 +73,7 @@ const TeamView: React.FC = () => {
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'compact'>('grid');
+  const [tableDensity, setTableDensity] = useState<DensityMode>('comfortable');
   const [expandedContactIds, setExpandedContactIds] = useState<Set<string>>(new Set());
   
   // Scorecard Sort State
@@ -1262,9 +1263,10 @@ const TeamView: React.FC = () => {
                     ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-sm" 
                     : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
+                title="Cards Grid View"
               >
                 <LayoutGrid size={13} />
-                <span>Grid</span>
+                <span>Cards</span>
               </button>
               <button
                 type="button"
@@ -1275,9 +1277,10 @@ const TeamView: React.FC = () => {
                     ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-sm" 
                     : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
+                title="Table List View"
               >
                 <List size={13} />
-                <span>List</span>
+                <span>Table</span>
               </button>
               <button
                 type="button"
@@ -1288,11 +1291,40 @@ const TeamView: React.FC = () => {
                     ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-sm" 
                     : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
                 )}
+                title="Avatar Roster View"
               >
                 <AlignJustify size={13} />
-                <span>Compact</span>
+                <span>Roster</span>
               </button>
             </div>
+
+            {/* Table Density Switcher (Visible in List View) */}
+            {viewMode === 'list' && (
+              <div className="hidden sm:flex items-center p-0.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                <button
+                  type="button"
+                  onClick={() => setTableDensity('compact')}
+                  className={clsx(
+                    "px-2.5 py-1 min-h-[28px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                    tableDensity === 'compact' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
+                  )}
+                  title="Compact Table Density"
+                >
+                  Compact
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTableDensity('comfortable')}
+                  className={clsx(
+                    "px-2.5 py-1 min-h-[28px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                    tableDensity === 'comfortable' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
+                  )}
+                  title="Comfortable Table Density"
+                >
+                  Comfortable
+                </button>
+              </div>
+            )}
 
             {/* Middle: Role & Status Filters */}
             <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
@@ -1544,6 +1576,7 @@ const TeamView: React.FC = () => {
               columns={memberColumns}
               pagination={pagination}
               itemLabel="members"
+              density={tableDensity}
               minWidth="min-w-[850px]"
             />
           )}
