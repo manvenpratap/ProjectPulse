@@ -644,10 +644,6 @@ export const OverviewView: React.FC = () => {
         targetViewLabel = 'Open RAID Register';
         contentNode = (
           <div className="space-y-6">
-            <p className="text-xs text-[var(--color-text-muted)] leading-relaxed">
-              The automated telemetry sensor scans task deadlines, external dependencies, high-impact RAID registers, and governance bottlenecks in real-time.
-            </p>
-
             <div className="space-y-3">
               {ewsAlerts.map(alert => {
                 const AlertIcon = alert.icon;
@@ -904,10 +900,6 @@ export const OverviewView: React.FC = () => {
         targetViewLabel = 'Open Deliveries Workstation';
         contentNode = (
           <div className="space-y-6">
-            <p className="text-xs text-[var(--color-text-muted)] leading-relaxed">
-              Software delivery units, ALM packages, and integration pipelines scheduled for the active release train.
-            </p>
-
             <div className="space-y-3">
               <h4 className="font-bold text-xs uppercase tracking-wider text-[var(--color-text-muted)]">Core Release Packages</h4>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -942,10 +934,6 @@ export const OverviewView: React.FC = () => {
         targetViewLabel = 'Open Functional Matrix';
         contentNode = (
           <div className="space-y-6">
-            <p className="text-xs text-[var(--color-text-muted)] leading-relaxed">
-              Distribution of engineering mass across modular software domains, computing subsystem coupling and release density.
-            </p>
-
             <div className="space-y-3">
               <h4 className="font-bold text-xs uppercase tracking-wider text-[var(--color-text-muted)]">Domain Architecture Distribution</h4>
               <div className="divide-y divide-[var(--color-divider)] border border-[var(--color-divider)] rounded-2xl bg-[var(--color-surface)] overflow-hidden text-xs">
@@ -1005,9 +993,12 @@ export const OverviewView: React.FC = () => {
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-primary-hex)] block font-mono">
                   {category}
                 </span>
-                <h3 className="font-bold text-base sm:text-lg text-[var(--color-text)] leading-tight">
-                  {title}
-                </h3>
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-base sm:text-lg text-[var(--color-text)] leading-tight">
+                    {title}
+                  </h3>
+                  <SectionHelpButton view="overview" section={title} label={`${title} guide`} size={13} />
+                </div>
               </div>
             </div>
             <button 

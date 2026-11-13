@@ -81,6 +81,18 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
       {
         title: 'Executive Briefing & Distribution',
         desc: 'Share view summaries or generate Executive CXO Email Briefings directly from the PageHeader menu.'
+      },
+      {
+        title: 'Early Warning Signals & Threat Triage',
+        desc: 'Continuous automated telemetry sensor scanning task deadlines, external dependencies, high-impact RAID registers, and governance bottlenecks in real-time.'
+      },
+      {
+        title: 'Strategic Deliverables & Package Deployment',
+        desc: 'Tracks software delivery units, ALM packages, and integration pipelines scheduled for the active release train.'
+      },
+      {
+        title: 'Module Gravity & Architectural Cohesion',
+        desc: 'Analyzes the distribution of engineering mass across modular software domains, computing subsystem coupling and release density.'
       }
     ],
     proTips: [
@@ -111,7 +123,7 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
       },
       {
         name: 'Dependency Bottlenecks & Critical Path Risk',
-        desc: 'Identifies assignee owners with the highest count of blocked downstream deliverables and highlights parent milestones causing launch drift.'
+        desc: 'Identifies assignee owners with the highest count of blocked downstream deliverables and highlights parent milestones causing launch drift. Reallocate helper pairs or subtasks to alleviate top dependency owners.'
       },
       {
         name: 'EVM 4-Quadrant Performance Matrix & Burn Simulator',
@@ -719,7 +731,7 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
     capabilities: [
       {
         title: 'Bulk TSV / CSV Import',
-        desc: 'Copy lists of module names directly from Excel or spreadsheets and paste them into the wizard.'
+        desc: 'Copy lists of module names directly from Excel or spreadsheets and paste them into the wizard. Specify modules using: Name, Type, Assignee, Priority, Status, Release, Screens (Pipe-separated).'
       },
       {
         title: 'Screen Sitemap Hierarchy & Format',
@@ -768,6 +780,10 @@ export const VIEW_HELP_DATA: Record<string, ViewHelpItem> = {
       {
         title: 'Reordering & Visibility',
         desc: 'Drag to reorder custom fields to control their display position in modal forms.'
+      },
+      {
+        title: 'Categorical Dropdown Options',
+        desc: 'Specify manual options using comma or semicolon separation (e.g. Critical Tier 1; High Tier 2), or link directly to a standardized Global Dropdown Library key.'
       }
     ],
     proTips: [

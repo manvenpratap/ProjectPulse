@@ -21,7 +21,6 @@ import {
   TrendingDown,
   Search,
   Zap,
-  Info,
   ChevronDown,
   ChevronUp,
   SlidersHorizontal,

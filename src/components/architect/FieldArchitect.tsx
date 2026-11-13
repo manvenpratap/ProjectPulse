@@ -1252,7 +1252,12 @@ export const FieldArchitect: React.FC = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingIdx !== null ? `Edit Custom Field: ${formName}` : `Add Custom Field (${activeTab.toUpperCase()})`}
+        title={
+          <span className="flex items-center gap-2">
+            <span>{editingIdx !== null ? `Edit Custom Field: ${formName}` : `Add Custom Field (${activeTab.toUpperCase()})`}</span>
+            <SectionHelpButton view="fields" section="Field Types" label="Custom field guide" size={13} />
+          </span>
+        }
         size="md"
         footer={
           <div className="flex gap-2.5 w-full justify-end">

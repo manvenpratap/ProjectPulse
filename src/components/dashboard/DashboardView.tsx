@@ -18,8 +18,7 @@ import {
   Compass,
   Gauge,
   RefreshCw,
-  AlertTriangle,
-  Lightbulb
+  AlertTriangle
 } from 'lucide-react';
 import clsx from 'clsx';
 import SectionHelpButton from '../shared/SectionHelpButton';
@@ -718,11 +717,6 @@ export const DashboardView: React.FC = () => {
                     </p>
                   </div>
                 )}
-
-                <div className="p-3 rounded-2xl bg-[var(--color-surface-2)] text-[11px] text-[var(--color-text-muted)] leading-relaxed flex items-center gap-1.5">
-                  <Lightbulb size={13} className="text-amber-500 shrink-0" />
-                  <span><strong>Recommendation:</strong> Reallocate helper pairs or subtasks to alleviate top dependency owners.</span>
-                </div>
               </div>
             </div>
 

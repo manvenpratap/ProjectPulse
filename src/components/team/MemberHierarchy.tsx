@@ -10,6 +10,7 @@ import {
   Users
 } from 'lucide-react';
 import Button from '../shared/Button';
+import SectionHelpButton from '../shared/SectionHelpButton';
 
 interface Node {
   member: Member;
@@ -185,7 +186,10 @@ const MemberHierarchy: React.FC = () => {
           <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
             <Building size={16} />
           </div>
-          <h2 className="text-xl font-bold tracking-tight">Organization Map</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-bold tracking-tight">Organization Map</h2>
+            <SectionHelpButton view="team" section="Dynamic Org Chart Tree" label="Organization Map guide" size={13} />
+          </div>
         </div>
         <div className="flex gap-2 bg-[var(--color-surface)] border border-[var(--color-divider)] p-1 rounded-xl shadow-sm">
            <Button variant="ghost" size="icon" onClick={() => zoom(1.1)} className="h-8 w-8"><ZoomIn size={14}/></Button>

@@ -4,6 +4,7 @@ import { UserRole, RolePermissions, UserAccount } from '../../types';
 import { NAV_HUBS } from '../../config/navigation';
 import Modal from '../shared/Modal';
 import Button from '../shared/Button';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import { 
   ShieldCheck, 
   UserCheck, 
@@ -114,13 +115,18 @@ export const AccessManagerModal: React.FC<AccessManagerModalProps> = ({ isOpen, 
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title="Role & Access Governance"
+      title={
+        <span className="flex items-center gap-2">
+          <span>Role & Access Governance</span>
+          <SectionHelpButton view="settings" section="Role Governance & Modification Permissions" label="Access governance guide" size={13} />
+        </span>
+      }
       size="xl"
       footer={
         <div className="flex justify-between items-center w-full">
           <div className="text-xs text-[var(--color-text-faint)] flex items-center gap-1.5">
             <ShieldCheck size={14} className="text-emerald-500" />
-            <span>Changes to roles and permissions apply immediately in real-time.</span>
+            <span className="font-medium text-emerald-600 dark:text-emerald-400">Live Real-Time Governance</span>
           </div>
           <Button variant="primary" size="sm" onClick={onClose} className="rounded-xl px-5 font-bold">
             Done
@@ -169,8 +175,7 @@ export const AccessManagerModal: React.FC<AccessManagerModalProps> = ({ isOpen, 
         {/* TAB 1: USERS LIST & ACCESS CONTROLS */}
         {activeTab === 'users' && !selectedUserForViews && (
           <div className="space-y-4">
-            <div className="flex items-center justify-between text-xs text-[var(--color-text-muted)] px-1">
-              <span>Select a role to assign access levels, or customize granular views.</span>
+            <div className="flex items-center justify-end text-xs text-[var(--color-text-muted)] px-1">
               <span className="font-semibold">{users.length} Users Enrolled</span>
             </div>
 

@@ -26,6 +26,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
 import Modal from '../shared/Modal';
+import SectionHelpButton from '../shared/SectionHelpButton';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import { MotionPage, StaggerContainer, StaggerItem, AnimatedProgressBar } from '../shared/MotionPage';
 import { AnimatedMetric, COCKPIT_EASE } from '../shared/AnimatedMetric';
@@ -416,7 +417,12 @@ export const ReleaseRoadmap: React.FC = () => {
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={editingRelease ? 'Edit Release Version' : 'Create Release Version'}
+        title={
+          <span className="flex items-center gap-2">
+            <span>{editingRelease ? 'Edit Release Version' : 'Create Release Version'}</span>
+            <SectionHelpButton view="releases" section="Version Scope Gating" label="Release guide" size={13} />
+          </span>
+        }
         size="md"
         footer={
           <div className="flex justify-end gap-2.5 w-full">
@@ -492,7 +498,14 @@ export const ReleaseRoadmap: React.FC = () => {
       <Modal
         isOpen={!!selectedReleaseDetails}
         onClose={() => setSelectedReleaseDetails(null)}
-        title={selectedReleaseDetails ? `Mapped Scope for ${selectedReleaseDetails.name}` : ''}
+        title={
+          selectedReleaseDetails ? (
+            <span className="flex items-center gap-2">
+              <span>Mapped Scope for {selectedReleaseDetails.name}</span>
+              <SectionHelpButton view="releases" section="Version Scope Gating" label="Scope guide" size={13} />
+            </span>
+          ) : ''
+        }
         size="lg"
         footer={
           <div className="flex justify-end w-full">

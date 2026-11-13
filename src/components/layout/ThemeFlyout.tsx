@@ -118,7 +118,7 @@ const ThemeFlyout: React.FC<ThemeFlyoutProps> = ({ isOpen, onClose }) => {
                   </span>
                 </div>
                 <p className="text-xs text-[var(--color-text-muted)] mt-0.5 truncate">
-                  Now active: <span className="font-semibold text-[var(--color-text)]">{activeThemeObj.name}</span> · {activeThemeObj.isDark ? 'Dark' : 'Light'} Mode · Hover any card to preview
+                  Now active: <span className="font-semibold text-[var(--color-text)]">{activeThemeObj.name}</span> · {activeThemeObj.isDark ? 'Dark' : 'Light'} Mode
                 </p>
               </div>
               <button

@@ -471,7 +471,12 @@ const ScaffolderView: React.FC = () => {
         <Modal
           isOpen={isBulkOpen}
           onClose={() => setIsBulkOpen(false)}
-          title="Bulk Module & Architecture Presets"
+          title={
+            <span className="flex items-center gap-2">
+              <span>Bulk Module & Architecture Presets</span>
+              <SectionHelpButton view="scaffolder" section="Bulk TSV / CSV Import" label="Bulk import guide" size={13} />
+            </span>
+          }
           size="lg"
           footer={
             <div className="flex items-center justify-end gap-3 w-full">
@@ -523,9 +528,6 @@ const ScaffolderView: React.FC = () => {
                     <label className="text-xs font-bold text-[var(--color-text-faint)] uppercase tracking-wider">
                       Module Blueprint Matrix (CSV / TSV)
                     </label>
-                    <span className="text-[11px] font-mono text-[var(--color-text-faint)]">
-                      Name, Type, Assignee, Priority, Status, Release, Screens (Pipe-separated)
-                    </span>
                   </div>
                   <textarea
                     value={bulkText}
