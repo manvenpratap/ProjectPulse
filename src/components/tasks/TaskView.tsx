@@ -9,6 +9,8 @@ import { ListTodo, Plus, LayoutGrid, Kanban, GanttChart, Layers, Flag, Filter } 
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
+import { MotionPage, StaggerContainer, StaggerItem } from '../shared/MotionPage';
+import { AnimatedMetric } from '../shared/AnimatedMetric';
 import { TaskPriority, TaskStatus } from '../../types';
 import { isBlocked, isOverdue } from '../../utils/projectUtils';
 import clsx from 'clsx';
@@ -110,7 +112,7 @@ const TaskView: React.FC<TaskViewProps> = ({ initialMode }) => {
   }, [state.tasks, viewMode, selectedModule, selectedRelease]);
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-hidden">
+    <MotionPage className="flex flex-col h-full bg-[var(--color-bg)] overflow-hidden">
       {/* Unified Tier 2 Command Bar: Title + Filters + View Modes + Actions */}
       <PageHeader
         icon={ListTodo}
@@ -264,66 +266,66 @@ const TaskView: React.FC<TaskViewProps> = ({ initialMode }) => {
           ]}
           contentClassName="pt-2.5 pb-1"
         >
-          <div className="flex sm:grid overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar scroll-fade-x sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pb-1">
-            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+          <StaggerContainer className="flex sm:grid overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar scroll-fade-x sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pb-1">
+            <StaggerItem className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
               <div className="text-xs font-medium text-[var(--color-text-muted)]">Completed Scope</div>
               <div className="text-xl font-bold text-emerald-500 mt-1 flex items-baseline gap-1.5 tracking-tight tabular-nums">
-                <span>{taskTelemetry.completed}</span>
+                <span><AnimatedMetric value={taskTelemetry.completed} /></span>
                 <span className="text-[11px] font-normal text-[var(--color-text-muted)]">/ {taskTelemetry.total}</span>
               </div>
               <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5 tabular-nums">
-                {taskTelemetry.completionPct}% done
+                <AnimatedMetric value={taskTelemetry.completionPct} suffix="% done" />
               </div>
-            </div>
+            </StaggerItem>
 
-            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+            <StaggerItem className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
               <div className="text-xs font-medium text-[var(--color-text-muted)]">In Flight</div>
               <div className="text-xl font-bold text-sky-500 mt-1 flex items-baseline gap-1.5 tracking-tight tabular-nums">
-                <span>{taskTelemetry.inFlight}</span>
+                <span><AnimatedMetric value={taskTelemetry.inFlight} /></span>
                 <span className="text-[11px] font-normal text-[var(--color-text-muted)]">active</span>
               </div>
               <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Progress &amp; review</div>
-            </div>
+            </StaggerItem>
 
-            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+            <StaggerItem className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
               <div className="text-xs font-medium text-[var(--color-text-muted)]">Blocked / Hold</div>
               <div className={clsx(
                 'text-xl font-bold mt-1 tracking-tight tabular-nums',
                 taskTelemetry.blockedOrHold > 0 ? 'text-amber-500' : 'text-[var(--color-text)]'
               )}>
-                {taskTelemetry.blockedOrHold}
+                <AnimatedMetric value={taskTelemetry.blockedOrHold} />
               </div>
               <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Prerequisite or hold</div>
-            </div>
+            </StaggerItem>
 
-            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+            <StaggerItem className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
               <div className="text-xs font-medium text-[var(--color-text-muted)]">Overdue Tasks</div>
               <div className={clsx(
                 'text-xl font-bold mt-1 tracking-tight tabular-nums',
                 taskTelemetry.overdue > 0 ? 'text-rose-500' : 'text-emerald-500'
               )}>
-                {taskTelemetry.overdue}
+                <AnimatedMetric value={taskTelemetry.overdue} />
               </div>
               <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Past target due date</div>
-            </div>
+            </StaggerItem>
 
-            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+            <StaggerItem className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
               <div className="text-xs font-medium text-[var(--color-text-muted)]">Crit / High Open</div>
               <div className="text-xl font-bold text-purple-500 mt-1 tracking-tight tabular-nums">
-                {taskTelemetry.highPriorityOpen}
+                <AnimatedMetric value={taskTelemetry.highPriorityOpen} />
               </div>
               <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Priority escalations</div>
-            </div>
+            </StaggerItem>
 
-            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+            <StaggerItem className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
               <div className="text-xs font-medium text-[var(--color-text-muted)]">Effort Burned</div>
               <div className="text-xl font-bold text-[var(--color-text)] mt-1 tracking-tight tabular-nums">
-                {taskTelemetry.actDays}
+                <AnimatedMetric value={taskTelemetry.actDays} />
                 <span className="text-xs text-[var(--color-text-muted)] ml-1 font-normal">/ {taskTelemetry.estDays}d</span>
               </div>
               <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Actual vs estimated</div>
-            </div>
-          </div>
+            </StaggerItem>
+          </StaggerContainer>
         </CollapsibleSummaryStrip>
       </div>
 
@@ -363,7 +365,7 @@ const TaskView: React.FC<TaskViewProps> = ({ initialMode }) => {
         onClose={() => setIsModalOpen(false)} 
         taskId={editingTaskId} 
       />
-    </div>
+    </MotionPage>
   );
 };
 

@@ -50,6 +50,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { getWeekNumber, normalizeSkills } from '../../utils/projectUtils';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef, DensityMode } from '../shared/DataTable';
+import { MotionPage, StaggerContainer, StaggerItem, AnimatedProgressBar } from '../shared/MotionPage';
+import { AnimatedMetric } from '../shared/AnimatedMetric';
 
 const AVATAR_COLORS = [
   'bg-indigo-500 text-white',
@@ -912,7 +914,7 @@ const TeamView: React.FC = () => {
   ], []);
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+    <MotionPage className="flex flex-col h-full bg-[var(--color-bg)]">
       {/* Page Header with Action Button */}
       <PageHeader
         icon={Users}
@@ -959,10 +961,10 @@ const TeamView: React.FC = () => {
           contentClassName="pt-3 pb-1"
         >
         <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           
           {/* CARD 1: Velocity Leaderboard */}
-          <div className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs flex flex-col justify-between">
+          <StaggerItem className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -1002,10 +1004,10 @@ const TeamView: React.FC = () => {
               <span className="font-semibold text-amber-500">{velocityLeaders.scores[0]?.name || '—'}</span>
               <SectionHelpButton view="team" section="Velocity Leaders" label="Velocity leaderboard guide" size={12} />
             </div>
-          </div>
+          </StaggerItem>
 
           {/* CARD 2: Quality Champions */}
-          <div className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs flex flex-col justify-between">
+          <StaggerItem className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -1041,10 +1043,10 @@ const TeamView: React.FC = () => {
               <span className="font-semibold text-emerald-500">{qualityChampions[0]?.name || '—'}</span>
               <SectionHelpButton view="team" section="Skills & Role Coverage" label="Quality Champions guide" size={12} />
             </div>
-          </div>
+          </StaggerItem>
 
           {/* CARD 3: Growth Mindset */}
-          <div className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs flex flex-col justify-between">
+          <StaggerItem className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -1084,10 +1086,10 @@ const TeamView: React.FC = () => {
               <span className="font-semibold text-sky-500">{growthLeaders.scores[0]?.count || 0} modules</span>
               <SectionHelpButton view="team" section="Skills & Role Coverage" label="Growth Mindset guide" size={12} />
             </div>
-          </div>
+          </StaggerItem>
 
           {/* CARD 4: Collaborative Pulse */}
-          <div className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs flex flex-col justify-between">
+          <StaggerItem className="bg-[var(--color-surface)] p-5 rounded-2xl border border-[var(--color-divider)] shadow-xs flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
@@ -1135,9 +1137,9 @@ const TeamView: React.FC = () => {
               <span className="font-semibold text-[var(--color-primary-hex)]">{pulseMetrics.totalEvents} logged</span>
               <SectionHelpButton view="team" section="Weekly Capacity" label="Collaborative Pulse guide" size={12} />
             </div>
-          </div>
+          </StaggerItem>
 
-        </div>
+        </StaggerContainer>
 
         {/* ══════════════════════════════════════════════════════════
             SECTION 2: UPCOMING BIRTHDAYS & PLANNED LEAVES BANNERS
@@ -1381,7 +1383,7 @@ const TeamView: React.FC = () => {
 
           {/* VIEW MODE 1: GRID VIEW (Expanded Rich Cards) */}
           {viewMode === 'grid' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {filteredMembers.map((member, i) => {
                 const initials = member.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
                 const mTasks = tasks.filter(t => t.assignee === member.name);
@@ -1416,7 +1418,7 @@ const TeamView: React.FC = () => {
                 const isContactExpanded = expandedContactIds.has(member.id);
 
                 return (
-                  <div 
+                  <StaggerItem 
                     key={member.id} 
                     className="card p-5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs flex flex-col justify-between hover:border-[var(--color-border)] transition-colors space-y-4"
                   >
@@ -1457,14 +1459,18 @@ const TeamView: React.FC = () => {
                     <div className="flex items-center justify-between p-2.5 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] text-xs">
                       <div>
                         <div className="text-[10px] font-semibold text-[var(--color-text-muted)] uppercase">Completion</div>
-                        <div className="font-mono font-bold text-[var(--color-text)]">{progress}%</div>
+                        <div className="font-mono font-bold text-[var(--color-text)]">
+                          <AnimatedMetric value={progress} suffix="%" />
+                        </div>
                       </div>
-                      <div className="w-20 h-1.5 bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
-                        <div className="h-full bg-[var(--color-primary-hex)] rounded-full" style={{ width: `${progress}%` }} />
+                      <div className="w-20">
+                        <AnimatedProgressBar progress={progress} height={6} />
                       </div>
                       <div className="text-right">
                         <div className="text-[10px] font-semibold text-[var(--color-text-muted)] uppercase">Efficiency</div>
-                        <div className="font-mono font-bold text-[var(--color-primary-hex)]">{efficiency}%</div>
+                        <div className="font-mono font-bold text-[var(--color-primary-hex)]">
+                          <AnimatedMetric value={efficiency} suffix="%" />
+                        </div>
                       </div>
                     </div>
 
@@ -1563,10 +1569,10 @@ const TeamView: React.FC = () => {
                       </button>
                     </div>
 
-                  </div>
+                  </StaggerItem>
                 );
               })}
-            </div>
+            </StaggerContainer>
           )}
 
           {/* VIEW MODE 2: LIST VIEW (Tabular) */}
@@ -1583,11 +1589,11 @@ const TeamView: React.FC = () => {
 
           {/* VIEW MODE 3: COMPACT VIEW (Avatar Roster) */}
           {viewMode === 'compact' && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            <StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
               {filteredMembers.map((m, i) => {
                 const initials = m.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
                 return (
-                  <div
+                  <StaggerItem
                     key={m.id}
                     onClick={() => handleOpenEditModal(m)}
                     className="card p-3.5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs text-center flex flex-col items-center gap-2 hover:border-[var(--color-primary-hex)] transition-colors cursor-pointer active:scale-95 group"
@@ -1605,10 +1611,10 @@ const TeamView: React.FC = () => {
                     <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text-muted)]">
                       {m.status}
                     </span>
-                  </div>
+                  </StaggerItem>
                 );
               })}
-            </div>
+            </StaggerContainer>
           )}
 
           {filteredMembers.length === 0 && (
@@ -2057,7 +2063,7 @@ const TeamView: React.FC = () => {
         variant="danger"
         confirmLabel="Remove Member"
       />
-    </div>
+    </MotionPage>
   );
 };
 

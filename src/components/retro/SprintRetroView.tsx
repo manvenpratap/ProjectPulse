@@ -30,6 +30,8 @@ import Modal from '../shared/Modal';
 import { toast } from '../../utils/toast';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import { nextRetroActionStatus } from '../../utils/stateMachines';
+import { MotionPage, StaggerContainer, StaggerItem } from '../shared/MotionPage';
+import { AnimatedMetric } from '../shared/AnimatedMetric';
 
 const CATEGORIES = [
   { id: 'went_well', label: 'What Went Well', color: 'emerald', icon: Smile, desc: 'Wins, accelerated velocities, and successful milestones' },
@@ -153,7 +155,7 @@ export const SprintRetroView: React.FC = () => {
   });
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+    <MotionPage className="flex flex-col h-full bg-[var(--color-bg)]">
       <PageHeader
         icon={Smile}
         title="Sprint Retrospective"
@@ -198,9 +200,9 @@ export const SprintRetroView: React.FC = () => {
           ]}
           contentClassName="pt-2.5 pb-1"
         >
-        <div className="flex sm:grid overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar scroll-fade-x sm:grid-cols-3 gap-3 sm:gap-4 pb-1">
+        <StaggerContainer className="flex sm:grid overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar scroll-fade-x sm:grid-cols-3 gap-3 sm:gap-4 pb-1">
             {/* Morale Index */}
-            <div className="min-w-[235px] sm:min-w-0 shrink-0 snap-start p-3.5 sm:p-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl flex items-center gap-3.5 sm:gap-4">
+            <StaggerItem className="min-w-[235px] sm:min-w-0 shrink-0 snap-start p-3.5 sm:p-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl flex items-center gap-3.5 sm:gap-4">
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0 border border-emerald-500/20">
                 <Smile size={22} />
               </div>
@@ -209,13 +211,13 @@ export const SprintRetroView: React.FC = () => {
                   <span className="text-xs font-medium text-[var(--color-text-muted)]">Team Morale Index</span>
                 </div>
                 <div className="text-xl font-mono font-bold text-emerald-500 mt-0.5">
-                  {sprintMorale} <span className="text-xs font-sans text-[var(--color-text-muted)]">/ 10</span>
+                  <AnimatedMetric value={sprintMorale} decimals={1} /> <span className="text-xs font-sans text-[var(--color-text-muted)]">/ 10</span>
                 </div>
               </div>
-            </div>
+            </StaggerItem>
 
             {/* Velocity Fulfillment */}
-            <div className="min-w-[235px] sm:min-w-0 shrink-0 snap-start p-3.5 sm:p-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl flex items-center gap-3.5 sm:gap-4">
+            <StaggerItem className="min-w-[235px] sm:min-w-0 shrink-0 snap-start p-3.5 sm:p-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl flex items-center gap-3.5 sm:gap-4">
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-sky-500/10 text-sky-500 flex items-center justify-center shrink-0 border border-sky-500/20">
                 <TrendingUp size={22} />
               </div>
@@ -225,13 +227,13 @@ export const SprintRetroView: React.FC = () => {
                   <SectionHelpButton view="retro" section="Action Items" label="Velocity Delivered guide" size={12} />
                 </div>
                 <div className="text-xl font-mono font-bold text-sky-500 mt-0.5">
-                  {sprintDeliveredPoints} <span className="text-xs font-sans text-[var(--color-text-muted)]">/ {sprintTargetPoints} pts</span>
+                  <AnimatedMetric value={sprintDeliveredPoints} /> <span className="text-xs font-sans text-[var(--color-text-muted)]">/ {sprintTargetPoints} pts</span>
                 </div>
               </div>
-            </div>
+            </StaggerItem>
 
             {/* Kaizen Actions Closure */}
-            <div className="min-w-[235px] sm:min-w-0 shrink-0 snap-start p-3.5 sm:p-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl flex items-center gap-3.5 sm:gap-4">
+            <StaggerItem className="min-w-[235px] sm:min-w-0 shrink-0 snap-start p-3.5 sm:p-4 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl flex items-center gap-3.5 sm:gap-4">
               <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0 border border-purple-500/20">
                 <CheckCircle2 size={22} />
               </div>
@@ -241,11 +243,11 @@ export const SprintRetroView: React.FC = () => {
                   <SectionHelpButton view="retro" section="Action Item Tracking" label="Action Resolution guide" size={12} />
                 </div>
                 <div className="text-xl font-mono font-bold text-purple-500 mt-0.5">
-                  {counts.resolved_actions} <span className="text-xs font-sans text-[var(--color-text-muted)]">/ {counts.action_item} Resolved</span>
+                  <AnimatedMetric value={counts.resolved_actions} /> <span className="text-xs font-sans text-[var(--color-text-muted)]">/ {counts.action_item} Resolved</span>
                 </div>
               </div>
-            </div>
-          </div>
+            </StaggerItem>
+          </StaggerContainer>
         </CollapsibleSummaryStrip>
 
         {/* 2. CATEGORY PILL FILTER BAR (Information Pyramid Level 2) */}
@@ -279,7 +281,7 @@ export const SprintRetroView: React.FC = () => {
         </div>
 
         {/* 3. RETRO BOARD FEEDBACK CARDS (Information Pyramid Level 3) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {CATEGORIES.filter(c => activeCategoryFilter === 'all' || activeCategoryFilter === c.id).map(category => {
             const items = retros.filter(r => r.category === category.id);
             const isEmerald = category.color === 'emerald';
@@ -288,7 +290,7 @@ export const SprintRetroView: React.FC = () => {
             const isPurple = category.color === 'purple';
 
             return (
-              <div 
+              <StaggerItem 
                 key={category.id} 
                 className={clsx(
                   "flex flex-col bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl p-4 shadow-sm",
@@ -398,10 +400,10 @@ export const SprintRetroView: React.FC = () => {
                     </div>
                   )}
                 </div>
-              </div>
+              </StaggerItem>
             );
           })}
-        </div>
+        </StaggerContainer>
 
         {/* 4. CONTINUOUS IMPROVEMENT COMMITMENT LEDGER (Information Pyramid Level 4) */}
         <div className="p-6 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-sm space-y-4">
@@ -571,7 +573,7 @@ export const SprintRetroView: React.FC = () => {
         </form>
       </Modal>
 
-    </div>
+    </MotionPage>
   );
 };
 

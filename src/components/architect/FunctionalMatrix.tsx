@@ -50,6 +50,8 @@ import { daysDiff, fmtDate, todayStr } from '../../utils/projectUtils';
 import { motion, AnimatePresence } from 'motion/react';
 import FeatureTimelineChart from './FeatureTimelineChart';
 import FeatureSwimlaneChart from './FeatureSwimlaneChart';
+import { MotionPage, StaggerContainer, StaggerItem } from '../shared/MotionPage';
+import { AnimatedMetric } from '../shared/AnimatedMetric';
 
 type ViewMode = 'matrix' | 'table' | 'timeline' | 'swimlane';
 type ComplexityFilter = 'all' | 'simple' | 'moderate' | 'complex';
@@ -899,7 +901,7 @@ export const FunctionalMatrix: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] text-[var(--color-text)]">
+    <MotionPage className="flex flex-col h-full bg-[var(--color-bg)] text-[var(--color-text)]">
       {/* ── 1. Page Header with Controls ── */}
       <PageHeader
         icon={Layers}
@@ -1209,26 +1211,32 @@ export const FunctionalMatrix: React.FC = () => {
           ]}
           contentClassName="pt-2.5 pb-1"
         >
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
-          <div className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-between">
+        <StaggerContainer className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+          <StaggerItem className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-between">
             <span className="font-semibold text-[var(--color-text-muted)]">Features</span>
-            <span className="font-mono font-bold text-sm text-[var(--color-text)]">{totalFeatures}</span>
-          </div>
-          <div className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-between">
+            <span className="font-mono font-bold text-sm text-[var(--color-text)]">
+              <AnimatedMetric value={totalFeatures} />
+            </span>
+          </StaggerItem>
+          <StaggerItem className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-between">
             <span className="font-semibold text-[var(--color-text-muted)]">Mapped Screens</span>
-            <span className="font-mono font-bold text-sm text-cyan-600 dark:text-cyan-400">{mappedScreens.length} / {allScreens.length}</span>
-          </div>
-          <div className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-between">
+            <span className="font-mono font-bold text-sm text-cyan-600 dark:text-cyan-400">
+              <AnimatedMetric value={mappedScreens.length} /> / {allScreens.length}
+            </span>
+          </StaggerItem>
+          <StaggerItem className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-between">
             <span className="font-semibold text-[var(--color-text-muted)]">Avg Maturation</span>
-            <span className="font-mono font-bold text-sm text-emerald-600 dark:text-emerald-400">{avgMaturity}%</span>
-          </div>
-          <div className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-between">
+            <span className="font-mono font-bold text-sm text-emerald-600 dark:text-emerald-400">
+              <AnimatedMetric value={avgMaturity} suffix="%" />
+            </span>
+          </StaggerItem>
+          <StaggerItem className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-between">
             <span className="font-semibold text-[var(--color-text-muted)]">At Risk</span>
             <span className={clsx("font-mono font-bold text-sm", totalAtRisk > 0 ? "text-rose-500" : "text-emerald-500")}>
-              {totalAtRisk}
+              <AnimatedMetric value={totalAtRisk} />
             </span>
-          </div>
-        </div>
+          </StaggerItem>
+        </StaggerContainer>
         </CollapsibleSummaryStrip>
 
         {/* Filter Controls Row */}
@@ -2016,7 +2024,7 @@ export const FunctionalMatrix: React.FC = () => {
         variant="danger"
         confirmLabel="Remove Feature"
       />
-    </div>
+    </MotionPage>
   );
 };
 

@@ -8,6 +8,8 @@ import Modal from '../shared/Modal';
 import { toast } from '../../utils/toast';
 import clsx from 'clsx';
 import { LogEntry } from '../../types';
+import { MotionPage, StaggerContainer, StaggerItem } from '../shared/MotionPage';
+import { AnimatedMetric } from '../shared/AnimatedMetric';
 
 const LogView: React.FC = () => {
   const { state, addLog } = useProject();
@@ -48,11 +50,16 @@ const LogView: React.FC = () => {
   }, {} as Record<string, LogEntry[]>);
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+    <MotionPage className="flex flex-col h-full bg-[var(--color-bg)]">
       <PageHeader
         icon={History}
         title="Project Audit Log"
-        subtitle={`${state.log.length} Transactional Entries Recorded`}
+        subtitle={
+          <span className="inline-flex items-center gap-1.5">
+            <AnimatedMetric value={state.log.length} />
+            <span>Transactional Entries Recorded</span>
+          </span>
+        }
         actions={
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:flex-initial">
@@ -98,14 +105,14 @@ const LogView: React.FC = () => {
                 <div className="h-[1px] flex-1 bg-[var(--color-divider)] shadow-sm" />
               </div>
 
-              <div className="space-y-3 relative pl-4 border-l-2 border-[var(--color-divider)] ml-14">
+              <StaggerContainer className="space-y-3 relative pl-4 border-l-2 border-[var(--color-divider)] ml-14">
                 {entries.map((entry, idx) => {
                   const time = new Date(entry.ts).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
                   const isStatus = entry.action === 'Status Changed';
                   const isCreated = entry.action === 'Created';
                   
                   return (
-                    <div key={idx} className="group relative">
+                    <StaggerItem key={idx} className="group relative">
                       {/* Timeline Dot */}
                       <div className={clsx(
                         "absolute -left-[1.35rem] top-4 w-2.5 h-2.5 rounded-full border-2 border-[var(--color-surface)] ring-4 ring-[var(--color-bg)] motion-safe:transition-transform motion-safe:group-hover:scale-125",
@@ -162,10 +169,10 @@ const LogView: React.FC = () => {
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </StaggerItem>
                   );
                 })}
-              </div>
+              </StaggerContainer>
             </div>
           ))}
 
@@ -234,7 +241,7 @@ const LogView: React.FC = () => {
           </div>
         </form>
       </Modal>
-    </div>
+    </MotionPage>
   );
 };
 

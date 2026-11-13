@@ -39,6 +39,8 @@ import {
   Legend
 } from 'recharts';
 import { motion, AnimatePresence } from 'motion/react';
+import { MotionPage, StaggerContainer, StaggerItem, AnimatedProgressBar } from '../shared/MotionPage';
+import { AnimatedMetric } from '../shared/AnimatedMetric';
 
 const COLORS = ['#4F46E5', '#10B981', '#F59E0B', '#E11D48', '#8B5CF6', '#06B6D4', '#EC4899'];
 
@@ -113,7 +115,7 @@ const ReportView: React.FC = () => {
       />
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto custom-scroll print:overflow-visible">
+      <MotionPage className="flex-1 overflow-y-auto custom-scroll print:overflow-visible">
         <div className="spell-scroll-hairline print:hidden" aria-hidden="true" />
         <div className="w-full p-4 sm:p-6 lg:p-8 space-y-6 print:p-0">
           
@@ -176,47 +178,57 @@ const ReportView: React.FC = () => {
                   </div>
                   <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold">
                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 motion-safe:animate-pulse" />
-                    Health Index: {health}%
+                    Health Index: <AnimatedMetric value={health} suffix="%" />
                   </div>
                 </div>
               </div>
 
               {/* TAB 1: STATUS SUMMARY */}
               {reportType === 'status' && (
-                <div className="space-y-8 motion-safe:animate-in motion-safe:fade-in duration-300">
+                <div className="space-y-8">
                   {/* 4 Core Metrics */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                  <StaggerContainer className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <StaggerItem className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] shadow-2xs hover:shadow-xs transition-shadow">
                       <span className="text-xs font-medium text-[var(--color-text-faint)]">Tasks done</span>
-                      <div className="text-2xl font-mono font-bold text-emerald-600 mt-1">{completedTasks.length} / {totalTasks}</div>
-                      <span className="text-[10px] text-[var(--color-text-muted)]">{progress}% completed</span>
-                    </div>
-                    <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                      <div className="text-2xl font-mono font-bold text-emerald-600 mt-1">
+                        <AnimatedMetric value={completedTasks.length} /> / {totalTasks}
+                      </div>
+                      <span className="text-[10px] text-[var(--color-text-muted)] font-mono">
+                        <AnimatedMetric value={progress} suffix="%" /> completed
+                      </span>
+                    </StaggerItem>
+                    <StaggerItem className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] shadow-2xs hover:shadow-xs transition-shadow">
                       <span className="text-xs font-medium text-[var(--color-text-faint)]">ALM deliveries</span>
-                      <div className="text-2xl font-mono font-bold text-[var(--color-primary-hex)] mt-1">{state.deliveries?.length || 0}</div>
+                      <div className="text-2xl font-mono font-bold text-[var(--color-primary-hex)] mt-1">
+                        <AnimatedMetric value={state.deliveries?.length || 0} />
+                      </div>
                       <span className="text-[10px] text-[var(--color-text-muted)]">Release packages</span>
-                    </div>
-                    <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                    </StaggerItem>
+                    <StaggerItem className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] shadow-2xs hover:shadow-xs transition-shadow">
                       <span className="text-xs font-medium text-[var(--color-text-faint)]">Active RAID</span>
-                      <div className="text-2xl font-mono font-bold text-amber-600 mt-1">{activeRaids.length}</div>
+                      <div className="text-2xl font-mono font-bold text-amber-600 mt-1">
+                        <AnimatedMetric value={activeRaids.length} />
+                      </div>
                       <span className="text-[10px] text-[var(--color-text-muted)]">Risks & dependencies</span>
-                    </div>
-                    <div className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                    </StaggerItem>
+                    <StaggerItem className="p-4 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] shadow-2xs hover:shadow-xs transition-shadow">
                       <span className="text-xs font-medium text-[var(--color-text-faint)]">Overdue items</span>
-                      <div className="text-2xl font-mono font-bold text-red-500 mt-1">{overdueTasks.length}</div>
+                      <div className="text-2xl font-mono font-bold text-rose-500 mt-1">
+                        <AnimatedMetric value={overdueTasks.length} />
+                      </div>
                       <span className="text-[10px] text-[var(--color-text-muted)]">Need intervention</span>
-                    </div>
-                  </div>
+                    </StaggerItem>
+                  </StaggerContainer>
 
                   {/* Progress Visual */}
-                  <div className="space-y-2 p-5 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                  <div className="space-y-2 p-5 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] shadow-2xs">
                     <div className="flex justify-between items-center text-xs font-bold">
                       <span className="text-xs font-medium text-[var(--color-text-muted)]">Total delivery momentum</span>
-                      <span className="font-mono text-[var(--color-primary-hex)]">{progress}%</span>
+                      <span className="font-mono text-[var(--color-primary-hex)]">
+                        <AnimatedMetric value={progress} suffix="%" />
+                      </span>
                     </div>
-                    <div className="h-3 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
-                      <div className="h-full bg-[var(--color-primary-hex)] rounded-full" style={{ width: `${progress}%` }} />
-                    </div>
+                    <AnimatedProgressBar progress={progress} heightClass="h-3" />
                   </div>
 
                   {/* Key Executive Insights */}
@@ -398,7 +410,7 @@ const ReportView: React.FC = () => {
           </div>
           )}
         </div>
-      </div>
+      </MotionPage>
     </div>
   );
 };

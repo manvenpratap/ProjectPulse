@@ -31,6 +31,8 @@ import TaskModal from '../tasks/TaskModal';
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'motion/react';
 import { useMediaQuery } from '../../hooks/useMediaQuery';
+import { MotionPage } from '../shared/MotionPage';
+import { AnimatedMetric } from '../shared/AnimatedMetric';
 
 type ZoomMode = 'day' | 'week' | 'month';
 type SortMode = 'date' | 'name-asc' | 'name-desc';
@@ -849,14 +851,21 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
     }
   };
 
+  const RootWrapper = (embedded ? 'div' : MotionPage) as any;
+
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)]" ref={containerRef}>
+    <RootWrapper className="flex flex-col h-full bg-[var(--color-bg)]" ref={containerRef}>
       {/* 1. Page Header (hidden when embedded in TaskView) */}
       {!embedded && (
         <PageHeader
           icon={GanttIcon}
           title="Project Timeline & Gantt"
-          subtitle={`${filteredTasks.length} Scheduled Tasks`}
+          subtitle={
+            <span className="inline-flex items-center gap-1.5">
+              <AnimatedMetric value={filteredTasks.length} />
+              <span>Scheduled Tasks</span>
+            </span>
+          }
           actions={
             <div className="flex items-center gap-2 flex-nowrap md:flex-wrap">
               {/* View Mode Toggle */}
@@ -1446,7 +1455,7 @@ export const TimelineView: React.FC<TimelineViewProps> = ({ embedded = false }) 
         onClose={() => { setIsModalOpen(false); setSelectedTaskId(null); }}
         taskId={selectedTaskId}
       />
-    </div>
+    </RootWrapper>
   );
 };
 

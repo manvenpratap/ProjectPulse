@@ -44,6 +44,7 @@ import PageHeader from '../shared/PageHeader';
 import Modal from '../shared/Modal';
 import { formatLibraryName } from './RegistryView';
 import clsx from 'clsx';
+import { MotionPage } from '../shared/MotionPage';
 import { CustomField, FieldConfig } from '../../types';
 import {
   DEFAULT_TASK_COLS,
@@ -501,7 +502,7 @@ export const FieldArchitect: React.FC = () => {
     : 'CF_ATTRIBUTE_KEY';
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] relative">
+    <MotionPage className="flex flex-col h-full bg-[var(--color-bg)] relative">
       {/* Screen reader status announcer (dynamic-sort) */}
       <p role="status" className="sr-only">
         {liveStatus}
@@ -1496,7 +1497,7 @@ export const FieldArchitect: React.FC = () => {
           </div>
         </form>
       </Modal>
-    </div>
+    </MotionPage>
   );
 };
 

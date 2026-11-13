@@ -33,6 +33,7 @@ import clsx from 'clsx';
 import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import ThemeGrid, { THEMES } from '../shared/ThemeGrid';
+import { MotionPage } from '../shared/MotionPage';
 
 const VALID_SETTINGS_TABS = new Set(['parameters', 'theme', 'baselines', 'access']);
 
@@ -138,7 +139,7 @@ const SettingsView: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+    <MotionPage className="flex flex-col h-full bg-[var(--color-bg)]">
       <PageHeader
         icon={Settings}
         title="System Configuration & Governance"
@@ -536,7 +537,7 @@ const SettingsView: React.FC = () => {
         variant={confirmState.variant}
         confirmLabel={confirmState.confirmLabel}
       />
-    </div>
+    </MotionPage>
   );
 };
 

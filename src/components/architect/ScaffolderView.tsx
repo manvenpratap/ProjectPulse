@@ -25,6 +25,7 @@ import Modal from '../shared/Modal';
 import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import clsx from 'clsx';
+import { MotionPage } from '../shared/MotionPage';
 
 interface ScaffoldModule {
   name: string;
@@ -207,7 +208,7 @@ const ScaffolderView: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+    <MotionPage className="flex flex-col h-full bg-[var(--color-bg)]">
       <PageHeader
         icon={Blocks}
         title="Project Scaffolder"
@@ -561,7 +562,7 @@ const ScaffolderView: React.FC = () => {
             </div>
         </Modal>
       </div>
-    </div>
+    </MotionPage>
   );
 };
 

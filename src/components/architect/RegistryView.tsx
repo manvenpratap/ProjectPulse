@@ -31,6 +31,8 @@ import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import { toast } from '../../utils/toast';
+import { MotionPage, StaggerContainer, StaggerItem } from '../shared/MotionPage';
+import { AnimatedMetric } from '../shared/AnimatedMetric';
 import clsx from 'clsx';
 import { todayStr } from '../../utils/projectUtils';
 
@@ -397,7 +399,7 @@ const RegistryView: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+    <MotionPage className="flex flex-col h-full bg-[var(--color-bg)]">
       {/* ── 1. Page Header ── */}
       <PageHeader
         icon={ListChecks}
@@ -438,50 +440,50 @@ const RegistryView: React.FC = () => {
           ]}
           contentClassName="pt-2.5 pb-1"
         >
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="p-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
+        <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <StaggerItem className="p-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
             <div>
               <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
                 Option Libraries
               </div>
               <div className="text-lg font-display font-black text-[var(--color-text)] mt-0.5">
-                {keys.length} <span className="text-xs font-medium text-[var(--color-text-muted)]">({coreCount} core · {customCount} custom)</span>
+                <AnimatedMetric value={keys.length} /> <span className="text-xs font-medium text-[var(--color-text-muted)]">({coreCount} core · {customCount} custom)</span>
               </div>
             </div>
             <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center shrink-0">
               <Layers size={16} />
             </div>
-          </div>
+          </StaggerItem>
 
-          <div className="p-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
+          <StaggerItem className="p-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
             <div>
               <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
                 Total Defined Options
               </div>
               <div className="text-lg font-display font-black text-[var(--color-text)] mt-0.5">
-                {totalValuesCount} <span className="text-xs font-medium text-[var(--color-text-muted)]">entries</span>
+                <AnimatedMetric value={totalValuesCount} /> <span className="text-xs font-medium text-[var(--color-text-muted)]">entries</span>
               </div>
             </div>
             <div className="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0">
               <Tag size={16} />
             </div>
-          </div>
+          </StaggerItem>
 
-          <div className="p-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
+          <StaggerItem className="p-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
             <div>
               <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
                 Custom Fields Linked
               </div>
               <div className="text-lg font-display font-black text-[var(--color-text)] mt-0.5">
-                {totalLinkedFields} <span className="text-xs font-medium text-[var(--color-text-muted)]">attributes</span>
+                <AnimatedMetric value={totalLinkedFields} /> <span className="text-xs font-medium text-[var(--color-text-muted)]">attributes</span>
               </div>
             </div>
             <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
               <Database size={16} />
             </div>
-          </div>
+          </StaggerItem>
 
-          <div className="p-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
+          <StaggerItem className="p-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
             <div>
               <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
                 Sync Integrity
@@ -494,8 +496,8 @@ const RegistryView: React.FC = () => {
             <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
               <ShieldCheck size={16} />
             </div>
-          </div>
-        </div>
+          </StaggerItem>
+        </StaggerContainer>
         </CollapsibleSummaryStrip>
       </div>
 
@@ -1026,7 +1028,7 @@ const RegistryView: React.FC = () => {
         variant={confirmState.variant}
         confirmLabel={confirmState.confirmLabel}
       />
-    </div>
+    </MotionPage>
   );
 };
 

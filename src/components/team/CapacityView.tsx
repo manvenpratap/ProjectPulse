@@ -32,6 +32,8 @@ import { toast } from '../../utils/toast';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import { TaskStatus } from '../../types';
 import { daysDiff, getBusinessDays, addBusDays } from '../../utils/projectUtils';
+import { MotionPage, StaggerContainer, StaggerItem } from '../shared/MotionPage';
+import { AnimatedMetric } from '../shared/AnimatedMetric';
 
 export interface CapacityViewProps {
   initialMode?: 'cards' | 'heatmap' | 'classic' | 'schedule';
@@ -690,7 +692,7 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] overflow-hidden">
+    <MotionPage className="flex flex-col h-full bg-[var(--color-bg)] overflow-hidden">
       <PageHeader
         icon={BarChart3}
         title="Resource Capacity & Scheduling"
@@ -784,30 +786,32 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
               ]}
               contentClassName="pt-2.5 pb-0.5"
             >
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
-                <div className="bg-[var(--color-surface)] p-2.5 sm:px-3.5 sm:py-2 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 shadow-2xs">
+              <StaggerContainer className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+                <StaggerItem className="bg-[var(--color-surface)] p-2.5 sm:px-3.5 sm:py-2 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 shadow-2xs">
                   <div className="min-w-0">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] truncate block">Resources</span>
-                    <span className="text-sm sm:text-base font-bold font-mono text-[var(--color-text)] truncate block">{filteredMembers.length} Members</span>
+                    <span className="text-sm sm:text-base font-bold font-mono text-[var(--color-text)] truncate block">
+                      <AnimatedMetric value={filteredMembers.length} /> Members
+                    </span>
                   </div>
                   <div className="w-7 h-7 rounded-lg bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center shrink-0">
                     <Users size={14} />
                   </div>
-                </div>
+                </StaggerItem>
 
-                <div className="bg-[var(--color-surface)] p-2.5 sm:px-3.5 sm:py-2 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 shadow-2xs">
+                <StaggerItem className="bg-[var(--color-surface)] p-2.5 sm:px-3.5 sm:py-2 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 shadow-2xs">
                   <div className="min-w-0">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] truncate block">Avg Utilization</span>
                     <span className="text-sm sm:text-base font-bold font-mono text-[var(--color-text)] truncate block">
-                      {avgUtil}%
+                      <AnimatedMetric value={avgUtil} suffix="%" />
                     </span>
                   </div>
                   <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
                     <TrendingUp size={14} />
                   </div>
-                </div>
+                </StaggerItem>
 
-                <div className={clsx(
+                <StaggerItem className={clsx(
                   "p-2.5 sm:px-3.5 sm:py-2 rounded-xl border flex items-center justify-between gap-2 shadow-2xs transition-colors",
                   overloadedCount > 0 
                     ? "bg-rose-500/10 border-rose-500/30 text-rose-500" 
@@ -816,26 +820,26 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                   <div className="min-w-0">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] truncate block">Overload Alert</span>
                     <span className={clsx("text-sm sm:text-base font-bold font-mono truncate block", overloadedCount > 0 ? "text-rose-500" : "text-emerald-500")}>
-                      {overloadedCount} Overloaded
+                      <AnimatedMetric value={overloadedCount} /> Overloaded
                     </span>
                   </div>
                   <div className={clsx("w-7 h-7 rounded-lg flex items-center justify-center shrink-0", overloadedCount > 0 ? "bg-rose-500/20 text-rose-500" : "bg-emerald-500/10 text-emerald-500")}>
                     <AlertTriangle size={14} />
                   </div>
-                </div>
+                </StaggerItem>
 
-                <div className="bg-[var(--color-surface)] p-2.5 sm:px-3.5 sm:py-2 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 shadow-2xs">
+                <StaggerItem className="bg-[var(--color-surface)] p-2.5 sm:px-3.5 sm:py-2 rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 shadow-2xs">
                   <div className="min-w-0">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] truncate block">Available Reserves</span>
                     <span className="text-sm sm:text-base font-bold font-mono text-sky-500 truncate block">
-                      {idleCount} Idle
+                      <AnimatedMetric value={idleCount} /> Idle
                     </span>
                   </div>
                   <div className="w-7 h-7 rounded-lg bg-sky-500/10 text-sky-500 flex items-center justify-center shrink-0">
                     <CheckCircle2 size={14} />
                   </div>
-                </div>
-              </div>
+                </StaggerItem>
+              </StaggerContainer>
             </CollapsibleSummaryStrip>
           </div>
         );
@@ -1548,7 +1552,7 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
           </div>
         )}
       </AnimatePresence>
-    </div>
+    </MotionPage>
   );
 };
 

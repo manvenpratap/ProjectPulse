@@ -34,6 +34,8 @@ import QualityGovernanceTab from './QualityGovernanceTab';
 import PageHeader from '../shared/PageHeader';
 import Button from '../shared/Button';
 import DataTable, { ColumnDef } from '../shared/DataTable';
+import { MotionPage, StaggerContainer, StaggerItem } from '../shared/MotionPage';
+import { AnimatedMetric } from '../shared/AnimatedMetric';
 import { 
   ResponsiveContainer, 
   Cell, 
@@ -377,11 +379,13 @@ export const DashboardView: React.FC = () => {
             <div className="flex items-center gap-2 px-2.5 sm:px-3 py-1.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs font-semibold">
               <span className="hidden sm:inline text-[var(--color-text-muted)]">AI Confidence:</span>
               <span className="sm:hidden text-[var(--color-text-muted)]">Conf:</span>
-              <span className={clsx("font-bold font-mono", confidenceBadge.color)}>{confidenceScore}%</span>
+              <span className={clsx("font-bold font-mono", confidenceBadge.color)}>
+                <AnimatedMetric value={confidenceScore} suffix="%" />
+              </span>
               <div className="w-px h-3 bg-[var(--color-divider)]" />
               <span className="text-[var(--color-text-muted)]">SPI:</span>
               <span className={clsx("font-mono font-bold", evmMetrics.SPI >= 1 ? "text-emerald-500" : "text-amber-500")}>
-                {evmMetrics.SPI}
+                <AnimatedMetric value={evmMetrics.SPI} decimals={2} />
               </span>
             </div>
           </div>
@@ -401,7 +405,7 @@ export const DashboardView: React.FC = () => {
         }
       />
 
-      <div className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full space-y-6 pb-20 max-w-full">
+      <MotionPage className="flex-1 overflow-y-auto custom-scroll p-4 sm:p-6 lg:p-8 w-full space-y-6 pb-20 max-w-full">
         {/* TOP TAB CONTROLS (4 High-Agency Modes) */}
         <div className="flex border-b border-[var(--color-divider)] gap-4 sm:gap-8 overflow-x-auto no-scrollbar scroll-fade-x pb-px">
           {[
@@ -484,7 +488,9 @@ export const DashboardView: React.FC = () => {
                         />
                       </svg>
                       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                        <span className="text-2xl font-black font-display text-[var(--color-text)]">{confidenceScore}%</span>
+                        <span className="text-2xl font-black font-display text-[var(--color-text)]">
+                          <AnimatedMetric value={confidenceScore} suffix="%" />
+                        </span>
                         <span className="text-[9px] uppercase tracking-wider font-bold text-[var(--color-text-faint)]">Confidence</span>
                       </div>
                     </div>
@@ -964,7 +970,7 @@ export const DashboardView: React.FC = () => {
             }}
           />
         )}
-      </div>
+      </MotionPage>
     </div>
   );
 };

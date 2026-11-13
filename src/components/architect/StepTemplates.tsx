@@ -46,6 +46,8 @@ import TablePagination, { usePagination } from '../shared/TablePagination';
 import { toast } from '../../utils/toast';
 import { motion, AnimatePresence } from 'motion/react';
 import { todayStr } from '../../utils/projectUtils';
+import { MotionPage, StaggerContainer, StaggerItem } from '../shared/MotionPage';
+import { AnimatedMetric } from '../shared/AnimatedMetric';
 
 // ============================================================================
 // STANDARD ALM INDUSTRY WORKFLOW BLUEPRINT PRESETS
@@ -914,7 +916,7 @@ const StepTemplates: React.FC = () => {
   }, [impact, taskSearch]);
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+    <MotionPage className="flex flex-col h-full bg-[var(--color-bg)]">
       {/* Hidden File Input for JSON Import */}
       <input 
         type="file" 
@@ -969,64 +971,64 @@ const StepTemplates: React.FC = () => {
           ]}
           contentClassName="pt-2.5 pb-1"
         >
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <div className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
+        <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <StaggerItem className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
             <div>
               <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
                 Workflow Blueprints
               </div>
               <div className="text-lg font-display font-black text-[var(--color-text)] mt-0.5">
-                {templates.length} <span className="text-xs font-medium text-[var(--color-text-muted)]">templates</span>
+                <AnimatedMetric value={templates.length} /> <span className="text-xs font-medium text-[var(--color-text-muted)]">templates</span>
               </div>
             </div>
             <div className="w-8 h-8 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center shrink-0">
               <BookOpen size={16} />
             </div>
-          </div>
+          </StaggerItem>
 
-          <div className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
+          <StaggerItem className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
             <div>
               <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
                 Standardized Phases
               </div>
               <div className="text-lg font-display font-black text-[var(--color-text)] mt-0.5">
-                {totalSteps} <span className="text-xs font-medium text-[var(--color-text-muted)]">steps</span>
+                <AnimatedMetric value={totalSteps} /> <span className="text-xs font-medium text-[var(--color-text-muted)]">steps</span>
               </div>
             </div>
             <div className="w-8 h-8 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0">
               <Layers size={16} />
             </div>
-          </div>
+          </StaggerItem>
 
-          <div className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
+          <StaggerItem className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
             <div>
               <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
                 Tasks Governed
               </div>
               <div className="text-lg font-display font-black text-emerald-500 mt-0.5 flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                {tasksLinkedCount} <span className="text-xs font-medium text-[var(--color-text-muted)]">tasks</span>
+                <AnimatedMetric value={tasksLinkedCount} /> <span className="text-xs font-medium text-[var(--color-text-muted)]">tasks</span>
               </div>
             </div>
             <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
               <CheckCircle2 size={16} />
             </div>
-          </div>
+          </StaggerItem>
 
-          <div className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
+          <StaggerItem className="p-3.5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex items-center justify-between">
             <div>
               <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
                 Workflow Scope
               </div>
               <div className="text-lg font-display font-black text-amber-500 mt-0.5">
-                {totalEffortAcrossAll}d <span className="text-xs font-medium text-[var(--color-text-muted)]">total effort</span>
+                <AnimatedMetric value={totalEffortAcrossAll} suffix="d" /> <span className="text-xs font-medium text-[var(--color-text-muted)]">total effort</span>
               </div>
             </div>
             <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
               <Clock size={16} />
             </div>
-          </div>
-        </div>
+          </StaggerItem>
+        </StaggerContainer>
         </CollapsibleSummaryStrip>
       </div>
 
@@ -1975,7 +1977,7 @@ const StepTemplates: React.FC = () => {
         confirmLabel="Delete Blueprint"
         variant="danger"
       />
-    </div>
+    </MotionPage>
   );
 };
 

@@ -30,6 +30,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef } from '../shared/DataTable';
 import CollapsibleSummaryStrip, { SummaryMetricItem } from '../shared/CollapsibleSummaryStrip';
+import { MotionPage, StaggerContainer, StaggerItem } from '../shared/MotionPage';
+import { AnimatedMetric } from '../shared/AnimatedMetric';
 
 type ViewMode = 'table' | 'cards';
 type DensityMode = 'comfortable' | 'compact';
@@ -448,7 +450,7 @@ const DefectView: React.FC = () => {
   }, [state.defCols, state.defCustomFields, defColMap, severities, filterSeverity, priorities, filterPriority, filterStatus, assignees, filterAssignee]);
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] text-[var(--color-text)]">
+    <MotionPage className="flex flex-col h-full bg-[var(--color-bg)] text-[var(--color-text)]">
       <PageHeader
         icon={Bug}
         title="Defect Workshop & Quality Matrix"
@@ -595,28 +597,36 @@ const DefectView: React.FC = () => {
           defaultExpanded={false}
           contentClassName="pt-2.5 pb-1"
         >
-          <div className="flex sm:grid overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar scroll-fade-x sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pb-1">
-            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+          <StaggerContainer className="flex sm:grid overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar scroll-fade-x sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pb-1">
+            <StaggerItem className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
               <div className="text-xs font-medium text-[var(--color-text-muted)]">Total Defects</div>
-              <div className="text-xl font-bold text-[var(--color-text)] mt-1 tracking-tight tabular-nums">{state.defects.length}</div>
+              <div className="text-xl font-bold text-[var(--color-text)] mt-1 tracking-tight tabular-nums">
+                <AnimatedMetric value={state.defects.length} />
+              </div>
               <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">All tracked issues</div>
-            </div>
-            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-rose-500/20 bg-rose-500/5 p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+            </StaggerItem>
+            <StaggerItem className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-rose-500/20 bg-rose-500/5 p-3 sm:p-3.5 rounded-2xl shadow-2xs">
               <div className="text-xs font-medium text-rose-500">S1 Blocker / Critical</div>
-              <div className="text-xl font-bold text-rose-500 mt-1 tracking-tight tabular-nums">{state.defects.filter(d => d.severity?.startsWith('S1')).length}</div>
+              <div className="text-xl font-bold text-rose-500 mt-1 tracking-tight tabular-nums">
+                <AnimatedMetric value={state.defects.filter(d => d.severity?.startsWith('S1')).length} />
+              </div>
               <div className="text-[10px] text-rose-500/70 mt-0.5">Highest severity gate</div>
-            </div>
-            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-amber-500/20 bg-amber-500/5 p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+            </StaggerItem>
+            <StaggerItem className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-amber-500/20 bg-amber-500/5 p-3 sm:p-3.5 rounded-2xl shadow-2xs">
               <div className="text-xs font-medium text-amber-500">Active In-Flight</div>
-              <div className="text-xl font-bold text-amber-500 mt-1 tracking-tight tabular-nums">{state.defects.filter(d => d.status === DefectStatus.IN_PROGRESS || d.status === DefectStatus.ASSIGNED).length}</div>
+              <div className="text-xl font-bold text-amber-500 mt-1 tracking-tight tabular-nums">
+                <AnimatedMetric value={state.defects.filter(d => d.status === DefectStatus.IN_PROGRESS || d.status === DefectStatus.ASSIGNED).length} />
+              </div>
               <div className="text-[10px] text-amber-500/70 mt-0.5">Assigned & in triage</div>
-            </div>
-            <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-emerald-500/20 bg-emerald-500/5 p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+            </StaggerItem>
+            <StaggerItem className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-emerald-500/20 bg-emerald-500/5 p-3 sm:p-3.5 rounded-2xl shadow-2xs">
               <div className="text-xs font-medium text-emerald-500">Resolved & Closed</div>
-              <div className="text-xl font-bold text-emerald-500 mt-1 tracking-tight tabular-nums">{state.defects.filter(d => d.status === DefectStatus.CLOSED || d.status === DefectStatus.FIXED).length}</div>
+              <div className="text-xl font-bold text-emerald-500 mt-1 tracking-tight tabular-nums">
+                <AnimatedMetric value={state.defects.filter(d => d.status === DefectStatus.CLOSED || d.status === DefectStatus.FIXED).length} />
+              </div>
               <div className="text-[10px] text-emerald-500/70 mt-0.5">Verified fixes</div>
-            </div>
-          </div>
+            </StaggerItem>
+          </StaggerContainer>
         </CollapsibleSummaryStrip>
       </div>
 
@@ -814,7 +824,7 @@ const DefectView: React.FC = () => {
         onClose={() => setIsModalOpen(false)}
         defectId={selectedDefect}
       />
-    </div>
+    </MotionPage>
   );
 };
 

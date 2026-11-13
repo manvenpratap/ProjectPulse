@@ -38,45 +38,7 @@ import SectionHelpButton from '../shared/SectionHelpButton';
 import PageHeader from '../shared/PageHeader';
 import Button from '../shared/Button';
 import { motion, AnimatePresence, useReducedMotion, animate } from 'motion/react';
-
-const COCKPIT_EASE: readonly [number, number, number, number] = [0.23, 1, 0.32, 1];
-
-/**
- * Hardware-friendly numeric counter writing directly to DOM ref (0 React re-renders/frame).
- * Renders final value immediately in JSX so Playwright and initial paint never read 0.
- */
-const AnimatedMetric: React.FC<{
-  value: number;
-  suffix?: string;
-  triggerKey: number | string;
-  reducedMotion: boolean;
-  className?: string;
-}> = ({ value, suffix = '', triggerKey, reducedMotion, className }) => {
-  const spanRef = useRef<HTMLSpanElement>(null);
-
-  useEffect(() => {
-    const el = spanRef.current;
-    if (!el) return;
-    if (reducedMotion || value === 0) {
-      el.textContent = `${value}${suffix}`;
-      return;
-    }
-    const controls = animate(0, value, {
-      duration: 0.72,
-      ease: COCKPIT_EASE,
-      onUpdate: (latest) => {
-        el.textContent = `${Math.round(latest)}${suffix}`;
-      }
-    });
-    return () => controls.stop();
-  }, [value, suffix, triggerKey, reducedMotion]);
-
-  return (
-    <span ref={spanRef} className={className}>
-      {value}{suffix}
-    </span>
-  );
-};
+import { AnimatedMetric, COCKPIT_EASE } from '../shared/AnimatedMetric';
 
 /**
  * 180-degree avionics speedometer dial using spring-animated trigonometric coordinates

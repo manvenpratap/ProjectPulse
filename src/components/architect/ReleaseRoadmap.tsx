@@ -27,6 +27,8 @@ import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
 import Modal from '../shared/Modal';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
+import { MotionPage, StaggerContainer, StaggerItem, AnimatedProgressBar } from '../shared/MotionPage';
+import { AnimatedMetric, COCKPIT_EASE } from '../shared/AnimatedMetric';
 import { toast } from '../../utils/toast';
 import clsx from 'clsx';
 
@@ -160,7 +162,7 @@ export const ReleaseRoadmap: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+    <MotionPage className="flex flex-col h-full bg-[var(--color-bg)]">
       <PageHeader
         icon={Flag}
         title="Release Roadmap"
@@ -184,59 +186,59 @@ export const ReleaseRoadmap: React.FC = () => {
           ]}
           contentClassName="pt-2.5 pb-1"
         >
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
+        <StaggerContainer className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <StaggerItem className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
             <div className="flex items-center justify-between text-xs font-semibold text-[var(--color-text-muted)]">
               <span>Total Cycles</span>
               <Flag size={14} className="text-[var(--color-primary-hex)]" />
             </div>
             <div className="mt-2 text-2xl font-mono font-black text-[var(--color-text)]">
-              {totalReleases}
+              <AnimatedMetric value={totalReleases} />
             </div>
             <div className="text-xs text-[var(--color-text-muted)] font-medium mt-0.5">
               Configured milestones
             </div>
-          </div>
+          </StaggerItem>
 
-          <div className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
+          <StaggerItem className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
             <div className="flex items-center justify-between text-xs font-semibold text-[var(--color-text-muted)]">
               <span>Active Cycle</span>
               <Clock size={14} className="text-sky-500" />
             </div>
             <div className="mt-2 text-2xl font-mono font-black text-sky-500">
-              {activeReleases}
+              <AnimatedMetric value={activeReleases} />
             </div>
             <div className="text-xs text-[var(--color-text-muted)] font-medium mt-0.5">
               In active development
             </div>
-          </div>
+          </StaggerItem>
 
-          <div className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
+          <StaggerItem className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
             <div className="flex items-center justify-between text-xs font-semibold text-[var(--color-text-muted)]">
               <span>Shipped</span>
               <CheckCircle2 size={14} className="text-emerald-500" />
             </div>
             <div className="mt-2 text-2xl font-mono font-black text-emerald-600">
-              {releasedReleases}
+              <AnimatedMetric value={releasedReleases} />
             </div>
             <div className="text-xs text-[var(--color-text-muted)] font-medium mt-0.5">
               Production delivered
             </div>
-          </div>
+          </StaggerItem>
 
-          <div className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
+          <StaggerItem className="p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm">
             <div className="flex items-center justify-between text-xs font-semibold text-[var(--color-text-muted)]">
               <span>Unmapped Scope</span>
               <AlertTriangle size={14} className="text-amber-500" />
             </div>
             <div className="mt-2 text-2xl font-mono font-black text-amber-600">
-              {unmappedTasks}
+              <AnimatedMetric value={unmappedTasks} />
             </div>
             <div className="text-xs text-[var(--color-text-muted)] font-medium mt-0.5">
               Tasks without release tag
             </div>
-          </div>
-        </div>
+          </StaggerItem>
+        </StaggerContainer>
         </CollapsibleSummaryStrip>
 
         {/* Filter and Search Bar */}
@@ -284,9 +286,10 @@ export const ReleaseRoadmap: React.FC = () => {
               <motion.div
                 key={r.id}
                 layout
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, transform: 'translateY(10px)' }}
+                animate={{ opacity: 1, transform: 'translateY(0px)' }}
                 exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.35, ease: COCKPIT_EASE }}
                 className="p-5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 transition-colors duration-150 shadow-sm flex flex-col justify-between group"
               >
                 <div>
@@ -354,14 +357,11 @@ export const ReleaseRoadmap: React.FC = () => {
                   <div className="space-y-1.5 mb-4">
                     <div className="flex justify-between items-center text-xs font-semibold">
                       <span className="text-xs font-semibold text-[var(--color-text-muted)]">Scope Completion</span>
-                      <span className="font-mono font-bold text-[var(--color-primary-hex)]">{progress}%</span>
+                      <span className="font-mono font-bold text-[var(--color-primary-hex)]">
+                        <AnimatedMetric value={progress} suffix="%" />
+                      </span>
                     </div>
-                    <div className="h-2 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-[var(--color-primary-hex)] rounded-full"
-                        style={{ width: `${progress}%` }}
-                      />
-                    </div>
+                    <AnimatedProgressBar progress={progress} height={8} />
                   </div>
 
                   {/* Mapped Assets */}
@@ -559,7 +559,7 @@ export const ReleaseRoadmap: React.FC = () => {
           </div>
         )}
       </Modal>
-    </div>
+    </MotionPage>
   );
 };
 

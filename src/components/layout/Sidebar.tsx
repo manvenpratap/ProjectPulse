@@ -302,6 +302,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
                             <li key={item.id}>
                               <button
                                 type="button"
+                                data-nav-id={item.id}
                                 onClick={() => onNavigate(item.id)}
                                 aria-current={isItemActive ? 'page' : undefined}
                                 className={clsx(

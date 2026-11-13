@@ -35,6 +35,8 @@ import Modal from '../shared/Modal';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef, DensityMode } from '../shared/DataTable';
 import CollapsibleSummaryStrip, { SummaryMetricItem } from '../shared/CollapsibleSummaryStrip';
+import { MotionPage, StaggerContainer, StaggerItem } from '../shared/MotionPage';
+import { AnimatedMetric } from '../shared/AnimatedMetric';
 
 const RAIDView: React.FC = () => {
   const { state, updateProject, addLog } = useProject();
@@ -508,7 +510,7 @@ const RAIDView: React.FC = () => {
 
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)]">
+    <MotionPage className="flex flex-col h-full bg-[var(--color-bg)]">
       <PageHeader
         icon={ShieldAlert}
         title="RAID Register"
@@ -629,8 +631,8 @@ const RAIDView: React.FC = () => {
             title="RAID Priority Heatmap & Risk Posture"
             defaultExpanded={false}
           >
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-              <div className="lg:col-span-2 card p-4 sm:p-6">
+            <StaggerContainer className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+              <StaggerItem className="lg:col-span-2 card p-4 sm:p-6">
                 <div className="flex justify-between items-center mb-4">
                   <div className="flex items-center gap-1.5">
                     <h3 className="font-bold text-sm flex items-center gap-1.5">
@@ -770,9 +772,9 @@ const RAIDView: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </StaggerItem>
 
-              <div className="card p-4 sm:p-6 flex flex-col justify-between">
+              <StaggerItem className="card p-4 sm:p-6 flex flex-col justify-between">
                 <div>
                   <h3 className="text-sm font-bold flex items-center gap-2 mb-2">
                     <ShieldAlert className="text-[var(--color-primary-hex)]" size={16} /> 
@@ -797,8 +799,8 @@ const RAIDView: React.FC = () => {
                     <Info size={13} /> Showing all items
                   </div>
                 )}
-              </div>
-            </div>
+              </StaggerItem>
+            </StaggerContainer>
           </CollapsibleSummaryStrip>
         )}
 
@@ -1276,7 +1278,7 @@ const RAIDView: React.FC = () => {
           </div>
         )}
       </Modal>
-    </div>
+    </MotionPage>
   );
 };
 

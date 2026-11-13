@@ -53,6 +53,8 @@ import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import Modal from '../shared/Modal';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef } from '../shared/DataTable';
+import { MotionPage, StaggerContainer, StaggerItem } from '../shared/MotionPage';
+import { AnimatedMetric } from '../shared/AnimatedMetric';
 
 type ViewMode = 'table' | 'cards' | 'kanban' | 'heatmap';
 type HeatmapPerspective = 'feat_screens' | 'env_pipeline' | 'del_impact';
@@ -636,7 +638,7 @@ export const DeliveriesView: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg)] text-[var(--color-text)] overflow-hidden">
+    <MotionPage className="flex flex-col h-full bg-[var(--color-bg)] text-[var(--color-text)] overflow-hidden">
       <PageHeader
         icon={Package}
         title="Software Deliveries & Deployment Schedule"
@@ -867,38 +869,38 @@ export const DeliveriesView: React.FC = () => {
           contentClassName="pt-2.5 pb-1"
         >
         {/* Bento Telemetry Cards (Horizontal Snap Strip on Mobile, Grid on sm+) */}
-        <div className="flex sm:grid overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar scroll-fade-x sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pb-1">
-          <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+        <StaggerContainer className="flex sm:grid overflow-x-auto sm:overflow-visible snap-x snap-mandatory no-scrollbar scroll-fade-x sm:grid-cols-3 lg:grid-cols-6 gap-2.5 pb-1">
+          <StaggerItem className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Deployed Live</div>
             <div className="text-xl font-bold text-emerald-500 mt-1 flex items-baseline gap-1.5 tracking-tight">
-              <span>{telemetry.deployed}</span>
+              <span><AnimatedMetric value={telemetry.deployed} /></span>
               <span className="text-[11px] font-normal text-[var(--color-text-muted)]">
                 / {telemetry.total}
               </span>
             </div>
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Production sign-off</div>
-          </div>
+          </StaggerItem>
 
-          <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+          <StaggerItem className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Ready / In Flight</div>
             <div className="text-xl font-bold text-sky-500 mt-1 flex items-baseline gap-1.5 tracking-tight">
-              <span>{telemetry.ready + telemetry.inProgress}</span>
+              <span><AnimatedMetric value={telemetry.ready + telemetry.inProgress} /></span>
               <span className="text-[11px] font-normal text-[var(--color-text-muted)]">
                 active
               </span>
             </div>
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Staging & UAT queues</div>
-          </div>
+          </StaggerItem>
 
-          <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+          <StaggerItem className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Pending Sign-Off</div>
             <div className="text-xl font-bold text-amber-500 mt-1 tracking-tight">
-              {telemetry.pendingSignoff}
+              <AnimatedMetric value={telemetry.pendingSignoff} />
             </div>
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Awaiting lead sign-off</div>
-          </div>
+          </StaggerItem>
 
-          <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+          <StaggerItem className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Smoke Test Gates</div>
             <div className="text-xl font-bold mt-1 flex items-center gap-2 tracking-tight">
               <span className={telemetry.failedSmoke > 0 ? "text-rose-500" : "text-emerald-500"}>
@@ -911,28 +913,28 @@ export const DeliveriesView: React.FC = () => {
               )}
             </div>
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Automated test matrix</div>
-          </div>
+          </StaggerItem>
 
-          <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+          <StaggerItem className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Avg Cycle Lead Time</div>
             <div className="text-xl font-bold text-[var(--color-text)] mt-1 tracking-tight">
-              {telemetry.avgLeadTime} <span className="text-xs text-[var(--color-text-muted)] font-normal">days</span>
+              <AnimatedMetric value={telemetry.avgLeadTime} /> <span className="text-xs text-[var(--color-text-muted)] font-normal">days</span>
             </div>
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Commit-to-release duration</div>
-          </div>
+          </StaggerItem>
 
-          <div className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
+          <StaggerItem className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Delay Variance</div>
             <div className={clsx(
               "text-xl font-bold mt-1 tracking-tight",
               parseFloat(telemetry.avgVariance) > 0 ? "text-rose-500" : "text-emerald-500"
             )}>
-              {parseFloat(telemetry.avgVariance) > 0 ? `+${telemetry.avgVariance}` : telemetry.avgVariance}
+              <AnimatedMetric value={parseFloat(telemetry.avgVariance) || 0} decimals={1} prefix={parseFloat(telemetry.avgVariance) > 0 ? '+' : ''} />
               <span className="text-xs text-[var(--color-text-muted)] ml-1 font-normal">days</span>
             </div>
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Variance vs target</div>
-          </div>
-        </div>
+          </StaggerItem>
+        </StaggerContainer>
         </CollapsibleSummaryStrip>
       </div>
 
@@ -1514,7 +1516,7 @@ export const DeliveriesView: React.FC = () => {
           }}
         />
       )}
-    </div>
+    </MotionPage>
   );
 };
 
