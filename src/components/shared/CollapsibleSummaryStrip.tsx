@@ -2,6 +2,7 @@ import React, { useId, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { BarChart3, ChevronDown } from 'lucide-react';
 import clsx from 'clsx';
+import AnimatedMetric from './AnimatedMetric';
 
 export type SummaryTone = 'neutral' | 'primary' | 'emerald' | 'amber' | 'rose' | 'sky' | 'purple';
 
@@ -66,6 +67,24 @@ export const CollapsibleSummaryStrip: React.FC<CollapsibleSummaryStripProps> = (
   const panelId = useId();
   const reduce = useReducedMotion();
 
+  const renderMetricValue = (val: string | number) => {
+    if (typeof val === 'number') {
+      return <AnimatedMetric value={val} />;
+    }
+    if (typeof val === 'string') {
+      const match = val.match(/^([^\d]*)(-?\d+(?:\.\d+)?)(.*)$/);
+      if (match) {
+        const prefix = match[1];
+        const num = parseFloat(match[2]);
+        const suffix = match[3];
+        const hasDecimals = match[2].includes('.');
+        const decimals = hasDecimals ? match[2].split('.')[1].length : 0;
+        return <AnimatedMetric value={num} prefix={prefix} suffix={suffix} decimals={decimals} />;
+      }
+    }
+    return val;
+  };
+
   return (
     <div className={clsx('w-full min-w-0', className)}>
       {/* Compact Trigger Ribbon */}
@@ -82,7 +101,7 @@ export const CollapsibleSummaryStrip: React.FC<CollapsibleSummaryStripProps> = (
                   <span className={clsx('w-1.5 h-1.5 rounded-full shrink-0', TONE_DOT_CLASSES[tone])} />
                   <span className="font-medium text-[var(--color-text-muted)]">{item.label}</span>
                   <span className={clsx('font-mono font-bold tabular-nums', TONE_VALUE_CLASSES[tone])}>
-                    {item.value}
+                    {renderMetricValue(item.value)}
                   </span>
                 </div>
               );

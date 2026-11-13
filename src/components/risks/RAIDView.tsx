@@ -775,12 +775,42 @@ const RAIDView: React.FC = () => {
 
               <StaggerItem className="card p-4 sm:p-6 flex flex-col justify-between">
                 <div>
-                  <h3 className="text-sm font-bold flex items-center gap-2 mb-2">
-                    <ShieldAlert className="text-[var(--color-primary-hex)]" size={16} /> 
-                    <span>Active Risk Posture</span>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-sm font-bold flex items-center gap-2">
+                      <ShieldAlert className="text-[var(--color-primary-hex)]" size={16} /> 
+                      <span>Active Risk Posture</span>
+                    </h3>
                     <SectionHelpButton view="risks" section="Severity Score" label="Risk Posture guide" size={13} />
-                  </h3>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2.5 mt-2">
+                    <div className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                      <span className="text-[10px] font-bold uppercase text-[var(--color-text-faint)] block mb-0.5">Active Risks</span>
+                      <span className="text-base font-bold font-mono text-rose-500">
+                        <AnimatedMetric value={raids.filter(r => r.type === 'Risk' && isRaidActive(r.status)).length} />
+                      </span>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                      <span className="text-[10px] font-bold uppercase text-[var(--color-text-faint)] block mb-0.5">Critical (S1)</span>
+                      <span className="text-base font-bold font-mono text-rose-600 dark:text-rose-400">
+                        <AnimatedMetric value={raids.filter(r => r.type === 'Risk' && (r.severity?.includes('Critical') || r.severity?.includes('S1'))).length} />
+                      </span>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                      <span className="text-[10px] font-bold uppercase text-[var(--color-text-faint)] block mb-0.5">Active Issues</span>
+                      <span className="text-base font-bold font-mono text-amber-500">
+                        <AnimatedMetric value={raids.filter(r => r.type === 'Issue' && isRaidActive(r.status)).length} />
+                      </span>
+                    </div>
+                    <div className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                      <span className="text-[10px] font-bold uppercase text-[var(--color-text-faint)] block mb-0.5">Decisions</span>
+                      <span className="text-base font-bold font-mono text-[var(--color-primary-hex)]">
+                        <AnimatedMetric value={decisions.filter(d => d.status === 'Pending Sign-off').length} />
+                      </span>
+                    </div>
+                  </div>
                 </div>
+
                 {matrixFilter ? (
                   <div className="mt-4 p-3 bg-[var(--color-primary-highlight-hex)] border border-[var(--color-primary-hex)]/30 text-[var(--color-primary-hex)] rounded-xl text-xs font-bold flex items-center justify-between">
                     <span className="flex items-center gap-1.5">
@@ -793,7 +823,12 @@ const RAIDView: React.FC = () => {
                       Reset
                     </button>
                   </div>
-                ) : null}
+                ) : (
+                  <div className="mt-4 text-[11px] text-[var(--color-text-faint)] flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block shrink-0" />
+                    <span>Click any matrix cell to filter records</span>
+                  </div>
+                )}
               </StaggerItem>
             </StaggerContainer>
           </CollapsibleSummaryStrip>

@@ -431,14 +431,14 @@ export const AccessManagerModal: React.FC<AccessManagerModalProps> = ({ isOpen, 
                             switchUser(u.id);
                             toast.success(`Switched active persona session to ${u.name} (${u.role})`);
                           }}
-                          className="h-9 px-2.5 rounded-xl bg-[var(--color-surface-2)] hover:bg-[var(--color-primary-highlight-hex)] hover:text-[var(--color-primary-hex)] hover:border-[var(--color-primary-hex)]/30 border border-[var(--color-divider)] text-xs font-semibold flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer"
+                          className="h-9 px-2.5 rounded-xl bg-[var(--color-surface-2)] hover:bg-[var(--color-primary-highlight-hex)] hover:text-[var(--color-primary-hex)] hover:border-[var(--color-primary-hex)]/30 border border-[var(--color-divider)] text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer min-w-[36px] md:min-w-[72px]"
                           title={`Test permissions as ${u.name}`}
                         >
                           <UserCheck size={13} className="text-emerald-500" />
                           <span className="hidden md:inline">Test</span>
                         </button>
                       ) : (
-                        <div className="w-9 h-9 sm:w-[72px]" aria-hidden="true" />
+                        <div className="min-w-[36px] md:min-w-[72px] h-9" aria-hidden="true" />
                       )}
 
                       {/* Delete user button (cannot delete yourself or the primary admin) */}
@@ -450,14 +450,14 @@ export const AccessManagerModal: React.FC<AccessManagerModalProps> = ({ isOpen, 
                               toast.info(`Removed ${u.name}`);
                             }
                           }}
-                          className="h-9 w-9 rounded-xl text-rose-500 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 flex items-center justify-center transition-colors active:scale-95 cursor-pointer"
+                          className="h-9 w-9 rounded-xl text-rose-500 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 flex items-center justify-center transition-colors active:scale-95 cursor-pointer shrink-0"
                           title="Delete User"
                           aria-label={`Delete ${u.name}`}
                         >
                           <Trash2 size={15} />
                         </button>
                       ) : (
-                        <div className="w-9 h-9" aria-hidden="true" />
+                        <div className="w-9 h-9 shrink-0" aria-hidden="true" />
                       )}
                     </div>
                   </div>

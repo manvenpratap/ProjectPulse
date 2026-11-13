@@ -45,6 +45,7 @@ import Modal from '../shared/Modal';
 import { formatLibraryName } from './RegistryView';
 import clsx from 'clsx';
 import { MotionPage } from '../shared/MotionPage';
+import { AnimatedMetric } from '../shared/AnimatedMetric';
 import { CustomField, FieldConfig } from '../../types';
 import {
   DEFAULT_TASK_COLS,
@@ -654,19 +655,19 @@ export const FieldArchitect: React.FC = () => {
           <div className="px-3 py-1.5 flex items-center gap-2 border-b sm:border-b-0 border-r border-[var(--color-divider)]">
             <Database size={13} className="text-[var(--color-primary-hex)]" />
             <span className="font-semibold text-[var(--color-text-muted)]">Total</span>
-            <span className="font-mono font-bold tabular-nums text-[var(--color-text)]">{totalAttributes}</span>
+            <span className="font-mono font-bold tabular-nums text-[var(--color-text)]"><AnimatedMetric value={totalAttributes} /></span>
           </div>
           <div className="px-3 py-1.5 flex items-center gap-2 border-b sm:border-b-0 sm:border-r border-[var(--color-divider)]">
             <ShieldCheck size={13} className="text-sky-500" />
             <span className="font-semibold text-[var(--color-text-muted)]">Visible</span>
             <span className="font-mono font-bold tabular-nums text-sky-500">
-              {visibleStdCols.length}/{stdCols.length}
+              <AnimatedMetric value={visibleStdCols.length} />/{stdCols.length}
             </span>
           </div>
           <div className="px-3 py-1.5 flex items-center gap-2 border-r border-[var(--color-divider)]">
             <Layers size={13} className="text-amber-500" />
             <span className="font-semibold text-[var(--color-text-muted)]">Custom</span>
-            <span className="font-mono font-bold tabular-nums text-amber-500">{customFields.length}</span>
+            <span className="font-mono font-bold tabular-nums text-amber-500"><AnimatedMetric value={customFields.length} /></span>
           </div>
           <div
             className={clsx(
@@ -676,7 +677,7 @@ export const FieldArchitect: React.FC = () => {
           >
             <CheckCircle2 size={13} />
             <span className="font-mono tabular-nums">
-              {modifiedCount > 0 ? `${modifiedCount} Customized` : 'Factory Sync'}
+              {modifiedCount > 0 ? <><AnimatedMetric value={modifiedCount} /> Customized</> : 'Factory Sync'}
             </span>
           </div>
         </div>

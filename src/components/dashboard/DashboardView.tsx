@@ -552,22 +552,22 @@ export const DashboardView: React.FC = () => {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
                   <div className="p-3.5 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
                     <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)] block mb-1">Backlog Effort</span>
-                    <span className="text-lg font-black font-display text-[var(--color-text)]">{remainingEffortDays}</span>
+                    <span className="text-lg font-black font-display text-[var(--color-text)]"><AnimatedMetric value={remainingEffortDays} /></span>
                     <span className="text-[10px] text-[var(--color-text-muted)] block">person-days</span>
                   </div>
                   <div className="p-3.5 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
                     <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)] block mb-1">Time Remaining</span>
-                    <span className="text-lg font-black font-display text-[var(--color-text)]">{daysRemaining}</span>
+                    <span className="text-lg font-black font-display text-[var(--color-text)]"><AnimatedMetric value={daysRemaining} /></span>
                     <span className="text-[10px] text-[var(--color-text-muted)] block">calendar days</span>
                   </div>
                   <div className="p-3.5 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
                     <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)] block mb-1">Required Velocity</span>
-                    <span className={clsx("text-lg font-black font-display", capacityTelemetry.capColor)}>{capacityTelemetry.dailyLoadNeeded}</span>
+                    <span className={clsx("text-lg font-black font-display", capacityTelemetry.capColor)}><AnimatedMetric value={capacityTelemetry.dailyLoadNeeded} decimals={1} /></span>
                     <span className="text-[10px] text-[var(--color-text-muted)] block">pd / day</span>
                   </div>
                   <div className="p-3.5 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
                     <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)] block mb-1">Team Roster</span>
-                    <span className="text-lg font-black font-display text-[var(--color-text)]">{capacityTelemetry.teamSize}</span>
+                    <span className="text-lg font-black font-display text-[var(--color-text)]"><AnimatedMetric value={capacityTelemetry.teamSize} /></span>
                     <span className="text-[10px] text-[var(--color-text-muted)] block">members</span>
                   </div>
                 </div>
@@ -575,7 +575,7 @@ export const DashboardView: React.FC = () => {
                 <div className="space-y-1.5">
                   <div className="flex justify-between text-xs font-semibold">
                     <span className="text-[var(--color-text-muted)]">Team Utilization Pacing</span>
-                    <span className={clsx("font-mono font-bold", capacityTelemetry.capColor)}>{capacityTelemetry.utilization}%</span>
+                    <span className={clsx("font-mono font-bold", capacityTelemetry.capColor)}><AnimatedMetric value={capacityTelemetry.utilization} suffix="%" /></span>
                   </div>
                   <div className="h-2 w-full bg-[var(--color-surface-2)] rounded-full overflow-hidden border border-[var(--color-divider)]">
                     <div 
@@ -607,13 +607,13 @@ export const DashboardView: React.FC = () => {
                   </div>
                   <div className="flex items-center gap-3 text-xs font-semibold">
                     <span className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500" /> Active: {agingData.activeCount}
+                      <span className="w-2 h-2 rounded-full bg-emerald-500" /> Active: <AnimatedMetric value={agingData.activeCount} />
                     </span>
                     <span className="flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
-                      <span className="w-2 h-2 rounded-full bg-amber-500" /> Stale: {agingData.staleCount}
+                      <span className="w-2 h-2 rounded-full bg-amber-500" /> Stale: <AnimatedMetric value={agingData.staleCount} />
                     </span>
                     <span className="flex items-center gap-1.5 text-rose-600 dark:text-rose-400">
-                      <span className="w-2 h-2 rounded-full bg-rose-500" /> At Risk: {agingData.riskCount}
+                      <span className="w-2 h-2 rounded-full bg-rose-500" /> At Risk: <AnimatedMetric value={agingData.riskCount} />
                     </span>
                   </div>
                 </div>

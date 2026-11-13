@@ -8,7 +8,7 @@ import { useMediaQuery } from '../../hooks/useMediaQuery';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  title: string;
+  title: React.ReactNode;
   children: React.ReactNode;
   footer?: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
@@ -94,7 +94,9 @@ const Modal: React.FC<ModalProps> = ({
             </div>
 
             <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b border-[var(--color-divider)]">
-              <h3 id={titleId} className="font-display font-bold text-base sm:text-lg pr-2 truncate">{title}</h3>
+              <div id={titleId} className="font-display font-bold text-base sm:text-lg pr-2 flex items-center min-w-0">
+                {typeof title === 'string' ? <h3 className="truncate">{title}</h3> : title}
+              </div>
               <Button
                 variant="ghost"
                 size="icon"

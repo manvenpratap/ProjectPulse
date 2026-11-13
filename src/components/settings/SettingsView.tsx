@@ -34,6 +34,7 @@ import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import ThemeGrid, { THEMES } from '../shared/ThemeGrid';
 import { MotionPage } from '../shared/MotionPage';
+import { AnimatedMetric } from '../shared/AnimatedMetric';
 
 const VALID_SETTINGS_TABS = new Set(['parameters', 'theme', 'baselines', 'access']);
 
@@ -176,7 +177,7 @@ const SettingsView: React.FC = () => {
                   : "text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
               )}
             >
-              <Camera size={13} /> <span className="hidden sm:inline">Snapshots</span><span className="sm:hidden">Snaps</span> ({state.baselines?.length ? new Set(state.baselines.map(b => b.id)).size : 0})
+              <Camera size={13} /> <span className="hidden sm:inline">Snapshots</span><span className="sm:hidden">Snaps</span> (<AnimatedMetric value={state.baselines?.length ? new Set(state.baselines.map(b => b.id)).size : 0} />)
             </button>
             <button
               onClick={() => setActiveTab('access')}
