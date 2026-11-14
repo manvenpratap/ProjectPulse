@@ -41,6 +41,7 @@ import SectionHelpButton from '../shared/SectionHelpButton';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import Modal from '../shared/Modal';
 import ConfirmModal from '../shared/ConfirmModal';
+import SlideOverDrawer from '../shared/SlideOverDrawer';
 import DataTable, { ColumnDef, DensityMode } from '../shared/DataTable';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import { toast } from '../../utils/toast';
@@ -250,8 +251,10 @@ export function smartSyncSubtasks(
 // ============================================================================
 // MAIN COMPONENT: ENHANCED STEP BLUEPRINTS ARCHITECT
 // ============================================================================
+type BlueprintPreset = 'all' | 'alm_presets' | 'custom' | 'heavy' | 'quick' | 'feature' | 'server';
+
 const StepTemplates: React.FC = () => {
-  const { state, updateProject } = useProject();
+  const { state, updateProject, setView } = useProject();
   const [editingIdx, setEditingIdx] = useState<number | null>(null);
   const [editForm, setEditForm] = useState<StepTemplate | null>(null);
   const [editorMode, setEditorMode] = useState<'visual' | 'quickText'>('visual');
@@ -259,9 +262,10 @@ const StepTemplates: React.FC = () => {
   const [confirmPropagation, setConfirmPropagation] = useState<boolean>(false);
   const [taskSearch, setTaskSearch] = useState<string>('');
 
-  // Primary Page Controls: Filter, Search, and View Mode
+  // Primary Page Controls: Filter, Search, View Mode, and Presets
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [activePreset, setActivePreset] = useState<BlueprintPreset>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [density, setDensity] = useState<DensityMode>('comfortable');
   const [sortBy, setSortBy] = useState<string>('name');
@@ -271,15 +275,75 @@ const StepTemplates: React.FC = () => {
   const [deleteTargetIdx, setDeleteTargetIdx] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Peek Side Drawer & Batch Selection States
+  const [peekTemplateName, setPeekTemplateName] = useState<string | null>(null);
+  const [selectedTemplateNames, setSelectedTemplateNames] = useState<Set<string>>(new Set());
+  const [batchCategory, setBatchCategory] = useState<string>('');
+
+  // Inline Editing & Category Jump Menu
+  const [editingField, setEditingField] = useState<{ name: string; field: 'name' } | null>(null);
+  const [editingVal, setEditingVal] = useState<string>('');
+  const [categoryMenuTemplateName, setCategoryMenuTemplateName] = useState<string | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
   const templates = state.stepTemplates || [];
   const categories = state.dropdowns?.category || [
     'Feature', 'Server Module', 'GUI Screen', 'GUI Module', 'DevOps', 'Testing', 'Research', 'Documentation'
   ];
 
+  const standardPresetNames = useMemo(() => new Set(STANDARD_BLUEPRINT_PRESETS.map(p => p.name)), []);
+
   // Distinct categories present in active templates
   const presentCategories = useMemo(() => {
     return Array.from(new Set(templates.map(t => t.category).filter(Boolean)));
   }, [templates]);
+
+  // Preset Counts & Calculation
+  const presetCounts = useMemo(() => {
+    const counts = {
+      all: templates.length,
+      alm_presets: 0,
+      custom: 0,
+      heavy: 0,
+      quick: 0,
+      feature: 0,
+      server: 0,
+    };
+
+    templates.forEach(t => {
+      const isStd = standardPresetNames.has(t.name);
+      if (isStd) counts.alm_presets++;
+      else counts.custom++;
+      if (t.steps.length >= 5) counts.heavy++;
+      if (t.steps.length <= 3) counts.quick++;
+      if (t.category === 'Feature') counts.feature++;
+      if (t.category === 'Server Module') counts.server++;
+    });
+
+    return counts;
+  }, [templates, standardPresetNames]);
+
+  const PRESETS: { id: BlueprintPreset; label: string; count: number }[] = useMemo(() => [
+    { id: 'all', label: 'All Blueprints', count: presetCounts.all },
+    { id: 'alm_presets', label: 'ALM Standard', count: presetCounts.alm_presets },
+    { id: 'custom', label: 'Custom', count: presetCounts.custom },
+    { id: 'heavy', label: 'Deep (5+ Steps)', count: presetCounts.heavy },
+    { id: 'quick', label: 'Fast (1-3 Steps)', count: presetCounts.quick },
+    { id: 'feature', label: 'Feature Workflows', count: presetCounts.feature },
+    { id: 'server', label: 'Server Modules', count: presetCounts.server },
+  ], [presetCounts]);
+
+  const handlePresetClick = (preset: BlueprintPreset) => {
+    setActivePreset(preset);
+  };
+
+  const hasActiveFilters = activePreset !== 'all' || searchQuery !== '' || selectedCategory !== 'all';
+
+  const resetAllFilters = () => {
+    setActivePreset('all');
+    setSearchQuery('');
+    setSelectedCategory('all');
+  };
 
   // Filtered Templates
   const filteredTemplates = useMemo(() => {
@@ -289,10 +353,23 @@ const StepTemplates: React.FC = () => {
         t.name.toLowerCase().includes(q) || 
         t.category.toLowerCase().includes(q) ||
         t.steps.some(s => s.name.toLowerCase().includes(q));
+      if (!matchesSearch) return false;
+
       const matchesCategory = selectedCategory === 'all' || t.category === selectedCategory;
-      return matchesSearch && matchesCategory;
+      if (!matchesCategory) return false;
+
+      // Preset Filtering
+      const isStd = standardPresetNames.has(t.name);
+      if (activePreset === 'alm_presets' && !isStd) return false;
+      if (activePreset === 'custom' && isStd) return false;
+      if (activePreset === 'heavy' && t.steps.length < 5) return false;
+      if (activePreset === 'quick' && t.steps.length > 3) return false;
+      if (activePreset === 'feature' && t.category !== 'Feature') return false;
+      if (activePreset === 'server' && t.category !== 'Server Module') return false;
+
+      return true;
     });
-  }, [templates, searchQuery, selectedCategory]);
+  }, [templates, searchQuery, selectedCategory, activePreset, standardPresetNames]);
 
   // Sorted Templates for Deterministic Ordering and Table Sorting
   const sortedTemplates = useMemo(() => {
@@ -415,27 +492,205 @@ const StepTemplates: React.FC = () => {
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
+  // Peek Sequential Navigation
+  const peekTemplate = useMemo(() => templates.find(t => t.name === peekTemplateName) || null, [templates, peekTemplateName]);
+  const peekTemplateIndex = useMemo(() => sortedTemplates.findIndex(t => t.name === peekTemplateName), [sortedTemplates, peekTemplateName]);
+
+  const handlePrevTemplate = () => {
+    if (peekTemplateIndex > 0) {
+      setPeekTemplateName(sortedTemplates[peekTemplateIndex - 1].name);
+    }
+  };
+
+  const handleNextTemplate = () => {
+    if (peekTemplateIndex >= 0 && peekTemplateIndex < sortedTemplates.length - 1) {
+      setPeekTemplateName(sortedTemplates[peekTemplateIndex + 1].name);
+    }
+  };
+
+  // Keyboard navigation & search focus listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) return;
+
+      if (e.key === '/') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+      if (e.key === '[') {
+        if (peekTemplateName) handlePrevTemplate();
+      }
+      if (e.key === ']') {
+        if (peekTemplateName) handleNextTemplate();
+      }
+      if (e.key === 'Escape') {
+        setEditingField(null);
+        setCategoryMenuTemplateName(null);
+        setPeekTemplateName(null);
+        setSelectedTemplateNames(new Set());
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [peekTemplateName, peekTemplateIndex, sortedTemplates]);
+
+  // Close menus on outside click
+  useEffect(() => {
+    if (!categoryMenuTemplateName) return;
+    const handleClickOutside = () => setCategoryMenuTemplateName(null);
+    window.addEventListener('click', handleClickOutside);
+    return () => window.removeEventListener('click', handleClickOutside);
+  }, [categoryMenuTemplateName]);
+
+  const handleCommitEdit = (targetName: string) => {
+    if (!editingVal.trim()) {
+      setEditingField(null);
+      return;
+    }
+    const idx = templates.findIndex(t => t.name === targetName);
+    if (idx < 0) {
+      setEditingField(null);
+      return;
+    }
+    const updated = [...templates];
+    updated[idx] = { ...updated[idx], name: editingVal.trim() };
+    updateProject({ stepTemplates: updated });
+    toast.success(`Renamed blueprint to "${editingVal.trim()}"`);
+    setEditingField(null);
+  };
+
+  const handleSetTemplateCategory = (tpl: StepTemplate, category: string) => {
+    const idx = templates.findIndex(t => t.name === tpl.name);
+    if (idx < 0) return;
+    const updated = [...templates];
+    updated[idx] = { ...updated[idx], category };
+    updateProject({ stepTemplates: updated });
+    setCategoryMenuTemplateName(null);
+    toast.success(`Category updated to "${category}"`);
+  };
+
+  const handleToggleSelectAll = () => {
+    if (selectedTemplateNames.size === sortedTemplates.length) {
+      setSelectedTemplateNames(new Set());
+    } else {
+      setSelectedTemplateNames(new Set(sortedTemplates.map(t => t.name)));
+    }
+  };
+
+  const handleToggleSelectTemplate = (name: string) => {
+    setSelectedTemplateNames(prev => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
+  };
+
+  const handleBatchApplyCategory = (cat: string) => {
+    if (!cat || selectedTemplateNames.size === 0) return;
+    const updated = templates.map(t => selectedTemplateNames.has(t.name) ? { ...t, category: cat } : t);
+    updateProject({ stepTemplates: updated });
+    toast.success(`Assigned ${selectedTemplateNames.size} blueprint(s) to category ${cat}`);
+    setSelectedTemplateNames(new Set());
+    setBatchCategory('');
+  };
+
+  const handleBatchDuplicate = () => {
+    if (selectedTemplateNames.size === 0) return;
+    const newClones: StepTemplate[] = [];
+    templates.forEach(t => {
+      if (selectedTemplateNames.has(t.name)) {
+        newClones.push({
+          ...JSON.parse(JSON.stringify(t)),
+          name: `${t.name} (Copy)`
+        });
+      }
+    });
+    updateProject({ stepTemplates: [...templates, ...newClones] });
+    toast.success(`Duplicated ${selectedTemplateNames.size} blueprint(s).`);
+    setSelectedTemplateNames(new Set());
+  };
+
+  const handleBatchDelete = () => {
+    if (selectedTemplateNames.size === 0) return;
+    const targetCount = selectedTemplateNames.size;
+    const updated = templates.filter(t => !selectedTemplateNames.has(t.name));
+    updateProject({ stepTemplates: updated });
+    toast.info(`Deleted ${targetCount} blueprint(s).`);
+    setSelectedTemplateNames(new Set());
+  };
+
   const columns = useMemo<ColumnDef<StepTemplate>[]>(() => [
+    {
+      id: 'select',
+      header: (
+        <input
+          type="checkbox"
+          checked={sortedTemplates.length > 0 && selectedTemplateNames.size === sortedTemplates.length}
+          onChange={handleToggleSelectAll}
+          className="rounded border-[var(--color-divider)] text-[var(--color-primary-hex)] focus:ring-0 cursor-pointer"
+          aria-label="Select all blueprints"
+        />
+      ),
+      width: 'w-10',
+      align: 'center',
+      cell: (tpl) => (
+        <input
+          type="checkbox"
+          checked={selectedTemplateNames.has(tpl.name)}
+          onChange={() => handleToggleSelectTemplate(tpl.name)}
+          onClick={(e) => e.stopPropagation()}
+          className="rounded border-[var(--color-divider)] text-[var(--color-primary-hex)] focus:ring-0 cursor-pointer"
+          aria-label={`Select ${tpl.name}`}
+        />
+      )
+    },
     {
       id: 'name',
       header: 'Blueprint Name',
-      headerTitle: 'Standardized operational blueprint name and scope',
+      headerTitle: 'Standardized operational blueprint name and scope (Double-click to inline edit)',
       sortable: true,
       sortKey: 'name',
-      width: 'w-52 min-w-[180px]',
+      width: 'w-56 min-w-[200px]',
       cell: (tpl) => {
         const meta = getCategoryMeta(tpl.category);
         const IconComponent = meta.icon;
         const totalEffort = tpl.steps.reduce((s, st) => s + (Number(st.effort) || 0), 0);
+        const isEditing = editingField?.name === tpl.name && editingField?.field === 'name';
+
         return (
           <div className="flex items-center gap-2.5 py-1 min-w-0">
             <div className={clsx("w-8 h-8 rounded-xl flex items-center justify-center border shadow-2xs shrink-0", meta.bg, meta.color, meta.border)}>
               <IconComponent size={15} />
             </div>
-            <div className="min-w-0">
-              <div className="font-bold text-xs text-[var(--color-text)] hover:text-[var(--color-primary-hex)] transition-colors leading-snug truncate" title={tpl.name}>
-                {tpl.name}
-              </div>
+            <div className="min-w-0 flex-1">
+              {isEditing ? (
+                <input
+                  autoFocus
+                  type="text"
+                  value={editingVal}
+                  onChange={(e) => setEditingVal(e.target.value)}
+                  onBlur={() => handleCommitEdit(tpl.name)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleCommitEdit(tpl.name);
+                    if (e.key === 'Escape') setEditingField(null);
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full px-1.5 py-0.5 bg-[var(--color-surface-2)] border border-[var(--color-primary-hex)] rounded text-xs font-bold text-[var(--color-text)] outline-none"
+                />
+              ) : (
+                <div 
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    setEditingField({ name: tpl.name, field: 'name' });
+                    setEditingVal(tpl.name);
+                  }}
+                  className="font-bold text-xs text-[var(--color-text)] hover:text-[var(--color-primary-hex)] transition-colors leading-snug truncate cursor-pointer" 
+                  title={`${tpl.name} (Double-click to inline edit)`}
+                >
+                  {tpl.name}
+                </div>
+              )}
               <div className="cell-secondary text-[10px] text-[var(--color-text-muted)] flex items-center gap-1.5 mt-0.5">
                 <span>{tpl.steps.length} {tpl.steps.length === 1 ? 'phase' : 'phases'}</span>
                 <span>·</span>
@@ -449,18 +704,55 @@ const StepTemplates: React.FC = () => {
     {
       id: 'category',
       header: 'Category',
-      headerTitle: 'Task category governed by this blueprint',
+      headerTitle: 'Task category governed by this blueprint (Click to switch)',
       sortable: true,
       sortKey: 'category',
       width: 'w-36',
       cell: (tpl) => {
         const meta = getCategoryMeta(tpl.category);
         const IconComponent = meta.icon;
+        const isMenuOpen = categoryMenuTemplateName === tpl.name;
+
         return (
-          <span className={clsx("inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-2xs", meta.bg, meta.color, meta.border)}>
-            <IconComponent size={11} />
-            <span className="truncate">{tpl.category}</span>
-          </span>
+          <div className="relative inline-block">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setCategoryMenuTemplateName(isMenuOpen ? null : tpl.name);
+              }}
+              className={clsx(
+                "inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border shadow-2xs hover:border-[var(--color-border)] cursor-pointer transition-colors",
+                meta.bg, meta.color, meta.border
+              )}
+              title="Click to change category"
+            >
+              <IconComponent size={11} />
+              <span className="truncate">{tpl.category}</span>
+              <ChevronDown size={10} />
+            </button>
+            {isMenuOpen && (
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="absolute left-0 top-full mt-1 w-44 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl shadow-xl z-50 py-1 max-h-48 overflow-y-auto text-xs"
+              >
+                {categories.map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => handleSetTemplateCategory(tpl, cat)}
+                    className={clsx(
+                      "w-full text-left px-3 py-1.5 text-xs hover:bg-[var(--color-surface-2)] flex items-center justify-between cursor-pointer",
+                      tpl.category === cat ? "font-bold text-[var(--color-primary-hex)]" : "text-[var(--color-text)]"
+                    )}
+                  >
+                    <span>{cat}</span>
+                    {tpl.category === cat && <Check size={11} />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         );
       }
     },
@@ -575,12 +867,20 @@ const StepTemplates: React.FC = () => {
       header: 'Actions',
       headerTitle: 'Manage blueprint template',
       align: 'right',
-      width: 'w-28',
+      width: 'w-36',
       cell: (tpl) => {
         const i = templates.findIndex(t => t.name === tpl.name);
         const isCopied = copiedIndex === i;
         return (
           <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={() => setPeekTemplateName(tpl.name)}
+              title="Quick Peek Drawer"
+              className="p-1.5 rounded-lg text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors cursor-pointer border border-transparent hover:border-[var(--color-divider)] touch-hit-expand"
+            >
+              <ExternalLink size={13} />
+            </button>
             <button
               type="button"
               onClick={() => copyBlueprintMarkdown(i)}
@@ -617,7 +917,7 @@ const StepTemplates: React.FC = () => {
         );
       }
     }
-  ], [templates, state.tasks, copiedIndex]);
+  ], [templates, state.tasks, copiedIndex, sortedTemplates, selectedTemplateNames, editingField, editingVal, categoryMenuTemplateName, categories]);
 
   const handleImportBlueprints = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -1032,6 +1332,51 @@ const StepTemplates: React.FC = () => {
         </CollapsibleSummaryStrip>
       </div>
 
+      {/* ── Quick Filter Presets Strip ── */}
+      <div className="px-4 sm:px-6 lg:px-8 pt-1">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 text-xs">
+          {PRESETS.map((p) => {
+            const isActive = activePreset === p.id;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => handlePresetClick(p.id)}
+                className={clsx(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-medium text-xs whitespace-nowrap transition-all cursor-pointer border active:scale-95",
+                  isActive
+                    ? "bg-[var(--color-primary-hex)] text-white border-[var(--color-primary-hex)] shadow-xs font-bold"
+                    : "bg-[var(--color-surface)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:border-[var(--color-border)] hover:text-[var(--color-text)]"
+                )}
+              >
+                <span>{p.label}</span>
+                <span
+                  className={clsx(
+                    "text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold",
+                    isActive
+                      ? "bg-white/20 text-white"
+                      : "bg-[var(--color-surface-2)] text-[var(--color-text-faint)]"
+                  )}
+                >
+                  {p.count}
+                </span>
+              </button>
+            );
+          })}
+
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={resetAllFilters}
+              className="text-xs text-[var(--color-primary-hex)] font-semibold hover:underline flex items-center gap-1 whitespace-nowrap px-2 py-1 cursor-pointer"
+            >
+              <X size={12} />
+              Reset All
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* ── 3. Operational Toolbar (Filter, Search & View Modes) ── */}
       <div className="px-4 sm:px-6 lg:px-8 py-2">
         <div className="p-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-2xs flex flex-wrap items-center justify-between gap-3 text-xs">
@@ -1040,10 +1385,11 @@ const StepTemplates: React.FC = () => {
             <div className="relative flex-1 max-w-sm">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
               <input
+                ref={searchInputRef}
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search blueprints by name, category, or phase…"
+                placeholder="Search blueprints by name, category, or phase… (/)"
                 className="w-full h-9 pl-9 pr-8 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs font-medium text-[var(--color-text)] outline-none focus:border-[var(--color-primary-hex)] transition-colors shadow-2xs"
               />
               {searchQuery && (
@@ -1200,7 +1546,7 @@ const StepTemplates: React.FC = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.96 }}
                     transition={{ duration: 0.16 }}
-                    onClick={() => startEdit(i)}
+                    onClick={() => setPeekTemplateName(tpl.name)}
                     className="card glass p-5 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 hover:shadow-lg transition-all duration-200 cursor-pointer flex flex-col group relative overflow-hidden"
                   >
                     {/* Top Row: Icon + Category + Action Bar */}
@@ -1221,6 +1567,14 @@ const StepTemplates: React.FC = () => {
 
                       {/* Card Action Buttons */}
                       <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
+                        <button
+                          type="button"
+                          onClick={(e) => { e.stopPropagation(); setPeekTemplateName(tpl.name); }}
+                          title="Quick Peek Blueprint"
+                          className="p-1.5 rounded-lg text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors cursor-pointer"
+                        >
+                          <ExternalLink size={13} />
+                        </button>
                         <button
                           type="button"
                           onClick={(e) => { e.stopPropagation(); copyBlueprintMarkdown(i); }}
@@ -1347,10 +1701,8 @@ const StepTemplates: React.FC = () => {
             showRowNumbers
             pagination={pagination}
             itemLabel="blueprints"
-            onRowClick={(tpl) => {
-              const i = templates.findIndex(t => t.name === tpl.name);
-              if (i !== -1) startEdit(i);
-            }}
+            stickyFirstColumn
+            onRowClick={(tpl) => setPeekTemplateName(tpl.name)}
             mobileCardRenderer={(tpl) => {
               const i = templates.findIndex(t => t.name === tpl.name);
               const totalEffort = tpl.steps.reduce((s, st) => s + (Number(st.effort) || 0), 0);
@@ -1363,7 +1715,7 @@ const StepTemplates: React.FC = () => {
 
               return (
                 <div
-                  onClick={() => startEdit(i)}
+                  onClick={() => setPeekTemplateName(tpl.name)}
                   className="p-4 space-y-3 cursor-pointer active:bg-[var(--color-surface-2)]/70 transition-colors"
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -1379,6 +1731,14 @@ const StepTemplates: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
+                      <button
+                        type="button"
+                        onClick={() => setPeekTemplateName(tpl.name)}
+                        title="Quick Peek"
+                        className="p-2 rounded-lg text-[var(--color-text-muted)] hover:text-cyan-400 touch-hit-expand cursor-pointer"
+                      >
+                        <ExternalLink size={14} />
+                      </button>
                       <button
                         type="button"
                         onClick={() => copyBlueprintMarkdown(i)}
@@ -1976,6 +2336,316 @@ const StepTemplates: React.FC = () => {
         confirmLabel="Delete Blueprint"
         variant="danger"
       />
+
+      {/* ── 8. Blueprint Detail Master-Detail Peek Side Drawer ── */}
+      <SlideOverDrawer
+        isOpen={Boolean(peekTemplate)}
+        onClose={() => setPeekTemplateName(null)}
+        widthClass="w-full sm:w-[540px] lg:w-[620px]"
+        onPrevious={handlePrevTemplate}
+        onNext={handleNextTemplate}
+        hasPrevious={peekTemplateIndex > 0}
+        hasNext={peekTemplateIndex >= 0 && peekTemplateIndex < sortedTemplates.length - 1}
+        title={
+          peekTemplate ? (
+            <div className="flex items-center gap-3">
+              {(() => {
+                const meta = getCategoryMeta(peekTemplate.category);
+                const IconComponent = meta.icon;
+                return (
+                  <div className={clsx("w-9 h-9 rounded-xl flex items-center justify-center border shadow-2xs shrink-0", meta.bg, meta.color, meta.border)}>
+                    <IconComponent size={18} />
+                  </div>
+                );
+              })()}
+              <div className="min-w-0">
+                <h3 className="font-bold text-sm text-[var(--color-text)] truncate">{peekTemplate.name}</h3>
+                <p className="text-xs text-[var(--color-text-muted)] truncate">{peekTemplate.category} Workflow</p>
+              </div>
+            </div>
+          ) : undefined
+        }
+        footer={
+          peekTemplate && (
+            <div className="flex items-center justify-between w-full gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const idx = templates.findIndex(t => t.name === peekTemplate.name);
+                  if (idx !== -1) copyBlueprintMarkdown(idx);
+                }}
+                className="text-xs font-semibold flex items-center gap-1.5"
+              >
+                <Copy size={13} /> Copy Markdown
+              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const idx = templates.findIndex(t => t.name === peekTemplate.name);
+                    if (idx !== -1) {
+                      duplicateTemplate(idx);
+                      toast.success(`Duplicated blueprint "${peekTemplate.name}".`);
+                    }
+                  }}
+                  className="text-xs font-semibold flex items-center gap-1.5"
+                >
+                  <CopyPlus size={13} /> Clone
+                </Button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => {
+                    const idx = templates.findIndex(t => t.name === peekTemplate.name);
+                    if (idx !== -1) {
+                      setPeekTemplateName(null);
+                      startEdit(idx);
+                    }
+                  }}
+                  className="text-xs font-bold flex items-center gap-1.5"
+                >
+                  <Edit2 size={13} /> Edit Blueprint
+                </Button>
+              </div>
+            </div>
+          )
+        }
+      >
+        {peekTemplate && (() => {
+          const totalEffort = peekTemplate.steps.reduce((s, st) => s + (Number(st.effort) || 0), 0);
+          const avgPhase = peekTemplate.steps.length > 0 ? (totalEffort / peekTemplate.steps.length).toFixed(1) : '0';
+          const matchingTasks = state.tasks.filter(t => 
+            t.category === peekTemplate.category || (peekTemplate.category === 'GUI Screen' && ((t.subtasks && t.subtasks.some(st => st.type === 'screen')) || (t.guiScreens && t.guiScreens.length > 0)))
+          );
+
+          return (
+            <div className="space-y-6">
+              {/* 4-Stat Metric Bento Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div className="p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">Phases</div>
+                  <div className="text-xl font-bold font-mono text-[var(--color-text)] mt-1">{peekTemplate.steps.length}</div>
+                  <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Sequential steps</div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">Total Effort</div>
+                  <div className="text-xl font-bold font-mono text-cyan-600 dark:text-cyan-400 mt-1">{totalEffort}d</div>
+                  <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Planned work days</div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">Avg / Phase</div>
+                  <div className="text-xl font-bold font-mono text-indigo-600 dark:text-indigo-400 mt-1">{avgPhase}d</div>
+                  <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Effort density</div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">Active Tasks</div>
+                  <div className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-1">{matchingTasks.length}</div>
+                  <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Matching category</div>
+                </div>
+              </div>
+
+              {/* Segmented Proportional Effort Pipeline Bar */}
+              <div>
+                <div className="flex items-center justify-between text-xs mb-2">
+                  <span className="font-bold text-[var(--color-text)] flex items-center gap-1.5">
+                    <Layers size={13} className="text-[var(--color-primary-hex)]" />
+                    Phase Effort Distribution
+                  </span>
+                  <span className="font-mono text-[11px] text-[var(--color-text-muted)]">
+                    100% = {totalEffort} Days
+                  </span>
+                </div>
+                <div className="h-3 rounded-full overflow-hidden flex gap-0.5 bg-[var(--color-surface-2)] p-0.5 border border-[var(--color-divider)] shadow-inner">
+                  {peekTemplate.steps.map((st, si) => {
+                    const pct = totalEffort > 0 ? (Number(st.effort) / totalEffort) * 100 : 100 / peekTemplate.steps.length;
+                    return (
+                      <div
+                        key={si}
+                        title={`Phase ${si + 1}: ${st.name} (${st.effort}d - ${pct.toFixed(1)}%)`}
+                        style={{ width: `${Math.max(3, pct)}%` }}
+                        className={clsx("h-full rounded-xs transition-all", PHASE_COLORS[si % PHASE_COLORS.length])}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Sequential Phase Breakdown List */}
+              <div>
+                <h4 className="font-bold text-xs text-[var(--color-text)] uppercase tracking-wider mb-2.5 flex items-center gap-1.5">
+                  <Clock size={13} className="text-cyan-500" />
+                  Sequential Execution Phases ({peekTemplate.steps.length})
+                </h4>
+                <div className="space-y-1.5">
+                  {peekTemplate.steps.map((st, si) => {
+                    const pct = totalEffort > 0 ? ((Number(st.effort) / totalEffort) * 100).toFixed(0) : '0';
+                    return (
+                      <div
+                        key={si}
+                        className="p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-between gap-3 hover:border-[var(--color-primary-hex)]/40 transition-colors"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span className="w-6 h-6 rounded-lg bg-[var(--color-surface)] border border-[var(--color-divider)] text-[10px] font-mono font-bold flex items-center justify-center shrink-0 text-[var(--color-text-muted)]">
+                            {si + 1}
+                          </span>
+                          <span className="font-bold text-xs text-[var(--color-text)] truncate">{st.name}</span>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="text-[11px] font-mono font-semibold text-[var(--color-text-muted)]">
+                            {pct}% share
+                          </span>
+                          <span className="px-2 py-0.5 rounded-md bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20 font-mono font-bold text-xs">
+                            {st.effort}d
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Linked Active Tasks in Scope */}
+              <div>
+                <div className="flex items-center justify-between mb-2.5">
+                  <h4 className="font-bold text-xs text-[var(--color-text)] uppercase tracking-wider flex items-center gap-1.5">
+                    <Sparkles size={13} className="text-emerald-500" />
+                    Linked Project Tasks ({matchingTasks.length})
+                  </h4>
+                  {matchingTasks.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPeekTemplateName(null);
+                        setView('tasks');
+                      }}
+                      className="text-[11px] text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 font-semibold cursor-pointer"
+                    >
+                      Open in Tasks <ArrowRight size={11} />
+                    </button>
+                  )}
+                </div>
+                {matchingTasks.length === 0 ? (
+                  <div className="p-4 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-center text-xs text-[var(--color-text-muted)]">
+                    No active tasks are currently mapped to this blueprint's category ({peekTemplate.category}).
+                  </div>
+                ) : (
+                  <div className="space-y-1.5 max-h-60 overflow-y-auto pr-1">
+                    {matchingTasks.slice(0, 10).map(t => (
+                      <div
+                        key={t.id}
+                        onClick={() => {
+                          setPeekTemplateName(null);
+                          setView('tasks');
+                        }}
+                        className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-between gap-2 hover:border-[var(--color-primary-hex)]/40 transition-colors cursor-pointer group"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-[10px] font-bold text-[var(--color-primary-hex)]">{t.id}</span>
+                            <span className="font-bold text-xs text-[var(--color-text)] truncate group-hover:text-[var(--color-primary-hex)] transition-colors">{t.name}</span>
+                          </div>
+                          <div className="text-[10px] text-[var(--color-text-muted)] mt-0.5 truncate">
+                            {t.assignee || 'Unassigned'} • Due {t.dueDate || 'TBD'}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className={clsx(
+                            "px-1.5 py-0.5 rounded text-[10px] font-semibold",
+                            t.status === TaskStatus.COMPLETED ? "bg-emerald-500/10 text-emerald-500" :
+                            t.status === TaskStatus.IN_PROGRESS ? "bg-amber-500/10 text-amber-500" :
+                            "bg-slate-500/10 text-slate-400"
+                          )}>
+                            {t.status}
+                          </span>
+                          <span className="font-mono font-bold text-xs text-[var(--color-text)]">{t.progress || 0}%</span>
+                        </div>
+                      </div>
+                    ))}
+                    {matchingTasks.length > 10 && (
+                      <div className="text-center text-[11px] text-[var(--color-text-muted)] pt-1">
+                        + {matchingTasks.length - 10} more tasks mapped
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
+      </SlideOverDrawer>
+
+      {/* ── 9. Floating Action Bar for Batch Selection ── */}
+      <AnimatePresence>
+        {selectedTemplateNames.size > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-[var(--color-surface-2)]/95 backdrop-blur-md border border-[var(--color-divider)] shadow-2xl rounded-2xl px-4 py-2.5 flex items-center gap-3 text-xs"
+          >
+            <div className="flex items-center gap-2 pr-3 border-r border-[var(--color-divider)]">
+              <span className="w-5 h-5 rounded-full bg-[var(--color-primary-hex)] text-white text-[10px] font-bold flex items-center justify-center">
+                {selectedTemplateNames.size}
+              </span>
+              <span className="font-semibold text-[var(--color-text)]">Selected</span>
+            </div>
+
+            {/* Batch Assign Category */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[var(--color-text-muted)] text-[11px]">Category:</span>
+              <select
+                value={batchCategory}
+                onChange={(e) => {
+                  setBatchCategory(e.target.value);
+                  if (e.target.value) handleBatchApplyCategory(e.target.value);
+                }}
+                className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg px-2 py-1 text-xs text-[var(--color-text)] cursor-pointer"
+              >
+                <option value="">Assign Category...</option>
+                {categories.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Batch Duplicate */}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleBatchDuplicate}
+              className="text-cyan-500 hover:bg-cyan-500/10 border-cyan-500/30 flex items-center gap-1 h-7"
+            >
+              <CopyPlus size={12} />
+              <span>Clone All</span>
+            </Button>
+
+            {/* Batch Delete */}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleBatchDelete}
+              className="text-rose-500 hover:bg-rose-500/10 border-rose-500/30 flex items-center gap-1 h-7"
+            >
+              <Trash2 size={12} />
+              <span>Delete</span>
+            </Button>
+
+            {/* Clear Selection */}
+            <button
+              type="button"
+              onClick={() => setSelectedTemplateNames(new Set())}
+              className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] text-xs font-medium cursor-pointer ml-1"
+            >
+              Clear
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </MotionPage>
   );
 };
