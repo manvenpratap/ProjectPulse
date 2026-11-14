@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { Task, TaskStatus, TaskPriority, Subtask } from '../../types';
 import { fmtDate, daysDiff, isBlocked, todayStr } from '../../utils/projectUtils';
@@ -27,7 +27,9 @@ import {
   User,
   Calendar,
   Layers2,
-  Plus
+  Plus,
+  Search,
+  RotateCcw
 } from 'lucide-react';
 import Button from '../shared/Button';
 import { motion, AnimatePresence } from 'motion/react';
@@ -104,6 +106,23 @@ const TaskGrid: React.FC<TaskGridProps> = ({
   const [expandedTasks, setExpandedTasks] = useState<Set<string>>(new Set());
   const [sortField, setSortField] = useState<'id' | 'name' | 'module' | 'status' | 'priority' | 'assignee' | 'dueDate' | 'progress'>('id');
   const [sortAsc, setSortAsc] = useState<boolean>(true);
+
+  // Quick Preset Filters & Search Shortcut
+  type FilterPreset = 'all' | 'blocked' | 'critical' | 'overdue';
+  const [activePreset, setActivePreset] = useState<FilterPreset>('all');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) return;
+      if (e.key === '/') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Bulk Selection State
   const [selectedTaskIds, setSelectedTaskIds] = useState<Set<string>>(new Set());
@@ -227,6 +246,30 @@ const TaskGrid: React.FC<TaskGridProps> = ({
     }
   };
 
+  const today = todayStr();
+  const countBlocked = useMemo(() => state.tasks.filter(t => t.status === TaskStatus.BLOCKED || t.status === TaskStatus.ON_HOLD).length, [state.tasks]);
+  const countCritical = useMemo(() => state.tasks.filter(t => t.priority === TaskPriority.CRITICAL || t.priority === TaskPriority.HIGH).length, [state.tasks]);
+  const countOverdue = useMemo(() => state.tasks.filter(t => Boolean(t.dueDate) && t.dueDate < today && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED).length, [state.tasks, today]);
+
+  const isAnyFilterActive = 
+    activePreset !== 'all' || 
+    Boolean(searchTerm.trim()) || 
+    selectedModule !== 'all' || 
+    selectedRelease !== 'all' || 
+    selectedStatus !== 'all' || 
+    selectedPriority !== 'all' || 
+    selectedAssignee !== 'all';
+
+  const resetAllFilters = () => {
+    setActivePreset('all');
+    setSearchTerm('');
+    setSelectedModule('all');
+    setSelectedRelease('all');
+    setSelectedStatus('all');
+    setSelectedPriority('all');
+    setSelectedAssignee('all');
+  };
+
   // Filtered & Sorted Tasks
   const filteredTasks = useMemo(() => {
     return state.tasks.filter(t => {
@@ -237,13 +280,20 @@ const TaskGrid: React.FC<TaskGridProps> = ({
         t.module.toLowerCase().includes(q) ||
         (t.assignee && t.assignee.toLowerCase().includes(q));
 
+      const matchesPreset = 
+        activePreset === 'all' ? true :
+        activePreset === 'blocked' ? (t.status === TaskStatus.BLOCKED || t.status === TaskStatus.ON_HOLD) :
+        activePreset === 'critical' ? (t.priority === TaskPriority.CRITICAL || t.priority === TaskPriority.HIGH) :
+        activePreset === 'overdue' ? (Boolean(t.dueDate) && t.dueDate < today && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED) :
+        true;
+
       const matchesModule = selectedModule === 'all' || t.module === selectedModule;
       const matchesRelease = selectedRelease === 'all' || t.release === selectedRelease;
       const matchesStatus = selectedStatus === 'all' || t.status === selectedStatus;
       const matchesAssignee = selectedAssignee === 'all' || t.assignee === selectedAssignee;
       const matchesPriority = selectedPriority === 'all' || t.priority === selectedPriority;
 
-      return matchesSearch && matchesModule && matchesRelease && matchesStatus && matchesAssignee && matchesPriority;
+      return matchesSearch && matchesPreset && matchesModule && matchesRelease && matchesStatus && matchesAssignee && matchesPriority;
     }).sort((a, b) => {
       let cmp = 0;
       if (sortField === 'id') {
@@ -266,7 +316,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
       }
       return sortAsc ? cmp : -cmp;
     });
-  }, [state.tasks, searchTerm, selectedModule, selectedRelease, selectedStatus, selectedAssignee, selectedPriority, sortField, sortAsc]);
+  }, [state.tasks, searchTerm, activePreset, selectedModule, selectedRelease, selectedStatus, selectedAssignee, selectedPriority, sortField, sortAsc, today]);
 
   const pagination = usePagination<Task>(filteredTasks, 10, 'pp_page_size_tasks');
 
@@ -615,10 +665,111 @@ const TaskGrid: React.FC<TaskGridProps> = ({
     <div className="space-y-3.5">
       {/* ── 1. Table Toolbar & Operational Controls (Rendered when not merged into Tier 2 header) ── */}
       {!hideToolbar && (
-        <div className="p-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xs flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex flex-wrap items-center gap-2">
+        <div className="p-3 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xs space-y-2.5 text-xs">
+          {/* Top Row: Quick Search + Preset Filter Chips + Density & Stats */}
+          <div className="flex flex-wrap items-center justify-between gap-2.5">
+            {/* Quick Search with / Hotkey */}
+            <div className="relative flex-1 min-w-[200px] max-w-xs">
+              <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)] pointer-events-none" />
+              <input
+                ref={searchInputRef}
+                type="text"
+                value={searchTerm}
+                onChange={e => setSearchTerm(e.target.value)}
+                placeholder="Search tasks... (/)"
+                className="w-full h-8 pl-8 pr-7 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs outline-none focus:border-[var(--color-primary-hex)]/40 focus:bg-[var(--color-surface)] transition-all"
+              />
+              {searchTerm ? (
+                <button
+                  type="button"
+                  onClick={() => setSearchTerm('')}
+                  aria-label="Clear search"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)] hover:text-[var(--color-text)] p-0.5 rounded cursor-pointer"
+                >
+                  <X size={12} />
+                </button>
+              ) : (
+                <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] font-mono text-[var(--color-text-faint)] border border-[var(--color-divider)] px-1 py-0.5 rounded bg-[var(--color-surface)] pointer-events-none">
+                  /
+                </kbd>
+              )}
+            </div>
+
+            {/* Segmented Filter Preset Chips */}
+            <div className="flex items-center gap-1 overflow-x-auto custom-scroll py-0.5">
+              {[
+                { id: 'all', label: 'All' },
+                { id: 'blocked', label: 'Blocked / On Hold', count: countBlocked },
+                { id: 'critical', label: 'Critical / High', count: countCritical },
+                { id: 'overdue', label: 'Overdue', count: countOverdue },
+              ].map(chip => (
+                <button
+                  key={chip.id}
+                  onClick={() => setActivePreset(chip.id as FilterPreset)}
+                  className={clsx(
+                    "px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all whitespace-nowrap cursor-pointer flex items-center gap-1.5",
+                    activePreset === chip.id
+                      ? "bg-[var(--color-primary-hex)] text-white shadow-xs"
+                      : "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)]/80"
+                  )}
+                >
+                  <span>{chip.label}</span>
+                  {chip.count !== undefined && (
+                    <span className={clsx(
+                      "px-1 py-0.2 rounded-full text-[9px] font-mono",
+                      activePreset === chip.id ? "bg-white/20 text-white" : "bg-[var(--color-surface)] text-[var(--color-text-faint)]"
+                    )}>
+                      {chip.count}
+                    </span>
+                  )}
+                </button>
+              ))}
+
+              {isAnyFilterActive && (
+                <button
+                  onClick={resetAllFilters}
+                  className="px-2 py-1 rounded-lg text-[11px] font-semibold text-rose-500 hover:bg-rose-500/10 transition-colors flex items-center gap-1 cursor-pointer ml-1"
+                  title="Clear all active filters"
+                >
+                  <RotateCcw size={11} />
+                  <span>Reset</span>
+                </button>
+              )}
+            </div>
+
+            {/* View Density & Filter Count */}
+            <div className="flex items-center gap-2.5 ml-auto">
+              <span className="text-xs font-semibold text-[var(--color-text-muted)] hidden sm:inline">
+                <strong className="text-[var(--color-text)]">{filteredTasks.length}</strong> / {state.tasks.length}
+              </span>
+
+              <div className="flex items-center p-0.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                <button
+                  onClick={() => setDensity('compact')}
+                  className={clsx(
+                    "px-2.5 py-1 min-h-[28px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                    density === 'compact' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)]"
+                  )}
+                >
+                  Compact
+                </button>
+                <button
+                  onClick={() => setDensity('comfortable')}
+                  className={clsx(
+                    "px-2.5 py-1 min-h-[28px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
+                    density === 'comfortable' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)]"
+                  )}
+                >
+                  Comfortable
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Secondary Row: Module Filter + Release Filter + Inline Filters Toggle */}
+          <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-[var(--color-divider)]/40">
             {/* Quick Module Filter */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
               <Layers size={13} className="text-[var(--color-text-faint)]" />
               <select
                 value={selectedModule}
@@ -633,7 +784,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
             </div>
 
             {/* Quick Release Filter */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
               <Flag size={13} className="text-[var(--color-text-faint)]" />
               <select
                 value={selectedRelease}
@@ -651,7 +802,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
             <button
               onClick={() => setShowInlineFilters(!showInlineFilters)}
               className={clsx(
-                "px-2.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 border transition-all cursor-pointer",
+                "px-2.5 py-1 rounded-xl font-bold flex items-center gap-1.5 border transition-all cursor-pointer ml-auto",
                 showInlineFilters 
                   ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border-[var(--color-primary-hex)]/30"
                   : "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:text-[var(--color-text)]"
@@ -661,34 +812,6 @@ const TaskGrid: React.FC<TaskGridProps> = ({
               <Filter size={13} />
               <span>{showInlineFilters ? 'Filters Visible' : 'Show Filters'}</span>
             </button>
-          </div>
-
-          {/* View Density & Filter Count */}
-          <div className="flex items-center gap-3">
-            <span className="text-xs font-semibold text-[var(--color-text-muted)]">
-              <strong className="text-[var(--color-text)]">{filteredTasks.length}</strong> / {state.tasks.length} tasks
-            </span>
-
-            <div className="flex items-center p-0.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
-              <button
-                onClick={() => setDensity('compact')}
-                className={clsx(
-                  "px-2.5 py-1 min-h-[30px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
-                  density === 'compact' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)]"
-                )}
-              >
-                Compact
-              </button>
-              <button
-                onClick={() => setDensity('comfortable')}
-                className={clsx(
-                  "px-2.5 py-1 min-h-[30px] rounded-lg text-xs font-semibold transition-all cursor-pointer",
-                  density === 'comfortable' ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-xs" : "text-[var(--color-text-faint)]"
-                )}
-              >
-                Comfortable
-              </button>
-            </div>
           </div>
         </div>
       )}
