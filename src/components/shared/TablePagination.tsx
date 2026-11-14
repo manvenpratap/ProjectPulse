@@ -160,7 +160,7 @@ export const TablePagination: FC<TablePaginationProps> = ({
           disabled={currentPage === 1}
           aria-label="First page"
           title="First page"
-          className="w-7 h-7 rounded-lg flex items-center justify-center border border-[var(--color-divider)] hover:bg-[var(--color-surface-2)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer text-[var(--color-text)]"
+          className="w-7 h-7 rounded-lg flex items-center justify-center border border-[var(--color-divider)] hover:bg-[var(--color-surface-2)] disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer text-[var(--color-text)] active:scale-95 disabled:active:scale-100"
         >
           <ChevronsLeft size={13} />
         </button>
@@ -172,13 +172,20 @@ export const TablePagination: FC<TablePaginationProps> = ({
           disabled={currentPage === 1}
           aria-label="Previous page"
           title="Previous page"
-          className="w-7 h-7 rounded-lg flex items-center justify-center border border-[var(--color-divider)] hover:bg-[var(--color-surface-2)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer text-[var(--color-text)]"
+          className="w-7 h-7 rounded-lg flex items-center justify-center border border-[var(--color-divider)] hover:bg-[var(--color-surface-2)] disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer text-[var(--color-text)] active:scale-95 disabled:active:scale-100"
         >
           <ChevronLeft size={13} />
         </button>
 
-        {/* Numeric Page Buttons */}
-        <div className="flex items-center gap-1 px-1">
+        {/* Mobile Compact Page Indicator (< sm) */}
+        <div className="flex sm:hidden items-center gap-1 font-mono text-[11px] font-bold text-[var(--color-text)] px-2">
+          <span>{currentPage}</span>
+          <span className="text-[var(--color-text-faint)]">/</span>
+          <span className="text-[var(--color-text-muted)]">{totalPages}</span>
+        </div>
+
+        {/* Desktop Numeric Page Buttons (>= sm) */}
+        <div className="hidden sm:flex items-center gap-1 px-1">
           {pageNumbers.map((p, idx) => {
             if (p === 'ellipsis') {
               return (
@@ -195,10 +202,10 @@ export const TablePagination: FC<TablePaginationProps> = ({
                 onClick={() => onPageChange(p)}
                 aria-current={isActive ? 'page' : undefined}
                 className={clsx(
-                  "min-w-[28px] h-7 px-1.5 rounded-lg text-xs font-semibold font-mono transition-colors cursor-pointer",
+                  "min-w-[28px] h-7 px-1.5 rounded-lg text-xs font-semibold font-mono transition-all cursor-pointer active:scale-95",
                   isActive
                     ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] font-bold shadow-2xs"
-                    : "hover:bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text)]"
+                    : "hover:bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text)] hover:border-[var(--color-primary-hex)]/40"
                 )}
               >
                 {p}
@@ -214,7 +221,7 @@ export const TablePagination: FC<TablePaginationProps> = ({
           disabled={currentPage === totalPages}
           aria-label="Next page"
           title="Next page"
-          className="w-7 h-7 rounded-lg flex items-center justify-center border border-[var(--color-divider)] hover:bg-[var(--color-surface-2)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer text-[var(--color-text)]"
+          className="w-7 h-7 rounded-lg flex items-center justify-center border border-[var(--color-divider)] hover:bg-[var(--color-surface-2)] disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer text-[var(--color-text)] active:scale-95 disabled:active:scale-100"
         >
           <ChevronRight size={13} />
         </button>
@@ -226,7 +233,7 @@ export const TablePagination: FC<TablePaginationProps> = ({
           disabled={currentPage === totalPages}
           aria-label="Last page"
           title="Last page"
-          className="w-7 h-7 rounded-lg flex items-center justify-center border border-[var(--color-divider)] hover:bg-[var(--color-surface-2)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer text-[var(--color-text)]"
+          className="w-7 h-7 rounded-lg flex items-center justify-center border border-[var(--color-divider)] hover:bg-[var(--color-surface-2)] disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer text-[var(--color-text)] active:scale-95 disabled:active:scale-100"
         >
           <ChevronsRight size={13} />
         </button>
