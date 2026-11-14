@@ -2,26 +2,26 @@ import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { TaskStatus, TaskPriority, Feature } from '../../types';
 import { todayStr, getTeamNames } from '../../utils/projectUtils';
-import { 
-  Blocks, 
-  Plus, 
-  Trash2, 
-  Copy, 
-  CopyPlus, 
-  Zap, 
-  ArrowRight, 
-  ArrowLeft, 
-  Layers, 
-  Monitor, 
-  Database, 
-  Upload, 
-  X, 
-  Check, 
-  Search, 
-  PanelRight, 
-  ChevronLeft, 
-  ChevronRight, 
-  FileText, 
+import {
+  Blocks,
+  Plus,
+  Trash2,
+  Copy,
+  CopyPlus,
+  Zap,
+  ArrowRight,
+  ArrowLeft,
+  Layers,
+  Monitor,
+  Database,
+  Upload,
+  X,
+  Check,
+  Search,
+  PanelRight,
+  ChevronLeft,
+  ChevronRight,
+  FileText,
   AlertCircle,
   ExternalLink,
   Sliders,
@@ -124,7 +124,7 @@ export const ScaffolderView: React.FC = () => {
   // Filtered modules
   const filteredModules = useMemo(() => {
     return modules.filter(m => {
-      const matchesSearch = !searchQuery.trim() || 
+      const matchesSearch = !searchQuery.trim() ||
         m.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         m.assignee.toLowerCase().includes(searchQuery.toLowerCase()) ||
         m.release.toLowerCase().includes(searchQuery.toLowerCase());
@@ -308,7 +308,7 @@ export const ScaffolderView: React.FC = () => {
     validModules.forEach(m => {
       const subtasks: any[] = [];
       const guiScreens: string[] = [];
-      
+
       if (m.type === 'GUI' && m.screens.trim()) {
         const screenLines = m.screens.split('\n').filter(l => l.trim());
         screenLines.forEach((line, lx) => {
@@ -364,7 +364,7 @@ export const ScaffolderView: React.FC = () => {
 
   const renderStepStepper = () => (
     <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6 max-w-xl mx-auto px-1">
-      <button 
+      <button
         onClick={() => setStep('blueprint')}
         className="flex items-center gap-2 sm:gap-3 shrink-0 cursor-pointer focus:outline-none"
       >
@@ -377,14 +377,14 @@ export const ScaffolderView: React.FC = () => {
         </span>
       </button>
       <div className="flex-1 h-px bg-[var(--color-divider)]" />
-      <button 
+      <button
         onClick={() => setStep('alignment')}
         className="flex items-center gap-2 sm:gap-3 shrink-0 cursor-pointer focus:outline-none"
       >
         <div className={clsx(
           "w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center font-bold text-xs sm:text-sm transition-all shadow-sm",
-          step === 'alignment' 
-            ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] ring-2 ring-[var(--color-primary-hex)]/30" 
+          step === 'alignment'
+            ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] ring-2 ring-[var(--color-primary-hex)]/30"
             : "bg-[var(--color-surface-offset)] text-[var(--color-text-faint)]"
         )}>2</div>
         <span className={clsx("text-xs sm:text-sm font-bold", step === 'alignment' ? "text-[var(--color-primary-hex)]" : "text-[var(--color-text-faint)]")}>
@@ -495,19 +495,19 @@ export const ScaffolderView: React.FC = () => {
 
               {/* Primary Blueprint Actions */}
               <div className="flex items-center gap-2 shrink-0">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setIsBulkOpen(true)} 
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsBulkOpen(true)}
                   className="h-9 px-3 font-bold rounded-xl border-[var(--color-divider)] bg-[var(--color-surface-2)] active:scale-95 text-xs"
                 >
                   <Upload size={14} className="mr-1.5 text-[var(--color-primary-hex)]" />
                   <span>Bulk & Presets</span>
                 </Button>
-                <Button 
-                  variant="primary" 
-                  size="sm" 
-                  onClick={addRow} 
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={addRow}
                   className="h-9 px-3.5 font-bold rounded-xl active:scale-95 shadow-xs text-xs"
                 >
                   <Plus size={14} className="mr-1.5" />
@@ -553,7 +553,7 @@ export const ScaffolderView: React.FC = () => {
                       const screenCount = m.screens.trim() ? m.screens.split('\n').filter(Boolean).length : 0;
 
                       return (
-                        <tr 
+                        <tr
                           key={m.id}
                           className={clsx(
                             "group transition-colors duration-150 hover:bg-[var(--color-surface-2)]/60",
@@ -706,7 +706,7 @@ export const ScaffolderView: React.FC = () => {
                   const screenCount = m.screens.trim() ? m.screens.split('\n').filter(Boolean).length : 0;
 
                   return (
-                    <div 
+                    <div
                       key={m.id}
                       className={clsx(
                         "p-4 rounded-xl border transition-all space-y-3",
@@ -832,8 +832,8 @@ export const ScaffolderView: React.FC = () => {
                   <div>
                     <h3 className="text-sm font-bold text-[var(--color-text)]">No Architecture Modules Found</h3>
                     <p className="text-xs text-[var(--color-text-muted)] mt-1 max-w-sm mx-auto">
-                      {searchQuery || layerFilter !== 'all' 
-                        ? 'Try clearing your active filters or search terms.' 
+                      {searchQuery || layerFilter !== 'all'
+                        ? 'Try clearing your active filters or search terms.'
                         : 'Get started by creating a blank module or loading an enterprise architecture blueprint.'}
                     </p>
                   </div>
@@ -891,7 +891,7 @@ export const ScaffolderView: React.FC = () => {
                   const screenCount = m.screens.trim() ? m.screens.split('\n').filter(Boolean).length : 0;
 
                   return (
-                    <div 
+                    <div
                       key={m.id}
                       className="p-5 rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] hover:border-[var(--color-primary-hex)]/40 transition-all space-y-4 flex flex-col justify-between"
                     >
@@ -906,7 +906,7 @@ export const ScaffolderView: React.FC = () => {
                         </div>
 
                         <h3 className="font-bold text-sm text-[var(--color-text)] truncate">{m.name}</h3>
-                        
+
                         <div className="grid grid-cols-2 gap-2 text-[11px] mt-3 pt-3 border-t border-[var(--color-divider)]">
                           <div>
                             <span className="text-[10px] font-semibold text-[var(--color-text-faint)] block uppercase">Owner</span>
@@ -1079,7 +1079,7 @@ export const ScaffolderView: React.FC = () => {
             {/* Editable Attributes */}
             <div className="space-y-4 p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)]">
               <h4 className="text-xs font-bold text-[var(--color-text)] uppercase tracking-wider">Module Specification</h4>
-              
+
               <div>
                 <label className="text-[11px] font-semibold text-[var(--color-text-muted)] block mb-1">Module Name</label>
                 <input
@@ -1235,9 +1235,9 @@ export const ScaffolderView: React.FC = () => {
             <Button variant="ghost" size="sm" onClick={() => setIsBulkOpen(false)}>
               Cancel
             </Button>
-            <Button 
-              variant="primary" 
-              size="sm" 
+            <Button
+              variant="primary"
+              size="sm"
               onClick={handleBulkImport}
               disabled={!bulkText.trim()}
               className="font-bold shadow-sm"

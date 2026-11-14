@@ -24,10 +24,12 @@ For detailed blueprints, sequence traces, and state machines, see [**`PROJECT_CO
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 * Node.js (v18+ recommended)
 * npm
 
 ### Installation & Launch
+
 ```bash
 # 1. Install dependencies
 npm install
@@ -42,12 +44,14 @@ npm run dev
 Open `http://localhost:3000` (or `http://localhost:5173`) in your browser.
 
 ### Production Build
+
 ```bash
 npm run build
 npm start
 ```
 
 ### Native Mobile Builds (iOS & Android via Capacitor 8)
+
 ```bash
 # Sync web dist/ and Capacitor plugins into native projects
 npm run mobile:sync
@@ -86,7 +90,8 @@ npm run mobile:ios:sim
 21. **Native iOS & Android Mobile Apps (`Capacitor 8`)**: Native Swift Package Manager (`ios/`) and Android Gradle (`android/`) mobile shells wrapping the production Vite bundle with safe-area notch/Dynamic Island insets (`env(safe-area-inset-*)`), branded app icons & splash assets, native OS Share Sheet exports via `@capacitor/filesystem` and `@capacitor/share` (`saveBlob`), and an offline on-device Executive Pulse telemetry fallback (`analyzeProject`).
 22. **Desktop-to-Mobile Safari QR Launcher (`MobileLaunchQrModal` + `/api/network-info`)**: One-click desktop header QR button (`Topbar` & `SetupView`) resolving local LAN IPv4 addresses automatically via `/api/network-info` (avoiding broken `localhost` mobile links) with `Workspace Home` vs. `Current View` deep-link toggle, editable host override, and crisp SVG QR rendering (`uqr`).
 23. **Universal Motion & Physics-Based View Transitions (`MotionPage`, `AnimatedMetric`, `COCKPIT_EASE`)**: High-performance, hardware-accelerated motion system embodying Emil Kowalski design engineering principles: composite-only properties (`opacity`, `transform: translateY(...)`), unified cockpit bezier curve (`COCKPIT_EASE: [0.23, 1, 0.32, 1]`), zero-rerender DOM-direct numeric counter tickers (`AnimatedMetric`), orchestrated stagger delays (`StaggerContainer` & `StaggerItem`), smooth spring-filled progress bars (`AnimatedProgressBar`), and automatic `prefers-reduced-motion` compliance across every view and hub.
-24. **Linear-Grade Enterprise Table Architecture & Interactive Cascade**: End-to-end elevation across all 12 core data grids and workstations (`TaskGrid`, `DefectView`, `DeliveriesView`, `RAIDView`, `TeamView`, `FunctionalMatrix`, `StepTemplates`, `CapacityView`, `DashboardView`, `QualityGovernanceTab`, `BaselineManager`, `LogView`). Enforces an 8-dimension design system: visual hierarchy and surface depth with 1px border dividers, batch multi-select operations via floating action bars (`AnimatePresence`), real-time quick filter preset chips with live counts, persistent column visibility popovers, spring-physics master-detail peek drawers (`<SlideOverDrawer>`) with sequential keyboard navigation (`[` / `]`), empty/loading/error states with 1-click filter reset, inline quick-edits (double-click rename, status/category dropdown jump menus), dual-mode timeline/table toggles, and universal frozen Column 0 (`stickyFirstColumn={true}` / `sticky left-0`) with responsive mobile touch cards.
+24. **Linear-Grade Enterprise Table Architecture & Interactive Cascade**: End-to-end elevation across all core operational data grids (`TaskGrid`, `DefectView`, `DeliveriesView`, `RAIDView`, `TeamView`, `FunctionalMatrix`, `StepTemplates`, `CapacityView`, `DashboardView`, `QualityGovernanceTab`, `BaselineManager`, `LogView`). Enforces an 8-dimension design system: visual hierarchy and surface depth with 1px border dividers, batch multi-select operations via floating action bars (`AnimatePresence`), real-time quick filter preset chips with live counts, persistent column visibility popovers, spring-physics master-detail peek drawers (`<SlideOverDrawer>`) with sequential keyboard navigation (`[` / `]`), empty/loading/error states with 1-click filter reset, inline quick-edits (double-click rename, status/category dropdown jump menus), dual-mode timeline/table toggles, and universal frozen Column 0 (`stickyFirstColumn={true}` / `sticky left-0`) with responsive mobile touch cards.
+25. **Architecture Studio & Release Roadmap Governance (`ReleaseRoadmap`, `ScaffolderView`, `RegistryView`, `FieldArchitect`)**: Precision data architecture across ProjectPulse's architectural engines: Dual-mode Milestone Table vs. Bento Grid views with persistent preference storage, frozen Column 0 for release milestones and module names, live preset filters (`All`, `Active`, `Planned`, `Released`), floating action bars for batch operations (`AnimatePresence`), master-detail peek side drawers (`<SlideOverDrawer>`) with live scope inspection and architecture generation impact dossiers, sitemap editors with template subtask generators, and taxonomy option usage dossiers.
 
 ---
 
