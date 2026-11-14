@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
-import { ChevronRight, LayoutList, Table2, SlidersHorizontal, RotateCcw } from 'lucide-react';
+import { ChevronRight, LayoutList, Table2, SlidersHorizontal, RotateCcw, Inbox } from 'lucide-react';
 import clsx from 'clsx';
 import TablePagination, { UsePaginationReturn } from './TablePagination';
 
@@ -64,8 +64,14 @@ export interface DataTableProps<T> {
   onRowClick?: (item: T, event: React.MouseEvent) => void;
   rowClassName?: (item: T, index: number) => string | undefined | false;
 
+  // Loading & Skeletons
+  isLoading?: boolean;
+  skeletonRowCount?: number;
+
   // Empty State
+  emptyTitle?: string;
   emptyMessage?: React.ReactNode;
+  emptyAction?: React.ReactNode;
 
   // Responsive Accessibility & Mobile Card Mode (< md)
   tableLabel?: string;
@@ -111,7 +117,11 @@ export function DataTable<T>({
   renderSubRows,
   onRowClick,
   rowClassName,
+  isLoading = false,
+  skeletonRowCount = 5,
+  emptyTitle,
   emptyMessage,
+  emptyAction,
   tableLabel,
   mobileCardRenderer,
   pagination,
@@ -351,26 +361,49 @@ export function DataTable<T>({
       {/* Mobile Native Touch Cards (< md) */}
       {mobileCardRenderer && !showMatrixOnMobile && (
         <div className="md:hidden divide-y divide-[var(--color-divider)]/60">
-          {itemsToRender.map((item, idx) => {
-            const id = getKey(item, idx);
-            const isSelected = selectedIds ? selectedIds.has(id) : false;
-            return (
-              <React.Fragment key={id}>
-                {mobileCardRenderer(item, {
-                  isSelected,
-                  onToggleSelect: (e) => onToggleSelect && onToggleSelect(id, e),
-                  index: idx,
-                })}
-              </React.Fragment>
-            );
-          })}
-          {itemsToRender.length === 0 && (
-            <div className="py-10 px-4 text-center">
-              {emptyMessage ?? (
-                <div className="text-sm font-semibold text-[var(--color-text-muted)]">
-                  No records to display
+          {isLoading ? (
+            Array.from({ length: Math.min(skeletonRowCount, 4) }).map((_, idx) => (
+              <div key={`mobile-skeleton-${idx}`} className="p-4 space-y-3 animate-pulse">
+                <div className="flex items-center justify-between">
+                  <div className="h-4 w-24 bg-[var(--color-surface-2)] rounded" />
+                  <div className="h-4 w-16 bg-[var(--color-surface-2)] rounded-full" />
                 </div>
-              )}
+                <div className="h-4 w-3/4 bg-[var(--color-surface-2)] rounded" />
+                <div className="flex items-center justify-between pt-2 border-t border-[var(--color-divider)]/40">
+                  <div className="h-3 w-20 bg-[var(--color-surface-2)] rounded" />
+                  <div className="h-3 w-14 bg-[var(--color-surface-2)] rounded" />
+                </div>
+              </div>
+            ))
+          ) : (
+            itemsToRender.map((item, idx) => {
+              const id = getKey(item, idx);
+              const isSelected = selectedIds ? selectedIds.has(id) : false;
+              return (
+                <React.Fragment key={id}>
+                  {mobileCardRenderer(item, {
+                    isSelected,
+                    onToggleSelect: (e) => onToggleSelect && onToggleSelect(id, e),
+                    index: idx,
+                  })}
+                </React.Fragment>
+              );
+            })
+          )}
+          {!isLoading && itemsToRender.length === 0 && (
+            <div className="py-12 px-4 text-center">
+              <div className="flex flex-col items-center justify-center max-w-xs mx-auto space-y-2.5">
+                <div className="w-10 h-10 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-center text-[var(--color-text-muted)]">
+                  <Inbox size={20} className="opacity-80" />
+                </div>
+                <div className="text-xs font-bold text-[var(--color-text)]">
+                  {emptyTitle || "No records to display"}
+                </div>
+                <div className="text-[11px] text-[var(--color-text-muted)] leading-relaxed">
+                  {emptyMessage || "No data matches your active filter criteria."}
+                </div>
+                {emptyAction && <div className="pt-1">{emptyAction}</div>}
+              </div>
             </div>
           )}
         </div>
@@ -487,97 +520,151 @@ export function DataTable<T>({
 
           {/* Table Body */}
           <tbody className="divide-y divide-[var(--color-divider)]/40">
-            {itemsToRender.map((item, idx) => {
-              const id = getKey(item, idx);
-              const isSelected = selectedIds ? selectedIds.has(id) : false;
-              const canItemExpand = canExpand ? canExpand(item) : false;
-              const isItemExpanded = isExpanded ? isExpanded(item) : false;
-              const customRowClass = rowClassName ? rowClassName(item, idx) : '';
-
-              return (
-                <React.Fragment key={id}>
-                  <tr
-                    data-density={density}
-                    onClick={onRowClick ? (e) => onRowClick(item, e) : undefined}
-                    className={clsx(
-                      "group hover:bg-[var(--color-surface-2)]/70 transition-colors duration-75 relative",
-                      onRowClick && "cursor-pointer",
-                      isSelected && "bg-[var(--color-primary-highlight-hex)]/35",
-                      customRowClass
-                    )}
-                  >
-                    {/* Checkbox Cell */}
-                    {selectable && (
-                      <td className={clsx("px-2.5 text-center", padY)} onClick={e => e.stopPropagation()}>
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={(e) => onToggleSelect && onToggleSelect(id, e)}
-                          aria-label={`Select row ${id}`}
-                          className="rounded border-[var(--color-divider)] text-[var(--color-primary-hex)] cursor-pointer"
-                        />
-                      </td>
-                    )}
-
-                    {/* Row Number Cell */}
-                    {showRowNumbers && (
-                      <td className={clsx("px-2 text-center td-rn font-mono text-[10px] tabular-nums text-[var(--color-text-faint)]", padY)}>
-                        {baseStartIndex + idx + 1}
-                      </td>
-                    )}
-
-                    {/* Expand Button Cell */}
-                    {hasExpand && (
-                      <td className={clsx("px-1 text-center", padY)} onClick={e => e.stopPropagation()}>
-                        {canItemExpand ? (
-                          <button
-                            onClick={(e) => onToggleExpand && onToggleExpand(item, e)}
-                            title={`${isItemExpanded ? 'Collapse' : 'Expand'} details`}
-                            className="w-5 h-5 inline-flex items-center justify-center rounded-md hover:bg-[var(--color-surface-2)] text-[var(--color-text-muted)] cursor-pointer transition-transform"
-                          >
-                            <ChevronRight
-                              size={13}
-                              className={clsx("transition-transform duration-150", isItemExpanded && "rotate-90 text-[var(--color-primary-hex)]")}
-                            />
-                          </button>
-                        ) : null}
-                      </td>
-                    )}
-
-                    {/* Data Cells */}
-                    {visibleColumns.map((col) => {
-                      const alignClass = 
-                        col.align === 'center' ? 'px-2 text-center' :
-                        col.align === 'right' ? 'px-3 text-right tabular-nums' :
-                        'px-3 text-left';
-
-                      return (
-                        <td
-                          key={col.id}
-                          className={clsx(padY, alignClass, col.className)}
-                          onClick={col.onClick ? (e) => { e.stopPropagation(); col.onClick!(item, e); } : undefined}
-                        >
-                          {col.cell(item, idx, { density })}
-                        </td>
-                      );
-                    })}
-                  </tr>
-
-                  {/* Sub-rows / Child Hierarchy (e.g. subtasks) */}
-                  {isItemExpanded && renderSubRows && renderSubRows(item, idx)}
-                </React.Fragment>
-              );
-            })}
-
-            {/* Empty State */}
-            {itemsToRender.length === 0 && (
-              <tr>
-                <td colSpan={totalCols} className="py-12 text-center">
-                  {emptyMessage ?? (
-                    <div className="text-sm font-semibold text-[var(--color-text-muted)]">
-                      No records to display
-                    </div>
+            {isLoading ? (
+              Array.from({ length: skeletonRowCount }).map((_, rIdx) => (
+                <tr
+                  key={`skeleton-row-${rIdx}`}
+                  data-density={density}
+                  className={clsx(
+                    "border-b border-[var(--color-divider)]/40 animate-pulse",
+                    isCompact ? "h-9" : "h-13"
                   )}
+                >
+                  {selectable && (
+                    <td className={clsx("px-2.5 text-center", padY)}>
+                      <div className="w-4 h-4 mx-auto rounded bg-[var(--color-surface-2)]" />
+                    </td>
+                  )}
+                  {showRowNumbers && (
+                    <td className={clsx("px-2 text-center", padY)}>
+                      <div className="w-5 h-3 mx-auto rounded bg-[var(--color-surface-2)]" />
+                    </td>
+                  )}
+                  {hasExpand && (
+                    <td className={clsx("px-1 text-center", padY)}>
+                      <div className="w-3.5 h-3.5 mx-auto rounded bg-[var(--color-surface-2)]" />
+                    </td>
+                  )}
+                  {visibleColumns.map((col, cIdx) => (
+                    <td key={`skeleton-col-${col.id}-${cIdx}`} className={clsx(padY, "px-3")}>
+                      <div
+                        className={clsx(
+                          "h-3.5 rounded-md bg-[var(--color-surface-2)]",
+                          cIdx === 0 ? "w-2/3" : cIdx % 2 === 0 ? "w-3/4" : "w-1/2",
+                          col.align === 'right' && "ml-auto",
+                          col.align === 'center' && "mx-auto"
+                        )}
+                      />
+                    </td>
+                  ))}
+                </tr>
+              ))
+            ) : (
+              itemsToRender.map((item, idx) => {
+                const id = getKey(item, idx);
+                const isSelected = selectedIds ? selectedIds.has(id) : false;
+                const canItemExpand = canExpand ? canExpand(item) : false;
+                const isItemExpanded = isExpanded ? isExpanded(item) : false;
+                const customRowClass = rowClassName ? rowClassName(item, idx) : '';
+
+                return (
+                  <React.Fragment key={id}>
+                    <tr
+                      data-density={density}
+                      onClick={onRowClick ? (e) => onRowClick(item, e) : undefined}
+                      className={clsx(
+                        "group hover:bg-[var(--color-surface-2)]/70 transition-colors duration-75 relative",
+                        onRowClick && "cursor-pointer",
+                        isSelected && "bg-[var(--color-primary-highlight-hex)]/35",
+                        customRowClass
+                      )}
+                    >
+                      {/* Checkbox Cell */}
+                      {selectable && (
+                        <td className={clsx("px-2.5 text-center", padY)} onClick={e => e.stopPropagation()}>
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={(e) => onToggleSelect && onToggleSelect(id, e)}
+                            aria-label={`Select row ${id}`}
+                            className="rounded border-[var(--color-divider)] text-[var(--color-primary-hex)] cursor-pointer"
+                          />
+                        </td>
+                      )}
+
+                      {/* Row Number Cell */}
+                      {showRowNumbers && (
+                        <td className={clsx("px-2 text-center td-rn font-mono text-[10px] tabular-nums text-[var(--color-text-faint)]", padY)}>
+                          {baseStartIndex + idx + 1}
+                        </td>
+                      )}
+
+                      {/* Expand Button Cell */}
+                      {hasExpand && (
+                        <td className={clsx("px-1 text-center", padY)} onClick={e => e.stopPropagation()}>
+                          {canItemExpand ? (
+                            <button
+                              onClick={(e) => onToggleExpand && onToggleExpand(item, e)}
+                              title={`${isItemExpanded ? 'Collapse' : 'Expand'} details`}
+                              className="w-5 h-5 inline-flex items-center justify-center rounded-md hover:bg-[var(--color-surface-2)] text-[var(--color-text-muted)] cursor-pointer transition-transform"
+                            >
+                              <ChevronRight
+                                size={13}
+                                className={clsx("transition-transform duration-150", isItemExpanded && "rotate-90 text-[var(--color-primary-hex)]")}
+                              />
+                            </button>
+                          ) : null}
+                        </td>
+                      )}
+
+                      {/* Data Cells */}
+                      {visibleColumns.map((col) => {
+                        const alignClass = 
+                          col.align === 'center' ? 'px-2 text-center' :
+                          col.align === 'right' ? 'px-3 text-right tabular-nums' :
+                          'px-3 text-left';
+
+                        return (
+                          <td
+                            key={col.id}
+                            className={clsx(padY, alignClass, col.className)}
+                            onClick={col.onClick ? (e) => { e.stopPropagation(); col.onClick!(item, e); } : undefined}
+                          >
+                            {col.cell(item, idx, { density })}
+                          </td>
+                        );
+                      })}
+                    </tr>
+
+                    {/* Sub-rows / Child Hierarchy (e.g. subtasks) */}
+                    {isItemExpanded && renderSubRows && renderSubRows(item, idx)}
+                  </React.Fragment>
+                );
+              })
+            )}
+
+            {/* Enhanced Zero-State */}
+            {!isLoading && itemsToRender.length === 0 && (
+              <tr>
+                <td colSpan={totalCols} className="py-16 px-4 text-center">
+                  <div className="flex flex-col items-center justify-center max-w-sm mx-auto space-y-3">
+                    <div className="w-12 h-12 rounded-2xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-center text-[var(--color-text-muted)] shadow-xs">
+                      <Inbox size={22} className="opacity-80" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-[var(--color-text)]">
+                        {emptyTitle || "No records to display"}
+                      </h4>
+                      <p className="text-xs text-[var(--color-text-muted)] mt-1 leading-relaxed">
+                        {emptyMessage || "No data matches your active filter criteria. Try adjusting or resetting filters."}
+                      </p>
+                    </div>
+                    {emptyAction && (
+                      <div className="pt-1">
+                        {emptyAction}
+                      </div>
+                    )}
+                  </div>
                 </td>
               </tr>
             )}
