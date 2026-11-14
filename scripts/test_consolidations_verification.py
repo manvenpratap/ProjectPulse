@@ -227,10 +227,10 @@ def test_consolidations_verification():
         # TEST 8: Unified ThemeGrid (ThemeFlyout & SettingsView)
         # -------------------------------------------------------------
         print("\n--- TEST 8: Unified ThemeGrid (ThemeFlyout & SettingsView) ---")
-        theme_btn = page.locator('button[aria-label="Appearance and Theme Settings"]')
+        theme_btn = page.locator('button[aria-label="Appearance and Theme Settings"]').first
         assert theme_btn.is_visible(), "Topbar theme button not found"
         theme_btn.click()
-        page.wait_for_timeout(500)
+        page.locator("text=Featured Design Systems").wait_for(state="visible", timeout=4000)
 
         assert page.locator("text=Featured Design Systems").is_visible(), "ThemeFlyout failed to render ThemeGrid Featured section"
         assert page.locator("text=Curated Swiss Palettes").is_visible(), "ThemeFlyout failed to render ThemeGrid Curated section"

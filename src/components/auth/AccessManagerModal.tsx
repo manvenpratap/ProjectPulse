@@ -377,9 +377,9 @@ export const AccessManagerModal: React.FC<AccessManagerModalProps> = ({ isOpen, 
                             </span>
                           )}
                         </div>
-                        <div className="text-xs text-[var(--color-text-muted)] font-mono truncate">{u.email}</div>
+                        <div className="text-[11px] text-[var(--color-text-muted)] font-mono truncate">{u.email}</div>
                         {u.title && (
-                          <div className="text-xs text-[var(--color-text)]/75 font-medium truncate">{u.title}</div>
+                          <div className="text-xs text-[var(--color-text-muted)] font-medium truncate opacity-90">{u.title}</div>
                         )}
                       </div>
                     </div>

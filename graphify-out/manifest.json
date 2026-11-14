@@ -872,8 +872,8 @@
     "hash": "61413513d9b03b8857ce43180df53153"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/auth/AccessManagerModal.tsx": {
-    "mtime": 1794623772.8517962,
-    "hash": "a59601cbbf25ec11ac84e08d65d2a456"
+    "mtime": 1794628478.9204547,
+    "hash": "03e94973733f722b5fe9c917c79b1a8b"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/auth/LoginView.tsx": {
     "mtime": 1794458202.898389,
@@ -928,7 +928,7 @@
     "hash": "aa5cea6a63cb0590ef26b197135f858f"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/shared/AnimatedMetric.tsx": {
-    "mtime": 1794624281.466475,
+    "mtime": 1794624367.6523905,
     "hash": "634198e72c58427bbdafe239621d2cd4"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/shared/PageHeader.tsx": {
@@ -1096,7 +1096,7 @@
     "hash": "a6a42d67e4e399b2aa29980f26eeb7a7"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/deliveries/DeliveriesView.tsx": {
-    "mtime": 1794624289.0176866,
+    "mtime": 1794624367.575256,
     "hash": "ae0f8fe80ece610bd72f9463192fc344"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/hooks/useClickOutside.ts": {
