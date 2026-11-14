@@ -1267,7 +1267,7 @@ export const ReleaseRoadmap: React.FC = () => {
                             <div className="flex items-center gap-2 text-[10px] text-[var(--color-text-muted)]">
                               <span>Env: {d.environment || 'Production'}</span>
                               <span>•</span>
-                              <span>Target: {fmtDate(d.targetDate)}</span>
+                              <span>Target: {fmtDate(d.targetDeliveryDate)}</span>
                             </div>
                           </div>
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 shrink-0">
