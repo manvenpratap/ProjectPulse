@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { 
   Bug, 
@@ -141,6 +141,16 @@ const DefectView: React.FC = () => {
       setSelectedIds(new Set());
     }
   };
+
+  // Keyboard shortcut: Esc to clear selection
+  useEffect(() => {
+    if (selectedIds.size === 0) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedIds(new Set());
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedIds.size]);
 
   // 1-Click Cycle Status
   const handleCycleStatus = (defect: Defect, e: React.MouseEvent) => {
@@ -633,15 +643,15 @@ const DefectView: React.FC = () => {
       {/* Main Workspace */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scroll p-4 sm:p-6 lg:p-8 space-y-3.5 max-w-full">
 
-        {/* ── 2. Floating Bulk Actions Bar ── */}
+        {/* ── 2. Floating Docked Bulk Actions Bar ── */}
         <AnimatePresence>
           {selectedIds.size > 0 && (
             <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18 }}
-              className="p-2.5 sm:p-3 bg-[var(--color-surface-2)] border-2 border-[var(--color-primary-hex)] rounded-2xl shadow-md flex flex-wrap items-center justify-between gap-3 text-xs"
+              initial={{ opacity: 0, y: 28, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 28, scale: 0.96 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 p-2 sm:px-4 sm:py-2.5 bg-[var(--color-surface)]/95 backdrop-blur-md border border-[var(--color-divider)] shadow-2xl rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs max-w-[95vw] sm:max-w-3xl ring-1 ring-black/5"
             >
               <div className="flex items-center gap-3 flex-wrap">
                 <span className="font-extrabold text-[var(--color-primary-hex)] flex items-center gap-1.5">
@@ -698,9 +708,10 @@ const DefectView: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setSelectedIds(new Set())}
-                  className="px-2.5 py-1.5 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-surface)] font-semibold transition-colors cursor-pointer"
+                  className="px-2.5 py-1.5 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] font-semibold transition-colors cursor-pointer flex items-center gap-1.5"
                 >
-                  Deselect All
+                  <span>Deselect All</span>
+                  <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded text-[9px] font-mono bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)]">Esc</kbd>
                 </button>
               </div>
             </motion.div>

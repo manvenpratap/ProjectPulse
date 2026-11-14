@@ -612,6 +612,16 @@ export const DeliveriesView: React.FC = () => {
     }
   };
 
+  // Keyboard shortcut: Esc to clear selection
+  useEffect(() => {
+    if (selectedIds.size === 0) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setSelectedIds(new Set());
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedIds.size]);
+
   // Autofit classes mapping
   const getAutofitRowClass = () => {
     switch (autofitStrategy) {
@@ -944,11 +954,11 @@ export const DeliveriesView: React.FC = () => {
         <AnimatePresence>
           {selectedIds.size > 0 && (
             <motion.div
-              initial={{ opacity: 0, y: -8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.18 }}
-              className="p-2.5 sm:p-3 bg-[var(--color-surface-2)] border-2 border-[var(--color-primary-hex)] rounded-2xl shadow-md flex flex-wrap items-center justify-between gap-3 text-xs"
+              initial={{ opacity: 0, y: 28, scale: 0.96 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 28, scale: 0.96 }}
+              transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+              className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 p-2 sm:px-4 sm:py-2.5 bg-[var(--color-surface)]/95 backdrop-blur-md border border-[var(--color-divider)] shadow-2xl rounded-2xl flex flex-wrap items-center justify-between gap-3 text-xs max-w-[95vw] sm:max-w-3xl ring-1 ring-black/5"
             >
               <div className="flex items-center gap-3 flex-wrap">
                 <span className="font-extrabold text-[var(--color-primary-hex)] flex items-center gap-1.5">
@@ -1013,7 +1023,7 @@ export const DeliveriesView: React.FC = () => {
               <div className="flex items-center gap-2 ml-auto">
                 <button 
                   onClick={handleBatchDelete}
-                  className="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                  className="px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 font-bold flex items-center gap-1 transition-colors cursor-pointer"
                   title="Delete selected packages"
                 >
                   <Trash2 size={13} />
@@ -1021,9 +1031,10 @@ export const DeliveriesView: React.FC = () => {
                 </button>
                 <button
                   onClick={() => setSelectedIds(new Set())}
-                  className="px-2.5 py-1 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-surface)] font-semibold transition-colors cursor-pointer"
+                  className="px-2.5 py-1.5 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] font-semibold transition-colors cursor-pointer flex items-center gap-1.5"
                 >
-                  Deselect
+                  <span>Deselect</span>
+                  <kbd className="hidden sm:inline-block px-1.5 py-0.5 rounded text-[9px] font-mono bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)]">Esc</kbd>
                 </button>
               </div>
             </motion.div>
