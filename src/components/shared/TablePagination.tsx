@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, type FC } from 'react';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -84,7 +84,7 @@ export interface TablePaginationProps {
   itemLabel?: string;
 }
 
-export const TablePagination: React.FC<TablePaginationProps> = ({
+export const TablePagination: FC<TablePaginationProps> = ({
   currentPage,
   totalPages,
   totalItems,
