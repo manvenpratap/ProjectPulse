@@ -95,7 +95,7 @@ const Modal: React.FC<ModalProps> = ({
 
             <div className="px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between border-b border-[var(--color-divider)]">
               <div id={titleId} className="font-display font-bold text-base sm:text-lg pr-2 flex items-center min-w-0">
-                {typeof title === 'string' ? <h3 className="truncate">{title}</h3> : title}
+                <h3 className="flex items-center gap-2 min-w-0 truncate">{title}</h3>
               </div>
               <Button
                 variant="ghost"

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { 
   ListChecks, 
@@ -22,7 +22,10 @@ import {
   AlertCircle,
   Copy,
   BookOpen,
-  FolderPlus
+  FolderPlus,
+  FileText,
+  CheckSquare,
+  Square
 } from 'lucide-react';
 import Button from '../shared/Button';
 import Modal from '../shared/Modal';
@@ -30,9 +33,11 @@ import ConfirmModal from '../shared/ConfirmModal';
 import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
+import SlideOverDrawer from '../shared/SlideOverDrawer';
 import { toast } from '../../utils/toast';
 import { MotionPage, StaggerContainer, StaggerItem } from '../shared/MotionPage';
 import { AnimatedMetric } from '../shared/AnimatedMetric';
+import { motion, AnimatePresence } from 'motion/react';
 import clsx from 'clsx';
 import { todayStr } from '../../utils/projectUtils';
 
@@ -103,6 +108,14 @@ const RegistryView: React.FC = () => {
   const [searchFilter, setSearchFilter] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'all' | 'core' | 'custom'>('all');
   
+  // In-library option filter, batch selection & peek dossier
+  const [optionSearch, setOptionSearch] = useState<string>('');
+  const [selectedOptionValues, setSelectedOptionValues] = useState<Set<string>>(new Set());
+  const [peekOptionValue, setPeekOptionValue] = useState<string | null>(null);
+  const [mobileActivePanel, setMobileActivePanel] = useState<'libraries' | 'editor'>('libraries');
+  const optionSearchRef = useRef<HTMLInputElement>(null);
+  const librarySearchRef = useRef<HTMLInputElement>(null);
+
   // New option input
   const [newValue, setNewValue] = useState<string>('');
   const addInputRef = useRef<HTMLInputElement>(null);
@@ -114,6 +127,22 @@ const RegistryView: React.FC = () => {
   // Bulk edit modal
   const [isBulkOpen, setIsBulkOpen] = useState<boolean>(false);
   const [bulkText, setBulkText] = useState<string>('');
+
+  // Keyboard shortcut '/' to focus search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === '/' && !(document.activeElement instanceof HTMLInputElement || document.activeElement instanceof HTMLTextAreaElement)) {
+        e.preventDefault();
+        if (mobileActivePanel === 'libraries') {
+          librarySearchRef.current?.focus();
+        } else {
+          optionSearchRef.current?.focus();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobileActivePanel]);
 
   // New Library Modal
   const [isNewLibModalOpen, setIsNewLibModalOpen] = useState<boolean>(false);
@@ -198,6 +227,167 @@ const RegistryView: React.FC = () => {
     });
     return count;
   }, [state.customFields, state.defCustomFields, state.delCustomFields]);
+
+  // Filtered values within selected option library
+  const filteredValues = useMemo(() => {
+    if (!optionSearch.trim()) return values;
+    const q = optionSearch.trim().toLowerCase();
+    return values.filter(v => v.toLowerCase().includes(q));
+  }, [values, optionSearch]);
+
+  const isAllSelected = filteredValues.length > 0 && filteredValues.every(v => selectedOptionValues.has(v));
+
+  const handleToggleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedOptionValues(new Set());
+    } else {
+      setSelectedOptionValues(new Set(filteredValues));
+    }
+  };
+
+  const handleToggleSelectOption = (val: string, e: React.MouseEvent | React.ChangeEvent) => {
+    e.stopPropagation();
+    setSelectedOptionValues(prev => {
+      const next = new Set(prev);
+      if (next.has(val)) {
+        next.delete(val);
+      } else {
+        next.add(val);
+      }
+      return next;
+    });
+  };
+
+  const handleBatchCopyComma = () => {
+    const text = Array.from(selectedOptionValues).join(', ');
+    navigator.clipboard.writeText(text);
+    toast.success(`Copied ${selectedOptionValues.size} options as comma-separated list`);
+  };
+
+  const handleBatchCopyLines = () => {
+    const text = Array.from(selectedOptionValues).join('\n');
+    navigator.clipboard.writeText(text);
+    toast.success(`Copied ${selectedOptionValues.size} options as newline list`);
+  };
+
+  const handleBatchDeleteOptions = () => {
+    if (selectedOptionValues.size === 0) return;
+    const count = selectedOptionValues.size;
+    setConfirmState({
+      isOpen: true,
+      title: 'Batch Delete Options',
+      message: `Are you sure you want to remove ${count} selected options from ${formatLibraryName(selectedKey)}?`,
+      variant: 'danger',
+      confirmLabel: `Delete ${count} Options`,
+      onConfirm: () => {
+        const newVals = values.filter(v => !selectedOptionValues.has(v));
+        const updatedDefaults = { ...defaults };
+        if (selectedOptionValues.has(updatedDefaults[selectedKey])) {
+          delete updatedDefaults[selectedKey];
+        }
+        updateProject({
+          dropdowns: {
+            ...state.dropdowns,
+            [selectedKey]: newVals
+          },
+          dropdownDefaults: updatedDefaults
+        });
+        setSelectedOptionValues(new Set());
+        toast.info(`Removed ${count} options.`);
+      }
+    });
+  };
+
+  const handleCopyLibraryMarkdown = () => {
+    const rows = values.map((v, i) => `| ${i + 1} | ${v} | ${defaults[selectedKey] === v ? 'Default' : 'Standard'} |`).join('\n');
+    const md = `# Option Library: ${formatLibraryName(selectedKey)} (${selectedKey})\n\n| # | Option Value | Default |\n|---|---|---|\n${rows}\n`;
+    navigator.clipboard.writeText(md);
+    toast.success(`Copied ${formatLibraryName(selectedKey)} as Markdown table.`);
+  };
+
+  // Option Usage Dossier
+  const getOptionUsage = useCallback((val: string) => {
+    let tasks: { id: string; name: string; status: string }[] = [];
+    let defects: { id: string; title: string; status: string }[] = [];
+    let deliveries: { id: string; name: string; status: string }[] = [];
+    let members: { id: string; name: string; role: string }[] = [];
+
+    if (selectedKey === 'status') {
+      tasks = state.tasks.filter(t => t.status === val).map(t => ({ id: t.id, name: t.name, status: t.status }));
+    } else if (selectedKey === 'priority') {
+      tasks = state.tasks.filter(t => t.priority === val).map(t => ({ id: t.id, name: t.name, status: t.status }));
+    } else if (selectedKey === 'category') {
+      tasks = state.tasks.filter(t => t.category === val).map(t => ({ id: t.id, name: t.name, status: t.status }));
+    } else if (selectedKey === 'module') {
+      tasks = state.tasks.filter(t => t.module === val).map(t => ({ id: t.id, name: t.name, status: t.status }));
+    } else if (selectedKey === 'version') {
+      tasks = state.tasks.filter(t => t.version === val).map(t => ({ id: t.id, name: t.name, status: t.status }));
+    } else if (selectedKey === 'role') {
+      members = state.members.filter(m => m.role === val).map(m => ({ id: m.id, name: m.name, role: m.role }));
+    } else if (selectedKey === 'defectStatus') {
+      defects = state.defects.filter(d => d.status === val).map(d => ({ id: d.id, title: d.title, status: d.status }));
+    } else if (selectedKey === 'defectPriority') {
+      defects = state.defects.filter(d => d.priority === val).map(d => ({ id: d.id, title: d.title, status: d.status }));
+    } else if (selectedKey === 'defectSeverity') {
+      defects = state.defects.filter(d => d.severity === val).map(d => ({ id: d.id, title: d.title, status: d.status }));
+    } else if (selectedKey === 'defectType') {
+      defects = state.defects.filter(d => d.type === val).map(d => ({ id: d.id, title: d.title, status: d.status }));
+    } else if (selectedKey === 'deliveryStatus') {
+      deliveries = state.deliveries.filter(d => d.status === val).map(d => ({ id: d.id, name: d.name, status: d.status }));
+    } else if (selectedKey === 'deliveryCategory') {
+      deliveries = state.deliveries.filter(d => d.category === val).map(d => ({ id: d.id, name: d.name, status: d.status }));
+    } else if (selectedKey === 'deliveryEnv') {
+      deliveries = state.deliveries.filter(d => d.environment === val).map(d => ({ id: d.id, name: d.name, status: d.status }));
+    } else if (selectedKey === 'deliverySignOff') {
+      deliveries = state.deliveries.filter(d => d.signOffStatus === val).map(d => ({ id: d.id, name: d.name, status: d.status }));
+    } else if (selectedKey === 'almStatus') {
+      deliveries = state.deliveries.filter(d => d.almStatus === val).map(d => ({ id: d.id, name: d.name, status: d.status }));
+    }
+
+    const linkedCfs = (state.customFields || []).filter(cf => cf.globalKey === selectedKey || (cf as any).optionsKey === selectedKey);
+    if (linkedCfs.length > 0) {
+      const linkedTasks = state.tasks.filter(t => 
+        linkedCfs.some(cf => (t as any)[cf.name] === val)
+      ).map(t => ({ id: t.id, name: t.name, status: t.status }));
+      tasks = [...tasks, ...linkedTasks];
+    }
+
+    const totalUsage = tasks.length + defects.length + deliveries.length + members.length;
+    return { tasks, defects, deliveries, members, totalUsage };
+  }, [selectedKey, state.tasks, state.defects, state.deliveries, state.members, state.customFields]);
+
+  // Sequential drawer navigation for option peek
+  const peekIdx = useMemo(() => {
+    if (!peekOptionValue) return -1;
+    return filteredValues.indexOf(peekOptionValue);
+  }, [peekOptionValue, filteredValues]);
+
+  const hasPrevOption = peekIdx > 0;
+  const hasNextOption = peekIdx >= 0 && peekIdx < filteredValues.length - 1;
+
+  const handlePrevOption = useCallback(() => {
+    if (hasPrevOption) setPeekOptionValue(filteredValues[peekIdx - 1]);
+  }, [hasPrevOption, peekIdx, filteredValues]);
+
+  const handleNextOption = useCallback(() => {
+    if (hasNextOption) setPeekOptionValue(filteredValues[peekIdx + 1]);
+  }, [hasNextOption, peekIdx, filteredValues]);
+
+  useEffect(() => {
+    if (!peekOptionValue) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (document.activeElement instanceof HTMLInputElement || document.activeElement instanceof HTMLTextAreaElement) return;
+      if (e.key === '[') {
+        e.preventDefault();
+        handlePrevOption();
+      } else if (e.key === ']') {
+        e.preventDefault();
+        handleNextOption();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [peekOptionValue, handlePrevOption, handleNextOption]);
 
   // ── Actions ──
 
@@ -502,15 +692,45 @@ const RegistryView: React.FC = () => {
       </div>
 
       {/* ── 3. Split Master/Detail Workshop Layout ── */}
-      <div className="flex-1 min-h-0 overflow-hidden p-4 sm:p-6 lg:p-8 pt-2">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-full min-h-0">
+      <div className="flex-1 min-h-0 overflow-hidden p-4 sm:p-6 lg:p-8 pt-2 flex flex-col">
+        {/* Mobile Panel Switcher (< lg) */}
+        <div className="lg:hidden flex items-center p-1 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] mb-3 text-xs shrink-0">
+          <button
+            onClick={() => setMobileActivePanel('libraries')}
+            className={clsx(
+              "flex-1 py-1.5 rounded-lg text-center font-bold transition-all cursor-pointer",
+              mobileActivePanel === 'libraries'
+                ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-2xs"
+                : "text-[var(--color-text-muted)]"
+            )}
+          >
+            Libraries ({keys.length})
+          </button>
+          <button
+            onClick={() => setMobileActivePanel('editor')}
+            className={clsx(
+              "flex-1 py-1.5 rounded-lg text-center font-bold transition-all cursor-pointer truncate px-2",
+              mobileActivePanel === 'editor'
+                ? "bg-[var(--color-surface)] text-[var(--color-primary-hex)] shadow-2xs"
+                : "text-[var(--color-text-muted)]"
+            )}
+          >
+            Editor: {formatLibraryName(selectedKey)} ({values.length})
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 h-full min-h-0 flex-1">
           {/* ── LEFT: Library Sidebar (Col 1-4) ── */}
-          <div className="lg:col-span-4 flex flex-col bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs overflow-hidden h-full">
+          <div className={clsx(
+            "lg:col-span-4 flex flex-col bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs overflow-hidden h-full",
+            mobileActivePanel === 'editor' && "hidden lg:flex"
+          )}>
             {/* Sidebar Search & Tab Controls */}
             <div className="p-3.5 border-b border-[var(--color-divider)] bg-[var(--color-surface-2)]/60 space-y-2.5">
               <div className="relative">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
                 <input
+                  ref={librarySearchRef}
                   type="text"
                   value={searchFilter}
                   onChange={(e) => setSearchFilter(e.target.value)}
@@ -581,7 +801,12 @@ const RegistryView: React.FC = () => {
                   return (
                     <button
                       key={k}
-                      onClick={() => setSelectedRegistryKey(k)}
+                      onClick={() => {
+                        setSelectedRegistryKey(k);
+                        setSelectedOptionValues(new Set());
+                        setOptionSearch('');
+                        setMobileActivePanel('editor');
+                      }}
                       className={clsx(
                         "w-full px-3 py-2.5 rounded-xl text-left flex items-center justify-between group transition-all cursor-pointer border",
                         isActive
@@ -643,7 +868,10 @@ const RegistryView: React.FC = () => {
           </div>
 
           {/* ── RIGHT: Library Workshop / Editor (Col 5-12) ── */}
-          <div className="lg:col-span-8 flex flex-col bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs overflow-hidden h-full">
+          <div className={clsx(
+            "lg:col-span-8 flex flex-col bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs overflow-hidden h-full",
+            mobileActivePanel === 'libraries' && "hidden lg:flex"
+          )}>
             {/* Workshop Header Bar */}
             <div className="p-4 sm:p-5 border-b border-[var(--color-divider)] bg-[var(--color-surface-2)]/40 flex flex-wrap items-center justify-between gap-3">
               <div>
@@ -695,6 +923,15 @@ const RegistryView: React.FC = () => {
                     <span>Z→A</span>
                   </button>
                 </div>
+
+                {/* Copy Markdown Table */}
+                <button
+                  onClick={handleCopyLibraryMarkdown}
+                  title="Copy option library as Markdown table"
+                  className="h-9 px-2.5 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)] text-[var(--color-text)] flex items-center justify-center transition-all shadow-2xs active:scale-95 cursor-pointer"
+                >
+                  <Copy size={13} className="text-[var(--color-primary-hex)]" />
+                </button>
 
                 {/* Bulk Edit Button */}
                 <button
@@ -756,47 +993,104 @@ const RegistryView: React.FC = () => {
               </div>
             </div>
 
+            {/* Quick Option Filter & Selection Bar */}
+            <div className="px-3.5 sm:px-4 py-2.5 border-b border-[var(--color-divider)] bg-[var(--color-surface-2)]/40 flex items-center justify-between gap-2 text-xs">
+              <div className="relative flex-1 max-w-xs">
+                <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
+                <input
+                  ref={optionSearchRef}
+                  type="text"
+                  value={optionSearch}
+                  onChange={e => setOptionSearch(e.target.value)}
+                  placeholder={`Filter ${formatLibraryName(selectedKey)} options… (Press /)`}
+                  className="w-full h-8 pl-8 pr-7 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg text-xs font-semibold text-[var(--color-text)] outline-none focus:border-[var(--color-primary-hex)] shadow-2xs"
+                />
+                {optionSearch && (
+                  <button
+                    onClick={() => setOptionSearch('')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)] hover:text-[var(--color-text)]"
+                  >
+                    <X size={12} />
+                  </button>
+                )}
+              </div>
+
+              <div className="flex items-center gap-1.5 shrink-0">
+                <button
+                  onClick={handleToggleSelectAll}
+                  className="h-8 px-2.5 rounded-lg border border-[var(--color-divider)] bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)] text-[11px] font-bold text-[var(--color-text)] transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                >
+                  {isAllSelected ? <CheckSquare size={13} className="text-[var(--color-primary-hex)]" /> : <Square size={13} className="text-[var(--color-text-faint)]" />}
+                  <span>{isAllSelected ? 'Deselect All' : 'Select All'}</span>
+                </button>
+              </div>
+            </div>
+
             {/* Options List */}
             <div className="flex-1 overflow-y-auto custom-scroll p-4 space-y-2">
-              {values.length === 0 ? (
+              {filteredValues.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center p-12 text-center border-2 border-dashed border-[var(--color-divider)] rounded-2xl bg-[var(--color-surface-2)]/30">
                   <div className="w-12 h-12 rounded-xl bg-[var(--color-surface)] border border-[var(--color-divider)] flex items-center justify-center text-[var(--color-text-faint)] mb-3">
                     <ListChecks size={24} />
                   </div>
                   <h3 className="text-sm font-bold text-[var(--color-text)] mb-1">
-                    Option Library is Empty
+                    {optionSearch ? 'No Matching Options' : 'Option Library is Empty'}
                   </h3>
                   <p className="text-xs text-[var(--color-text-muted)] max-w-sm mb-4">
-                    Add standard values using the input above, or use <strong>Bulk Edit</strong> to paste multiple options in one click.
+                    {optionSearch
+                      ? `No options matched "${optionSearch}". Clear filter to view all options.`
+                      : 'Add standard values using the input above, or use Bulk Edit to paste multiple options in one click.'}
                   </p>
-                  <button
-                    onClick={handleOpenBulk}
-                    className="px-3 py-1.5 rounded-lg bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] text-xs font-bold border border-[var(--color-primary-hex)]/30 cursor-pointer"
-                  >
-                    Paste Multiple Values
-                  </button>
+                  {optionSearch ? (
+                    <button
+                      onClick={() => setOptionSearch('')}
+                      className="px-3 py-1.5 rounded-lg bg-[var(--color-surface-2)] text-[var(--color-text)] text-xs font-bold border border-[var(--color-divider)] cursor-pointer"
+                    >
+                      Clear Search
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleOpenBulk}
+                      className="px-3 py-1.5 rounded-lg bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] text-xs font-bold border border-[var(--color-primary-hex)]/30 cursor-pointer"
+                    >
+                      Paste Multiple Values
+                    </button>
+                  )}
                 </div>
               ) : (
-                values.map((val, idx) => {
+                filteredValues.map((val, idx) => {
+                  const realIdx = values.indexOf(val);
                   const isDefault = currentDefault === val;
-                  const isEditing = editingIdx === idx;
+                  const isEditing = editingIdx === realIdx;
                   const badgeStyle = getOptionBadgeStyle(val);
+                  const isSelected = selectedOptionValues.has(val);
 
                   return (
                     <div
-                      key={idx}
+                      key={`${val}-${realIdx}`}
                       className={clsx(
                         "p-2.5 sm:p-3 rounded-xl border transition-all flex items-center justify-between gap-3 group",
-                        isDefault 
-                          ? "bg-amber-500/[0.04] border-amber-500/30 shadow-2xs" 
-                          : "bg-[var(--color-surface)] border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 hover:bg-[var(--color-surface-2)]/50"
+                        isSelected
+                          ? "bg-[var(--color-primary-highlight-hex)]/40 border-[var(--color-primary-hex)]/50 shadow-xs"
+                          : isDefault 
+                            ? "bg-amber-500/[0.04] border-amber-500/30 shadow-2xs" 
+                            : "bg-[var(--color-surface)] border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 hover:bg-[var(--color-surface-2)]/50"
                       )}
                     >
-                      {/* Left: Index + Visual Pill + Text / Editor */}
+                      {/* Left: Checkbox + Index + Visual Pill + Text / Editor */}
                       <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                        {/* Checkbox */}
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={(e) => handleToggleSelectOption(val, e)}
+                          aria-label={`Select option ${val}`}
+                          className="rounded border-[var(--color-divider)] text-[var(--color-primary-hex)] cursor-pointer w-3.5 h-3.5 shrink-0"
+                        />
+
                         {/* Index */}
-                        <span className="font-mono text-[10px] font-bold text-[var(--color-text-faint)] w-6 text-center shrink-0">
-                          {String(idx + 1).padStart(2, '0')}
+                        <span className="font-mono text-[10px] font-bold text-[var(--color-text-faint)] w-5 text-center shrink-0">
+                          {String(realIdx + 1).padStart(2, '0')}
                         </span>
 
                         {/* Color Preview Pill */}
@@ -811,13 +1105,13 @@ const RegistryView: React.FC = () => {
                               value={editingText}
                               onChange={(e) => setEditingText(e.target.value)}
                               onKeyDown={(e) => {
-                                if (e.key === 'Enter') handleSaveEdit(idx);
+                                if (e.key === 'Enter') handleSaveEdit(realIdx);
                                 if (e.key === 'Escape') setEditingIdx(null);
                               }}
                               className="h-8 px-2 bg-[var(--color-surface-2)] border border-[var(--color-primary-hex)] rounded-lg text-xs font-bold text-[var(--color-text)] outline-none flex-1"
                             />
                             <button
-                              onClick={() => handleSaveEdit(idx)}
+                              onClick={() => handleSaveEdit(realIdx)}
                               className="p-1 rounded-md bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20"
                               title="Save changes (Enter)"
                             >
@@ -834,7 +1128,7 @@ const RegistryView: React.FC = () => {
                         ) : (
                           <div className="flex items-center gap-2 flex-1 min-w-0">
                             <span 
-                              onDoubleClick={() => handleStartEdit(idx, val)}
+                              onDoubleClick={() => handleStartEdit(realIdx, val)}
                               className="text-xs font-bold text-[var(--color-text)] truncate cursor-pointer select-text" 
                               title="Double click to edit"
                             >
@@ -851,6 +1145,15 @@ const RegistryView: React.FC = () => {
 
                       {/* Right: Actions */}
                       <div className="flex items-center gap-1 shrink-0">
+                        {/* Quick Peek Dossier Trigger */}
+                        <button
+                          onClick={() => setPeekOptionValue(val)}
+                          className="p-1.5 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors opacity-70 group-hover:opacity-100 cursor-pointer"
+                          title="Inspect live option usage dossier across project"
+                        >
+                          <ExternalLink size={12} />
+                        </button>
+
                         {/* Default Star Button */}
                         <button
                           onClick={() => handleToggleDefault(val)}
@@ -867,8 +1170,8 @@ const RegistryView: React.FC = () => {
 
                         {/* Move Up */}
                         <button
-                          disabled={idx === 0}
-                          onClick={() => handleMoveOption(idx, 'up')}
+                          disabled={realIdx === 0 || Boolean(optionSearch)}
+                          onClick={() => handleMoveOption(realIdx, 'up')}
                           className="p-1 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors disabled:opacity-20 cursor-pointer"
                           title="Move option up"
                         >
@@ -877,8 +1180,8 @@ const RegistryView: React.FC = () => {
 
                         {/* Move Down */}
                         <button
-                          disabled={idx === values.length - 1}
-                          onClick={() => handleMoveOption(idx, 'down')}
+                          disabled={realIdx === values.length - 1 || Boolean(optionSearch)}
+                          onClick={() => handleMoveOption(realIdx, 'down')}
                           className="p-1 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-text)] hover:bg-[var(--color-surface-2)] transition-colors disabled:opacity-20 cursor-pointer"
                           title="Move option down"
                         >
@@ -887,7 +1190,7 @@ const RegistryView: React.FC = () => {
 
                         {/* Edit Button */}
                         <button
-                          onClick={() => handleStartEdit(idx, val)}
+                          onClick={() => handleStartEdit(realIdx, val)}
                           className="p-1.5 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors opacity-70 group-hover:opacity-100 cursor-pointer"
                           title="Edit value"
                         >
@@ -896,7 +1199,7 @@ const RegistryView: React.FC = () => {
 
                         {/* Delete Button */}
                         <button
-                          onClick={() => handleRemoveValue(idx)}
+                          onClick={() => handleRemoveValue(realIdx)}
                           className="p-1.5 rounded-lg text-[var(--color-text-faint)] hover:text-rose-500 hover:bg-rose-500/10 transition-colors opacity-70 group-hover:opacity-100 cursor-pointer"
                           title="Remove option"
                         >
@@ -924,7 +1227,234 @@ const RegistryView: React.FC = () => {
         </div>
       </div>
 
-      {/* ── 4. Bulk Edit Options Modal (Standard Accessible Modal) ── */}
+      {/* ── 4. Floating Action Bar for Batch Selection ── */}
+      <AnimatePresence>
+        {selectedOptionValues.size > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+            className="fixed bottom-6 left-1/2 -translate-y-1/2 -translate-x-1/2 z-40 bg-[var(--color-surface)]/95 backdrop-blur-md border border-[var(--color-divider)] shadow-2xl rounded-2xl px-4 py-2.5 flex items-center gap-3 text-xs"
+          >
+            <div className="flex items-center gap-2 pr-3 border-r border-[var(--color-divider)] font-bold text-[var(--color-text)]">
+              <span className="w-5 h-5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center text-[10px]">
+                {selectedOptionValues.size}
+              </span>
+              <span>Selected</span>
+            </div>
+
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={handleBatchCopyComma}
+                className="px-2.5 py-1.5 rounded-xl border border-[var(--color-divider)] hover:bg-[var(--color-surface-2)] text-[var(--color-text)] font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                title="Copy selected values as comma-separated list"
+              >
+                <Copy size={12} className="text-[var(--color-primary-hex)]" />
+                <span>Copy CSV</span>
+              </button>
+
+              <button
+                onClick={handleBatchCopyLines}
+                className="px-2.5 py-1.5 rounded-xl border border-[var(--color-divider)] hover:bg-[var(--color-surface-2)] text-[var(--color-text)] font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
+                title="Copy selected values as newline list"
+              >
+                <FileText size={12} className="text-purple-400" />
+                <span>Copy Lines</span>
+              </button>
+
+              <button
+                onClick={handleBatchDeleteOptions}
+                className="px-2.5 py-1.5 rounded-xl bg-rose-500/10 text-rose-500 hover:bg-rose-500/20 font-bold flex items-center gap-1.5 transition-colors cursor-pointer"
+                title="Delete selected options from library"
+              >
+                <Trash2 size={12} />
+                <span>Delete ({selectedOptionValues.size})</span>
+              </button>
+            </div>
+
+            <button
+              onClick={() => setSelectedOptionValues(new Set())}
+              className="p-1 rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-text)] ml-1 cursor-pointer"
+              title="Deselect all"
+            >
+              <X size={14} />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── 5. Master-Detail Option Usage Dossier Drawer ── */}
+      <SlideOverDrawer
+        isOpen={Boolean(peekOptionValue)}
+        onClose={() => setPeekOptionValue(null)}
+        widthClass="w-full sm:w-[500px] lg:w-[560px]"
+        onPrevious={hasPrevOption ? handlePrevOption : undefined}
+        onNext={hasNextOption ? handleNextOption : undefined}
+        hasPrevious={hasPrevOption}
+        hasNext={hasNextOption}
+      >
+        {peekOptionValue && (() => {
+          const usage = getOptionUsage(peekOptionValue);
+          const isDef = defaults[selectedKey] === peekOptionValue;
+          const badgeStyle = getOptionBadgeStyle(peekOptionValue);
+
+          return (
+            <div className="flex flex-col h-full overflow-y-auto custom-scroll p-6 space-y-6">
+              {/* Drawer Header Banner */}
+              <div className="space-y-3 pb-5 border-b border-[var(--color-divider)]">
+                <div className="flex items-center justify-between gap-2">
+                  <span className={clsx("px-2.5 py-1 rounded-lg text-xs font-bold border flex items-center gap-1.5", badgeStyle)}>
+                    <span className="w-2 h-2 rounded-full border shrink-0 bg-current" />
+                    <span>{peekOptionValue}</span>
+                  </span>
+                  <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-[var(--color-surface-offset)] border border-[var(--color-divider)] text-[var(--color-text-muted)]">
+                    {selectedKey}
+                  </span>
+                </div>
+
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg sm:text-xl font-display font-black text-[var(--color-text)] tracking-tight">
+                      {peekOptionValue}
+                    </h2>
+                    {isDef && (
+                      <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded bg-amber-500/15 text-amber-500 border border-amber-500/30 flex items-center gap-1">
+                        <Star size={10} className="fill-amber-500" /> Default
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1.5 mt-1 text-xs text-[var(--color-text-muted)]">
+                    <span>Belongs to</span>
+                    <strong className="text-[var(--color-text)] font-semibold">{formatLibraryName(selectedKey)}</strong>
+                    <span>library</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4-Stat Metric Bento */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div className="p-3 rounded-xl bg-[var(--color-surface-2)]/60 border border-[var(--color-divider)]">
+                  <div className="text-[10px] font-mono font-bold text-[var(--color-text-faint)] uppercase">Tasks</div>
+                  <div className="text-base font-bold text-[var(--color-text)] mt-1">
+                    <AnimatedMetric value={usage.tasks.length} />
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[var(--color-surface-2)]/60 border border-[var(--color-divider)]">
+                  <div className="text-[10px] font-mono font-bold text-[var(--color-text-faint)] uppercase">Defects</div>
+                  <div className="text-base font-bold text-[var(--color-text)] mt-1">
+                    <AnimatedMetric value={usage.defects.length} />
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[var(--color-surface-2)]/60 border border-[var(--color-divider)]">
+                  <div className="text-[10px] font-mono font-bold text-[var(--color-text-faint)] uppercase">Deliveries</div>
+                  <div className="text-base font-bold text-[var(--color-text)] mt-1">
+                    <AnimatedMetric value={usage.deliveries.length} />
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[var(--color-surface-2)]/60 border border-[var(--color-divider)]">
+                  <div className="text-[10px] font-mono font-bold text-[var(--color-text-faint)] uppercase">Total Impact</div>
+                  <div className="text-base font-bold text-[var(--color-primary-hex)] mt-1">
+                    <AnimatedMetric value={usage.totalUsage} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Orphan Risk Warning if Total Impact > 0 */}
+              {usage.totalUsage > 0 && (
+                <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/25 flex items-start gap-3">
+                  <AlertCircle size={18} className="text-amber-500 shrink-0 mt-0.5" />
+                  <div className="min-w-0 text-xs">
+                    <div className="font-bold text-amber-600 dark:text-amber-400">Live Workspace Dependencies</div>
+                    <div className="text-[11px] text-[var(--color-text-muted)] mt-0.5 leading-relaxed">
+                      This option is currently active in {usage.totalUsage} project entity records. Modifying or deleting it will impact live workflow records.
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Linked Entities Mini-List */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-xs font-bold text-[var(--color-text)]">
+                  <span>Linked Project Records ({usage.totalUsage})</span>
+                </div>
+
+                {usage.totalUsage === 0 ? (
+                  <div className="p-6 text-center border border-dashed border-[var(--color-divider)] rounded-xl text-xs text-[var(--color-text-muted)]">
+                    No live project records are currently using this option.
+                  </div>
+                ) : (
+                  <div className="max-h-56 overflow-y-auto custom-scroll space-y-1.5 p-1">
+                    {usage.tasks.map(t => (
+                      <div
+                        key={t.id}
+                        onClick={() => { setView('tasks'); setPeekOptionValue(null); }}
+                        className="p-2.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 transition-colors cursor-pointer flex items-center justify-between text-xs"
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <span className="font-mono text-[10px] font-bold text-[var(--color-text-faint)] shrink-0">{t.id}</span>
+                          <span className="font-semibold text-[var(--color-text)] truncate">{t.name}</span>
+                        </div>
+                        <span className="text-[10px] text-[var(--color-primary-hex)] font-semibold shrink-0 flex items-center gap-0.5">
+                          <span>Task</span> <ExternalLink size={10} />
+                        </span>
+                      </div>
+                    ))}
+                    {usage.defects.map(d => (
+                      <div
+                        key={d.id}
+                        onClick={() => { setView('defects'); setPeekOptionValue(null); }}
+                        className="p-2.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 transition-colors cursor-pointer flex items-center justify-between text-xs"
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <span className="font-mono text-[10px] font-bold text-[var(--color-text-faint)] shrink-0">{d.id}</span>
+                          <span className="font-semibold text-[var(--color-text)] truncate">{d.title}</span>
+                        </div>
+                        <span className="text-[10px] text-rose-500 font-semibold shrink-0 flex items-center gap-0.5">
+                          <span>Defect</span> <ExternalLink size={10} />
+                        </span>
+                      </div>
+                    ))}
+                    {usage.deliveries.map(del => (
+                      <div
+                        key={del.id}
+                        onClick={() => { setView('deliveries'); setPeekOptionValue(null); }}
+                        className="p-2.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 transition-colors cursor-pointer flex items-center justify-between text-xs"
+                      >
+                        <div className="flex items-center gap-2 truncate">
+                          <span className="font-mono text-[10px] font-bold text-[var(--color-text-faint)] shrink-0">{del.id}</span>
+                          <span className="font-semibold text-[var(--color-text)] truncate">{del.name}</span>
+                        </div>
+                        <span className="text-[10px] text-sky-500 font-semibold shrink-0 flex items-center gap-0.5">
+                          <span>Package</span> <ExternalLink size={10} />
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Footer Actions */}
+              <div className="pt-4 border-t border-[var(--color-divider)] space-y-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleToggleDefault(peekOptionValue)}
+                  className="w-full h-9 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <Star size={13} className={isDef ? "fill-amber-500 text-amber-500" : "text-amber-500"} />
+                  <span>{isDef ? 'Clear as Default Value' : 'Set as Selector Default'}</span>
+                </Button>
+              </div>
+            </div>
+          );
+        })()}
+      </SlideOverDrawer>
+
+      {/* ── 6. Bulk Edit Options Modal (Standard Accessible Modal) ── */}
       <Modal
         isOpen={isBulkOpen}
         onClose={() => setIsBulkOpen(false)}
