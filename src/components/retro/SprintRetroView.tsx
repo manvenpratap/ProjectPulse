@@ -22,7 +22,7 @@ import {
   X
 } from 'lucide-react';
 import clsx from 'clsx';
-import confetti from 'canvas-confetti';
+import { fireConfetti } from '../../utils/designSpells';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import PageHeader from '../shared/PageHeader';
 import Button from '../shared/Button';
@@ -91,7 +91,7 @@ export const SprintRetroView: React.FC = () => {
       if (item.id === id) {
         const nextStatus = nextRetroActionStatus(item.status);
         if (nextStatus === 'Resolved') {
-          confetti({ particleCount: 35, spread: 60, origin: { y: 0.8 } });
+          fireConfetti({ particleCount: 35, spread: 60, origin: { y: 0.8 } });
         }
         return { ...item, status: nextStatus };
       }

@@ -1,5 +1,5 @@
 import { flushSync } from 'react-dom';
-import confetti from 'canvas-confetti';
+import type { PointerEvent } from 'react';
 
 let pendingOrigin: { x: number; y: number; ts: number } | null = null;
 
@@ -38,6 +38,26 @@ export function consumeInteractionOrigin(maxAgeMs = 800): { x: number; y: number
 }
 
 /**
+ * Fire an arbitrary celebratory confetti burst with lazy-loaded canvas-confetti,
+ * strictly honoring reduced-motion preferences.
+ */
+export function fireConfetti(options?: {
+  particleCount?: number;
+  spread?: number;
+  startVelocity?: number;
+  scalar?: number;
+  ticks?: number;
+  origin?: { x?: number; y?: number };
+  colors?: string[];
+}): void {
+  if (typeof window === 'undefined' || prefersReducedMotion()) return;
+  import('canvas-confetti').then((m) => {
+    const fire = (m as any).default || m;
+    fire(options);
+  }).catch(() => {});
+}
+
+/**
  * Fire a lightweight confetti burst anchored cleanly to an element's viewport center
  * (or fallback coordinates), strictly honoring reduced-motion preferences.
  */
@@ -55,7 +75,7 @@ export function castOriginConfetti(
     : { x: 0.5, y: 0.6 };
 
   const primary = getComputedStyle(document.documentElement).getPropertyValue('--color-primary-hex').trim() || '#22d3ee';
-  confetti({
+  fireConfetti({
     particleCount: options?.particleCount ?? 36,
     spread: options?.spread ?? 58,
     startVelocity: 28,
@@ -129,7 +149,7 @@ export function runCircularThemeTransition(
 /**
  * Zero-rerender pointer spotlight updater for flagship instrument cards.
  */
-export function updateCardSpotlight(e: React.PointerEvent<HTMLElement>): void {
+export function updateCardSpotlight(e: PointerEvent<HTMLElement>): void {
   if (prefersReducedMotion() || e.pointerType === 'touch') return;
   const rect = e.currentTarget.getBoundingClientRect();
   e.currentTarget.style.setProperty('--spot-x', `${e.clientX - rect.left}px`);

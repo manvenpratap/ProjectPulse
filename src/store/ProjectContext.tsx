@@ -8,8 +8,7 @@ import { nowISO, todayStr, getBusinessDays, addBusDays, getNextBusDay } from '..
 import { resolveTaskTransition, TaskTransitionResult } from '../utils/stateMachines';
 
 import { importProjectExcel } from '../services/excelService';
-import confetti from 'canvas-confetti';
-import { consumeInteractionOrigin, prefersReducedMotion } from '../utils/designSpells';
+import { consumeInteractionOrigin, prefersReducedMotion, fireConfetti } from '../utils/designSpells';
 
 import { getNavItem } from '../config/navigation';
 
@@ -336,7 +335,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
       if (verified.celebrated && !prefersReducedMotion()) {
         const origin = consumeInteractionOrigin() || { x: 0.5, y: 0.6 };
-        confetti({
+        fireConfetti({
           particleCount: origin.y === 0.6 ? 120 : 48,
           spread: 68,
           startVelocity: 32,
