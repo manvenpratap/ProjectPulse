@@ -1052,7 +1052,7 @@
     "hash": "2da9bc73d8c08a6f3fa3a047f06751b2"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/ReleaseRoadmap.tsx": {
-    "mtime": 1794674049.0742571,
+    "mtime": 1794676623.0104895,
     "hash": "0317fb465d5ba2e4e9ee2e05d37714b9"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/architect/ScaffolderView.tsx": {
@@ -1076,8 +1076,8 @@
     "hash": "6fcf885485a5abad9619337883f52bdc"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/retro/SprintRetroView.tsx": {
-    "mtime": 1794645505.2714694,
-    "hash": "f367fbc3be75d8e821ef4fa3a1b9e4e8"
+    "mtime": 1794678286.383642,
+    "hash": "7d9146512e1cdb00e61e1ae85246f363"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/log/LogView.tsx": {
     "mtime": 1794661329.5404115,
@@ -1124,8 +1124,8 @@
     "hash": "3485771beb2157477027bf9a90ca7d83"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/services/excelService.ts": {
-    "mtime": 1794280403.4509435,
-    "hash": "0f23ab226f4be3d767d4b3c39f5baa02"
+    "mtime": 1794678266.199335,
+    "hash": "688d352fa93468a1ca6eeb441f6ff3ae"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/store/ProjectContext.tsx": {
     "mtime": 1794645505.3407435,
@@ -1152,16 +1152,16 @@
     "hash": "8b7b329ee3dfc441a85a1202de2fded5"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/README.md": {
-    "mtime": 1794674181.0955896,
-    "hash": "c5ef1b40d3d68315984b1b2aae9bf4fb"
+    "mtime": 1794678394.9640536,
+    "hash": "9b6c183c41182a6ac0226223d57fd783"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/wiki/Architecture-and-System-Design.md": {
     "mtime": 1794505450.81511,
     "hash": "15bc482c4a343cab2bac02169a88b164"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/wiki/Home.md": {
-    "mtime": 1794674202.923633,
-    "hash": "6b26739f595dcba78a699ce04c6f0069"
+    "mtime": 1794678399.0031173,
+    "hash": "eace281da06290a125beb54d2fa53100"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/wiki/_Sidebar.md": {
     "mtime": 1794070719.298963,
