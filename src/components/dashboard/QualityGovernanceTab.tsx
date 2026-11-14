@@ -14,6 +14,7 @@ import {
   ShieldAlert,
   Tag,
   X,
+  ExternalLink,
 } from 'lucide-react';
 import {
   Bar,
@@ -1134,10 +1135,10 @@ export const QualityGovernanceTab: React.FC<QualityGovernanceTabProps> = ({
             <table className="w-full text-left border-collapse text-xs">
               <thead>
                 <tr className="border-b border-[var(--color-divider)] text-[10px] uppercase tracking-wider text-[var(--color-text-muted)]">
-                  <th className="py-2 pr-3 font-bold">ALM ID</th>
-                  <th className="py-2 pr-3 font-bold">Package Scope</th>
-                  <th className="py-2 pr-3 font-bold">Env</th>
-                  <th className="py-2 pr-3 font-bold">Sign-Off</th>
+                  <th className="py-2 pr-3 font-bold sticky left-0 bg-[var(--color-surface)] z-10 border-r border-[var(--color-divider)]">ALM ID</th>
+                  <th className="py-2 px-3 font-bold">Package Scope</th>
+                  <th className="py-2 px-3 font-bold">Env</th>
+                  <th className="py-2 px-3 font-bold">Sign-Off</th>
                   <th className="py-2 font-bold text-right">Smoke</th>
                 </tr>
               </thead>
@@ -1146,18 +1147,21 @@ export const QualityGovernanceTab: React.FC<QualityGovernanceTabProps> = ({
                   <tr
                     key={del.id}
                     onClick={() => onNavigate('deliveries')}
-                    className="hover:bg-[var(--color-surface-2)]/60 cursor-pointer transition-colors"
+                    className="hover:bg-[var(--color-surface-2)]/60 cursor-pointer transition-colors group"
                   >
-                    <td className="py-2 pr-3 font-mono font-bold text-[var(--color-primary-hex)] whitespace-nowrap">
-                      {del.almId || del.id}
+                    <td className="py-2 pr-3 font-mono font-bold text-[var(--color-primary-hex)] whitespace-nowrap sticky left-0 bg-[var(--color-surface)] group-hover:bg-[var(--color-surface-2)] z-10 border-r border-[var(--color-divider)] transition-colors">
+                      <div className="flex items-center gap-1.5">
+                        <span>{del.almId || del.id}</span>
+                        <ExternalLink size={10} className="opacity-0 group-hover:opacity-100 transition-opacity text-cyan-400 shrink-0" />
+                      </div>
                     </td>
-                    <td className="py-2 pr-3 max-w-[240px] truncate font-medium text-[var(--color-text)]">
+                    <td className="py-2 px-3 max-w-[240px] truncate font-medium text-[var(--color-text)]">
                       {del.name}
                     </td>
-                    <td className="py-2 pr-3 whitespace-nowrap font-mono text-[11px] text-[var(--color-text-muted)]">
+                    <td className="py-2 px-3 whitespace-nowrap font-mono text-[11px] text-[var(--color-text-muted)]">
                       {del.environment}
                     </td>
-                    <td className="py-2 pr-3 whitespace-nowrap">
+                    <td className="py-2 px-3 whitespace-nowrap">
                       <span
                         className={clsx(
                           'text-[10px] font-bold px-2 py-0.5 rounded-md border',

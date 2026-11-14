@@ -18,7 +18,8 @@ import {
   Compass,
   Gauge,
   RefreshCw,
-  AlertTriangle
+  AlertTriangle,
+  ExternalLink
 } from 'lucide-react';
 import clsx from 'clsx';
 import SectionHelpButton from '../shared/SectionHelpButton';
@@ -272,9 +273,12 @@ export const DashboardView: React.FC = () => {
       cell: (t) => {
         const dd = daysDiff(t.dueDate);
         return (
-          <span className="font-bold text-rose-600 font-mono text-xs">
-            {dd !== null && dd < 0 ? `${Math.abs(dd)}d LATE` : 'HIGH RISK'}
-          </span>
+          <div className="flex items-center justify-end gap-2">
+            <span className="font-bold text-rose-600 font-mono text-xs">
+              {dd !== null && dd < 0 ? `${Math.abs(dd)}d LATE` : 'HIGH RISK'}
+            </span>
+            <ExternalLink size={12} className="text-[var(--color-text-muted)] group-hover:text-[var(--color-primary-hex)] transition-colors shrink-0" />
+          </div>
         );
       }
     }
@@ -743,6 +747,9 @@ export const DashboardView: React.FC = () => {
                   columns={criticalPathColumns}
                   showRowNumbers={false}
                   density="compact"
+                  stickyFirstColumn
+                  onRowClick={(t) => setView('tasks')}
+                  tableLabel="Critical Path Tasks at Risk"
                 />
               ) : (
                 <div className="py-8 text-center text-emerald-600 space-y-1">
