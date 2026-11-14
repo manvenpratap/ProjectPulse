@@ -5,12 +5,12 @@
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 4474 nodes · 19607 edges · 339 communities (301 shown, 38 thin omitted)
+- 4474 nodes · 19607 edges · 347 communities (308 shown, 39 thin omitted)
 - Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 135 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `4addd0f6`
+- Built from commit: `ea14bbfc`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -92,6 +92,7 @@
 - [[_COMMUNITY_Community 74|Community 74]]
 - [[_COMMUNITY_Community 75|Community 75]]
 - [[_COMMUNITY_Community 76|Community 76]]
+- [[_COMMUNITY_Community 77|Community 77]]
 - [[_COMMUNITY_Community 78|Community 78]]
 - [[_COMMUNITY_Community 79|Community 79]]
 - [[_COMMUNITY_Community 80|Community 80]]
@@ -223,10 +224,10 @@
 - [[_COMMUNITY_Community 206|Community 206]]
 - [[_COMMUNITY_Community 207|Community 207]]
 - [[_COMMUNITY_Community 208|Community 208]]
+- [[_COMMUNITY_Community 209|Community 209]]
 - [[_COMMUNITY_Community 210|Community 210]]
 - [[_COMMUNITY_Community 211|Community 211]]
 - [[_COMMUNITY_Community 212|Community 212]]
-- [[_COMMUNITY_Community 213|Community 213]]
 - [[_COMMUNITY_Community 214|Community 214]]
 - [[_COMMUNITY_Community 215|Community 215]]
 - [[_COMMUNITY_Community 216|Community 216]]
@@ -247,6 +248,14 @@
 - [[_COMMUNITY_Community 231|Community 231]]
 - [[_COMMUNITY_Community 232|Community 232]]
 - [[_COMMUNITY_Community 233|Community 233]]
+- [[_COMMUNITY_Community 234|Community 234]]
+- [[_COMMUNITY_Community 235|Community 235]]
+- [[_COMMUNITY_Community 236|Community 236]]
+- [[_COMMUNITY_Community 237|Community 237]]
+- [[_COMMUNITY_Community 238|Community 238]]
+- [[_COMMUNITY_Community 239|Community 239]]
+- [[_COMMUNITY_Community 240|Community 240]]
+- [[_COMMUNITY_Community 241|Community 241]]
 
 ## God Nodes (most connected - your core abstractions)
 1. `defineProperty()` - 151 edges
@@ -272,797 +281,829 @@
 - `k$()` --calls--> `S()`  [INFERRED]
   android/app/src/main/assets/public/assets/index-CsiNbs1t.js → src/services/excelService.ts
 
-## Communities (339 total, 38 thin omitted)
+## Communities (347 total, 39 thin omitted)
 
 ### Community 0 - "Community 0"
 Cohesion: 0.01
-Nodes (278): _7, a2, a5, AB(), abe(), addAngleAxis(), addRadiusAxis(), ai (+270 more)
+Nodes (286): _7, a2, a5, AB(), abe(), addAngleAxis(), addRadiusAxis(), ai (+278 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.04
-Nodes (88): ColFilter, DOMAIN_META, DOMAIN_STARTERS, DomainTab, FieldArchitect(), LOCKED_KEYS, UndoSnapshot, getNavItem() (+80 more)
+Nodes (93): formatLibraryName(), LIBRARY_LABELS, RegistryView(), RESERVED_CORE_KEYS, ReleaseViewMode, BlueprintPreset, PHASE_COLORS, STANDARD_BLUEPRINT_PRESETS (+85 more)
 
 ### Community 2 - "Community 2"
 Cohesion: 0.04
-Nodes (80): ComplexityFilter, computeScreenSuggestions(), FEAT_STOP_WORDS, featTokenise(), FeaturePreset, STANDARD_CATEGORIES, ViewMode, formatLibraryName() (+72 more)
+Nodes (66): AccessDenied(), AccessDeniedProps, LoginView(), getAllNavItems(), getHubForView(), getNavItem(), NAV_HUBS, NavHub (+58 more)
 
 ### Community 3 - "Community 3"
 Cohesion: 0.05
-Nodes (65): AccessDenied(), AccessDeniedProps, AccessManagerModal(), AccessManagerModalProps, getRoleTheme(), LoginView(), getAllNavItems(), getHubForView() (+57 more)
+Nodes (86): aue(), Az(), Bb(), bi(), bU, cn(), DS(), eG (+78 more)
 
 ### Community 4 - "Community 4"
 Cohesion: 0.05
-Nodes (85): aue(), Az(), Bb(), bi(), bU, cn(), DS(), eG (+77 more)
+Nodes (60): ColFilter, DOMAIN_META, DOMAIN_STARTERS, DomainTab, FieldArchitect(), LOCKED_KEYS, UndoSnapshot, AccessManagerModal() (+52 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.05
-Nodes (82): aae(), aJ(), aq(), b7(), bJ(), Bp, c5(), c7() (+74 more)
+Nodes (70): _5(), _9(), a9(), ave(), b9(), bM, Bn(), bve() (+62 more)
 
 ### Community 6 - "Community 6"
-Cohesion: 0.05
-Nodes (63): Ahe(), Aue(), B0e(), Ca(), Cne(), concat(), Cr(), dae() (+55 more)
+Cohesion: 0.06
+Nodes (66): $5(), a7(), age(), applyPatches(), bge(), cbe(), dbe(), Dge() (+58 more)
 
 ### Community 7 - "Community 7"
-Cohesion: 0.06
-Nodes (65): $5(), a7(), age(), applyPatches(), aZ(), bge(), cbe(), dbe() (+57 more)
+Cohesion: 0.09
+Nodes (52): blendColors(), buildDeliveriesSheet(), buildDeliveriesWorkbook(), buildExecutiveDashboardSheet(), buildFeatureMatrixWorkbook(), buildFeatureRolloutsSheet(), buildFeatureScreenTraceabilitySheet(), buildUnifiedTasksSheet() (+44 more)
 
 ### Community 8 - "Community 8"
-Cohesion: 0.05
-Nodes (54): FEAT_PALETTE, FeatureSwimlaneChart(), FeatureSwimlaneChartProps, HitArea, LaneGroup, RELEASE_STATUS_COLORS, SwimlaneCategoryTrackProps, SwimlaneRow (+46 more)
+Cohesion: 0.06
+Nodes (19): ci(), d9(), di(), dx(), dY, hx, L0(), lK() (+11 more)
 
 ### Community 9 - "Community 9"
 Cohesion: 0.04
-Nodes (60): _0, B0e(), Bae(), ble(), cM, d9(), dB, e2 (+52 more)
+Nodes (58): _0, a5(), A6(), addRadiusAxis(), Aee(), Bae(), Bd, bh (+50 more)
 
 ### Community 10 - "Community 10"
-Cohesion: 0.06
-Nodes (58): Ate(), aW(), bne(), BS(), bue(), cC, createDraft(), DC (+50 more)
+Cohesion: 0.04
+Nodes (52): A1, aq(), ble(), cB, dl(), dM, Ei(), fH (+44 more)
 
 ### Community 11 - "Community 11"
-Cohesion: 0.04
-Nodes (59): A6(), addAngleAxis(), addRadiusAxis(), Are(), Bte(), cB, d2, darker() (+51 more)
+Cohesion: 0.06
+Nodes (40): FEAT_PALETTE, FeatureSwimlaneChart(), FeatureSwimlaneChartProps, HitArea, LaneGroup, RELEASE_STATUS_COLORS, SwimlaneCategoryTrackProps, SwimlaneRow (+32 more)
 
 ### Community 12 - "Community 12"
-Cohesion: 0.09
-Nodes (47): blendColors(), buildDeliveriesSheet(), buildDeliveriesWorkbook(), buildExecutiveDashboardSheet(), buildFeatureMatrixWorkbook(), buildFeatureRolloutsSheet(), buildFeatureScreenTraceabilitySheet(), buildUnifiedTasksSheet() (+39 more)
+Cohesion: 0.07
+Nodes (25): aU, cB(), cM(), dB(), dM(), fM(), fY, gB (+17 more)
 
 ### Community 13 - "Community 13"
 Cohesion: 0.06
-Nodes (23): ci(), cx(), d9(), di(), dx(), dY, f5(), fx (+15 more)
+Nodes (45): $0e(), aX, b7(), bK(), ble(), cC, F0e(), fK() (+37 more)
+
+### Community 14 - "Community 14"
+Cohesion: 0.04
+Nodes (46): addAngleAxis(), b5, C0, co, d2, Ef(), eoe(), Fte() (+38 more)
 
 ### Community 15 - "Community 15"
-Cohesion: 0.05
-Nodes (49): ALL_ALM_STATUSES, ALM_ST_MAP, AutofitStrategy, DEL_ST_MAP, DeliveryModal(), DeliveryModalProps, DeliveryPreset, HeatmapPerspective (+41 more)
-
-### Community 16 - "Community 16"
 Cohesion: 0.04
-Nodes (53): _2, ame(), Bse, cee(), dM, dme(), dQ, fB (+45 more)
+Nodes (46): _1, bq(), Cae(), cme(), darker(), dispatch(), dQ, e7 (+38 more)
 
 ### Community 17 - "Community 17"
-Cohesion: 0.05
-Nodes (31): aX, dfe(), e0e(), Eae(), Exe(), FJ(), fs(), gn() (+23 more)
+Cohesion: 0.07
+Nodes (33): AIPulseAnalysis(), PulseScanState, COCKPIT_EASE, DetailCardType, OverviewView(), CATEGORY_PALETTE, IMPACT_ROWS, PIPELINE_STAGES (+25 more)
 
 ### Community 18 - "Community 18"
-Cohesion: 0.05
-Nodes (41): afe(), As(), b2(), cU, cW, displayable(), Dt, dU (+33 more)
+Cohesion: 0.07
+Nodes (3): URL, IONFILEDirectoryManagerTests, XCTestCase
 
 ### Community 19 - "Community 19"
-Cohesion: 0.07
-Nodes (26): aU, cB(), cM(), dB(), dM(), fM(), fY, gB (+18 more)
+Cohesion: 0.05
+Nodes (40): _2, A0(), Are(), brighter(), Bse, cl, cM, dme() (+32 more)
 
 ### Community 20 - "Community 20"
-Cohesion: 0.05
-Nodes (44): aa, B0(), bme(), bxe(), da, Dhe(), di(), eC() (+36 more)
-
-### Community 21 - "Community 21"
-Cohesion: 0.05
-Nodes (46): _1, A0(), A1, a5(), aB, Aee(), b5, bh (+38 more)
-
-### Community 22 - "Community 22"
-Cohesion: 0.11
-Nodes (44): Aee(), bee(), cee(), dee(), defineProperty(), _ee(), eee(), eJ (+36 more)
-
-### Community 23 - "Community 23"
-Cohesion: 0.09
-Nodes (42): AA(), Ade(), _B(), bE(), Cf(), cG(), Ch(), da (+34 more)
-
-### Community 24 - "Community 24"
-Cohesion: 0.07
-Nodes (43): C0e(), C1(), Ca(), cfe(), cV, En(), eo, fde() (+35 more)
-
-### Community 25 - "Community 25"
-Cohesion: 0.05
-Nodes (41): Cae(), cl, co, dV, Eae(), fl, Gce(), hse() (+33 more)
-
-### Community 26 - "Community 26"
-Cohesion: 0.09
+Cohesion: 0.1
 Nodes (6): fY(), gY, lD, li(), oY, subscribe()
 
-### Community 27 - "Community 27"
-Cohesion: 0.05
-Nodes (40): ape(), brighter(), cme(), cU, deref(), dR(), dY(), Ei() (+32 more)
-
-### Community 28 - "Community 28"
-Cohesion: 0.09
-Nodes (35): aie(), aK(), bH, cO(), cV, cY, dG(), dV (+27 more)
-
-### Community 30 - "Community 30"
-Cohesion: 0.1
-Nodes (32): _0(), gt(), gY(), h$(), hq, Hr(), kq, m9() (+24 more)
-
-### Community 31 - "Community 31"
+### Community 21 - "Community 21"
 Cohesion: 0.07
-Nodes (36): ale(), aR(), boe(), Br, cle(), Df(), dle(), Doe() (+28 more)
+Nodes (38): aa, ba, bme(), C0e(), Ca(), cfe(), cV, di() (+30 more)
 
-### Community 32 - "Community 32"
+### Community 22 - "Community 22"
+Cohesion: 0.08
+Nodes (35): _$(), a(), aie(), aq, cO(), Die(), e0(), getPrototypeOf() (+27 more)
+
+### Community 23 - "Community 23"
 Cohesion: 0.14
 Nodes (11): $, A, D(), G(), I(), K(), M, V() (+3 more)
 
-### Community 33 - "Community 33"
+### Community 24 - "Community 24"
+Cohesion: 0.06
+Nodes (35): aB, ape(), cU, deref(), eve(), gV, h$, hse() (+27 more)
+
+### Community 25 - "Community 25"
+Cohesion: 0.08
+Nodes (32): DeliveryModal(), DraftPhase, useEntityDraft(), UseEntityDraftOptions, TaskModal(), TaskModalProps, StepTemplate, Subtask (+24 more)
+
+### Community 26 - "Community 26"
+Cohesion: 0.1
+Nodes (35): cte(), defineProperty(), eee(), FD, Hre(), hue(), iue(), JJ() (+27 more)
+
+### Community 27 - "Community 27"
+Cohesion: 0.07
+Nodes (35): ale(), aR(), boe(), Br, cle(), Df(), dle(), Doe() (+27 more)
+
+### Community 28 - "Community 28"
+Cohesion: 0.08
+Nodes (8): bG(), Je(), KO(), notify(), ny(), uZ, wi(), zG()
+
+### Community 29 - "Community 29"
+Cohesion: 0.14
+Nodes (35): aae(), b7(), bJ(), c7(), cJ(), defineProperty(), dJ(), eq (+27 more)
+
+### Community 30 - "Community 30"
 Cohesion: 0.07
 Nodes (3): dW(), i5, zw()
 
+### Community 31 - "Community 31"
+Cohesion: 0.08
+Nodes (28): dE(), displayable(), eC(), f6(), ffe(), h9(), Hc, hE() (+20 more)
+
+### Community 32 - "Community 32"
+Cohesion: 0.08
+Nodes (25): afe(), cx(), f5(), fx, gC(), gle(), hB(), HS() (+17 more)
+
+### Community 33 - "Community 33"
+Cohesion: 0.09
+Nodes (32): AA(), An(), _B(), ba, BI(), cE(), D$(), da (+24 more)
+
 ### Community 34 - "Community 34"
 Cohesion: 0.12
-Nodes (5): IONFILEDirectoryManager, IONFILEFileManager, IONFILEDirectoryType, IONFILEManager, Keys
+Nodes (8): Ac(), Dd(), g$(), h5(), i6(), o2(), sK, yD()
 
 ### Community 35 - "Community 35"
-Cohesion: 0.11
+Cohesion: 0.1
 Nodes (3): gs(), px, s5
 
 ### Community 36 - "Community 36"
-Cohesion: 0.14
-Nodes (17): _9(), AJ(), bx(), Cp(), Ct(), hxe(), Ine(), Kc (+9 more)
+Cohesion: 0.12
+Nodes (5): IONFILEDirectoryManager, IONFILEFileManager, IONFILEDirectoryType, IONFILEManager, Keys
 
 ### Community 37 - "Community 37"
 Cohesion: 0.09
-Nodes (18): dH, e9(), hG, iH, IW(), kf(), lD(), n5 (+10 more)
-
-### Community 38 - "Community 38"
-Cohesion: 0.11
-Nodes (27): DARK_MAP, FilterCategory, LIGHT_MAP, ThemeDef, ThemeFlyout(), ThemeFlyoutProps, THEMES, computePreviewMetrics() (+19 more)
-
-### Community 40 - "Community 40"
-Cohesion: 0.09
-Nodes (29): aie(), bie(), br(), cie(), die(), eie(), EP(), ese() (+21 more)
-
-### Community 41 - "Community 41"
-Cohesion: 0.11
-Nodes (27): _0e(), $8(), a0e(), aD(), AK(), ba, e0e(), fT() (+19 more)
-
-### Community 42 - "Community 42"
-Cohesion: 0.17
-Nodes (10): AG(), c2, cE(), Dae(), lE, Mae(), Nde, p9 (+2 more)
-
-### Community 43 - "Community 43"
-Cohesion: 0.1
 Nodes (3): notify(), qw, xx
 
+### Community 38 - "Community 38"
+Cohesion: 0.09
+Nodes (30): Aee(), ane(), _ee(), g7(), gee(), hee(), Iee(), Ki() (+22 more)
+
+### Community 39 - "Community 39"
+Cohesion: 0.14
+Nodes (26): a(), bC(), bx(), cZ(), dce(), Fz, I(), ire() (+18 more)
+
+### Community 41 - "Community 41"
+Cohesion: 0.09
+Nodes (25): _7(), cx, d5(), dee(), F7(), fx, G0(), In() (+17 more)
+
+### Community 42 - "Community 42"
+Cohesion: 0.12
+Nodes (26): DARK_MAP, FilterCategory, LIGHT_MAP, ThemeDef, ThemeFlyout(), ThemeFlyoutProps, THEMES, computePreviewMetrics() (+18 more)
+
+### Community 43 - "Community 43"
+Cohesion: 0.08
+Nodes (20): a9(), bD(), c2(), cD, E2(), eD(), eK, fhe (+12 more)
+
 ### Community 44 - "Community 44"
-Cohesion: 0.13
-Nodes (26): aT(), aV, aW(), Bf(), bM, cK, gO(), Hne() (+18 more)
+Cohesion: 0.16
+Nodes (9): AG(), cE(), Dae(), lE, Mae(), Nde, p9, qY() (+1 more)
 
 ### Community 45 - "Community 45"
-Cohesion: 0.11
-Nodes (5): bG(), notify(), ny(), wi(), zG()
+Cohesion: 0.15
+Nodes (25): _0(), aZ(), cG(), Ch(), d2(), F$(), gt(), hq (+17 more)
 
 ### Community 46 - "Community 46"
-Cohesion: 0.1
-Nodes (14): $0e(), bme(), F0e(), fK(), iK(), lK(), lme(), P0e() (+6 more)
+Cohesion: 0.14
+Nodes (16): _9(), AJ(), Cp(), Ct(), eZ(), Ine(), Kc, lG (+8 more)
+
+### Community 48 - "Community 48"
+Cohesion: 0.08
+Nodes (21): bG(), BY, Cc(), dn(), Fp(), gc(), Gw(), hG() (+13 more)
 
 ### Community 49 - "Community 49"
-Cohesion: 0.1
-Nodes (3): dG, vG(), yY
+Cohesion: 0.13
+Nodes (26): copy(), da, e$(), fT(), getOwnPropertyDescriptor(), gle(), IE(), ioe() (+18 more)
 
 ### Community 50 - "Community 50"
-Cohesion: 0.1
-Nodes (22): aU, cre(), cx, d5(), dre(), Dt, e9(), Fre() (+14 more)
+Cohesion: 0.12
+Nodes (15): dH, e9(), F9(), gie(), hG, l5(), l9, lD() (+7 more)
 
-### Community 51 - "Community 51"
+### Community 52 - "Community 52"
+Cohesion: 0.16
+Nodes (24): aT(), aV, aW(), Bf(), bO(), gO(), Hne(), iH (+16 more)
+
+### Community 53 - "Community 53"
+Cohesion: 0.09
+Nodes (23): Ade(), aG, AM, bae(), bB(), bE(), dE(), eB() (+15 more)
+
+### Community 55 - "Community 55"
 Cohesion: 0.11
 Nodes (22): 🏛️ 1. System Architecture, 🔄 2. Governance & Delivery Workflow, 🔄 2. Project Governance & Delivery Workflow, ⚡ 3. Bi-directional Excel Sync Sequence, ⚡ 3. ExcelJS Sync & Native Share Sequence, 🌊 4. Project Data Flow Pipeline, 🌊 4. Reactive Data Flow Pipeline, ⏱️ 5. Entity & Gate Lifecycle State Machine (+14 more)
 
-### Community 52 - "Community 52"
+### Community 56 - "Community 56"
 Cohesion: 0.09
 Nodes (22): CocoaPods, code:swift (dependencies: [), code:ruby (pod 'IONFilesystemLib', '~> ${version to use}'), code:swift (// declare the type alias if you need both file and director), code:swift (import Combine), code:swift (enum IONFILEDirectoryManagerError: Error {), Contributing, Error Handling (+14 more)
 
-### Community 53 - "Community 53"
-Cohesion: 0.12
-Nodes (22): BI(), cE(), cse(), dse(), hM(), Ip(), it(), kD() (+14 more)
+### Community 57 - "Community 57"
+Cohesion: 0.17
+Nodes (20): Ate(), eV, eW, fo, hO(), iH, IW(), J0() (+12 more)
 
-### Community 54 - "Community 54"
+### Community 58 - "Community 58"
+Cohesion: 0.13
+Nodes (13): c5(), gG, jc(), k5(), kG, nD, p2, px (+5 more)
+
+### Community 59 - "Community 59"
 Cohesion: 0.16
 Nodes (12): _ACResourceInitProtocol, AppKit.NSColor, AppKit.NSImage, ColorResource, ImageResource, ResourceBundleClass, SwiftUI.Color, SwiftUI.Image (+4 more)
 
-### Community 55 - "Community 55"
-Cohesion: 0.12
-Nodes (3): a9(), xq, yD()
+### Community 60 - "Community 60"
+Cohesion: 0.11
+Nodes (21): bT(), c0(), cW, displayable(), Dt, dU, hie(), ise() (+13 more)
 
-### Community 56 - "Community 56"
-Cohesion: 0.18
-Nodes (10): Ac(), g$(), gG, i6(), jc(), kG, p2, sK (+2 more)
-
-### Community 57 - "Community 57"
+### Community 61 - "Community 61"
 Cohesion: 0.1
 Nodes (10): FileManager, MockFileManager, MockFileManagerError, copyFileError, createDirectoryError, deleteDirectoryError, deleteFileError, itemAttributesError (+2 more)
 
-### Community 58 - "Community 58"
+### Community 62 - "Community 62"
+Cohesion: 0.11
+Nodes (21): aie(), br(), cie(), die(), eie(), EP(), fie(), Gce() (+13 more)
+
+### Community 63 - "Community 63"
 Cohesion: 0.1
 Nodes (20): 1.0.0, 1.0.1, 1.1.0, [1.1.1](https://github.com/ionic-team/ion-ios-filesystem/compare/1.1.0...1.1.1) (2026-02-13), [1.1.2](https://github.com/ionic-team/ion-ios-filesystem/compare/1.1.1...1.1.2) (2026-03-10), [1.1.3](https://github.com/ionic-team/ion-ios-filesystem/compare/1.1.2...1.1.3) (2026-09-07), [1.1.4](https://github.com/ionic-team/ion-ios-filesystem/compare/1.1.3...1.1.4) (2026-09-08), [2.0.0](https://github.com/ionic-team/ion-ios-filesystem/compare/1.1.4...2.0.0) (2026-09-16) (+12 more)
 
-### Community 59 - "Community 59"
-Cohesion: 0.1
-Nodes (20): b7(), gC(), gfe(), gr(), jx, kle(), N2(), pc() (+12 more)
+### Community 64 - "Community 64"
+Cohesion: 0.15
+Nodes (19): bee(), cee(), dee(), eJ, ete(), fee(), gJ, h7() (+11 more)
 
-### Community 60 - "Community 60"
+### Community 65 - "Community 65"
+Cohesion: 0.14
+Nodes (5): fs(), pJ, t7(), U$(), vY()
+
+### Community 66 - "Community 66"
+Cohesion: 0.13
+Nodes (18): _6, ao(), b6(), Gf(), Gw(), iY(), Lr(), lY() (+10 more)
+
+### Community 67 - "Community 67"
 Cohesion: 0.29
 Nodes (8): C(), d(), f(), R, __vite__mapDeps(), i, __vite__mapDeps(), _$
 
-### Community 62 - "Community 62"
-Cohesion: 0.1
-Nodes (19): aoe(), $B(), bde(), Bw, cD(), cH, Df(), fse() (+11 more)
-
-### Community 63 - "Community 63"
-Cohesion: 0.18
-Nodes (20): bC(), cZ(), d(), dispatch(), e$(), IE(), iU, j() (+12 more)
-
-### Community 65 - "Community 65"
-Cohesion: 0.13
-Nodes (3): cancel(), GS, tD
-
-### Community 66 - "Community 66"
-Cohesion: 0.15
-Nodes (13): c5(), eZ(), F9(), k5(), l5(), l9, lZ(), o2() (+5 more)
-
-### Community 67 - "Community 67"
-Cohesion: 0.15
-Nodes (18): clamp(), cn(), cq, dP(), due(), f7(), formatHsl(), FT() (+10 more)
+### Community 68 - "Community 68"
+Cohesion: 0.14
+Nodes (20): aJ(), Bp, fV, hH, iJ(), iP(), jJ(), kJ() (+12 more)
 
 ### Community 69 - "Community 69"
 Cohesion: 0.13
-Nodes (17): c$(), D7(), displayable(), getPrototypeOf(), hE(), Hp, jae(), mE() (+9 more)
+Nodes (17): createInitialModule(), LAYER_CONFIG, PRESET_BLUEPRINTS, ScaffolderStep, ScaffolderView(), ScaffoldModule, DefectModal(), DefectModalProps (+9 more)
 
 ### Community 70 - "Community 70"
-Cohesion: 0.2
-Nodes (19): ahe(), d1(), deleteProperty(), get(), has(), hee(), iee(), jme() (+11 more)
+Cohesion: 0.13
+Nodes (3): cancel(), GS, tD
 
 ### Community 71 - "Community 71"
-Cohesion: 0.12
-Nodes (18): cte(), dte(), fte(), ha(), jse(), kme(), kse(), lte() (+10 more)
-
-### Community 72 - "Community 72"
-Cohesion: 0.13
-Nodes (8): Encodable, Date, FileAttributeKey, IONFILEItemAttributeModel, IONFILEItemType, directory, file, Configuration
+Cohesion: 0.15
+Nodes (19): bne(), BS(), createDraft(), finishDraft(), fne(), fW(), HW(), lU (+11 more)
 
 ### Community 74 - "Community 74"
-Cohesion: 0.15
-Nodes (10): a6, e6, F0(), gD(), i9(), iZ(), kM, qd (+2 more)
+Cohesion: 0.22
+Nodes (19): ahe(), d1(), deleteProperty(), get(), has(), hee(), iee(), l7() (+11 more)
 
 ### Community 75 - "Community 75"
 Cohesion: 0.14
-Nodes (17): AE(), cae(), FE(), hae(), iue(), kT(), lue(), mae() (+9 more)
+Nodes (18): a6, b9(), c$(), cl, copy(), cZ(), F0(), Gz() (+10 more)
 
 ### Community 76 - "Community 76"
+Cohesion: 0.13
+Nodes (8): Encodable, Date, FileAttributeKey, IONFILEItemAttributeModel, IONFILEItemType, directory, file, Configuration
+
+### Community 78 - "Community 78"
+Cohesion: 0.14
+Nodes (18): aH, cK, concat(), cpe(), ehe(), Fa(), gre(), Jfe() (+10 more)
+
+### Community 80 - "Community 80"
 Cohesion: 0.51
 Nodes (8): CapacitorException, convertBody(), convertFormData(), createProxyUrl(), dummy, initBridge(), isRelativeOrProxyUrl(), readFileAsBase64()
 
-### Community 80 - "Community 80"
-Cohesion: 0.17
-Nodes (16): _$(), a(), An(), aq, ba, BJ(), Die(), j$() (+8 more)
+### Community 82 - "Community 82"
+Cohesion: 0.15
+Nodes (16): aae(), AE(), cae(), Cf(), dae(), Eae(), hae(), mae() (+8 more)
 
 ### Community 83 - "Community 83"
-Cohesion: 0.17
-Nodes (16): ave(), Cve(), Dz(), e5(), ege(), f9, ge(), ive() (+8 more)
-
-### Community 84 - "Community 84"
-Cohesion: 0.23
-Nodes (16): a(), cancel(), cq(), du(), I(), ire(), kz(), l() (+8 more)
+Cohesion: 0.12
+Nodes (15): As(), b2(), e6, gD(), gfe(), gY(), h9(), Hp (+7 more)
 
 ### Community 85 - "Community 85"
-Cohesion: 0.22
-Nodes (16): applyPatches(), BS, createDraft(), D8(), dc, finishDraft(), K2(), nU (+8 more)
-
-### Community 86 - "Community 86"
-Cohesion: 0.17
-Nodes (16): _7(), dH, F7(), fee(), G0(), h0(), HS(), i7() (+8 more)
+Cohesion: 0.15
+Nodes (15): IONFILEChunkPublisherError, cantEncodeData, notAbleToReadFile, IONFILEDirectoryManagerError, alreadyExists, notEmpty, IONFILEError, IONFILEFileManagerError (+7 more)
 
 ### Community 87 - "Community 87"
 Cohesion: 0.13
 Nodes (15): code:bash (# 1. Install dependencies), code:bash (npm run build), code:bash (# Sync web dist/ and Capacitor plugins into native projects), code:block4 (ProjectPulse 2.0/), Installation & Launch, 🛠️ Key Capabilities & Operational Modules, 📄 License, Native Mobile Builds (iOS & Android via Capacitor 8) (+7 more)
 
 ### Community 88 - "Community 88"
-Cohesion: 0.15
-Nodes (15): aG, AM, bB(), eB(), fl(), Jz(), Kz(), ll (+7 more)
+Cohesion: 0.17
+Nodes (14): cq, f7(), h$(), jq, kq, mM(), nq, oH (+6 more)
+
+### Community 89 - "Community 89"
+Cohesion: 0.23
+Nodes (15): bH, cV, dV, fC(), gx, kx, lc(), lV (+7 more)
 
 ### Community 90 - "Community 90"
-Cohesion: 0.13
-Nodes (15): a2(), ci(), Gf(), iD(), iG, JB(), m6(), nme() (+7 more)
-
-### Community 91 - "Community 91"
-Cohesion: 0.13
-Nodes (15): axe(), Cte(), dE(), dp, ete(), gU, Ki(), Lae() (+7 more)
+Cohesion: 0.24
+Nodes (15): aW(), DC, deleteProperty(), get(), has(), j1(), kte(), mW() (+7 more)
 
 ### Community 92 - "Community 92"
-Cohesion: 0.14
-Nodes (15): Gfe(), gx(), hK(), i6, mK, nH, npe(), Nxe() (+7 more)
+Cohesion: 0.23
+Nodes (15): applyPatches(), BS, createDraft(), D8(), dc, finishDraft(), K2(), nU (+7 more)
 
 ### Community 93 - "Community 93"
-Cohesion: 0.15
-Nodes (15): ai(), eZ(), fC(), gue(), Is(), jr(), ll(), Nl() (+7 more)
+Cohesion: 0.17
+Nodes (15): cee(), dH, fee(), h0(), HS(), i7(), I8(), kV (+7 more)
 
 ### Community 94 - "Community 94"
 Cohesion: 0.14
 Nodes (5): AppDelegate, SceneDelegate, UIApplicationDelegate, UIResponder, UIWindowSceneDelegate
 
 ### Community 95 - "Community 95"
-Cohesion: 0.18
-Nodes (14): b9(), bp(), cl, cZ(), Gz(), nZ(), sie(), Tc (+6 more)
+Cohesion: 0.15
+Nodes (13): e0e(), Exe(), FJ(), gn(), hC, Jne(), mJ(), tae() (+5 more)
 
 ### Community 96 - "Community 96"
-Cohesion: 0.18
-Nodes (13): bD(), bhe(), fhe, jhe(), khe(), Nhe(), p5(), pK (+5 more)
+Cohesion: 0.19
+Nodes (12): Ahe(), concat(), gve(), iF(), kve(), m$(), Nxe, oK() (+4 more)
 
 ### Community 97 - "Community 97"
-Cohesion: 0.18
-Nodes (12): _6, b6(), Gf(), gM(), Lr(), nC(), rC(), sD() (+4 more)
+Cohesion: 0.14
+Nodes (13): aoe(), $B(), bde(), cH, KB(), lq(), si(), vs() (+5 more)
 
 ### Community 98 - "Community 98"
-Cohesion: 0.15
-Nodes (13): Af(), bie(), _ie(), Iie(), l2(), m6(), p6(), qse() (+5 more)
+Cohesion: 0.16
+Nodes (14): ai(), fC(), gue(), Is(), jr(), ll(), Nl(), Ql() (+6 more)
 
 ### Community 99 - "Community 99"
 Cohesion: 0.15
-Nodes (13): ble(), Bpe(), c$(), copy(), cpe(), dpe(), Ji(), k0() (+5 more)
+Nodes (11): $ae(), dx, eU, g6(), M0(), m2, rD(), Td (+3 more)
 
 ### Community 100 - "Community 100"
-Cohesion: 0.18
-Nodes (12): Bn(), bz(), Cc(), gc(), Gw(), ipe, Jw(), kre() (+4 more)
+Cohesion: 0.2
+Nodes (14): bz(), Cve(), d(), du(), g(), kz(), OE(), pde() (+6 more)
 
 ### Community 101 - "Community 101"
-Cohesion: 0.18
-Nodes (13): eve(), fve(), kve(), Nve(), qve(), tve(), Ut(), uve() (+5 more)
+Cohesion: 0.19
+Nodes (11): d7(), eq, eX(), h2, jf(), q$(), q2(), Sf() (+3 more)
 
 ### Community 102 - "Community 102"
 Cohesion: 0.15
-Nodes (12): eW(), gQ(), hq, jY(), Kq(), qq(), sH, tH (+4 more)
+Nodes (9): dK(), dxe(), fxe(), ka, Lxe(), ui(), uxe(), wa() (+1 more)
 
 ### Community 103 - "Community 103"
-Cohesion: 0.22
-Nodes (13): eA(), g(), Hhe(), Khe(), La(), mX(), NK(), V1() (+5 more)
+Cohesion: 0.21
+Nodes (13): cn(), dP(), due(), Fue(), Oae(), oV, Sce(), u7() (+5 more)
 
 ### Community 104 - "Community 104"
 Cohesion: 0.15
-Nodes (13): Ale(), ax(), Dle(), Je(), lW, Mle(), N0(), n9 (+5 more)
+Nodes (13): Af(), bie(), _ie(), Iie(), l2(), m6(), p6(), qse() (+5 more)
 
 ### Community 105 - "Community 105"
-Cohesion: 0.18
-Nodes (13): b6(), cY, dx, eU, Fr(), g6(), Gd, M0() (+5 more)
+Cohesion: 0.15
+Nodes (10): b2(), Bw, cD(), Df(), fse(), moe(), pse(), qM (+2 more)
 
-### Community 107 - "Community 107"
-Cohesion: 0.17
-Nodes (12): c6(), d6(), ey(), hK(), jB, jK(), jve(), k6() (+4 more)
+### Community 106 - "Community 106"
+Cohesion: 0.15
+Nodes (13): a2(), ci(), Gf(), iG, JB(), m6(), nme(), pD (+5 more)
 
 ### Community 108 - "Community 108"
-Cohesion: 0.24
-Nodes (12): bK(), fpe(), ga, hpe(), ipe(), jH, lpe(), oa() (+4 more)
+Cohesion: 0.27
+Nodes (12): dR(), fV, Hr(), ive(), jV, kV, ml, pR() (+4 more)
 
 ### Community 109 - "Community 109"
-Cohesion: 0.23
-Nodes (4): IONFILEChunkPublisher, IONFILEChunkSubscription, Publisher, Subscription
+Cohesion: 0.18
+Nodes (12): c9(), Cr(), HJ(), hZ(), oc(), qJ(), qY(), tH (+4 more)
 
 ### Community 110 - "Community 110"
 Cohesion: 0.2
-Nodes (12): bx(), F0(), Fz, gve(), hve(), R0(), rge(), s9 (+4 more)
+Nodes (12): dte(), ea(), fte(), iO(), Ip(), sO(), tre(), ute() (+4 more)
 
 ### Community 111 - "Community 111"
-Cohesion: 0.17
-Nodes (6): Hc, Lz(), Qae(), XA(), xse(), Y()
+Cohesion: 0.26
+Nodes (12): B0e(), Et(), G0e(), iV, Nl(), pi, rV, Sxe() (+4 more)
 
 ### Community 112 - "Community 112"
-Cohesion: 0.18
-Nodes (8): b2(), Bd, dee(), moe(), qM, w5(), wG, zD
+Cohesion: 0.17
+Nodes (12): c6(), d6(), ey(), hK(), jB, jK(), jve(), k6() (+4 more)
 
 ### Community 113 - "Community 113"
-Cohesion: 0.18
-Nodes (12): afe(), Dfe(), gK(), ife(), Kue, lfe(), Mfe(), nfe() (+4 more)
+Cohesion: 0.17
+Nodes (12): aD(), aK(), bW(), bx(), dW, Hd, iU, jD() (+4 more)
 
 ### Community 114 - "Community 114"
-Cohesion: 0.17
-Nodes (10): a9(), bG(), dn(), Fp(), jG(), qG, sM, uY() (+2 more)
+Cohesion: 0.23
+Nodes (4): IONFILEChunkPublisher, IONFILEChunkSubscription, Publisher, Subscription
 
-### Community 115 - "Community 115"
+### Community 116 - "Community 116"
 Cohesion: 0.17
-Nodes (11): ⚡ Bi-directional Excel Sync Sequence, code:mermaid (flowchart TD), code:mermaid (flowchart LR), code:mermaid (sequenceDiagram), code:mermaid (flowchart LR), code:mermaid (stateDiagram-v2), 🌊 Project Data Flow Pipeline, 🔄 Project Governance & Delivery Workflow (+3 more)
+Nodes (12): ase(), cp(), f2(), Gfe(), mH, npe(), Nxe(), ose() (+4 more)
 
 ### Community 117 - "Community 117"
 Cohesion: 0.18
-Nodes (10): Equatable, IONFILEEncoding, byteBuffer, string, IONFILEEncodingValueMapper, byteBuffer, string, IONFILESearchPath (+2 more)
+Nodes (12): ac(), Cr(), CS(), eE(), fae(), gde(), gr(), kle() (+4 more)
 
 ### Community 118 - "Community 118"
-Cohesion: 0.35
-Nodes (7): C(), d(), f(), R, __vite__mapDeps(), m(), R()
+Cohesion: 0.18
+Nodes (12): aU, cre(), dre(), Dt, Ere(), Fre(), Mre(), n7() (+4 more)
 
 ### Community 119 - "Community 119"
 Cohesion: 0.18
-Nodes (11): _5(), _9(), bve(), g9(), i9(), Ia(), JX(), l9() (+3 more)
+Nodes (10): D7(), eW(), fG(), jY(), kD(), l6(), sH, tH (+2 more)
 
 ### Community 120 - "Community 120"
-Cohesion: 0.18
-Nodes (9): b9(), BY, gz(), hG(), I0(), nD(), p5(), Pz() (+1 more)
+Cohesion: 0.24
+Nodes (12): B0(), bxe(), Dhe(), Hfe(), kxe(), o9(), WK(), xxe() (+4 more)
 
 ### Community 121 - "Community 121"
-Cohesion: 0.22
-Nodes (11): concat(), eJ(), gre(), jq(), Jre(), prepend(), pU, qre() (+3 more)
+Cohesion: 0.18
+Nodes (12): c6, e6, gx(), hK(), i6, mK, nH, oK() (+4 more)
 
 ### Community 122 - "Community 122"
-Cohesion: 0.22
-Nodes (10): aM(), D0(), Ed(), Gp(), iK(), iY(), n6(), O0() (+2 more)
+Cohesion: 0.2
+Nodes (12): b6(), cY, Fr(), Gd, iK(), k6(), n6(), s6() (+4 more)
 
 ### Community 123 - "Community 123"
-Cohesion: 0.29
-Nodes (9): getMergedFieldGuide(), GLOBAL_SHORTCUTS, ShortcutItem, STANDARD_FIELD_GUIDE, StandardFieldItem, VIEW_HELP_DATA, ViewHelpItem, HelpModal() (+1 more)
-
-### Community 124 - "Community 124"
-Cohesion: 0.18
-Nodes (10): 1.1 Brand Identity & Voice, 1.2 Design Tokens & System Replacements, 1. Executive Summary & Design Direction, 2. Actionable Task Checklist, 3. Verification & Acceptance Criteria, Anti-AI-Slop Implementation Plan: ProjectPulse 2.0, Batch 1: Token Discipline & Background De-Slopping (Priority 1), Batch 2: Icon & Copy De-Slopping (Priority 1) (+2 more)
+Cohesion: 0.17
+Nodes (11): ⚡ Bi-directional Excel Sync Sequence, code:mermaid (flowchart TD), code:mermaid (flowchart LR), code:mermaid (sequenceDiagram), code:mermaid (flowchart LR), code:mermaid (stateDiagram-v2), 🌊 Project Data Flow Pipeline, 🔄 Project Governance & Delivery Workflow (+3 more)
 
 ### Community 125 - "Community 125"
-Cohesion: 0.2
-Nodes (6): dxe(), fxe(), ka, Lxe(), uxe(), xD()
+Cohesion: 0.22
+Nodes (10): clamp(), formatHsl(), FT(), I0(), lse(), m2, n0(), rT() (+2 more)
 
 ### Community 126 - "Community 126"
-Cohesion: 0.24
-Nodes (10): dn(), gV, j9(), kH, RJ(), wP(), xle(), Xp (+2 more)
+Cohesion: 0.22
+Nodes (11): Aue(), ehe(), hve(), jfe(), mr, Mue(), mve(), pve() (+3 more)
 
 ### Community 127 - "Community 127"
-Cohesion: 0.2
-Nodes (10): ao(), D$(), e$(), fW(), Gw(), HW(), j2(), Nh (+2 more)
+Cohesion: 0.24
+Nodes (11): Ase(), Fce(), gi(), hxe(), Ice(), jxe(), kT(), Lce() (+3 more)
 
 ### Community 128 - "Community 128"
-Cohesion: 0.2
-Nodes (10): aH, Cle(), copy(), Ele(), noe(), qE(), roe(), Tle() (+2 more)
+Cohesion: 0.18
+Nodes (10): IONFILEEncodingValueMapper, byteBuffer, string, IONFILESearchPath, directory, raw, IONFILEStringEncoding, ascii (+2 more)
 
 ### Community 129 - "Community 129"
-Cohesion: 0.2
-Nodes (10): fne(), gne(), jne(), kne(), $ne(), qne(), une(), vne() (+2 more)
-
-### Community 130 - "Community 130"
-Cohesion: 0.2
-Nodes (10): ase(), cse(), dse(), lse(), nse(), ose(), sse(), sU (+2 more)
+Cohesion: 0.35
+Nodes (7): C(), d(), f(), R, __vite__mapDeps(), m(), R()
 
 ### Community 131 - "Community 131"
 Cohesion: 0.2
-Nodes (10): bpe(), cG(), cW, eK(), eM(), sA(), tG(), wD() (+2 more)
+Nodes (11): Ct(), el, Hw, lp(), mW(), NP(), pW(), QX() (+3 more)
 
 ### Community 132 - "Community 132"
-Cohesion: 0.42
-Nodes (9): al(), bC(), D1(), En(), Gp(), mi(), qM(), Rr() (+1 more)
+Cohesion: 0.18
+Nodes (10): cde(), dde(), Ede(), iD(), ide(), lde(), oD(), ode() (+2 more)
 
 ### Community 133 - "Community 133"
 Cohesion: 0.22
-Nodes (9): dJ(), Fr(), h6(), Jp, LT, uJ(), v6(), y5() (+1 more)
+Nodes (11): a7(), ame(), an(), c5(), F(), h5(), m7(), nee() (+3 more)
 
 ### Community 134 - "Community 134"
-Cohesion: 0.22
-Nodes (9): c9(), HJ(), hZ(), oc(), qJ(), qY(), tH, VS() (+1 more)
+Cohesion: 0.2
+Nodes (11): bT(), cne(), dne(), lne(), mT(), nne(), one(), pT() (+3 more)
 
 ### Community 135 - "Community 135"
-Cohesion: 0.28
-Nodes (8): IONFILEChunkPublisherError, cantEncodeData, notAbleToReadFile, IONFILEDirectoryManagerError, alreadyExists, notEmpty, IONFILEError, LocalizedError
+Cohesion: 0.18
+Nodes (10): 1.1 Brand Identity & Voice, 1.2 Design Tokens & System Replacements, 1. Executive Summary & Design Direction, 2. Actionable Task Checklist, 3. Verification & Acceptance Criteria, Anti-AI-Slop Implementation Plan: ProjectPulse 2.0, Batch 1: Token Discipline & Background De-Slopping (Priority 1), Batch 2: Icon & Copy De-Slopping (Priority 1) (+2 more)
 
-### Community 136 - "Community 136"
+### Community 137 - "Community 137"
+Cohesion: 0.24
+Nodes (10): dn(), gV, j9(), kH, RJ(), wP(), xle(), Xp (+2 more)
+
+### Community 139 - "Community 139"
+Cohesion: 0.24
+Nodes (10): cse(), dse(), lse(), nse(), pH, pp(), sse(), sU (+2 more)
+
+### Community 140 - "Community 140"
+Cohesion: 0.24
+Nodes (10): bE(), clamp(), E0, formatHsl(), Hp, jae(), Tp(), wae() (+2 more)
+
+### Community 141 - "Community 141"
+Cohesion: 0.2
+Nodes (10): bie(), ese(), hie(), mO(), mp(), oie(), oU, uie() (+2 more)
+
+### Community 142 - "Community 142"
+Cohesion: 0.2
+Nodes (10): fne(), gne(), jne(), kne(), pU, qne(), to, une() (+2 more)
+
+### Community 143 - "Community 143"
+Cohesion: 0.22
+Nodes (9): Fa(), ha(), kme(), oO(), qve(), sJ(), updateYAxisWidth(), wme() (+1 more)
+
+### Community 144 - "Community 144"
+Cohesion: 0.22
+Nodes (9): aH, iD(), nK, Ode(), Pde(), Rde(), s6(), sY() (+1 more)
+
+### Community 145 - "Community 145"
 Cohesion: 0.53
 Nodes (3): B(), m(), R()
 
-### Community 137 - "Community 137"
+### Community 147 - "Community 147"
 Cohesion: 0.25
-Nodes (9): bT(), cne(), dne(), lne(), nne(), one(), rne(), Sne() (+1 more)
+Nodes (9): fq(), iq(), mC(), mM, Oq(), pq, rq, tU (+1 more)
 
-### Community 138 - "Community 138"
+### Community 148 - "Community 148"
+Cohesion: 0.22
+Nodes (9): afe(), Dfe(), eV, Mfe(), nfe(), sfe(), Xfe(), Yfe() (+1 more)
+
+### Community 149 - "Community 149"
+Cohesion: 0.22
+Nodes (9): Ale(), ax(), Dle(), Je(), lW, Mle(), N0(), n9 (+1 more)
+
+### Community 150 - "Community 150"
 Cohesion: 0.22
 Nodes (9): Bhe(), Che(), ihe(), nhe(), ohe(), rhe(), she(), the() (+1 more)
 
-### Community 139 - "Community 139"
-Cohesion: 0.25
-Nodes (9): ac(), Cr(), CS(), gde(), gr(), kle(), Nle(), Sle() (+1 more)
+### Community 152 - "Community 152"
+Cohesion: 0.5
+Nodes (8): al(), bC(), D1(), En(), Gp(), mi(), Rr(), xH
 
-### Community 142 - "Community 142"
-Cohesion: 0.25
-Nodes (8): aD(), aH, bW(), Md, s6(), wf(), xve(), Zw()
-
-### Community 143 - "Community 143"
-Cohesion: 0.32
-Nodes (7): eq, eX(), h2, q2(), Sf(), tq, xC()
-
-### Community 144 - "Community 144"
-Cohesion: 0.25
-Nodes (8): A0(), HS(), Jw, Kw(), ple(), uM(), xB, yB
-
-### Community 145 - "Community 145"
-Cohesion: 0.25
-Nodes (8): bre(), gre(), Hre(), nV, qre(), $re(), Wre(), yre()
-
-### Community 146 - "Community 146"
+### Community 153 - "Community 153"
 Cohesion: 0.29
-Nodes (8): a7(), an(), F(), k6(), m7(), ta(), yi(), yq
+Nodes (8): BJ(), dJ(), Fr(), j$(), Jp, LT, uJ(), y5()
 
-### Community 147 - "Community 147"
+### Community 154 - "Community 154"
+Cohesion: 0.25
+Nodes (8): Fue(), iue(), jp(), Nue(), oue(), Rf(), Rue(), sue()
+
+### Community 155 - "Community 155"
+Cohesion: 0.36
+Nodes (8): Hhe(), Ji, joe(), Khe(), NK(), Uhe(), vH, Vhe()
+
+### Community 156 - "Community 156"
 Cohesion: 0.32
 Nodes (8): aY(), n5(), nY, q6(), sY(), vq(), vY(), x9()
 
-### Community 148 - "Community 148"
-Cohesion: 0.29
-Nodes (8): fq(), iq(), mM, Oq(), pq, rq, tU, yM
-
-### Community 149 - "Community 149"
-Cohesion: 0.25
-Nodes (8): _6(), As(), f6(), kK(), o2, sn(), XD(), yD()
-
-### Community 150 - "Community 150"
-Cohesion: 0.25
-Nodes (8): Ere(), Ji, joe(), Mre(), n7(), _re(), u8, Uhe()
-
-### Community 151 - "Community 151"
-Cohesion: 0.33
-Nodes (7): Ase(), gi(), gme(), pp, vme(), xme(), Xt()
-
-### Community 152 - "Community 152"
-Cohesion: 0.29
-Nodes (5): eK, lY(), n9, uY(), x6
-
-### Community 153 - "Community 153"
-Cohesion: 0.33
-Nodes (6): cD, Dd(), eD(), Lf(), mG(), pG()
-
-### Community 154 - "Community 154"
-Cohesion: 0.29
-Nodes (7): IONFILEFileManagerError, cantCreateURL, cantDecodeData, directoryNotFound, fileNotFound, missingParentFolder, pathEscapesDirectory
-
-### Community 155 - "Community 155"
-Cohesion: 0.33
-Nodes (7): bO(), cpe(), eE(), fae(), tpe(), vi(), Xt()
-
-### Community 156 - "Community 156"
-Cohesion: 0.29
-Nodes (7): d6(), Nc, nG(), pY(), r9(), sG, sK()
-
 ### Community 157 - "Community 157"
-Cohesion: 0.29
-Nodes (4): $ae(), tM(), uK(), up
+Cohesion: 0.25
+Nodes (8): aD(), Bre(), hT(), lre(), Xre(), Yf, yre(), zre()
 
 ### Community 158 - "Community 158"
-Cohesion: 0.29
-Nodes (7): Cf(), gse(), jse(), kie(), kse(), Tf(), vse()
+Cohesion: 0.25
+Nodes (8): cG(), d6(), eM(), Nc, pY(), r9(), sK(), tG()
+
+### Community 159 - "Community 159"
+Cohesion: 0.32
+Nodes (7): aM(), D0(), Ed(), Gp(), iY(), O0(), s7()
 
 ### Community 160 - "Community 160"
-Cohesion: 0.4
-Nodes (5): d7(), iq, jf(), q$(), sq
+Cohesion: 0.25
+Nodes (8): _6(), As(), e9(), kK(), o2, u6(), vD(), yD()
 
 ### Community 161 - "Community 161"
-Cohesion: 0.4
-Nodes (5): c2(), E2(), jG(), nG, sG()
+Cohesion: 0.46
+Nodes (8): C1(), En(), hi(), iC(), Pr(), rl(), uH, VO()
 
 ### Community 162 - "Community 162"
-Cohesion: 0.33
-Nodes (6): ea(), iO(), sO(), yF(), yte(), zte()
+Cohesion: 0.29
+Nodes (7): bp(), cU, jie(), kie(), sie(), TE(), zge
 
 ### Community 163 - "Community 163"
-Cohesion: 0.33
-Nodes (6): bT(), c0(), ise(), nU, ose(), zie()
+Cohesion: 0.29
+Nodes (7): fH, Hne(), ile(), qne(), vne(), xO(), zoe()
 
 ### Community 164 - "Community 164"
+Cohesion: 0.29
+Nodes (7): gxe(), jU, lH, U0e(), ume(), wxe(), yxe()
+
+### Community 165 - "Community 165"
 Cohesion: 0.33
-Nodes (6): IONFILEDirectoryType, cache, document, library, notSyncedLibrary, temporary
+Nodes (7): eJ(), iV, jl(), jq(), jxe(), Uxe(), wxe()
 
 ### Community 166 - "Community 166"
-Cohesion: 0.33
-Nodes (6): c9(), ey, j6(), jK(), ry, ty()
+Cohesion: 0.29
+Nodes (7): gQ(), hq, Kq(), qq(), Wq(), xM, yS
 
 ### Community 167 - "Community 167"
 Cohesion: 0.33
-Nodes (6): eue(), jde(), kde(), oi(), Qde(), wde()
+Nodes (7): gK(), ife(), Kue, lfe(), P0, rfe(), tfe()
 
 ### Community 168 - "Community 168"
-Cohesion: 0.33
-Nodes (6): Bre(), lre(), Xre(), Yf, yre(), zre()
+Cohesion: 0.29
+Nodes (7): eA(), Ghe(), jhe(), La(), pxe(), qhe(), whe()
 
 ### Community 169 - "Community 169"
-Cohesion: 0.47
-Nodes (6): bE(), clamp(), E0, formatHsl(), Tp(), Xae()
-
-### Community 170 - "Community 170"
-Cohesion: 0.4
+Cohesion: 0.33
 Nodes (6): AP(), nae(), pie(), pne(), RO(), Wce()
 
+### Community 170 - "Community 170"
+Cohesion: 0.29
+Nodes (7): Cf(), gse(), jse(), kie(), kse(), Tf(), vse()
+
 ### Community 171 - "Community 171"
-Cohesion: 0.4
-Nodes (5): 📚 Core Documentation, ⚡ Key Architectural Pillars, ⚡ Key Highlights, Welcome to the ProjectPulse 2.0 Wiki, Welcome to the ProjectPulse Wiki
+Cohesion: 0.29
+Nodes (7): _0e(), a0e(), AK(), H0e(), Sf(), U0e(), V0e()
 
 ### Community 172 - "Community 172"
-Cohesion: 0.33
-Nodes (5): 1. Product Foundations, 2. Typography & Hierarchies, 3. Surface & Border Semantics (StyleSeed Standard), 4. Interaction & Motion Rules, ProjectPulse Design System — Master Specification
+Cohesion: 0.29
+Nodes (7): bpe(), cW, eK(), sA(), wD(), wpe(), ype()
 
 ### Community 173 - "Community 173"
-Cohesion: 0.4
-Nodes (5): gxe(), jU, lH, U0e(), ume()
-
-### Community 174 - "Community 174"
-Cohesion: 0.4
-Nodes (5): ane(), Ki(), nne(), sne(), vo()
+Cohesion: 0.29
+Nodes (6): $8(), ete(), hD(), Lte(), q8(), Z8()
 
 ### Community 175 - "Community 175"
-Cohesion: 0.4
-Nodes (5): aae(), G0, iae(), nae(), rae()
+Cohesion: 0.33
+Nodes (6): A0(), Jw, Kw(), uM(), xB, yB
 
 ### Community 176 - "Community 176"
-Cohesion: 0.4
-Nodes (5): bae(), Jae(), wae(), yae(), zae()
+Cohesion: 0.33
+Nodes (4): Ca(), Cne(), q0e, She()
 
 ### Community 177 - "Community 177"
 Cohesion: 0.4
-Nodes (5): Ghe(), hme(), mme(), pV, qme()
+Nodes (6): cY, gM(), p9, sD(), xx, yX()
 
 ### Community 178 - "Community 178"
+Cohesion: 0.33
+Nodes (6): Bpe(), cpe(), dpe(), k0(), upe(), Vpe()
+
+### Community 179 - "Community 179"
+Cohesion: 0.33
+Nodes (5): bue(), que(), Wue(), Xue(), zue()
+
+### Community 180 - "Community 180"
+Cohesion: 0.33
+Nodes (6): bhe(), jhe(), khe(), whe(), Xhe(), yhe()
+
+### Community 181 - "Community 181"
+Cohesion: 0.33
+Nodes (6): IONFILEDirectoryType, cache, document, library, notSyncedLibrary, temporary
+
+### Community 182 - "Community 182"
+Cohesion: 0.33
+Nodes (6): fce(), Hce(), pce(), uce(), vce(), xce()
+
+### Community 183 - "Community 183"
+Cohesion: 0.33
+Nodes (6): gte(), Kp, rT(), vte(), W8(), xte()
+
+### Community 184 - "Community 184"
+Cohesion: 0.33
+Nodes (6): dp, gU, Ki(), Nf(), pae(), _te()
+
+### Community 185 - "Community 185"
+Cohesion: 0.33
+Nodes (6): constructor(), oB, setAutoFreeze(), setPrototypeOf(), setUseStrictIteration(), setUseStrictShallowCopy()
+
+### Community 186 - "Community 186"
+Cohesion: 0.33
+Nodes (6): c9(), ey, j6(), jK(), ry, ty()
+
+### Community 187 - "Community 187"
+Cohesion: 0.33
+Nodes (6): getPrototypeOf(), jte(), kte(), oH, wO(), z0()
+
+### Community 188 - "Community 188"
+Cohesion: 0.4
+Nodes (5): 📚 Core Documentation, ⚡ Key Architectural Pillars, ⚡ Key Highlights, Welcome to the ProjectPulse 2.0 Wiki, Welcome to the ProjectPulse Wiki
+
+### Community 189 - "Community 189"
+Cohesion: 0.33
+Nodes (5): 1. Product Foundations, 2. Typography & Hierarchies, 3. Surface & Border Semantics (StyleSeed Standard), 4. Interaction & Motion Rules, ProjectPulse Design System — Master Specification
+
+### Community 190 - "Community 190"
 Cohesion: 0.4
 Nodes (5): ave(), Ixe(), nve(), Pf(), rve()
 
-### Community 179 - "Community 179"
-Cohesion: 0.4
-Nodes (5): jpe(), kpe(), Npe(), qpe(), tF()
-
-### Community 180 - "Community 180"
-Cohesion: 0.4
-Nodes (5): _8, Gne(), J7(), Wne(), Yne()
-
-### Community 181 - "Community 181"
-Cohesion: 0.4
-Nodes (5): B0, n$(), r$(), tK, v$()
-
-### Community 182 - "Community 182"
-Cohesion: 0.4
-Nodes (4): Ec, F6(), gK(), kK
-
-### Community 183 - "Community 183"
+### Community 191 - "Community 191"
 Cohesion: 0.4
 Nodes (5): ere(), j0e(), k0e(), Qte(), ts()
 
-### Community 191 - "Community 191"
-Cohesion: 0.4
-Nodes (5): ome(), u9(), ui(), ume(), zc()
-
 ### Community 192 - "Community 192"
 Cohesion: 0.4
-Nodes (5): Ct(), Hw, QX(), St(), vre()
+Nodes (5): jpe(), kpe(), Npe(), qpe(), tF()
 
 ### Community 193 - "Community 193"
 Cohesion: 0.4
-Nodes (5): constructor(), oB, setAutoFreeze(), setUseStrictIteration(), setUseStrictShallowCopy()
+Nodes (5): B0, n$(), r$(), tK, v$()
 
 ### Community 194 - "Community 194"
 Cohesion: 0.4
-Nodes (5): jte(), kte(), oH, wO(), z0()
+Nodes (5): bre(), gre(), nV, $re(), yre()
 
 ### Community 195 - "Community 195"
 Cohesion: 0.4
-Nodes (5): eH, Qd, qK(), y6(), zK
+Nodes (5): dfe(), L$, lW, sve(), x5()
 
 ### Community 196 - "Community 196"
 Cohesion: 0.4
-Nodes (5): ehe(), Fa(), Jfe(), qfe(), U1()
+Nodes (5): _8, Gne(), J7(), Wne(), Yne()
 
-### Community 198 - "Community 198"
-Cohesion: 0.5
-Nodes (3): iY(), rY(), u6()
-
-### Community 199 - "Community 199"
-Cohesion: 0.5
-Nodes (4): Cie(), eie, O0, tie
-
-### Community 200 - "Community 200"
-Cohesion: 0.5
-Nodes (4): Gce(), Kce(), Xce(), Yce()
-
-### Community 201 - "Community 201"
-Cohesion: 0.5
-Nodes (4): constructor(), setAutoFreeze(), setUseStrictIteration(), setUseStrictShallowCopy()
-
-### Community 202 - "Community 202"
-Cohesion: 0.5
-Nodes (4): IONFILEStringEncoding, ascii, utf16, utf8
-
-### Community 204 - "Community 204"
-Cohesion: 0.5
-Nodes (4): ES(), GA(), uB, yB()
+### Community 197 - "Community 197"
+Cohesion: 0.4
+Nodes (4): Ec, F6(), gK(), kK
 
 ### Community 205 - "Community 205"
-Cohesion: 0.5
-Nodes (4): Hce(), pce(), vce(), xce()
+Cohesion: 0.4
+Nodes (5): eH, Qd, qK(), y6(), zK
 
 ### Community 206 - "Community 206"
-Cohesion: 0.5
-Nodes (4): Ghe(), jhe(), qhe(), whe()
+Cohesion: 0.4
+Nodes (5): axe(), Cte(), rte(), sxe(), tte()
 
 ### Community 207 - "Community 207"
 Cohesion: 0.5
-Nodes (4): Fue(), iue(), oue(), Rue()
+Nodes (4): Gce(), Kce(), Xce(), Yce()
 
 ### Community 208 - "Community 208"
 Cohesion: 0.5
-Nodes (4): c6, e6, oK(), t6()
+Nodes (4): constructor(), setAutoFreeze(), setUseStrictIteration(), setUseStrictShallowCopy()
+
+### Community 209 - "Community 209"
+Cohesion: 0.5
+Nodes (4): Cie(), eie, O0, tie
 
 ### Community 210 - "Community 210"
-Cohesion: 0.67
-Nodes (3): kY(), XY(), yY()
-
-### Community 211 - "Community 211"
-Cohesion: 0.67
-Nodes (3): Fce(), Ice(), Lce()
+Cohesion: 0.5
+Nodes (4): Equatable, IONFILEEncoding, byteBuffer, string
 
 ### Community 212 - "Community 212"
-Cohesion: 0.67
-Nodes (3): d2(), nD, uG()
-
-### Community 213 - "Community 213"
-Cohesion: 0.67
-Nodes (3): hhe(), mhe(), phe()
+Cohesion: 0.5
+Nodes (4): ES(), GA(), uB, yB()
 
 ### Community 214 - "Community 214"
-Cohesion: 0.67
-Nodes (3): aV, Lre(), zre()
+Cohesion: 1.0
+Nodes (3): pW, xne(), YO()
 
 ### Community 215 - "Community 215"
 Cohesion: 0.67
-Nodes (3): Bse(), lse(), zse()
+Nodes (3): Hte(), Jo(), vte()
 
 ### Community 216 - "Community 216"
 Cohesion: 0.67
-Nodes (3): Hce(), qce(), Wce()
+Nodes (3): bme(), yme(), zme()
 
 ### Community 217 - "Community 217"
 Cohesion: 0.67
-Nodes (3): Ode(), Pde(), Rde()
+Nodes (3): dl(), IS, jr()
 
 ### Community 218 - "Community 218"
 Cohesion: 0.67
-Nodes (3): cue(), Nue(), Sue()
+Nodes (3): aV, Lre(), zre()
 
 ### Community 219 - "Community 219"
 Cohesion: 0.67
-Nodes (3): Ire(), Pre(), Rre()
+Nodes (3): kY(), XY(), yY()
 
 ### Community 220 - "Community 220"
 Cohesion: 0.67
-Nodes (3): Hte(), Jo(), vte()
+Nodes (3): cme(), Nme(), Sme()
 
 ### Community 221 - "Community 221"
 Cohesion: 0.67
-Nodes (3): Xde(), Yde(), Zde()
+Nodes (3): hhe(), mhe(), phe()
 
 ### Community 222 - "Community 222"
 Cohesion: 0.67
-Nodes (3): dl(), IS, jr()
+Nodes (3): Xde(), Yde(), Zde()
 
 ### Community 223 - "Community 223"
 Cohesion: 0.67
-Nodes (3): cme(), Nme(), Sme()
+Nodes (3): Hce(), qce(), Wce()
 
 ### Community 224 - "Community 224"
 Cohesion: 0.67
-Nodes (3): D0e(), M0e(), O0e()
+Nodes (3): Ire(), Pre(), Rre()
+
+### Community 225 - "Community 225"
+Cohesion: 0.67
+Nodes (3): pH, wle(), yle()
+
+### Community 228 - "Community 228"
+Cohesion: 0.67
+Nodes (3): kc, Un(), yC()
+
+### Community 229 - "Community 229"
+Cohesion: 0.67
+Nodes (3): g2(), uc(), v2()
+
+### Community 230 - "Community 230"
+Cohesion: 0.67
+Nodes (3): c$(), que(), wue()
+
+### Community 231 - "Community 231"
+Cohesion: 0.67
+Nodes (3): I1(), vde(), xde()
+
+### Community 232 - "Community 232"
+Cohesion: 0.67
+Nodes (3): eue(), jde(), kde()
+
+### Community 233 - "Community 233"
+Cohesion: 0.67
+Nodes (3): Cle(), Ele(), Tle()
+
+### Community 234 - "Community 234"
+Cohesion: 0.67
+Nodes (3): B0e(), X0e(), z0e()
 
 ## Knowledge Gaps
 - **280 isolated node(s):** `env`, `config`, `notEmpty`, `alreadyExists`, `cantCreateURL` (+275 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **38 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **39 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `S()` connect `Community 7` to `Community 4`, `Community 5`, `Community 12`, `Community 13`, `Community 17`, `Community 18`, `Community 20`, `Community 22`, `Community 23`, `Community 151`, `Community 155`, `Community 41`, `Community 174`, `Community 53`, `Community 61`, `Community 63`, `Community 66`, `Community 80`, `Community 84`, `Community 85`, `Community 86`, `Community 88`, `Community 91`, `Community 95`, `Community 98`, `Community 100`, `Community 102`, `Community 119`, `Community 120`, `Community 126`?**
+- **Why does `S()` connect `Community 6` to `Community 3`, `Community 5`, `Community 7`, `Community 137`, `Community 22`, `Community 31`, `Community 38`, `Community 39`, `Community 45`, `Community 46`, `Community 48`, `Community 49`, `Community 53`, `Community 183`, `Community 184`, `Community 60`, `Community 65`, `Community 68`, `Community 73`, `Community 75`, `Community 92`, `Community 93`, `Community 95`, `Community 100`, `Community 104`, `Community 110`, `Community 117`, `Community 119`, `Community 127`?**
   _High betweenness centrality (0.370) - this node is a cross-community bridge._
-- **Why does `MockFileManagerError` connect `Community 57` to `Community 47`?**
+- **Why does `MockFileManagerError` connect `Community 61` to `Community 51`?**
   _High betweenness centrality (0.081) - this node is a cross-community bridge._
-- **Why does `MockFileManager` connect `Community 57` to `Community 78`, `Community 14`?**
+- **Why does `MockFileManager` connect `Community 61` to `Community 16`, `Community 18`?**
   _High betweenness centrality (0.080) - this node is a cross-community bridge._
 - **What connects `env`, `config`, `notEmpty` to the rest of the system?**
   _280 weakly-connected nodes found - possible documentation gaps or missing edges._
