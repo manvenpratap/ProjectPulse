@@ -248,9 +248,9 @@ export function DataTable<T>({
             tableClassName
           )}
         >
-          <thead className="sticky top-0 z-10 bg-[var(--color-surface-offset)] shadow-[0_1px_0_0_var(--color-divider)]">
+          <thead className="sticky top-0 z-10 bg-[var(--color-surface)]/90 backdrop-blur-md shadow-[0_1px_0_0_var(--color-divider)]">
             {/* Primary Column Header Row */}
-            <tr className={clsx("bg-[var(--color-surface-offset)] border-b border-[var(--color-divider)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)] select-none", headPadY)}>
+            <tr className={clsx("bg-transparent border-b border-[var(--color-divider)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)] select-none", headPadY)}>
               {/* Checkbox Header */}
               {selectable && (
                 <th className={clsx("px-2.5 w-10 text-center", headPadY)}>
@@ -266,7 +266,7 @@ export function DataTable<T>({
 
               {/* Row Number Header (#) */}
               {showRowNumbers && (
-                <th className={clsx("px-2 w-11 text-center td-rn font-mono text-[10px]", headPadY)} title="Sequential row index">
+                <th className={clsx("px-2 w-11 text-center td-rn font-mono text-[10px] tabular-nums", headPadY)} title="Sequential row index">
                   #
                 </th>
               )}
@@ -281,7 +281,7 @@ export function DataTable<T>({
                 const isSorted = sortField && sortField === (col.sortKey || col.id);
                 const alignClass = 
                   col.align === 'center' ? 'px-2 text-center' :
-                  col.align === 'right' ? 'px-3 text-right' :
+                  col.align === 'right' ? 'px-3 text-right tabular-nums' :
                   'px-3 text-left';
 
                 const justifyClass =
@@ -353,7 +353,7 @@ export function DataTable<T>({
                     data-density={density}
                     onClick={onRowClick ? (e) => onRowClick(item, e) : undefined}
                     className={clsx(
-                      "group hover:bg-[var(--color-surface-2)]/70 transition-colors relative",
+                      "group hover:bg-[var(--color-surface-2)]/70 transition-colors duration-75 relative",
                       onRowClick && "cursor-pointer",
                       isSelected && "bg-[var(--color-primary-highlight-hex)]/35",
                       customRowClass
@@ -374,7 +374,7 @@ export function DataTable<T>({
 
                     {/* Row Number Cell */}
                     {showRowNumbers && (
-                      <td className={clsx("px-2 text-center td-rn font-mono text-[10px] text-[var(--color-text-faint)]", padY)}>
+                      <td className={clsx("px-2 text-center td-rn font-mono text-[10px] tabular-nums text-[var(--color-text-faint)]", padY)}>
                         {baseStartIndex + idx + 1}
                       </td>
                     )}
@@ -401,7 +401,7 @@ export function DataTable<T>({
                     {columns.map((col) => {
                       const alignClass = 
                         col.align === 'center' ? 'px-2 text-center' :
-                        col.align === 'right' ? 'px-3 text-right' :
+                        col.align === 'right' ? 'px-3 text-right tabular-nums' :
                         'px-3 text-left';
 
                       return (
