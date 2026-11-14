@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { 
   BarChart3, 
@@ -22,7 +22,10 @@ import {
   Clock,
   Briefcase,
   AlertCircle,
-  ArrowRight
+  ArrowRight,
+  ExternalLink,
+  Check,
+  Sparkles
 } from 'lucide-react';
 import clsx from 'clsx';
 import { motion, AnimatePresence } from 'motion/react';
@@ -30,6 +33,8 @@ import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import { toast } from '../../utils/toast';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
+import Button from '../shared/Button';
+import SlideOverDrawer from '../shared/SlideOverDrawer';
 import { TaskStatus } from '../../types';
 import { daysDiff, getBusinessDays, addBusDays } from '../../utils/projectUtils';
 import { MotionPage, StaggerContainer, StaggerItem, AnimatedProgressBar } from '../shared/MotionPage';
@@ -41,13 +46,18 @@ export interface CapacityViewProps {
 
 const VALID_CAPACITY_MODES = new Set(['cards', 'heatmap', 'classic', 'schedule']);
 
+export type CapacityPreset = 'all' | 'overloaded' | 'optimal' | 'underallocated' | 'idle' | 'conflicts';
+
 const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
-  const { state, activeSubTab, updateSettings, updateProject, addLog } = useProject();
+  const { state, activeSubTab, updateSettings, updateProject, addLog, setView } = useProject();
   const { members, tasks, settings } = state;
 
   // Filter and Interactive state
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [activePreset, setActivePreset] = useState<CapacityPreset>('all');
+  const [peekMemberName, setPeekMemberName] = useState<string | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   // Responsive default: Mobile defaults to touch-friendly cards, Desktop defaults to heatmap
   const [viewMode, setViewMode] = useState<'cards' | 'heatmap' | 'classic' | 'schedule'>(() => {
     if (initialMode) return initialMode;
@@ -260,16 +270,8 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
   // Extract unique roles for filtering
   const roles = ['all', ...Array.from(new Set(members.map(m => m.role).filter(Boolean)))];
 
-  // Filter members based on role and search query
-  const filteredMembers = members.filter(member => {
-    const matchesRole = roleFilter === 'all' || member.role === roleFilter;
-    const matchesSearch = member.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          (member.role || '').toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesRole && matchesSearch;
-  });
-
-  // Calculate load distribution
-  const calculateCapacity = () => {
+  // Calculate load distribution across ALL members for consistent telemetry and preset statistics
+  const calculateAllCapacity = () => {
     const today = new Date();
     // Get start of current week
     const startOfWeek = new Date(today);
@@ -282,8 +284,8 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
       return d;
     });
 
-    const memberLoad = filteredMembers.map(member => {
-      const memberTasks = tasks.filter(t => t.assignee === member.name && t.status !== TaskStatus.COMPLETED);
+    const allMemberLoads = members.map(member => {
+      const memberTasks = tasks.filter(t => t.assignee === member.name && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED);
       
       const weeklyEffort = weeks.map(weekStart => {
         const weekEnd = new Date(weekStart);
@@ -360,10 +362,117 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
       };
     });
 
-    return { weeks, memberLoad };
+    return { weeks, allMemberLoads };
   };
 
-  const { weeks, memberLoad } = calculateCapacity();
+  const { weeks, allMemberLoads } = useMemo(() => calculateAllCapacity(), [members, tasks, settings.daysPerWeek]);
+
+  // Dynamic Preset Counts
+  const presetCounts = useMemo(() => {
+    let overloaded = 0;
+    let optimal = 0;
+    let underallocated = 0;
+    let idle = 0;
+    let conflictCount = 0;
+
+    allMemberLoads.forEach(m => {
+      const isOver = m.utilization > 100 || m.weeklyEffort.some(w => w.utilization > 100);
+      if (isOver) overloaded++;
+      else if (m.utilization >= 50 && m.utilization <= 100) optimal++;
+      else if (m.utilization > 0 && m.utilization < 50) underallocated++;
+      else if (m.utilization === 0) idle++;
+
+      if (conflicts.some(c => c.member === m.name)) conflictCount++;
+    });
+
+    return {
+      all: allMemberLoads.length,
+      overloaded,
+      optimal,
+      underallocated,
+      idle,
+      conflicts: conflictCount
+    };
+  }, [allMemberLoads, conflicts]);
+
+  const PRESETS: { id: CapacityPreset; label: string; icon: any; count: number; color?: string }[] = [
+    { id: 'all', label: 'All Resources', icon: Users, count: presetCounts.all },
+    { id: 'overloaded', label: 'Overloaded (>100%)', icon: AlertTriangle, count: presetCounts.overloaded, color: 'text-rose-500' },
+    { id: 'optimal', label: 'Optimal (50–100%)', icon: CheckCircle2, count: presetCounts.optimal, color: 'text-emerald-500' },
+    { id: 'underallocated', label: 'Underallocated (<50%)', icon: Clock, count: presetCounts.underallocated, color: 'text-sky-500' },
+    { id: 'idle', label: 'Idle (0%)', icon: Check, count: presetCounts.idle, color: 'text-slate-400' },
+    { id: 'conflicts', label: 'With Conflicts', icon: AlertCircle, count: presetCounts.conflicts, color: 'text-amber-500' }
+  ];
+
+  const hasActiveFilters = activePreset !== 'all' || roleFilter !== 'all' || Boolean(searchQuery.trim());
+
+  const resetAllFilters = () => {
+    setActivePreset('all');
+    setRoleFilter('all');
+    setSearchQuery('');
+  };
+
+  // Filtered members based on role, search, and preset
+  const memberLoad = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
+    return allMemberLoads.filter(member => {
+      if (roleFilter !== 'all' && member.role !== roleFilter) return false;
+      if (q && !member.name.toLowerCase().includes(q) && !(member.role || '').toLowerCase().includes(q)) return false;
+
+      if (activePreset === 'overloaded' && member.utilization <= 100 && !member.weeklyEffort.some(w => w.utilization > 100)) return false;
+      if (activePreset === 'optimal' && (member.utilization < 50 || member.utilization > 100 || member.weeklyEffort.some(w => w.utilization > 100))) return false;
+      if (activePreset === 'underallocated' && (member.utilization === 0 || member.utilization >= 50)) return false;
+      if (activePreset === 'idle' && member.utilization > 0) return false;
+      if (activePreset === 'conflicts' && !conflicts.some(c => c.member === member.name)) return false;
+
+      return true;
+    });
+  }, [allMemberLoads, roleFilter, searchQuery, activePreset, conflicts]);
+
+  // Backward-compatible filteredMembers reference
+  const filteredMembers = memberLoad;
+
+  // Peek Sequential Navigation
+  const peekMember = useMemo(() => allMemberLoads.find(m => m.name === peekMemberName) || null, [allMemberLoads, peekMemberName]);
+  const peekMemberIndex = useMemo(() => memberLoad.findIndex(m => m.name === peekMemberName), [memberLoad, peekMemberName]);
+
+  const handlePrevMember = () => {
+    if (peekMemberIndex > 0) {
+      setPeekMemberName(memberLoad[peekMemberIndex - 1].name);
+    }
+  };
+
+  const handleNextMember = () => {
+    if (peekMemberIndex >= 0 && peekMemberIndex < memberLoad.length - 1) {
+      setPeekMemberName(memberLoad[peekMemberIndex + 1].name);
+    }
+  };
+
+  // Keyboard navigation & search focus listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) return;
+
+      if (e.key === '/') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+      if (e.key === '[') {
+        e.preventDefault();
+        handlePrevMember();
+      }
+      if (e.key === ']') {
+        e.preventDefault();
+        handleNextMember();
+      }
+      if (e.key === 'Escape') {
+        if (peekMemberName) setPeekMemberName(null);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [peekMemberIndex, memberLoad, peekMemberName]);
 
   // Color-coded logic depending on the view mode (Classic vs. Saturated Heatmap)
   const getCellColor = (days: number, mode: 'classic' | 'heatmap' | 'cards') => {
@@ -839,6 +948,52 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
       })()}
 
       {/* ═══════════════════════════════════════════════════════════════════════ */}
+      {/* 1B. LINEAR-GRADE QUICK FILTER PRESETS STRIP                             */}
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="px-4 sm:px-6 pt-2 shrink-0 flex items-center justify-between gap-2 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-1.5 flex-nowrap shrink-0">
+          {PRESETS.map((p) => {
+            const Icon = p.icon;
+            const isActive = activePreset === p.id;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => setActivePreset(p.id)}
+                className={clsx(
+                  "px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 border",
+                  isActive
+                    ? "bg-[var(--color-primary-hex)] text-white border-[var(--color-primary-hex)] shadow-2xs"
+                    : "bg-[var(--color-surface)] hover:bg-[var(--color-surface-2)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] border-[var(--color-divider)]"
+                )}
+              >
+                <Icon size={12} className={clsx(isActive ? "text-white" : p.color || "text-[var(--color-text-muted)]")} />
+                <span>{p.label}</span>
+                <span
+                  className={clsx(
+                    "ml-0.5 px-1.5 py-0.2 rounded-full font-mono text-[10px] font-bold",
+                    isActive ? "bg-white/20 text-white" : "bg-[var(--color-surface-2)] text-[var(--color-text-muted)]"
+                  )}
+                >
+                  {p.count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {hasActiveFilters && (
+          <button
+            type="button"
+            onClick={resetAllFilters}
+            className="text-xs text-[var(--color-primary-hex)] hover:underline font-semibold flex items-center gap-1 shrink-0 whitespace-nowrap cursor-pointer px-2 py-1"
+          >
+            <X size={12} /> Reset filters
+          </button>
+        )}
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════ */}
       {/* 2. CONSOLIDATED COMMAND & CONTROL TOOLBAR (Single Row, Height ~44px)     */}
       {/* ═══════════════════════════════════════════════════════════════════════ */}
       <div className="px-4 sm:px-6 py-2.5 shrink-0 flex flex-wrap items-center justify-between gap-2">
@@ -998,10 +1153,11 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
           <div className="relative w-40 xl:w-44 shrink-0">
             <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
             <input
+              ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search resources..."
+              placeholder="Search resources... (/)"
               aria-label="Search resources"
               className="w-full h-9 pl-8 pr-7 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl text-xs text-[var(--color-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary-hex)] shadow-2xs"
             />
@@ -1063,8 +1219,14 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                 <div className="divide-y divide-[var(--color-divider)] overflow-y-auto custom-scroll flex-1">
                   {activeMembers.map(m => (
                     <div key={m.id} className="p-3 sm:px-4 flex flex-col sm:flex-row gap-3 sm:items-center hover:bg-[var(--color-surface-2)]/40 transition-colors">
-                      <div className="w-36 shrink-0">
-                        <div className="font-bold text-xs text-[var(--color-text)] truncate">{m.name}</div>
+                      <div 
+                        onClick={() => setPeekMemberName(m.name)}
+                        className="w-36 shrink-0 cursor-pointer group/sched"
+                      >
+                        <div className="font-bold text-xs text-[var(--color-text)] truncate group-hover/sched:text-[var(--color-primary-hex)] transition-colors flex items-center justify-between">
+                          <span>{m.name}</span>
+                          <ExternalLink size={11} className="opacity-0 group-hover/sched:opacity-100 transition-opacity text-cyan-400" />
+                        </div>
                         <div className="text-[11px] text-[var(--color-primary-hex)] mt-0.5 truncate">{m.role}</div>
                       </div>
 
@@ -1206,17 +1368,20 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                       <div className="space-y-3">
                         {/* Header: Avatar, Name, Role, Badge */}
                         <div className="flex items-start justify-between gap-2">
-                          <div className="flex items-center gap-2.5 min-w-0">
-                            <div className="w-9 h-9 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs">
+                          <div 
+                            onClick={() => setPeekMemberName(member.name)}
+                            className="flex items-center gap-2.5 min-w-0 cursor-pointer group/card flex-1"
+                          >
+                            <div className="w-9 h-9 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 flex items-center justify-center font-bold text-xs shrink-0 shadow-2xs group-hover/card:scale-105 transition-transform">
                               {member.name.charAt(0)}
                             </div>
                             <div className="min-w-0">
-                              <h4 className="font-bold text-xs text-[var(--color-text)] truncate">{member.name}</h4>
+                              <h4 className="font-bold text-xs text-[var(--color-text)] truncate group-hover/card:text-[var(--color-primary-hex)] transition-colors">{member.name}</h4>
                               <p className="text-[11px] text-[var(--color-text-muted)] truncate">{member.role || 'Member'}</p>
                             </div>
                           </div>
 
-                          <div className="shrink-0">
+                          <div className="flex items-center gap-1.5 shrink-0">
                             {isOverloaded ? (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
                                 <AlertTriangle size={11} /> {member.utilization}% Overload
@@ -1234,6 +1399,17 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                                 {member.utilization}% Idle
                               </span>
                             )}
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setPeekMemberName(member.name);
+                              }}
+                              title="Quick Peek Resource Dossier"
+                              className="p-1 rounded-lg text-[var(--color-text-muted)] hover:text-cyan-400 touch-hit-expand cursor-pointer transition-colors"
+                            >
+                              <ExternalLink size={13} />
+                            </button>
                           </div>
                         </div>
 
@@ -1287,25 +1463,42 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                         </div>
                       </div>
 
-                      {/* Quick Peak Week Action */}
-                      {isOverloaded && (
-                        <div className="pt-2 flex items-center justify-between bg-rose-500/5 border border-rose-500/15 rounded-xl px-2.5 py-1.5 text-xs">
+                      {/* Card Footer: Peak alert & Dossier Inspect */}
+                      <div className="pt-2 flex items-center justify-between border-t border-[var(--color-divider)] text-xs">
+                        {isOverloaded ? (
                           <span className="text-rose-600 dark:text-rose-400 text-[10px] font-medium flex items-center gap-1 truncate">
                             <AlertTriangle size={11} className="shrink-0" />
                             Peak: Wk {peakIdx + 1} ({peakEffort.days}d)
                           </span>
+                        ) : (
+                          <span className="text-[10px] text-[var(--color-text-muted)] truncate">
+                            {tasks.filter(t => t.assignee === member.name && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED).length} tasks active
+                          </span>
+                        )}
+
+                        <div className="flex items-center gap-1 shrink-0">
+                          {isOverloaded && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedCoords({ memberName: member.name, weekIdx: peakIdx });
+                                setShowAdvisoryPanel(true);
+                              }}
+                              className="px-2 py-0.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 rounded-md text-[10px] font-bold transition-colors cursor-pointer flex items-center gap-0.5"
+                            >
+                              Inspect Peak
+                            </button>
+                          )}
                           <button
                             type="button"
-                            onClick={() => {
-                              setSelectedCoords({ memberName: member.name, weekIdx: peakIdx });
-                              setShowAdvisoryPanel(true);
-                            }}
-                            className="px-2 py-0.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 rounded-md text-[10px] font-bold transition-colors cursor-pointer flex items-center gap-0.5 shrink-0"
+                            onClick={() => setPeekMemberName(member.name)}
+                            className="px-2 py-0.5 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] rounded-md text-[10px] font-semibold transition-colors cursor-pointer flex items-center gap-1"
                           >
-                            Inspect <ChevronRight size={10} />
+                            <span>Dossier</span>
+                            <ExternalLink size={10} />
                           </button>
                         </div>
-                      )}
+                      </div>
                     </div>
                   );
                 })
@@ -1330,7 +1523,7 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                 <table className="w-full text-left border-collapse">
                   <thead className="lg:sticky lg:top-0 bg-[var(--color-surface-2)] z-20 border-b border-[var(--color-divider)] shadow-2xs">
                     <tr>
-                      <th className="p-3 font-bold text-xs text-[var(--color-text-muted)] lg:sticky lg:left-0 bg-[var(--color-surface-2)] z-30 min-w-[170px] sm:w-60 border-r border-[var(--color-divider)]">
+                      <th className="p-3 font-bold text-xs text-[var(--color-text-muted)] sticky left-0 bg-[var(--color-surface-2)] z-30 min-w-[170px] sm:w-60 border-r border-[var(--color-divider)]">
                         Team Member
                       </th>
                       {weeks.map((week, idx) => (
@@ -1353,15 +1546,28 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                       memberLoad.map((member, mIdx) => (
                         <tr key={mIdx} className="hover:bg-[var(--color-surface-2)]/60 transition-colors group">
                           {/* Member Avatar / Meta details */}
-                          <td className="p-2.5 sm:px-3.5 lg:sticky lg:left-0 bg-[var(--color-surface)] group-hover:bg-[var(--color-surface-2)] z-10 border-r border-[var(--color-divider)] transition-colors">
-                            <div className="flex items-center gap-2.5">
-                              <div className="w-7 h-7 rounded-lg bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 flex items-center justify-center font-bold text-xs shrink-0">
-                                {member.name.charAt(0)}
+                          <td className="p-2.5 sm:px-3.5 sticky left-0 bg-[var(--color-surface)] group-hover:bg-[var(--color-surface-2)] z-10 border-r border-[var(--color-divider)] transition-colors">
+                            <div className="flex items-center justify-between gap-2">
+                              <div 
+                                onClick={() => setPeekMemberName(member.name)}
+                                className="flex items-center gap-2.5 min-w-0 cursor-pointer group/member flex-1"
+                              >
+                                <div className="w-7 h-7 rounded-lg bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 flex items-center justify-center font-bold text-xs shrink-0 group-hover/member:scale-105 transition-transform shadow-2xs">
+                                  {member.name.charAt(0)}
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <p className="text-xs font-bold text-[var(--color-text)] truncate group-hover/member:text-[var(--color-primary-hex)] transition-colors">{member.name}</p>
+                                  <p className="text-[10px] text-[var(--color-text-muted)] truncate">{member.role || 'Member'}</p>
+                                </div>
                               </div>
-                              <div className="min-w-0 flex-1">
-                                <p className="text-xs font-bold text-[var(--color-text)] truncate">{member.name}</p>
-                                <p className="text-[10px] text-[var(--color-text-muted)] truncate">{member.role || 'Member'}</p>
-                              </div>
+                              <button
+                                type="button"
+                                onClick={() => setPeekMemberName(member.name)}
+                                title="Quick Peek Resource Dossier"
+                                className="p-1 rounded-md text-[var(--color-text-muted)] hover:text-cyan-400 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer shrink-0"
+                              >
+                                <ExternalLink size={13} />
+                              </button>
                             </div>
                           </td>
 
@@ -1537,6 +1743,239 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
           </div>
         )}
       </AnimatePresence>
+
+      {/* ── RESOURCE CAPACITY DOSSIER MASTER-DETAIL PEEK SIDE DRAWER ── */}
+      <SlideOverDrawer
+        isOpen={Boolean(peekMember)}
+        onClose={() => setPeekMemberName(null)}
+        widthClass="w-full sm:w-[540px] lg:w-[620px]"
+        onPrevious={handlePrevMember}
+        onNext={handleNextMember}
+        hasPrevious={peekMemberIndex > 0}
+        hasNext={peekMemberIndex >= 0 && peekMemberIndex < memberLoad.length - 1}
+        title={
+          peekMember ? (
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 flex items-center justify-center font-mono font-bold text-sm shrink-0 shadow-xs">
+                {peekMember.name.charAt(0)}
+              </div>
+              <div className="min-w-0">
+                <h3 className="font-bold text-sm text-[var(--color-text)] truncate">{peekMember.name}</h3>
+                <p className="text-xs text-[var(--color-text-muted)] truncate">{peekMember.role || 'Team Member'}</p>
+              </div>
+            </div>
+          ) : undefined
+        }
+        footer={
+          peekMember && (
+            <div className="flex items-center justify-between w-full gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setPeekMemberName(null);
+                  setView('team');
+                }}
+                className="text-xs font-semibold flex items-center gap-1.5"
+              >
+                <Users size={13} /> View in Team Directory
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => {
+                  setPeekMemberName(null);
+                  setView('tasks');
+                }}
+                className="text-xs font-bold flex items-center gap-1.5"
+              >
+                <ArrowRight size={13} /> Open Assigned Tasks
+              </Button>
+            </div>
+          )
+        }
+      >
+        {peekMember && (() => {
+          const assignedTasks = tasks.filter(t => t.assignee === peekMember.name && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED);
+          const isOver = peekMember.utilization > 100 || peekMember.weeklyEffort.some(w => w.utilization > 100);
+          const peakIdx = getPeakWeekIndex(peekMember);
+          const peakEffort = peekMember.weeklyEffort[peakIdx];
+
+          return (
+            <div className="space-y-6">
+              {/* 4-Stat Metric Bento Grid */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div className="p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">Avg Load</div>
+                  <div className="text-xl font-bold font-mono text-[var(--color-text)] mt-1">{peekMember.avgLoad}d</div>
+                  <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Per week avg</div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">Total Load</div>
+                  <div className="text-xl font-bold font-mono text-cyan-600 dark:text-cyan-400 mt-1">{peekMember.totalLoad.toFixed(1)}d</div>
+                  <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Across 8 weeks</div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">Utilization</div>
+                  <div className={clsx("text-xl font-bold font-mono mt-1", isOver ? "text-rose-500" : "text-emerald-500")}>
+                    {peekMember.utilization}%
+                  </div>
+                  <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">
+                    {isOver ? "Overloaded" : peekMember.utilization >= 50 ? "Optimal" : peekMember.utilization > 0 ? "Under capacity" : "Idle"}
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-muted)]">Active Tasks</div>
+                  <div className="text-xl font-bold font-mono text-indigo-600 dark:text-indigo-400 mt-1">{assignedTasks.length}</div>
+                  <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">In flight</div>
+                </div>
+              </div>
+
+              {/* Peak Week Warning if Overloaded */}
+              {isOver && (
+                <div className="p-3.5 bg-rose-500/10 border border-rose-500/25 rounded-2xl flex items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-2.5">
+                    <AlertTriangle size={16} className="text-rose-500 shrink-0" />
+                    <div>
+                      <div className="font-bold text-rose-600 dark:text-rose-400">Peak Overload Detected</div>
+                      <div className="text-[11px] text-[var(--color-text-muted)]">
+                        Week {peakIdx + 1} reaches {peakEffort.days}d ({peakEffort.utilization}% capacity).
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedCoords({ memberName: peekMember.name, weekIdx: peakIdx });
+                      setShowAdvisoryPanel(true);
+                    }}
+                    className="px-3 py-1 bg-rose-500/20 hover:bg-rose-500/30 text-rose-600 dark:text-rose-400 rounded-lg text-xs font-bold transition-colors cursor-pointer shrink-0"
+                  >
+                    Inspect Peak Week
+                  </button>
+                </div>
+              )}
+
+              {/* 8-Week Workload Timeline Grid */}
+              <div>
+                <div className="flex items-center justify-between text-xs mb-2.5">
+                  <span className="font-bold text-[var(--color-text)] flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
+                    <Layers size={13} className="text-[var(--color-primary-hex)]" />
+                    8-Week Effort Horizon
+                  </span>
+                  <span className="text-[10px] text-[var(--color-text-muted)]">Click week to inspect daily tasks</span>
+                </div>
+                <div className="grid grid-cols-4 sm:grid-cols-8 gap-1.5">
+                  {peekMember.weeklyEffort.map((effort, wIdx) => {
+                    const days = effort.days;
+                    const util = effort.utilization;
+                    const isSelected = selectedCoords?.memberName === peekMember.name && selectedCoords?.weekIdx === wIdx;
+
+                    return (
+                      <button
+                        key={wIdx}
+                        type="button"
+                        onClick={() => {
+                          setSelectedCoords({ memberName: peekMember.name, weekIdx: wIdx });
+                          setShowAdvisoryPanel(true);
+                        }}
+                        className={clsx(
+                          "p-2 rounded-xl border flex flex-col items-center justify-center transition-all cursor-pointer min-h-[58px] select-none hover:scale-[1.02] active:scale-95",
+                          getCellColor(days, 'heatmap'),
+                          isSelected ? "ring-2 ring-[var(--color-primary-hex)] ring-offset-1 z-10" : "border-[var(--color-divider)]"
+                        )}
+                      >
+                        <span className="text-[9px] font-semibold opacity-80 leading-none">W{wIdx + 1}</span>
+                        <span className="text-xs font-bold font-mono mt-1 leading-none">{days}d</span>
+                        <span className="text-[9px] opacity-80 font-mono leading-none mt-1">{util}%</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Assigned Active Tasks */}
+              <div>
+                <div className="flex items-center justify-between mb-2.5">
+                  <h4 className="font-bold text-xs text-[var(--color-text)] uppercase tracking-wider flex items-center gap-1.5">
+                    <Sparkles size={13} className="text-cyan-500" />
+                    Assigned Active Tasks ({assignedTasks.length})
+                  </h4>
+                  {assignedTasks.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPeekMemberName(null);
+                        setView('tasks');
+                      }}
+                      className="text-[11px] text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 font-semibold cursor-pointer"
+                    >
+                      Open Tasks <ArrowRight size={11} />
+                    </button>
+                  )}
+                </div>
+
+                {assignedTasks.length === 0 ? (
+                  <div className="p-4 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-center text-xs text-[var(--color-text-muted)]">
+                    No active tasks currently assigned to this resource.
+                  </div>
+                ) : (
+                  <div className="space-y-2 max-h-72 overflow-y-auto pr-1 custom-scroll">
+                    {assignedTasks.map(t => (
+                      <div
+                        key={t.id}
+                        onClick={() => {
+                          setPeekMemberName(null);
+                          setView('tasks');
+                        }}
+                        className="p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-between gap-3 hover:border-[var(--color-primary-hex)]/40 transition-colors cursor-pointer group"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-[10px] font-bold text-[var(--color-primary-hex)]">{t.id}</span>
+                            <span className="font-bold text-xs text-[var(--color-text)] truncate group-hover:text-[var(--color-primary-hex)] transition-colors">
+                              {t.name}
+                            </span>
+                          </div>
+                          <div className="text-[10px] text-[var(--color-text-muted)] mt-1 flex items-center gap-2 truncate">
+                            <span>{t.startDate || 'No start'} – {t.dueDate || 'No due'}</span>
+                            <span>•</span>
+                            <span className="font-mono">{t.estDays || 1}d est</span>
+                            <span>•</span>
+                            <span className={clsx(
+                              "font-semibold",
+                              t.priority === 'Critical' ? "text-rose-500" :
+                              t.priority === 'High' ? "text-amber-500" :
+                              "text-slate-400"
+                            )}>
+                              {t.priority || 'Medium'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className={clsx(
+                            "px-1.5 py-0.5 rounded text-[10px] font-semibold",
+                            t.status === TaskStatus.COMPLETED ? "bg-emerald-500/10 text-emerald-500" :
+                            t.status === TaskStatus.IN_PROGRESS ? "bg-amber-500/10 text-amber-500" :
+                            "bg-slate-500/10 text-slate-400"
+                          )}>
+                            {t.status}
+                          </span>
+                          <span className="font-mono font-bold text-xs text-[var(--color-text)]">{t.progress || 0}%</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
+      </SlideOverDrawer>
     </MotionPage>
   );
 };
