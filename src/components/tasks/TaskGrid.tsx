@@ -29,12 +29,14 @@ import {
   Layers2,
   Plus,
   Search,
-  RotateCcw
+  RotateCcw,
+  ExternalLink
 } from 'lucide-react';
 import Button from '../shared/Button';
 import { motion, AnimatePresence } from 'motion/react';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef } from '../shared/DataTable';
+import SlideOverDrawer from '../shared/SlideOverDrawer';
 import { markInteractionOrigin } from '../../utils/designSpells';
 
 interface TaskGridProps {
@@ -126,6 +128,8 @@ const TaskGrid: React.FC<TaskGridProps> = ({
 
   // Bulk Selection State
   const [selectedTaskIds, setSelectedTaskIds] = useState<Set<string>>(new Set());
+  // Master-Detail Peek Side Drawer State
+  const [peekTaskId, setPeekTaskId] = useState<string | null>(null);
 
   // Filter options
   const modules = useMemo(() => Array.from(new Set(state.tasks.map(t => t.module).filter(Boolean))), [state.tasks]);
@@ -319,6 +323,20 @@ const TaskGrid: React.FC<TaskGridProps> = ({
   }, [state.tasks, searchTerm, activePreset, selectedModule, selectedRelease, selectedStatus, selectedAssignee, selectedPriority, sortField, sortAsc, today]);
 
   const pagination = usePagination<Task>(filteredTasks, 10, 'pp_page_size_tasks');
+
+  // Peek Side Drawer Navigation
+  const peekTask = useMemo(() => (peekTaskId ? state.tasks.find(t => t.id === peekTaskId) || null : null), [state.tasks, peekTaskId]);
+  const currentPeekIndex = peekTaskId ? filteredTasks.findIndex(t => t.id === peekTaskId) : -1;
+  const hasPrevious = currentPeekIndex > 0;
+  const hasNext = currentPeekIndex >= 0 && currentPeekIndex < filteredTasks.length - 1;
+
+  const handlePrevious = () => {
+    if (hasPrevious) setPeekTaskId(filteredTasks[currentPeekIndex - 1].id);
+  };
+
+  const handleNext = () => {
+    if (hasNext) setPeekTaskId(filteredTasks[currentPeekIndex + 1].id);
+  };
 
   if (!state.tasks.length) {
     return (
@@ -931,7 +949,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
         canExpand={(task) => task.subtasks.length > 0}
         isExpanded={(task) => expandedTasks.has(task.id)}
         onToggleExpand={(task, e) => toggleExpand(task.id, e)}
-        onRowClick={(task) => onEditTask(task.id)}
+        onRowClick={(task) => setPeekTaskId(task.id)}
         rowClassName={(task) => {
           const overdue = daysDiff(task.dueDate)! < 0 && task.status !== TaskStatus.COMPLETED && task.status !== TaskStatus.CANCELLED;
           const isMilestone = (task.startDate && task.startDate === task.dueDate) || task.subtasks.some(s => s.name.toLowerCase().includes('milestone'));
@@ -1082,7 +1100,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
           return (
             <div 
               key={task.id}
-              onClick={() => onEditTask(task.id)}
+              onClick={() => setPeekTaskId(task.id)}
               className={clsx(
                 "p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xs motion-safe:active:scale-[0.98] transition-colors duration-150 relative",
                 blocked && "bg-amber-500/5 border-amber-500/20",
@@ -1161,6 +1179,154 @@ const TaskGrid: React.FC<TaskGridProps> = ({
           />
         )}
       </div>
+
+      {/* ── 5. Master-Detail Peek Side Drawer ── */}
+      <SlideOverDrawer
+        isOpen={Boolean(peekTask)}
+        onClose={() => setPeekTaskId(null)}
+        title={
+          peekTask && (
+            <div className="flex items-center gap-2">
+              <span className="font-mono text-xs font-bold text-[var(--color-primary-hex)]">{peekTask.id}</span>
+              <span className="text-sm font-bold text-[var(--color-text)] truncate">{peekTask.name}</span>
+            </div>
+          )
+        }
+        subtitle={
+          peekTask && (
+            <div className="flex items-center gap-2 text-xs text-[var(--color-text-muted)]">
+              <span>Module: <strong className="text-[var(--color-text)]">{peekTask.module}</strong></span>
+              <span>•</span>
+              <span>Release: <strong className="text-[var(--color-text)]">{peekTask.release || 'None'}</strong></span>
+            </div>
+          )
+        }
+        hasPrevious={hasPrevious}
+        hasNext={hasNext}
+        onPrevious={handlePrevious}
+        onNext={handleNext}
+        footer={
+          peekTask && (
+            <>
+              <button
+                type="button"
+                onClick={() => {
+                  const id = peekTask.id;
+                  setPeekTaskId(null);
+                  onEditTask(id);
+                }}
+                className="px-3 py-1.5 rounded-xl bg-[var(--color-primary-hex)] text-white font-bold text-xs flex items-center gap-1.5 hover:opacity-95 transition-opacity cursor-pointer shadow-xs"
+              >
+                <ExternalLink size={13} />
+                <span>Open Full Editor</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPeekTaskId(null)}
+                className="px-3 py-1.5 rounded-xl text-xs font-semibold text-[var(--color-text-muted)] hover:bg-[var(--color-surface)] transition-colors cursor-pointer"
+              >
+                Close (Esc)
+              </button>
+            </>
+          )
+        }
+      >
+        {peekTask && (
+          <div className="space-y-5 text-xs">
+            {/* Status & Priority Pills */}
+            <div className="flex items-center gap-2.5 flex-wrap p-3 rounded-xl bg-[var(--color-surface-2)]/60 border border-[var(--color-divider)]">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] font-semibold text-[var(--color-text-muted)]">Status:</span>
+                <button
+                  type="button"
+                  onClick={(e) => handleCycleStatus(peekTask, e)}
+                  title="Click to advance status"
+                  className={clsx("st-badge cursor-pointer", `st-${ST_MAP[peekTask.status] || 'not-started'}`)}
+                >
+                  <span className="dot" />
+                  <span>{peekTask.status}</span>
+                </button>
+              </div>
+
+              <div className="h-3.5 w-px bg-[var(--color-divider)]" />
+
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] font-semibold text-[var(--color-text-muted)]">Priority:</span>
+                <span className={clsx("pri-badge", `pri-${PRI_MAP[peekTask.priority] || 'low'}`)}>
+                  {peekTask.priority}
+                </span>
+              </div>
+            </div>
+
+            {/* Quick Metrics Grid */}
+            <div className="grid grid-cols-2 gap-2.5">
+              <div className="p-3 rounded-xl bg-[var(--color-surface-2)]/40 border border-[var(--color-divider)] space-y-1">
+                <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)] tracking-wider">Assignee</span>
+                <div className="font-semibold text-xs text-[var(--color-text)] flex items-center gap-1.5">
+                  <User size={13} className="text-[var(--color-text-muted)]" />
+                  <span>{peekTask.assignee || 'Unassigned'}</span>
+                </div>
+              </div>
+
+              <div className="p-3 rounded-xl bg-[var(--color-surface-2)]/40 border border-[var(--color-divider)] space-y-1">
+                <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)] tracking-wider">Due Date</span>
+                <div className="font-mono tabular-nums font-semibold text-xs text-[var(--color-text)] flex items-center gap-1.5">
+                  <Calendar size={13} className="text-[var(--color-text-muted)]" />
+                  <span>{fmtDate(peekTask.dueDate) || 'None'}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Progress Bar */}
+            <div className="p-3 rounded-xl bg-[var(--color-surface-2)]/40 border border-[var(--color-divider)] space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)] tracking-wider">Completion Progress</span>
+                <span className="font-mono tabular-nums font-bold text-xs text-[var(--color-primary-hex)]">{peekTask.progress || 0}%</span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-[var(--color-divider)] overflow-hidden">
+                <div
+                  className="h-full bg-[var(--color-primary-hex)] rounded-full transition-all duration-300"
+                  style={{ width: `${Math.min(100, Math.max(0, peekTask.progress || 0))}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Subtasks Checklist */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] uppercase font-bold text-[var(--color-text-faint)] tracking-wider">
+                  Checklist ({peekTask.subtasks.filter(s => s.done).length}/{peekTask.subtasks.length})
+                </span>
+              </div>
+
+              {peekTask.subtasks.length === 0 ? (
+                <div className="p-4 rounded-xl border border-dashed border-[var(--color-divider)] text-center text-xs text-[var(--color-text-muted)]">
+                  No checklist items on this task.
+                </div>
+              ) : (
+                <div className="divide-y divide-[var(--color-divider)]/40 border border-[var(--color-divider)] rounded-xl overflow-hidden bg-[var(--color-surface)]">
+                  {peekTask.subtasks.map(st => (
+                    <div
+                      key={st.id}
+                      onClick={(e) => handleToggleSubtask(peekTask, st.id, e)}
+                      className="px-3 py-2.5 flex items-center gap-2.5 hover:bg-[var(--color-surface-2)]/60 transition-colors cursor-pointer"
+                    >
+                      {st.done ? (
+                        <CheckSquare size={15} className="text-emerald-500 shrink-0" />
+                      ) : (
+                        <Square size={15} className="text-[var(--color-text-faint)] shrink-0" />
+                      )}
+                      <span className={clsx("text-xs flex-1", st.done && "line-through text-[var(--color-text-muted)]")}>
+                        {st.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </SlideOverDrawer>
     </div>
   );
 };
