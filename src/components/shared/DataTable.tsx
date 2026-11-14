@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ChevronRight, LayoutList, Table2 } from 'lucide-react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { ChevronRight, LayoutList, Table2, SlidersHorizontal, RotateCcw } from 'lucide-react';
 import clsx from 'clsx';
 import TablePagination, { UsePaginationReturn } from './TablePagination';
 
@@ -18,6 +18,8 @@ export interface ColumnDef<T> {
   className?: string;
   headerClassName?: string;
   onClick?: (item: T, event: React.MouseEvent) => void;
+  hideable?: boolean;
+  defaultHidden?: boolean;
 }
 
 export interface DataTableProps<T> {
@@ -26,6 +28,8 @@ export interface DataTableProps<T> {
   keyField?: keyof T | ((item: T) => string);
   density?: DensityMode;
   showInlineFilters?: boolean;
+  enableColumnVisibility?: boolean;
+  columnVisibilityStorageKey?: string;
 
   // Viewport bounds & scroll
   maxHeight?: string;
@@ -112,12 +116,78 @@ export function DataTable<T>({
   mobileCardRenderer,
   pagination,
   itemLabel,
-  pageSizeOptions
+  pageSizeOptions,
+  enableColumnVisibility = true,
+  columnVisibilityStorageKey
 }: DataTableProps<T>): React.ReactElement {
   const [showMatrixOnMobile, setShowMatrixOnMobile] = useState(false);
+
+  // Column Visibility State & Persistence
+  const storageKey = columnVisibilityStorageKey || (tableLabel ? `pp_cols_${tableLabel.replace(/\s+/g, '_').toLowerCase()}` : undefined);
+  const [hiddenColumnIds, setHiddenColumnIds] = useState<Set<string>>(() => {
+    if (storageKey && typeof window !== 'undefined') {
+      try {
+        const saved = localStorage.getItem(storageKey);
+        if (saved) return new Set(JSON.parse(saved));
+      } catch (e) {
+        // ignore
+      }
+    }
+    const defHidden = columns.filter(c => c.defaultHidden).map(c => c.id);
+    return new Set(defHidden);
+  });
+
+  const [isColMenuOpen, setIsColMenuOpen] = useState(false);
+  const colMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isColMenuOpen) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (colMenuRef.current && !colMenuRef.current.contains(e.target as Node)) {
+        setIsColMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isColMenuOpen]);
+
+  const toggleColumnVisibility = (colId: string) => {
+    setHiddenColumnIds(prev => {
+      const next = new Set(prev);
+      if (next.has(colId)) next.delete(colId);
+      else next.add(colId);
+
+      if (storageKey && typeof window !== 'undefined') {
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(Array.from(next)));
+        } catch (e) {
+          // ignore
+        }
+      }
+      return next;
+    });
+  };
+
+  const showAllColumns = () => {
+    setHiddenColumnIds(new Set());
+    if (storageKey && typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem(storageKey);
+      } catch (e) {
+        // ignore
+      }
+    }
+  };
+
+  // Filter columns based on visibility
+  const visibleColumns = useMemo(() => {
+    if (!enableColumnVisibility) return columns;
+    return columns.filter(c => !hiddenColumnIds.has(c.id));
+  }, [columns, hiddenColumnIds, enableColumnVisibility]);
+
   // Determine if expand slot should be shown
   const hasExpand = expandable ?? (Boolean(canExpand) || Boolean(renderSubRows));
-  const hasInlineFilters = showInlineFilters && columns.some(c => c.filter !== undefined && c.filter !== null);
+  const hasInlineFilters = showInlineFilters && visibleColumns.some(c => c.filter !== undefined && c.filter !== null);
   
   // Calculate row number offset (derive from pagination if available)
   const baseStartIndex = pagination ? pagination.startIndex : (externalStartIndex ?? 0);
@@ -126,7 +196,7 @@ export function DataTable<T>({
   const itemsToRender = pagination ? pagination.paginatedItems : data;
 
   // Calculate total columns for empty state colSpan
-  const totalCols = (selectable ? 1 : 0) + (showRowNumbers ? 1 : 0) + (hasExpand ? 1 : 0) + columns.length;
+  const totalCols = (selectable ? 1 : 0) + (showRowNumbers ? 1 : 0) + (hasExpand ? 1 : 0) + visibleColumns.length;
 
   const isCompact = density === 'compact';
   const padY = isCompact ? 'py-1' : 'py-2.5 sm:py-3';
@@ -156,12 +226,12 @@ export function DataTable<T>({
       )}
       data-density={density}
     >
-      {/* Optional Mobile Presentation Toggle (< md only when mobileCardRenderer is provided) */}
-      {mobileCardRenderer && (
-        <div className="md:hidden px-3 py-2 border-b border-[var(--color-divider)] bg-[var(--color-surface-2)]/60 flex items-center justify-between gap-2">
+      {/* Table Utility Bar (Column Visibility & Presentation Modes) */}
+      {(mobileCardRenderer || enableColumnVisibility) && (
+        <div className="px-3 py-2 border-b border-[var(--color-divider)] bg-[var(--color-surface-2)]/60 flex items-center justify-between gap-2 text-xs">
           <div className="flex items-center gap-2 text-xs text-[var(--color-text-muted)] font-semibold">
             {selectable && (
-              <label className="inline-flex items-center gap-1.5 cursor-pointer min-h-[32px]">
+              <label className="inline-flex items-center gap-1.5 cursor-pointer min-h-[28px]">
                 <input
                   type="checkbox"
                   checked={isAllSelected}
@@ -169,34 +239,111 @@ export function DataTable<T>({
                   aria-label="Select all rows"
                   className="rounded border-[var(--color-divider)] text-[var(--color-primary-hex)] cursor-pointer"
                 />
-                <span>Select all</span>
+                <span className="hidden sm:inline">Select all</span>
               </label>
             )}
-            {!selectable && <span>{itemsToRender.length} {itemLabel || 'items'}</span>}
+            <span className="font-mono text-[11px] text-[var(--color-text-faint)]">
+              {tableLabel ? <span className="font-semibold text-[var(--color-text-muted)] mr-1.5">{tableLabel} •</span> : null}
+              {itemsToRender.length} {itemLabel || 'records'}
+            </span>
           </div>
-          <div className="inline-flex items-center p-0.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-divider)]">
-            <button
-              type="button"
-              onClick={() => setShowMatrixOnMobile(false)}
-              className={clsx(
-                "px-2.5 py-1 rounded-md text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer",
-                !showMatrixOnMobile ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)]" : "text-[var(--color-text-muted)]"
-              )}
-            >
-              <LayoutList size={12} aria-hidden="true" />
-              <span>Cards</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setShowMatrixOnMobile(true)}
-              className={clsx(
-                "px-2.5 py-1 rounded-md text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer",
-                showMatrixOnMobile ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)]" : "text-[var(--color-text-muted)]"
-              )}
-            >
-              <Table2 size={12} aria-hidden="true" />
-              <span>Matrix</span>
-            </button>
+
+          <div className="flex items-center gap-2">
+            {/* Column Visibility Popover Trigger */}
+            {enableColumnVisibility && (
+              <div className="relative" ref={colMenuRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsColMenuOpen(!isColMenuOpen)}
+                  className={clsx(
+                    "px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1.5 border transition-all cursor-pointer",
+                    isColMenuOpen
+                      ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border-[var(--color-primary-hex)]/40 shadow-xs"
+                      : "bg-[var(--color-surface)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:text-[var(--color-text)]"
+                  )}
+                  title="Toggle visible columns"
+                  aria-expanded={isColMenuOpen}
+                >
+                  <SlidersHorizontal size={12} />
+                  <span>Columns</span>
+                  <span className="px-1 py-0.2 rounded-full text-[9px] font-mono bg-[var(--color-surface-2)] text-[var(--color-text-faint)]">
+                    {visibleColumns.length}/{columns.length}
+                  </span>
+                </button>
+
+                {/* Popover Dropdown */}
+                {isColMenuOpen && (
+                  <div className="absolute right-0 top-full mt-1.5 z-40 w-60 p-2 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xl space-y-1.5 text-xs animate-in fade-in zoom-in-95 duration-100">
+                    <div className="px-2 py-1 flex items-center justify-between border-b border-[var(--color-divider)] text-[11px] font-bold text-[var(--color-text-muted)]">
+                      <span>Column Visibility</span>
+                      <button
+                        type="button"
+                        onClick={showAllColumns}
+                        className="text-[10px] text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer font-semibold"
+                      >
+                        <RotateCcw size={10} />
+                        <span>Show All</span>
+                      </button>
+                    </div>
+
+                    <div className="max-h-56 overflow-y-auto custom-scroll space-y-0.5 p-0.5">
+                      {columns.map(col => {
+                        const isVisible = !hiddenColumnIds.has(col.id);
+                        const isLocked = col.hideable === false;
+                        const label = col.headerTitle || (typeof col.header === 'string' ? col.header : col.id);
+
+                        return (
+                          <label
+                            key={col.id}
+                            className={clsx(
+                              "flex items-center justify-between px-2 py-1.5 rounded-lg text-xs transition-colors select-none",
+                              isLocked ? "opacity-60 cursor-not-allowed" : "hover:bg-[var(--color-surface-2)] cursor-pointer"
+                            )}
+                          >
+                            <span className="truncate pr-2 font-medium text-[var(--color-text)]">{label}</span>
+                            <input
+                              type="checkbox"
+                              checked={isVisible}
+                              disabled={isLocked}
+                              onChange={() => toggleColumnVisibility(col.id)}
+                              className="rounded border-[var(--color-divider)] text-[var(--color-primary-hex)] cursor-pointer"
+                            />
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Mobile Cards vs Matrix Presentation Switcher */}
+            {mobileCardRenderer && (
+              <div className="md:hidden inline-flex items-center p-0.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-divider)]">
+                <button
+                  type="button"
+                  onClick={() => setShowMatrixOnMobile(false)}
+                  className={clsx(
+                    "px-2 py-1 rounded-md text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer",
+                    !showMatrixOnMobile ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)]" : "text-[var(--color-text-muted)]"
+                  )}
+                >
+                  <LayoutList size={12} aria-hidden="true" />
+                  <span>Cards</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowMatrixOnMobile(true)}
+                  className={clsx(
+                    "px-2 py-1 rounded-md text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer",
+                    showMatrixOnMobile ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)]" : "text-[var(--color-text-muted)]"
+                  )}
+                >
+                  <Table2 size={12} aria-hidden="true" />
+                  <span>Matrix</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -277,7 +424,7 @@ export function DataTable<T>({
               )}
 
               {/* Data Columns */}
-              {columns.map((col) => {
+              {visibleColumns.map((col) => {
                 const isSorted = sortField && sortField === (col.sortKey || col.id);
                 const alignClass = 
                   col.align === 'center' ? 'px-2 text-center' :
@@ -322,7 +469,7 @@ export function DataTable<T>({
                 {selectable && <th className="p-1" />}
                 {showRowNumbers && <th className="p-1" />}
                 {hasExpand && <th className="p-1" />}
-                {columns.map((col) => {
+                {visibleColumns.map((col) => {
                   const alignClass = 
                     col.align === 'center' ? 'text-center' :
                     col.align === 'right' ? 'text-right' :
@@ -398,7 +545,7 @@ export function DataTable<T>({
                     )}
 
                     {/* Data Cells */}
-                    {columns.map((col) => {
+                    {visibleColumns.map((col) => {
                       const alignClass = 
                         col.align === 'center' ? 'px-2 text-center' :
                         col.align === 'right' ? 'px-3 text-right tabular-nums' :
