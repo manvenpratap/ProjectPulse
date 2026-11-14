@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { Member, Leave, TaskStatus } from '../../types';
 import { 
@@ -35,11 +35,13 @@ import {
   BarChart2,
   Plane,
   AlertCircle,
-  Star
+  Star,
+  Check
 } from 'lucide-react';
 import Button from '../shared/Button';
 import Modal from '../shared/Modal';
 import ConfirmModal from '../shared/ConfirmModal';
+import SlideOverDrawer from '../shared/SlideOverDrawer';
 import { toast } from '../../utils/toast';
 import clsx from 'clsx';
 import MemberHierarchy from './MemberHierarchy';
@@ -52,6 +54,8 @@ import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef, DensityMode } from '../shared/DataTable';
 import { MotionPage, StaggerContainer, StaggerItem, AnimatedProgressBar } from '../shared/MotionPage';
 import { AnimatedMetric } from '../shared/AnimatedMetric';
+
+type TeamPreset = 'all' | 'active' | 'on_leave' | 'overloaded' | 'available' | 'blocked';
 
 const AVATAR_COLORS = [
   'bg-indigo-500 text-white',
@@ -74,9 +78,17 @@ const TeamView: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [activePreset, setActivePreset] = useState<TeamPreset>('all');
   const [viewMode, setViewMode] = useState<'grid' | 'list' | 'compact'>('grid');
   const [tableDensity, setTableDensity] = useState<DensityMode>('comfortable');
   const [expandedContactIds, setExpandedContactIds] = useState<Set<string>>(new Set());
+
+  // Master-Detail Peek Side Drawer & Inline Editing State
+  const [peekMemberId, setPeekMemberId] = useState<string | null>(null);
+  const [editingField, setEditingField] = useState<{ id: string; field: 'name' | 'role' } | null>(null);
+  const [editingVal, setEditingVal] = useState<string>('');
+  const [statusMenuMemberId, setStatusMenuMemberId] = useState<string | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   
   // Scorecard Sort State
   const [scorecardSortCol, setScorecardSortCol] = useState<string>('completionRate');
@@ -106,12 +118,68 @@ const TeamView: React.FC = () => {
     return Array.from(set).sort();
   }, [members]);
 
+  // Quick Preset Counts & Definitions
+  const presetCounts = useMemo(() => ({
+    all: members.length,
+    active: members.filter(m => m.status === 'Active').length,
+    on_leave: members.filter(m => m.status === 'On Leave').length,
+    overloaded: members.filter(m => {
+      const count = tasks.filter(t => t.assignee === m.name && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED).length;
+      return count >= 5;
+    }).length,
+    available: members.filter(m => {
+      const count = tasks.filter(t => t.assignee === m.name && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED).length;
+      return count <= 1 && m.status === 'Active';
+    }).length,
+    blocked: members.filter(m => tasks.some(t => t.assignee === m.name && t.status === TaskStatus.BLOCKED)).length,
+  }), [members, tasks]);
+
+  const PRESETS: { id: TeamPreset; label: string; count: number }[] = useMemo(() => [
+    { id: 'all', label: 'All Members', count: presetCounts.all },
+    { id: 'active', label: 'Active Delivery', count: presetCounts.active },
+    { id: 'overloaded', label: 'Overloaded (5+ Tasks)', count: presetCounts.overloaded },
+    { id: 'available', label: 'Available (≤1 Task)', count: presetCounts.available },
+    { id: 'blocked', label: 'Blocked Baggage', count: presetCounts.blocked },
+    { id: 'on_leave', label: 'On Leave', count: presetCounts.on_leave },
+  ], [presetCounts]);
+
+  const handlePresetClick = (preset: TeamPreset) => {
+    setActivePreset(preset);
+    setRoleFilter('all');
+    setStatusFilter('all');
+  };
+
+  const hasActiveFilters = activePreset !== 'all' || roleFilter !== 'all' || statusFilter !== 'all' || searchQuery !== '';
+  const resetAllFilters = () => {
+    setActivePreset('all');
+    setRoleFilter('all');
+    setStatusFilter('all');
+    setSearchQuery('');
+  };
+
   // Filtered members list
   const filteredMembers = useMemo(() => {
     const q = searchQuery.toLowerCase().trim();
     return members.filter(m => {
       if (roleFilter !== 'all' && m.role !== roleFilter) return false;
       if (statusFilter !== 'all' && m.status !== statusFilter) return false;
+
+      // Quick Preset Filter
+      if (activePreset === 'active' && m.status !== 'Active') return false;
+      if (activePreset === 'on_leave' && m.status !== 'On Leave') return false;
+      if (activePreset === 'overloaded') {
+        const count = tasks.filter(t => t.assignee === m.name && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED).length;
+        if (count < 5) return false;
+      }
+      if (activePreset === 'available') {
+        const count = tasks.filter(t => t.assignee === m.name && t.status !== TaskStatus.COMPLETED && t.status !== TaskStatus.CANCELLED).length;
+        if (count > 1 || m.status !== 'Active') return false;
+      }
+      if (activePreset === 'blocked') {
+        const hasBlocked = tasks.some(t => t.assignee === m.name && t.status === TaskStatus.BLOCKED);
+        if (!hasBlocked) return false;
+      }
+
       if (!q) return true;
 
       const skillsStr = Array.isArray(m.skills) ? m.skills.join(' ') : (m.skills || '');
@@ -124,9 +192,69 @@ const TeamView: React.FC = () => {
         skillsStr.toLowerCase().includes(q)
       );
     });
-  }, [members, searchQuery, roleFilter, statusFilter]);
+  }, [members, tasks, searchQuery, roleFilter, statusFilter, activePreset]);
 
   const pagination = usePagination<Member>(filteredMembers, 10, 'pp_page_size_team');
+
+  // Peek Item References & Navigation
+  const peekMember = useMemo(() => members.find(m => m.id === peekMemberId) || null, [members, peekMemberId]);
+  const peekMemberIndex = useMemo(() => filteredMembers.findIndex(m => m.id === peekMemberId), [filteredMembers, peekMemberId]);
+
+  const handlePrevMember = () => {
+    if (peekMemberIndex > 0) setPeekMemberId(filteredMembers[peekMemberIndex - 1].id);
+  };
+  const handleNextMember = () => {
+    if (peekMemberIndex >= 0 && peekMemberIndex < filteredMembers.length - 1) setPeekMemberId(filteredMembers[peekMemberIndex + 1].id);
+  };
+
+  // Keyboard shortcut listener: '/' for search, '[' & ']' for drawer navigation, Escape to close
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+      if (e.key === '[') {
+        if (peekMemberId) handlePrevMember();
+      }
+      if (e.key === ']') {
+        if (peekMemberId) handleNextMember();
+      }
+      if (e.key === 'Escape') {
+        setEditingField(null);
+        setStatusMenuMemberId(null);
+        setPeekMemberId(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [peekMemberId, peekMemberIndex, filteredMembers]);
+
+  // Close menus on outside click
+  useEffect(() => {
+    if (!statusMenuMemberId) return;
+    const handleClickOutside = () => setStatusMenuMemberId(null);
+    window.addEventListener('click', handleClickOutside);
+    return () => window.removeEventListener('click', handleClickOutside);
+  }, [statusMenuMemberId]);
+
+  // Inline Editing Commit Handlers
+  const handleCommitEdit = (member: Member) => {
+    if (!editingField) return;
+    const trimmed = editingVal.trim();
+    if (trimmed && trimmed !== (member as any)[editingField.field]) {
+      saveMember({ [editingField.field]: trimmed }, member.id);
+      toast.success(`Member ${editingField.field} updated`);
+    }
+    setEditingField(null);
+  };
+
+  const handleSetMemberStatus = (member: Member, newStatus: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    saveMember({ status: newStatus }, member.id);
+    setStatusMenuMemberId(null);
+    toast.success(`Member status updated to ${newStatus}`);
+  };
 
   // ══════════════════════════════════════════════════════════
   // TELEMETRY 1: Velocity Leaderboard (Top 3 in last 30 days)
@@ -565,21 +693,75 @@ const TeamView: React.FC = () => {
     {
       id: 'name',
       header: 'MEMBER',
-      headerTitle: 'Team member full name and primary delivery role',
-      width: 'w-52',
+      headerTitle: 'Team member full name and primary delivery role. Double-click name or role to edit inline.',
+      width: 'w-56',
       cell: (m, i) => {
         const initials = m.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+        const isEditingName = editingField?.id === m.id && editingField.field === 'name';
+        const isEditingRole = editingField?.id === m.id && editingField.field === 'role';
+
         return (
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center gap-2 min-w-0" onClick={e => e.stopPropagation()}>
             <div className={clsx(
-              "w-5 h-5 rounded flex items-center justify-center font-bold text-[9px] shrink-0",
+              "w-6 h-6 rounded-lg flex items-center justify-center font-bold text-[10px] shrink-0 shadow-2xs",
               AVATAR_COLORS[i % AVATAR_COLORS.length]
             )}>
               {initials}
             </div>
-            <div className="flex flex-col min-w-0">
-              <span className="font-semibold text-xs text-[var(--color-text)] truncate">{m.name}</span>
-              <span className="cell-secondary text-[10px] text-[var(--color-text-muted)] truncate">{m.role || 'Member'}</span>
+            <div className="flex flex-col min-w-0 flex-1">
+              {isEditingName ? (
+                <input
+                  type="text"
+                  autoFocus
+                  value={editingVal}
+                  onChange={e => setEditingVal(e.target.value)}
+                  onBlur={() => handleCommitEdit(m)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') handleCommitEdit(m);
+                    if (e.key === 'Escape') setEditingField(null);
+                  }}
+                  className="w-full bg-[var(--color-surface)] border border-[var(--color-primary-hex)] text-xs font-bold text-[var(--color-text)] rounded px-1.5 py-0.5 outline-none shadow-xs"
+                />
+              ) : (
+                <span
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    setEditingField({ id: m.id, field: 'name' });
+                    setEditingVal(m.name);
+                  }}
+                  className="font-bold text-xs text-[var(--color-text)] truncate cursor-pointer hover:text-[var(--color-primary-hex)] transition-colors"
+                  title={`${m.name} (Double-click to edit)`}
+                >
+                  {m.name}
+                </span>
+              )}
+
+              {isEditingRole ? (
+                <input
+                  type="text"
+                  autoFocus
+                  value={editingVal}
+                  onChange={e => setEditingVal(e.target.value)}
+                  onBlur={() => handleCommitEdit(m)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') handleCommitEdit(m);
+                    if (e.key === 'Escape') setEditingField(null);
+                  }}
+                  className="w-full bg-[var(--color-surface)] border border-[var(--color-primary-hex)] text-[10px] font-semibold text-[var(--color-text)] rounded px-1.5 py-0.5 outline-none shadow-xs mt-0.5"
+                />
+              ) : (
+                <span
+                  onDoubleClick={(e) => {
+                    e.stopPropagation();
+                    setEditingField({ id: m.id, field: 'role' });
+                    setEditingVal(m.role || '');
+                  }}
+                  className="cell-secondary text-[10px] text-[var(--color-text-muted)] truncate cursor-pointer hover:text-[var(--color-text)] transition-colors"
+                  title={`${m.role || 'Member'} (Double-click to edit)`}
+                >
+                  {m.role || 'Member'}
+                </span>
+              )}
             </div>
           </div>
         );
@@ -599,17 +781,52 @@ const TeamView: React.FC = () => {
     {
       id: 'status',
       header: 'STATUS',
-      headerTitle: 'Employment availability status (Active, On Leave, Inactive)',
-      width: 'w-28',
+      headerTitle: 'Employment availability status. Click to jump status.',
+      width: 'w-32',
       cell: (m) => (
-        <span className={clsx(
-          "text-[10px] font-bold px-2 py-0.5 rounded-full border whitespace-nowrap",
-          m.status === 'Active' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
-          m.status === 'On Leave' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
-          "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)]"
-        )}>
-          {m.status}
-        </span>
+        <div className="relative inline-block" onClick={e => e.stopPropagation()}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setStatusMenuMemberId(statusMenuMemberId === m.id ? null : m.id);
+            }}
+            className={clsx(
+              "text-[10px] font-bold px-2 py-0.5 rounded-full border whitespace-nowrap inline-flex items-center gap-1 cursor-pointer transition-transform active:scale-95",
+              m.status === 'Active' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
+              m.status === 'On Leave' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
+              "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)]"
+            )}
+            title="Click to change status"
+          >
+            <span>{m.status}</span>
+            <ChevronDown size={10} className="opacity-70" />
+          </button>
+
+          {statusMenuMemberId === m.id && (
+            <div
+              className="absolute left-0 mt-1 w-44 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl shadow-xl z-50 p-1 space-y-0.5 animate-in fade-in zoom-in-95 duration-100"
+              onClick={e => e.stopPropagation()}
+            >
+              {['Active', 'On Leave', 'Serving Notice Period', 'Other Assignment', 'Departed'].map(st => (
+                <button
+                  key={st}
+                  type="button"
+                  onClick={(e) => handleSetMemberStatus(m, st, e)}
+                  className={clsx(
+                    "w-full text-left px-2.5 py-1 text-xs rounded-lg font-medium transition-colors flex items-center justify-between cursor-pointer",
+                    m.status === st
+                      ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold"
+                      : "text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
+                  )}
+                >
+                  <span>{st}</span>
+                  {m.status === st && <Check size={11} />}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       )
     },
     {
@@ -696,10 +913,19 @@ const TeamView: React.FC = () => {
       id: 'actions',
       header: 'ACTIONS',
       headerTitle: 'Member quick actions',
-      width: 'w-28',
+      width: 'w-36',
       align: 'right',
       cell: (m) => (
-        <div className="flex items-center justify-end gap-1 whitespace-nowrap">
+        <div className="flex items-center justify-end gap-1 whitespace-nowrap" onClick={e => e.stopPropagation()}>
+          <button
+            type="button"
+            onClick={(e) => { e.stopPropagation(); setPeekMemberId(m.id); }}
+            className="p-1 px-1.5 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-[var(--color-text)] border border-[var(--color-divider)] rounded-md text-[11px] font-semibold cursor-pointer active:scale-95 transition-all flex items-center gap-1"
+            title="Inspect member profile peek"
+          >
+            <ExternalLink size={12} />
+            <span>Peek</span>
+          </button>
           <button
             type="button"
             onClick={() => handleOpenEditModal(m)}
@@ -717,7 +943,7 @@ const TeamView: React.FC = () => {
         </div>
       )
     }
-  ], [tasks, setView]);
+  ], [tasks, setView, editingField, editingVal, statusMenuMemberId]);
 
   type ScorecardRow = (typeof scorecardData)[0];
   const scorecardColumns = useMemo<ColumnDef<ScorecardRow>[]>(() => [
@@ -1251,6 +1477,56 @@ const TeamView: React.FC = () => {
            ══════════════════════════════════════════════════════════ */}
         <div className="space-y-4">
           
+          {/* ── Quick Filter Presets Strip ── */}
+          <div className="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar py-0.5 select-none">
+            <div className="flex items-center gap-1.5 shrink-0">
+              <span className="text-[11px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider hidden sm:inline mr-1">
+                Presets:
+              </span>
+              {PRESETS.map((p) => {
+                const isActive = activePreset === p.id;
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => handlePresetClick(p.id)}
+                    className={clsx(
+                      "px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all cursor-pointer active:scale-95",
+                      isActive
+                        ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] border-transparent shadow-xs font-bold"
+                        : "bg-[var(--color-surface)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 hover:text-[var(--color-text)]"
+                    )}
+                  >
+                    <span>{p.label}</span>
+                    <span className={clsx(
+                      "text-[10px] font-mono px-1.5 py-0.2 rounded-md font-bold",
+                      isActive ? "bg-black/20 text-white" : "bg-[var(--color-surface-2)] text-[var(--color-text-faint)]"
+                    )}>
+                      {p.count}
+                    </span>
+                  </button>
+                );
+              })}
+              {hasActiveFilters && (
+                <button
+                  type="button"
+                  onClick={resetAllFilters}
+                  className="px-2 py-1 rounded-xl text-xs font-medium text-rose-500 hover:bg-rose-500/10 flex items-center gap-1 transition-colors cursor-pointer ml-1"
+                  title="Reset all filters"
+                >
+                  <X size={12} />
+                  <span>Reset</span>
+                </button>
+              )}
+            </div>
+
+            <div className="hidden lg:flex items-center gap-2 text-[11px] text-[var(--color-text-faint)] font-mono shrink-0">
+              <span>Press <kbd className="px-1.5 py-0.5 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] font-semibold text-[10px]">/</kbd> to search</span>
+              <span>•</span>
+              <span><kbd className="px-1 py-0.5 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] font-semibold text-[10px]">[</kbd> <kbd className="px-1 py-0.5 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] font-semibold text-[10px] shadow-2xs">]</kbd> to navigate</span>
+            </div>
+          </div>
+
           {/* Controls Bar: Search, View Mode Toggles, Role/Status Filters */}
           <div className="bg-[var(--color-surface)] p-4 rounded-2xl border border-[var(--color-divider)] shadow-xs space-y-3 lg:space-y-0 lg:flex lg:items-center lg:justify-between lg:gap-4">
             
@@ -1361,8 +1637,9 @@ const TeamView: React.FC = () => {
             <div className="relative flex-1 lg:max-w-xs">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)] pointer-events-none" />
               <input
+                ref={searchInputRef}
                 type="text"
-                placeholder="Search member, skill, role, ID..."
+                placeholder="Search member, skill, role, ID... (/)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full h-9 pl-9 pr-8 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs text-[var(--color-text)] placeholder-[var(--color-text-faint)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary-hex)] transition-all"
@@ -1420,7 +1697,8 @@ const TeamView: React.FC = () => {
                 return (
                   <StaggerItem 
                     key={member.id} 
-                    className="card p-5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs flex flex-col justify-between hover:border-[var(--color-border)] transition-colors space-y-4"
+                    onClick={() => setPeekMemberId(member.id)}
+                    className="card p-5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs flex flex-col justify-between hover:border-[var(--color-primary-hex)]/60 transition-colors space-y-4 cursor-pointer group/card"
                   >
                     {/* Header: Avatar, Name, Role, Status */}
                     <div className="flex items-start justify-between gap-2">
@@ -1522,7 +1800,10 @@ const TeamView: React.FC = () => {
                     <div className="pt-2 border-t border-[var(--color-divider)]">
                       <button 
                         type="button"
-                        onClick={() => toggleContactInfo(member.id)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleContactInfo(member.id);
+                        }}
                         className="text-[11px] font-bold text-[var(--color-primary-hex)] flex items-center gap-1 hover:underline cursor-pointer"
                       >
                         {isContactExpanded ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
@@ -1530,7 +1811,10 @@ const TeamView: React.FC = () => {
                       </button>
 
                       {isContactExpanded && (
-                        <div className="mt-2.5 p-2.5 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] space-y-1.5 text-xs text-[var(--color-text-muted)]">
+                        <div 
+                          onClick={(e) => e.stopPropagation()}
+                          className="mt-2.5 p-2.5 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] space-y-1.5 text-xs text-[var(--color-text-muted)]"
+                        >
                           <div className="flex items-center gap-2 truncate">
                             <Mail size={12} className="shrink-0 text-[var(--color-text-faint)]" />
                             <span className="truncate">{member.email || '—'}</span>
@@ -1552,20 +1836,37 @@ const TeamView: React.FC = () => {
                     </div>
 
                     {/* Actions Footer */}
-                    <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[var(--color-divider)]">
+                    <div className="grid grid-cols-3 gap-2 pt-2 border-t border-[var(--color-divider)]">
                       <button
                         type="button"
-                        onClick={() => handleOpenEditModal(member)}
-                        className="h-8 px-3 rounded-lg border border-[var(--color-divider)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-[var(--color-text)] text-xs font-semibold flex items-center justify-center gap-1 transition-colors cursor-pointer active:scale-95"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setPeekMemberId(member.id);
+                        }}
+                        className="h-8 px-2 rounded-lg border border-[var(--color-divider)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-[var(--color-primary-hex)] text-xs font-semibold flex items-center justify-center gap-1 transition-colors cursor-pointer active:scale-95"
+                        title="Open Quick Peek Drawer"
+                      >
+                        <ExternalLink size={12} /> Peek
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenEditModal(member);
+                        }}
+                        className="h-8 px-2 rounded-lg border border-[var(--color-divider)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-[var(--color-text)] text-xs font-semibold flex items-center justify-center gap-1 transition-colors cursor-pointer active:scale-95"
                       >
                         <Edit3 size={12} /> Profile
                       </button>
                       <button
                         type="button"
-                        onClick={() => setView('tasks')}
-                        className="h-8 px-3 rounded-lg border border-[var(--color-divider)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-[var(--color-primary-hex)] text-xs font-semibold flex items-center justify-center gap-1 transition-colors cursor-pointer active:scale-95"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setView('tasks');
+                        }}
+                        className="h-8 px-2 rounded-lg border border-[var(--color-divider)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-[var(--color-text-muted)] text-xs font-semibold flex items-center justify-center gap-1 transition-colors cursor-pointer active:scale-95"
                       >
-                        <ExternalLink size={12} /> Tasks
+                        Tasks
                       </button>
                     </div>
 
@@ -1584,6 +1885,8 @@ const TeamView: React.FC = () => {
               itemLabel="members"
               density={tableDensity}
               minWidth="min-w-[850px]"
+              stickyFirstColumn={true}
+              onRowClick={(m) => setPeekMemberId(m.id)}
             />
           )}
 
@@ -1595,7 +1898,7 @@ const TeamView: React.FC = () => {
                 return (
                   <StaggerItem
                     key={m.id}
-                    onClick={() => handleOpenEditModal(m)}
+                    onClick={() => setPeekMemberId(m.id)}
                     className="card p-3.5 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-2xl shadow-xs text-center flex flex-col items-center gap-2 hover:border-[var(--color-primary-hex)] transition-colors cursor-pointer active:scale-95 group"
                   >
                     <div className={clsx(
@@ -1663,6 +1966,7 @@ const TeamView: React.FC = () => {
             showRowNumbers={false}
             minWidth="min-w-[760px]"
             density="compact"
+            onRowClick={(row) => setPeekMemberId(row.member.id)}
           />
         </div>
 
@@ -1852,6 +2156,7 @@ const TeamView: React.FC = () => {
             showRowNumbers={false}
             minWidth="min-w-[700px]"
             density="compact"
+            onRowClick={(m) => setPeekMemberId(m.id)}
           />
         </div>
 
@@ -2063,6 +2368,296 @@ const TeamView: React.FC = () => {
         variant="danger"
         confirmLabel="Remove Member"
       />
+
+      {/* ══════════════════════════════════════════════════════════
+          MEMBER PROFILE MASTER-DETAIL PEEK DRAWER
+         ══════════════════════════════════════════════════════════ */}
+      <SlideOverDrawer
+        isOpen={Boolean(peekMemberId && peekMember)}
+        onClose={() => setPeekMemberId(null)}
+        widthClass="w-full sm:w-[540px] lg:w-[620px]"
+        onPrevious={handlePrevMember}
+        onNext={handleNextMember}
+        hasPrevious={peekMemberIndex > 0}
+        hasNext={peekMemberIndex < filteredMembers.length - 1}
+        title={
+          peekMember ? (
+            <div className="flex items-center gap-3">
+              <div className={clsx(
+                "w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs text-white shadow-xs",
+                AVATAR_COLORS[(filteredMembers.findIndex(m => m.id === peekMember.id) >= 0 ? filteredMembers.findIndex(m => m.id === peekMember.id) : 0) % AVATAR_COLORS.length]
+              )}>
+                {peekMember.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)}
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-bold text-sm text-[var(--color-text)] truncate">{peekMember.name}</h3>
+                  {peekMember.empId && (
+                    <span className="text-[10px] font-mono text-[var(--color-primary-hex)] font-bold bg-[var(--color-primary-highlight-hex)] px-1.5 py-0.5 rounded">
+                      {peekMember.empId}
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-[var(--color-text-muted)] truncate">{peekMember.role || 'Member'}</p>
+              </div>
+            </div>
+          ) : undefined
+        }
+        subtitle={
+          peekMember ? (
+            <div className="flex items-center gap-2 mt-1">
+              <span className={clsx(
+                "text-[10px] font-bold px-2 py-0.5 rounded-full border",
+                peekMember.status === 'Active' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
+                peekMember.status === 'On Leave' ? "bg-amber-500/10 text-amber-500 border-amber-500/20" :
+                peekMember.status === 'Serving Notice Period' ? "bg-orange-500/10 text-orange-500 border-orange-500/20" :
+                "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)]"
+              )}>
+                {peekMember.status}
+              </span>
+              {peekMember.location && (
+                <span className="text-[11px] text-[var(--color-text-faint)] flex items-center gap-1">
+                  <MapPin size={11} /> {peekMember.location}
+                </span>
+              )}
+            </div>
+          ) : undefined
+        }
+        footer={
+          peekMember ? (
+            <div className="flex items-center justify-between w-full">
+              <div className="text-[11px] text-[var(--color-text-faint)]">
+                Member {peekMemberIndex + 1} of {filteredMembers.length}
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const m = peekMember;
+                    setPeekMemberId(null);
+                    handleOpenEditModal(m);
+                  }}
+                  className="flex items-center gap-1.5"
+                >
+                  <Edit3 size={13} />
+                  <span>Edit Profile</span>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="primary"
+                  onClick={() => {
+                    setPeekMemberId(null);
+                    setView('tasks');
+                  }}
+                  className="flex items-center gap-1.5"
+                >
+                  <span>Open Tasks</span>
+                  <ExternalLink size={13} />
+                </Button>
+              </div>
+            </div>
+          ) : undefined
+        }
+      >
+        {peekMember && (() => {
+          const memberTasks = tasks.filter(t => t.assigneeId === peekMember.id || t.assignee === peekMember.name);
+          const doneTasks = memberTasks.filter(t => t.status === TaskStatus.COMPLETED || (t.status as unknown as string) === 'Completed' || (t.status as unknown as string) === 'Done');
+          const blockedTasks = memberTasks.filter(t => t.status === TaskStatus.BLOCKED || (t.status as unknown as string) === 'Blocked');
+          const inProgressTasks = memberTasks.filter(t => t.status === TaskStatus.IN_PROGRESS || (t.status as unknown as string) === 'In Progress');
+          const overdueTasks = memberTasks.filter(t => (t.status !== TaskStatus.COMPLETED && (t.status as unknown as string) !== 'Done' && (t.status as unknown as string) !== 'Completed') && t.dueDate && t.dueDate < new Date().toISOString().split('T')[0]);
+          const completionRate = memberTasks.length > 0 ? Math.round((doneTasks.length / memberTasks.length) * 100) : 0;
+          const memberSkills = normalizeSkills(peekMember.skills);
+
+          return (
+            <div className="space-y-6">
+              {/* Quick Status Jump Bar */}
+              <div className="p-3 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-3">
+                <span className="text-xs font-semibold text-[var(--color-text-muted)]">Current Status:</span>
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  {(['Active', 'On Leave', 'Serving Notice Period', 'Departed'] as const).map((st) => (
+                    <button
+                      key={st}
+                      type="button"
+                      onClick={() => handleSetMemberStatus(peekMember, st)}
+                      className={clsx(
+                        "px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors cursor-pointer active:scale-95",
+                        peekMember.status === st
+                          ? "bg-[var(--color-primary-hex)] text-white border-[var(--color-primary-hex)] font-bold shadow-xs"
+                          : "bg-[var(--color-surface)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:border-[var(--color-border)]"
+                      )}
+                    >
+                      {st === 'Serving Notice Period' ? 'Notice' : st}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 4-Stat Metric Bento */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                <div className="p-3 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] text-center">
+                  <div className="text-[10px] font-semibold text-[var(--color-text-faint)] uppercase">Total Tasks</div>
+                  <div className="text-lg font-bold font-mono text-[var(--color-text)] mt-0.5">{memberTasks.length}</div>
+                </div>
+                <div className="p-3 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] text-center">
+                  <div className="text-[10px] font-semibold text-[var(--color-text-faint)] uppercase">Completed</div>
+                  <div className="text-lg font-bold font-mono text-emerald-500 mt-0.5">{doneTasks.length} ({completionRate}%)</div>
+                </div>
+                <div className="p-3 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] text-center">
+                  <div className="text-[10px] font-semibold text-[var(--color-text-faint)] uppercase">In Progress</div>
+                  <div className="text-lg font-bold font-mono text-blue-500 mt-0.5">{inProgressTasks.length}</div>
+                </div>
+                <div className="p-3 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] text-center">
+                  <div className="text-[10px] font-semibold text-[var(--color-text-faint)] uppercase">Blocked / Overdue</div>
+                  <div className={clsx("text-lg font-bold font-mono mt-0.5", (blockedTasks.length > 0 || overdueTasks.length > 0) ? "text-rose-500" : "text-[var(--color-text-muted)]")}>
+                    {blockedTasks.length + overdueTasks.length}
+                  </div>
+                </div>
+              </div>
+
+              {/* Contact & Hierarchy Details */}
+              <div className="space-y-3">
+                <h4 className="text-xs font-bold text-[var(--color-text)] uppercase tracking-wider">Contact & Organization</h4>
+                <div className="bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] divide-y divide-[var(--color-divider)] text-xs">
+                  <div className="p-3 flex items-center justify-between">
+                    <span className="text-[var(--color-text-muted)] flex items-center gap-2">
+                      <Mail size={13} className="text-[var(--color-text-faint)]" /> Email
+                    </span>
+                    <a href={peekMember.email ? `mailto:${peekMember.email}` : undefined} className="font-medium text-[var(--color-text)] hover:text-[var(--color-primary-hex)] hover:underline truncate max-w-[240px]">
+                      {peekMember.email || '—'}
+                    </a>
+                  </div>
+                  <div className="p-3 flex items-center justify-between">
+                    <span className="text-[var(--color-text-muted)] flex items-center gap-2">
+                      <Phone size={13} className="text-[var(--color-text-faint)]" /> Phone
+                    </span>
+                    <a href={peekMember.phone ? `tel:${peekMember.phone}` : undefined} className="font-medium text-[var(--color-text)] hover:text-[var(--color-primary-hex)]">
+                      {peekMember.phone || '—'}
+                    </a>
+                  </div>
+                  <div className="p-3 flex items-center justify-between">
+                    <span className="text-[var(--color-text-muted)] flex items-center gap-2">
+                      <Briefcase size={13} className="text-[var(--color-text-faint)]" /> Reports To
+                    </span>
+                    <span className="font-medium text-[var(--color-text)]">
+                      {peekMember.reportsTo || 'No Direct Manager (Root)'}
+                    </span>
+                  </div>
+                  <div className="p-3 flex items-center justify-between">
+                    <span className="text-[var(--color-text-muted)] flex items-center gap-2">
+                      <Calendar size={13} className="text-[var(--color-text-faint)]" /> Joined Date
+                    </span>
+                    <span className="font-mono text-[var(--color-text)]">
+                      {peekMember.joinDate || '—'}
+                    </span>
+                  </div>
+                  {peekMember.birthday && (
+                    <div className="p-3 flex items-center justify-between">
+                      <span className="text-[var(--color-text-muted)] flex items-center gap-2">
+                        <Cake size={13} className="text-[var(--color-text-faint)]" /> Birthday
+                      </span>
+                      <span className="font-medium text-[var(--color-text)]">
+                        {peekMember.birthday}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Skills Cloud */}
+              {memberSkills.length > 0 && (
+                <div className="space-y-3">
+                  <h4 className="text-xs font-bold text-[var(--color-text)] uppercase tracking-wider">Skills & Capabilities</h4>
+                  <div className="flex flex-wrap gap-1.5 p-3 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)]">
+                    {memberSkills.map((sk, idx) => (
+                      <span key={idx} className="text-xs px-2.5 py-1 rounded-lg bg-[var(--color-surface)] text-[var(--color-text)] border border-[var(--color-divider)] font-medium">
+                        {sk}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Planned Leaves */}
+              {peekMember.plannedLeaves && peekMember.plannedLeaves.length > 0 && (
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xs font-bold text-[var(--color-text)] uppercase tracking-wider flex items-center gap-1.5">
+                      <Plane size={13} className="text-amber-500" /> Planned Leaves ({peekMember.plannedLeaves.length})
+                    </h4>
+                  </div>
+                  <div className="space-y-2">
+                    {peekMember.plannedLeaves.map((lv, lIdx) => (
+                      <div key={lIdx} className="p-3 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] flex items-center justify-between text-xs">
+                        <div className="space-y-0.5">
+                          <div className="font-semibold text-[var(--color-text)]">{lv.reason || 'Personal Leave'}</div>
+                          <div className="text-[11px] font-mono text-[var(--color-text-muted)]">{lv.from} to {lv.to}</div>
+                        </div>
+                        <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-500 font-bold text-[10px] border border-amber-500/20">
+                          Scheduled
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Assigned Tasks Mini-List */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-bold text-[var(--color-text)] uppercase tracking-wider">
+                    Assigned Tasks ({memberTasks.length})
+                  </h4>
+                  {memberTasks.length > 5 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPeekMemberId(null);
+                        setView('tasks');
+                      }}
+                      className="text-xs text-[var(--color-primary-hex)] font-semibold hover:underline cursor-pointer"
+                    >
+                      View all in Tasks &rarr;
+                    </button>
+                  )}
+                </div>
+
+                {memberTasks.length === 0 ? (
+                  <div className="p-4 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] text-center text-xs text-[var(--color-text-muted)]">
+                    No active tasks assigned to this team member.
+                  </div>
+                ) : (
+                  <div className="space-y-1.5 max-h-64 overflow-y-auto pr-1">
+                    {memberTasks.slice(0, 8).map(task => (
+                      <div
+                        key={task.id}
+                        className="p-2.5 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] rounded-xl border border-[var(--color-divider)] flex items-center justify-between gap-2 text-xs transition-colors"
+                      >
+                        <div className="min-w-0 flex-1">
+                          <div className="font-semibold text-[var(--color-text)] truncate">{task.name}</div>
+                          <div className="text-[10px] text-[var(--color-text-faint)] flex items-center gap-2 mt-0.5">
+                            <span className="font-mono">{task.id}</span>
+                            {task.dueDate && <span>Due {task.dueDate}</span>}
+                          </div>
+                        </div>
+                        <span className={clsx(
+                          "px-2 py-0.5 rounded-full text-[10px] font-bold shrink-0 border",
+                          (task.status === TaskStatus.COMPLETED || (task.status as unknown as string) === 'Done') ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
+                          task.status === TaskStatus.IN_PROGRESS ? "bg-blue-500/10 text-blue-500 border-blue-500/20" :
+                          task.status === TaskStatus.BLOCKED ? "bg-rose-500/10 text-rose-500 border-rose-500/20" :
+                          "bg-[var(--color-surface)] text-[var(--color-text-muted)] border-[var(--color-divider)]"
+                        )}>
+                          {task.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
+      </SlideOverDrawer>
     </MotionPage>
   );
 };
