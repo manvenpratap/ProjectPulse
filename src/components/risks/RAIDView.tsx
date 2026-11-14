@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { RaidItem, Decision } from '../../types';
 import { normRaidImpact, getRaidEffectiveProb, isRaidActive } from '../../utils/projectUtils';
@@ -24,26 +24,45 @@ import {
   ChevronDown,
   ChevronUp,
   SlidersHorizontal,
-  Check
+  Check,
+  CheckCircle2,
+  ExternalLink
 } from 'lucide-react';
 import clsx from 'clsx';
 import Button from '../shared/Button';
 import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import Modal from '../shared/Modal';
+import SlideOverDrawer from '../shared/SlideOverDrawer';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef, DensityMode } from '../shared/DataTable';
 import CollapsibleSummaryStrip, { SummaryMetricItem } from '../shared/CollapsibleSummaryStrip';
 import { MotionPage, StaggerContainer, StaggerItem } from '../shared/MotionPage';
 import { AnimatedMetric } from '../shared/AnimatedMetric';
+import { toast } from '../../utils/toast';
+
+type RaidPreset = 'all' | 'critical' | 'active_risks' | 'active_issues' | 'dependencies' | 'pending_decisions' | 'closed';
 
 const RAIDView: React.FC = () => {
   const { state, updateProject, addLog } = useProject();
   const { raids = [], decisions = [], members = [] } = state;
 
   const [activeTab, setActiveTab] = useState<'all' | 'risks' | 'assumptions' | 'issues' | 'dependencies' | 'decisions'>('all');
+  const [activePreset, setActivePreset] = useState<RaidPreset>('all');
   const [density, setDensity] = useState<DensityMode>('comfortable');
   const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Peek Drawer State
+  const [peekRaidId, setPeekRaidId] = useState<string | null>(null);
+  const [peekDecisionId, setPeekDecisionId] = useState<string | null>(null);
+
+  // Inline Quick-Edit State
+  const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
+  const [editingTitleVal, setEditingTitleVal] = useState<string>('');
+  const [statusMenuRaidId, setStatusMenuRaidId] = useState<string | null>(null);
+  const [statusMenuDecisionId, setStatusMenuDecisionId] = useState<string | null>(null);
+
   const [selectedRaid, setSelectedRaid] = useState<RaidItem | null>(null);
   const [selectedDecision, setSelectedDecision] = useState<Decision | null>(null);
   const [isRaidOpen, setIsRaidOpen] = useState(false);
@@ -73,6 +92,44 @@ const RAIDView: React.FC = () => {
     }
   };
 
+  // Quick Presets Counts & Definitions
+  const presetCounts = useMemo(() => ({
+    all: raids.length + decisions.length,
+    critical: raids.filter(r => (r.severity?.includes('Critical') || r.severity?.includes('S1')) && isRaidActive(r.status)).length,
+    active_risks: raids.filter(r => r.type === 'Risk' && isRaidActive(r.status)).length,
+    active_issues: raids.filter(r => r.type === 'Issue' && isRaidActive(r.status)).length,
+    dependencies: raids.filter(r => r.type === 'Dependency' && isRaidActive(r.status)).length,
+    pending_decisions: decisions.filter(d => d.status === 'Pending Sign-off').length,
+    closed: raids.filter(r => !isRaidActive(r.status)).length,
+  }), [raids, decisions]);
+
+  const PRESETS: { id: RaidPreset; label: string; count: number }[] = useMemo(() => [
+    { id: 'all', label: 'All Items', count: presetCounts.all },
+    { id: 'critical', label: 'Critical (S1)', count: presetCounts.critical },
+    { id: 'active_risks', label: 'Active Risks', count: presetCounts.active_risks },
+    { id: 'active_issues', label: 'Active Issues', count: presetCounts.active_issues },
+    { id: 'dependencies', label: 'Dependencies', count: presetCounts.dependencies },
+    { id: 'pending_decisions', label: 'Pending Decisions', count: presetCounts.pending_decisions },
+    { id: 'closed', label: 'Closed / Mitigated', count: presetCounts.closed },
+  ], [presetCounts]);
+
+  const handlePresetClick = (preset: RaidPreset) => {
+    setActivePreset(preset);
+    setMatrixFilter(null);
+    if (preset === 'pending_decisions') {
+      setActiveTab('decisions');
+    } else if (activeTab === 'decisions') {
+      setActiveTab('all');
+    }
+  };
+
+  const hasActiveFilters = activePreset !== 'all' || searchQuery !== '' || matrixFilter !== null;
+  const resetAllFilters = () => {
+    setActivePreset('all');
+    setSearchQuery('');
+    setMatrixFilter(null);
+  };
+
   // Filter & Search RAID Items
   const getFilteredRaids = () => {
     let list = [...raids];
@@ -87,12 +144,25 @@ const RAIDView: React.FC = () => {
       list = list.filter(r => r.type === typeMap[activeTab]);
     }
 
+    if (activePreset === 'critical') {
+      list = list.filter(r => (r.severity?.includes('Critical') || r.severity?.includes('S1')) && isRaidActive(r.status));
+    } else if (activePreset === 'active_risks') {
+      list = list.filter(r => r.type === 'Risk' && isRaidActive(r.status));
+    } else if (activePreset === 'active_issues') {
+      list = list.filter(r => r.type === 'Issue' && isRaidActive(r.status));
+    } else if (activePreset === 'dependencies') {
+      list = list.filter(r => r.type === 'Dependency' && isRaidActive(r.status));
+    } else if (activePreset === 'closed') {
+      list = list.filter(r => !isRaidActive(r.status));
+    }
+
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       list = list.filter(r => 
         r.title.toLowerCase().includes(q) || 
         (r.desc || '').toLowerCase().includes(q) || 
         (r.owner || '').toLowerCase().includes(q) || 
+        (r.mitigation || '').toLowerCase().includes(q) || 
         r.id.toLowerCase().includes(q)
       );
     }
@@ -126,12 +196,17 @@ const RAIDView: React.FC = () => {
   // Filter & Search Decisions
   const getFilteredDecisions = () => {
     let list = [...decisions];
+    if (activePreset === 'pending_decisions') {
+      list = list.filter(d => d.status === 'Pending Sign-off');
+    }
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       list = list.filter(d => 
         d.title.toLowerCase().includes(q) || 
         d.desc.toLowerCase().includes(q) || 
         (d.rationale || '').toLowerCase().includes(q) || 
+        (d.approver || '').toLowerCase().includes(q) || 
+        (d.proposedBy || '').toLowerCase().includes(q) || 
         d.id.toLowerCase().includes(q)
       );
     }
@@ -145,6 +220,48 @@ const RAIDView: React.FC = () => {
       setSortCol(col);
       setSortOrder('asc');
     }
+  };
+
+  // Inline Title Editing Commit Handlers
+  const handleCommitRaidTitle = (item: RaidItem) => {
+    const trimmed = editingTitleVal.trim();
+    if (trimmed && trimmed !== item.title) {
+      const updated = raids.map(r => r.id === item.id ? { ...r, title: trimmed, updatedAt: new Date().toISOString() } : r);
+      updateProject({ raids: updated });
+      addLog('Updated', item.id, trimmed);
+      toast.success('RAID title updated');
+    }
+    setEditingTitleId(null);
+  };
+
+  const handleCommitDecisionTitle = (item: Decision) => {
+    const trimmed = editingTitleVal.trim();
+    if (trimmed && trimmed !== item.title) {
+      const updated = decisions.map(d => d.id === item.id ? { ...d, title: trimmed, updatedAt: new Date().toISOString() } : d);
+      updateProject({ decisions: updated });
+      addLog('Updated', item.id, trimmed);
+      toast.success('Decision title updated');
+    }
+    setEditingTitleId(null);
+  };
+
+  // Quick Status Jump Handlers
+  const handleSetRaidStatus = (item: RaidItem, newStatus: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const updated = raids.map(r => r.id === item.id ? { ...r, status: newStatus, updatedAt: new Date().toISOString() } : r);
+    updateProject({ raids: updated });
+    addLog('Updated Status', item.id, `${item.status} → ${newStatus}`);
+    setStatusMenuRaidId(null);
+    toast.success(`Status updated to ${newStatus}`);
+  };
+
+  const handleSetDecisionStatus = (item: Decision, newStatus: Decision['status'], e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const updated = decisions.map(d => d.id === item.id ? { ...d, status: newStatus, updatedAt: new Date().toISOString() } : d);
+    updateProject({ decisions: updated });
+    addLog('Updated Decision', item.id, `${item.status} → ${newStatus}`);
+    setStatusMenuDecisionId(null);
+    toast.success(`Decision status updated to ${newStatus}`);
   };
 
   const handleDeleteRaid = (id: string) => {
@@ -259,6 +376,63 @@ const RAIDView: React.FC = () => {
   const activeFiltered = getFilteredRaids();
   const activeDecisions = getFilteredDecisions();
 
+  // Peek Item References & Navigation
+  const peekRaid = useMemo(() => raids.find(r => r.id === peekRaidId) || null, [raids, peekRaidId]);
+  const peekRaidIndex = useMemo(() => activeFiltered.findIndex(r => r.id === peekRaidId), [activeFiltered, peekRaidId]);
+  const handlePrevRaid = () => {
+    if (peekRaidIndex > 0) setPeekRaidId(activeFiltered[peekRaidIndex - 1].id);
+  };
+  const handleNextRaid = () => {
+    if (peekRaidIndex >= 0 && peekRaidIndex < activeFiltered.length - 1) setPeekRaidId(activeFiltered[peekRaidIndex + 1].id);
+  };
+
+  const peekDecision = useMemo(() => decisions.find(d => d.id === peekDecisionId) || null, [decisions, peekDecisionId]);
+  const peekDecisionIndex = useMemo(() => activeDecisions.findIndex(d => d.id === peekDecisionId), [activeDecisions, peekDecisionId]);
+  const handlePrevDecision = () => {
+    if (peekDecisionIndex > 0) setPeekDecisionId(activeDecisions[peekDecisionIndex - 1].id);
+  };
+  const handleNextDecision = () => {
+    if (peekDecisionIndex >= 0 && peekDecisionIndex < activeDecisions.length - 1) setPeekDecisionId(activeDecisions[peekDecisionIndex + 1].id);
+  };
+
+  // Keyboard shortcut listener: '/' for search, '[' & ']' for drawer navigation, Escape to close
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+      if (e.key === '[') {
+        if (peekRaidId) handlePrevRaid();
+        else if (peekDecisionId) handlePrevDecision();
+      }
+      if (e.key === ']') {
+        if (peekRaidId) handleNextRaid();
+        else if (peekDecisionId) handleNextDecision();
+      }
+      if (e.key === 'Escape') {
+        setStatusMenuRaidId(null);
+        setStatusMenuDecisionId(null);
+        setEditingTitleId(null);
+        setPeekRaidId(null);
+        setPeekDecisionId(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [peekRaidId, peekDecisionId, peekRaidIndex, peekDecisionIndex, activeFiltered, activeDecisions]);
+
+  // Close menus on outside click
+  useEffect(() => {
+    if (!statusMenuRaidId && !statusMenuDecisionId) return;
+    const handleClickOutside = () => {
+      setStatusMenuRaidId(null);
+      setStatusMenuDecisionId(null);
+    };
+    window.addEventListener('click', handleClickOutside);
+    return () => window.removeEventListener('click', handleClickOutside);
+  }, [statusMenuRaidId, statusMenuDecisionId]);
+
   const raidSummaryMetrics: SummaryMetricItem[] = [
     { label: 'Active Risks', value: raids.filter(r => r.type === 'Risk' && isRaidActive(r.status)).length, tone: raids.some(r => r.type === 'Risk' && isRaidActive(r.status)) ? 'rose' : 'emerald' },
     { label: 'Critical (S1)', value: raids.filter(r => r.type === 'Risk' && (r.severity?.includes('Critical') || r.severity?.includes('S1'))).length, tone: raids.some(r => r.type === 'Risk' && (r.severity?.includes('Critical') || r.severity?.includes('S1'))) ? 'rose' : 'neutral' },
@@ -316,20 +490,46 @@ const RAIDView: React.FC = () => {
     {
       id: 'title',
       header: 'Decision Title',
-      headerTitle: 'Strategic steering decision topic and context',
+      headerTitle: 'Strategic steering decision topic and context. Double-click to edit title.',
       width: 'min-w-[280px]',
-      cell: (d) => (
-        <div className="flex flex-col min-w-0 max-w-[340px]">
-          <span className="font-bold text-xs text-[var(--color-text)] truncate" title={d.title}>
-            {d.title}
-          </span>
-          {d.desc && (
-            <span className="cell-secondary text-[10px] text-[var(--color-text-muted)] truncate" title={d.desc}>
-              {d.desc}
-            </span>
-          )}
-        </div>
-      )
+      cell: (d) => {
+        const isEditing = editingTitleId === d.id;
+        return (
+          <div className="flex flex-col min-w-0 max-w-[340px]" onClick={e => e.stopPropagation()}>
+            {isEditing ? (
+              <input
+                type="text"
+                autoFocus
+                value={editingTitleVal}
+                onChange={e => setEditingTitleVal(e.target.value)}
+                onBlur={() => handleCommitDecisionTitle(d)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') handleCommitDecisionTitle(d);
+                  if (e.key === 'Escape') setEditingTitleId(null);
+                }}
+                className="w-full bg-[var(--color-surface)] border border-[var(--color-primary-hex)] text-xs font-bold text-[var(--color-text)] rounded px-1.5 py-0.5 outline-none shadow-xs"
+              />
+            ) : (
+              <span 
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  setEditingTitleId(d.id);
+                  setEditingTitleVal(d.title);
+                }}
+                className="font-bold text-xs text-[var(--color-text)] truncate cursor-pointer hover:text-[var(--color-primary-hex)] transition-colors" 
+                title={`${d.title} (Double-click to edit)`}
+              >
+                {d.title}
+              </span>
+            )}
+            {d.desc && (
+              <span className="cell-secondary text-[10px] text-[var(--color-text-muted)] truncate" title={d.desc}>
+                {d.desc}
+              </span>
+            )}
+          </div>
+        );
+      }
     },
     {
       id: 'owner',
@@ -346,12 +546,50 @@ const RAIDView: React.FC = () => {
     {
       id: 'status',
       header: 'Status',
-      headerTitle: 'Current decision sign-off state (Approved, Pending Sign-off, Rejected)',
-      width: 'w-32',
+      headerTitle: 'Current decision sign-off state (Approved, Pending Sign-off, Rejected). Click to jump status.',
+      width: 'w-36',
       cell: (d) => (
-        <span className={clsx("px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap inline-block", getStatusStyle(d.status))}>
-          {d.status}
-        </span>
+        <div className="relative inline-block" onClick={e => e.stopPropagation()}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setStatusMenuDecisionId(statusMenuDecisionId === d.id ? null : d.id);
+            }}
+            className={clsx(
+              "px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap inline-flex items-center gap-1 cursor-pointer transition-transform active:scale-95",
+              getStatusStyle(d.status)
+            )}
+            title="Click to jump status"
+          >
+            <span>{d.status}</span>
+            <ChevronDown size={10} className="opacity-70" />
+          </button>
+
+          {statusMenuDecisionId === d.id && (
+            <div
+              className="absolute left-0 mt-1 w-40 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl shadow-xl z-50 p-1 space-y-0.5 animate-in fade-in zoom-in-95 duration-100"
+              onClick={e => e.stopPropagation()}
+            >
+              {DECISION_STATUSES.map(st => (
+                <button
+                  key={st}
+                  type="button"
+                  onClick={(e) => handleSetDecisionStatus(d, st, e)}
+                  className={clsx(
+                    "w-full text-left px-2.5 py-1 text-xs rounded-lg font-medium transition-colors flex items-center justify-between cursor-pointer",
+                    d.status === st
+                      ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold"
+                      : "text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
+                  )}
+                >
+                  <span>{st}</span>
+                  {d.status === st && <Check size={11} />}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       )
     },
     {
@@ -368,10 +606,18 @@ const RAIDView: React.FC = () => {
     {
       id: 'actions',
       header: 'Actions',
-      width: 'w-20',
+      width: 'w-24',
       align: 'right',
       cell: (d) => (
         <div className="flex gap-1 justify-end whitespace-nowrap" onClick={e => e.stopPropagation()}>
+          <button 
+            onClick={() => setPeekDecisionId(d.id)} 
+            className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors inline-flex items-center justify-center cursor-pointer touch-hit-expand"
+            aria-label={`Peek details for ${d.id}`}
+            title="Inspect decision details"
+          >
+            <ExternalLink size={13} />
+          </button>
           <button 
             onClick={() => handleOpenDecisionModal(d)} 
             className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors inline-flex items-center justify-center cursor-pointer touch-hit-expand"
@@ -408,21 +654,47 @@ const RAIDView: React.FC = () => {
     {
       id: 'title',
       header: 'Title & Context',
-      headerTitle: 'Summary of the risk event or blocker condition. Click to sort.',
+      headerTitle: 'Summary of the risk event or blocker condition. Double-click to edit title. Click to sort.',
       sortable: true,
       width: 'min-w-[260px]',
-      cell: (r) => (
-        <div className="flex flex-col min-w-0 max-w-[320px]">
-          <span className="font-bold text-xs text-[var(--color-text)] truncate" title={r.title}>
-            {r.title}
-          </span>
-          {r.desc && (
-            <span className="cell-secondary text-[10px] text-[var(--color-text-muted)] truncate" title={r.desc}>
-              {r.desc}
-            </span>
-          )}
-        </div>
-      )
+      cell: (r) => {
+        const isEditing = editingTitleId === r.id;
+        return (
+          <div className="flex flex-col min-w-0 max-w-[340px]" onClick={e => e.stopPropagation()}>
+            {isEditing ? (
+              <input
+                type="text"
+                autoFocus
+                value={editingTitleVal}
+                onChange={e => setEditingTitleVal(e.target.value)}
+                onBlur={() => handleCommitRaidTitle(r)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') handleCommitRaidTitle(r);
+                  if (e.key === 'Escape') setEditingTitleId(null);
+                }}
+                className="w-full bg-[var(--color-surface)] border border-[var(--color-primary-hex)] text-xs font-bold text-[var(--color-text)] rounded px-1.5 py-0.5 outline-none shadow-xs"
+              />
+            ) : (
+              <span 
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  setEditingTitleId(r.id);
+                  setEditingTitleVal(r.title);
+                }}
+                className="font-bold text-xs text-[var(--color-text)] truncate cursor-pointer hover:text-[var(--color-primary-hex)] transition-colors" 
+                title={`${r.title} (Double-click to edit)`}
+              >
+                {r.title}
+              </span>
+            )}
+            {r.desc && (
+              <span className="cell-secondary text-[10px] text-[var(--color-text-muted)] truncate" title={r.desc}>
+                {r.desc}
+              </span>
+            )}
+          </div>
+        );
+      }
     },
     {
       id: 'owner',
@@ -472,22 +744,68 @@ const RAIDView: React.FC = () => {
     {
       id: 'status',
       header: 'Status',
-      headerTitle: 'Tracking status: Active, Mitigated, or Closed. Click to sort.',
+      headerTitle: 'Tracking status: Active, Mitigated, or Closed. Click to jump status or sort.',
       sortable: true,
-      width: 'w-24',
+      width: 'w-28',
       cell: (r) => (
-        <span className={clsx("px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap inline-block", getStatusStyle(r.status))}>
-          {r.status}
-        </span>
+        <div className="relative inline-block" onClick={e => e.stopPropagation()}>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setStatusMenuRaidId(statusMenuRaidId === r.id ? null : r.id);
+            }}
+            className={clsx(
+              "px-2 py-0.5 rounded text-xs font-medium whitespace-nowrap inline-flex items-center gap-1 cursor-pointer transition-transform active:scale-95",
+              getStatusStyle(r.status)
+            )}
+            title="Click to jump status"
+          >
+            <span>{r.status}</span>
+            <ChevronDown size={10} className="opacity-70" />
+          </button>
+
+          {statusMenuRaidId === r.id && (
+            <div
+              className="absolute left-0 mt-1 w-32 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl shadow-xl z-50 p-1 space-y-0.5 animate-in fade-in zoom-in-95 duration-100"
+              onClick={e => e.stopPropagation()}
+            >
+              {RAID_STATUSES.map(st => (
+                <button
+                  key={st}
+                  type="button"
+                  onClick={(e) => handleSetRaidStatus(r, st, e)}
+                  className={clsx(
+                    "w-full text-left px-2.5 py-1 text-xs rounded-lg font-medium transition-colors flex items-center justify-between cursor-pointer",
+                    r.status === st
+                      ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold"
+                      : "text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
+                  )}
+                >
+                  <span>{st}</span>
+                  {r.status === st && <Check size={11} />}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       )
     },
     {
       id: 'actions',
       header: 'Actions',
-      width: 'w-20',
+      width: 'w-24',
       align: 'right',
       cell: (r) => (
         <div className="flex gap-1 justify-end whitespace-nowrap" onClick={e => e.stopPropagation()}>
+          <button 
+            onClick={() => setPeekRaidId(r.id)} 
+            className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors inline-flex items-center justify-center cursor-pointer touch-hit-expand"
+            aria-label={`Peek details for ${r.id}`}
+            title="Inspect RAID item details"
+          >
+            <ExternalLink size={13} />
+          </button>
           <button 
             onClick={() => handleOpenRaidModal(r)} 
             className="w-7 h-7 flex items-center justify-center rounded-lg text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] hover:bg-[var(--color-surface-2)] transition-colors inline-flex items-center justify-center cursor-pointer touch-hit-expand"
@@ -605,8 +923,9 @@ const RAIDView: React.FC = () => {
             <div className="relative w-full sm:w-64">
               <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)] pointer-events-none" />
               <input 
+                ref={searchInputRef}
                 type="text"
-                placeholder="Search registry..."
+                placeholder="Search registry... (/)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full h-10 pl-9 pr-8 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs font-medium outline-none focus:border-[var(--color-primary-hex)] transition-colors"
@@ -614,7 +933,7 @@ const RAIDView: React.FC = () => {
               {searchQuery && (
                 <button 
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)] hover:text-[var(--color-text)] p-1"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)] hover:text-[var(--color-text)] p-1 cursor-pointer"
                 >
                   <X size={14} />
                 </button>
@@ -834,6 +1153,56 @@ const RAIDView: React.FC = () => {
           </CollapsibleSummaryStrip>
         )}
 
+        {/* ── Quick Filter Presets Strip ── */}
+        <div className="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar py-0.5 select-none">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="text-[11px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider hidden sm:inline mr-1">
+              Presets:
+            </span>
+            {PRESETS.map((p) => {
+              const isActive = activePreset === p.id;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => handlePresetClick(p.id)}
+                  className={clsx(
+                    "px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all cursor-pointer active:scale-95",
+                    isActive
+                      ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] border-transparent shadow-xs font-bold"
+                      : "bg-[var(--color-surface)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 hover:text-[var(--color-text)]"
+                  )}
+                >
+                  <span>{p.label}</span>
+                  <span className={clsx(
+                    "text-[10px] font-mono px-1.5 py-0.2 rounded-md font-bold",
+                    isActive ? "bg-black/20 text-white" : "bg-[var(--color-surface-2)] text-[var(--color-text-faint)]"
+                  )}>
+                    {p.count}
+                  </span>
+                </button>
+              );
+            })}
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={resetAllFilters}
+                className="px-2 py-1 rounded-xl text-xs font-medium text-rose-500 hover:bg-rose-500/10 flex items-center gap-1 transition-colors cursor-pointer ml-1"
+                title="Reset all filters"
+              >
+                <X size={12} />
+                <span>Reset</span>
+              </button>
+            )}
+          </div>
+
+          <div className="hidden lg:flex items-center gap-2 text-[11px] text-[var(--color-text-faint)] font-mono shrink-0">
+            <span>Press <kbd className="px-1.5 py-0.5 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] font-semibold text-[10px]">/</kbd> to search</span>
+            <span>•</span>
+            <span><kbd className="px-1 py-0.5 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] font-semibold text-[10px]">[</kbd> <kbd className="px-1 py-0.5 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] font-semibold text-[10px] shadow-2xs">]</kbd> to navigate</span>
+          </div>
+        </div>
+
         {/* Register Content: Responsive Card View on Mobile + Table on Desktop */}
         {activeTab === 'decisions' ? (
           <div>
@@ -843,7 +1212,8 @@ const RAIDView: React.FC = () => {
                 activeDecisions.map(d => (
                   <div 
                     key={d.id} 
-                    className="card p-4 space-y-3 border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 transition-colors"
+                    onClick={() => setPeekDecisionId(d.id)}
+                    className="card p-4 space-y-3 border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 transition-colors cursor-pointer active:scale-[0.99]"
                   >
                     <div className="flex items-center justify-between gap-2">
                       <span className="font-mono font-bold text-xs text-[var(--color-primary-hex)] bg-[var(--color-primary-highlight-hex)] px-2 py-0.5 rounded-md">
@@ -887,8 +1257,17 @@ const RAIDView: React.FC = () => {
                     )}
 
                     {/* Touch-Friendly Action Buttons */}
-                    <div className="flex items-center gap-2 pt-2 border-t border-[var(--color-divider)]">
+                    <div className="flex items-center gap-2 pt-2 border-t border-[var(--color-divider)]" onClick={e => e.stopPropagation()}>
                       <button 
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setPeekDecisionId(d.id); }}
+                        className="min-h-[38px] px-3 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] text-[var(--color-text)] rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer border border-[var(--color-divider)]"
+                        aria-label={`Peek details for ${d.id}`}
+                      >
+                        <ExternalLink size={13} /> <span>Details</span>
+                      </button>
+                      <button 
+                        type="button"
                         onClick={() => handleOpenDecisionModal(d)}
                         className="flex-1 min-h-[38px] px-3 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] text-[var(--color-text)] rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer border border-[var(--color-divider)]"
                         aria-label={`Edit ${d.id}`}
@@ -896,6 +1275,7 @@ const RAIDView: React.FC = () => {
                         <Edit2 size={13} /> <span>Edit</span>
                       </button>
                       <button 
+                        type="button"
                         onClick={() => handleDeleteDecision(d.id)}
                         className="min-h-[38px] px-3.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer border border-rose-500/20"
                         aria-label={`Delete ${d.id}`}
@@ -922,6 +1302,8 @@ const RAIDView: React.FC = () => {
                 pagination={decisionPagination}
                 itemLabel="decisions"
                 density={density}
+                stickyFirstColumn={true}
+                onRowClick={(d) => setPeekDecisionId(d.id)}
                 maxHeight="max-h-[calc(100vh-320px)]"
                 emptyMessage={<div className="py-8 text-center text-xs text-[var(--color-text-faint)]">No decisions registered.</div>}
               />
@@ -935,7 +1317,8 @@ const RAIDView: React.FC = () => {
                 activeFiltered.map(r => (
                   <div 
                     key={r.id} 
-                    className="card p-4 space-y-3 border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 transition-colors"
+                    onClick={() => setPeekRaidId(r.id)}
+                    className="card p-4 space-y-3 border border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 transition-colors cursor-pointer active:scale-[0.99]"
                   >
                     <div className="flex items-center justify-between gap-2 flex-wrap">
                       <div className="flex items-center gap-1.5">
@@ -989,8 +1372,17 @@ const RAIDView: React.FC = () => {
                     )}
 
                     {/* Touch-Friendly Action Buttons */}
-                    <div className="flex items-center gap-2 pt-2 border-t border-[var(--color-divider)]">
+                    <div className="flex items-center gap-2 pt-2 border-t border-[var(--color-divider)]" onClick={e => e.stopPropagation()}>
                       <button 
+                        type="button"
+                        onClick={(e) => { e.stopPropagation(); setPeekRaidId(r.id); }}
+                        className="min-h-[38px] px-3 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] text-[var(--color-text)] rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer border border-[var(--color-divider)]"
+                        aria-label={`Peek details for ${r.id}`}
+                      >
+                        <ExternalLink size={13} /> <span>Details</span>
+                      </button>
+                      <button 
+                        type="button"
                         onClick={() => handleOpenRaidModal(r)}
                         className="flex-1 min-h-[38px] px-3 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] text-[var(--color-text)] rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer border border-[var(--color-divider)]"
                         aria-label={`Edit ${r.id}`}
@@ -998,6 +1390,7 @@ const RAIDView: React.FC = () => {
                         <Edit2 size={13} /> <span>Edit</span>
                       </button>
                       <button 
+                        type="button"
                         onClick={() => handleDeleteRaid(r.id)}
                         className="min-h-[38px] px-3.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer border border-rose-500/20"
                         aria-label={`Delete ${r.id}`}
@@ -1027,6 +1420,9 @@ const RAIDView: React.FC = () => {
                 pagination={raidPagination}
                 itemLabel="RAID items"
                 density={density}
+                stickyFirstColumn={true}
+                onRowClick={(r) => setPeekRaidId(r.id)}
+                rowClassName={(r) => (r.severity?.includes('Critical') || r.severity?.includes('S1')) ? "bg-rose-500/[0.02]" : ""}
                 maxHeight="max-h-[calc(100vh-320px)]"
                 emptyMessage={<div className="p-12 text-center text-xs text-[var(--color-text-faint)]">No RAID items mapped.</div>}
               />
@@ -1308,6 +1704,351 @@ const RAIDView: React.FC = () => {
           </div>
         )}
       </Modal>
+
+      {/* ── Master-Detail Peek Side Drawer for RAID Items ── */}
+      <SlideOverDrawer
+        isOpen={Boolean(peekRaid)}
+        onClose={() => setPeekRaidId(null)}
+        title={
+          peekRaid && (
+            <div className="flex items-center gap-2 min-w-0 flex-wrap">
+              <span className="text-xs font-mono font-bold text-[var(--color-primary-hex)] bg-[var(--color-primary-highlight-hex)] border border-[var(--color-primary-hex)]/30 px-2 py-0.5 rounded leading-none">
+                {peekRaid.id}
+              </span>
+              <span className={clsx("px-2 py-0.5 rounded text-xs font-semibold border", getTypeStyle(peekRaid.type))}>
+                {peekRaid.type}
+              </span>
+              <span className={clsx("px-2 py-0.5 rounded text-xs font-medium", getSeverityStyle(peekRaid.severity))}>
+                {peekRaid.severity}
+              </span>
+              <span className={clsx("px-2 py-0.5 rounded text-xs font-medium", getStatusStyle(peekRaid.status))}>
+                {peekRaid.status}
+              </span>
+            </div>
+          )
+        }
+        subtitle={
+          peekRaid && (
+            <div className="text-[11px] text-[var(--color-text-faint)] flex items-center gap-2 mt-0.5 flex-wrap">
+              <span>Owner: {peekRaid.owner || 'Unassigned'}</span>
+              <span>• Due: {peekRaid.dueDate || 'Unscheduled'}</span>
+              <span>• Impact: {peekRaid.impact}</span>
+              {peekRaid.probability && <span>• Probability: {peekRaid.probability}</span>}
+            </div>
+          )
+        }
+        hasPrevious={peekRaidIndex > 0}
+        hasNext={peekRaidIndex >= 0 && peekRaidIndex < activeFiltered.length - 1}
+        onPrevious={handlePrevRaid}
+        onNext={handleNextRaid}
+        footer={
+          peekRaid && (
+            <div className="flex items-center justify-between w-full gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const r = peekRaid;
+                  setPeekRaidId(null);
+                  handleOpenRaidModal(r);
+                }}
+                className="px-3 py-1.5 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] text-xs font-bold text-[var(--color-text)] flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Edit2 size={13} />
+                <span>Edit Full Form</span>
+              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleDeleteRaid(peekRaid.id);
+                    setPeekRaidId(null);
+                  }}
+                  className="px-3 py-1.5 rounded-xl border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Delete
+                </button>
+                {peekRaid.status !== 'Closed' ? (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      const nextSt = peekRaid.status === 'Identified' ? 'Active' : peekRaid.status === 'Active' ? 'Mitigated' : 'Closed';
+                      handleSetRaidStatus(peekRaid, nextSt, e);
+                    }}
+                    className="px-3.5 py-1.5 rounded-xl bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] text-xs font-bold flex items-center gap-1.5 shadow-xs transition-transform active:scale-95 cursor-pointer"
+                  >
+                    <CheckCircle2 size={13} />
+                    <span>Advance Status</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={(e) => handleSetRaidStatus(peekRaid, 'Active', e)}
+                    className="px-3 py-1.5 rounded-xl border border-amber-500/30 text-amber-500 hover:bg-amber-500/10 text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    Reopen
+                  </button>
+                )}
+              </div>
+            </div>
+          )
+        }
+      >
+        {peekRaid && (
+          <div className="space-y-5 text-xs text-[var(--color-text)]">
+            {/* Title & Description */}
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] mb-1">
+                Item Title & Context
+              </div>
+              <h2 className="text-base font-bold text-[var(--color-text)] leading-snug">
+                {peekRaid.title}
+              </h2>
+              {peekRaid.desc && (
+                <p className="text-xs text-[var(--color-text-muted)] mt-1.5 leading-relaxed">
+                  {peekRaid.desc}
+                </p>
+              )}
+            </div>
+
+            {/* Progression Bar */}
+            <div className="p-3 rounded-2xl bg-[var(--color-surface-2)]/70 border border-[var(--color-divider)] space-y-2">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
+                Lifecycle Progression
+              </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                {['Identified', 'Active', 'Mitigated', 'Closed'].map(st => {
+                  const isCurrent = peekRaid.status === st;
+                  return (
+                    <div
+                      key={st}
+                      className={clsx(
+                        "py-1.5 px-2 rounded-xl text-[10px] font-bold text-center transition-all",
+                        isCurrent
+                          ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-xs"
+                          : "bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text-muted)]"
+                      )}
+                    >
+                      {st}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Core Specs Grid */}
+            <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-[var(--color-surface-2)]/40 border border-[var(--color-divider)]">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1">
+                  Owner
+                </span>
+                <span className="font-semibold text-xs text-[var(--color-text)]">
+                  {peekRaid.owner || 'Unassigned'}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1">
+                  Due Date
+                </span>
+                <span className="font-mono text-xs text-[var(--color-text)]">
+                  {peekRaid.dueDate || 'Unscheduled'}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1">
+                  Impact Level
+                </span>
+                <span className="font-semibold text-xs text-[var(--color-text)]">
+                  {peekRaid.impact}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1">
+                  Probability Score
+                </span>
+                <span className="font-semibold text-xs text-[var(--color-text)]">
+                  {peekRaid.probability || 'N/A'}
+                </span>
+              </div>
+            </div>
+
+            {/* Mitigation / Resolution Plan */}
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] mb-1.5">
+                Mitigation & Action Plan
+              </div>
+              <div className="p-3.5 rounded-2xl bg-[var(--color-surface-2)]/50 border border-[var(--color-divider)] leading-relaxed text-xs text-[var(--color-text)]">
+                {peekRaid.mitigation ? (
+                  <p className="whitespace-pre-wrap">{peekRaid.mitigation}</p>
+                ) : (
+                  <span className="text-[var(--color-text-faint)] italic">No mitigation plan recorded yet.</span>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </SlideOverDrawer>
+
+      {/* ── Master-Detail Peek Side Drawer for Decisions ── */}
+      <SlideOverDrawer
+        isOpen={Boolean(peekDecision)}
+        onClose={() => setPeekDecisionId(null)}
+        title={
+          peekDecision && (
+            <div className="flex items-center gap-2 min-w-0 flex-wrap">
+              <span className="text-xs font-mono font-bold text-[var(--color-primary-hex)] bg-[var(--color-primary-highlight-hex)] border border-[var(--color-primary-hex)]/30 px-2 py-0.5 rounded leading-none">
+                {peekDecision.id}
+              </span>
+              <span className={clsx("px-2 py-0.5 rounded text-xs font-medium", getStatusStyle(peekDecision.status))}>
+                {peekDecision.status}
+              </span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text)]">
+                {peekDecision.impact} Impact
+              </span>
+            </div>
+          )
+        }
+        subtitle={
+          peekDecision && (
+            <div className="text-[11px] text-[var(--color-text-faint)] flex items-center gap-2 mt-0.5 flex-wrap">
+              <span>Proposed by: {peekDecision.proposedBy}</span>
+              <span>• Approver: {peekDecision.approver}</span>
+              <span>• Target: {peekDecision.dueDate}</span>
+            </div>
+          )
+        }
+        hasPrevious={peekDecisionIndex > 0}
+        hasNext={peekDecisionIndex >= 0 && peekDecisionIndex < activeDecisions.length - 1}
+        onPrevious={handlePrevDecision}
+        onNext={handleNextDecision}
+        footer={
+          peekDecision && (
+            <div className="flex items-center justify-between w-full gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const d = peekDecision;
+                  setPeekDecisionId(null);
+                  handleOpenDecisionModal(d);
+                }}
+                className="px-3 py-1.5 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-3)] text-xs font-bold text-[var(--color-text)] flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Edit2 size={13} />
+                <span>Edit Full Form</span>
+              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleDeleteDecision(peekDecision.id);
+                    setPeekDecisionId(null);
+                  }}
+                  className="px-3 py-1.5 rounded-xl border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Delete
+                </button>
+                {peekDecision.status !== 'Approved' && (
+                  <button
+                    type="button"
+                    onClick={(e) => handleSetDecisionStatus(peekDecision, 'Approved', e)}
+                    className="px-3.5 py-1.5 rounded-xl bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-xs transition-transform active:scale-95 cursor-pointer"
+                  >
+                    <CheckCircle2 size={13} />
+                    <span>Approve</span>
+                  </button>
+                )}
+                {peekDecision.status !== 'Rejected' && (
+                  <button
+                    type="button"
+                    onClick={(e) => handleSetDecisionStatus(peekDecision, 'Rejected', e)}
+                    className="px-3 py-1.5 rounded-xl border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 text-xs font-bold transition-colors cursor-pointer"
+                  >
+                    Reject
+                  </button>
+                )}
+              </div>
+            </div>
+          )
+        }
+      >
+        {peekDecision && (
+          <div className="space-y-5 text-xs text-[var(--color-text)]">
+            {/* Title & Description */}
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] mb-1">
+                Strategic Decision Title & Scope
+              </div>
+              <h2 className="text-base font-bold text-[var(--color-text)] leading-snug">
+                {peekDecision.title}
+              </h2>
+              {peekDecision.desc && (
+                <p className="text-xs text-[var(--color-text-muted)] mt-1.5 leading-relaxed">
+                  {peekDecision.desc}
+                </p>
+              )}
+            </div>
+
+            {/* Core Specs Grid */}
+            <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-[var(--color-surface-2)]/40 border border-[var(--color-divider)]">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1">
+                  Proposed By
+                </span>
+                <span className="font-semibold text-xs text-[var(--color-text)]">
+                  {peekDecision.proposedBy || 'Unassigned'}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1">
+                  Sign-Off Approver
+                </span>
+                <span className="font-semibold text-xs text-[var(--color-text)]">
+                  {peekDecision.approver || 'Pending'}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1">
+                  Target Resolution Date
+                </span>
+                <span className="font-mono text-xs text-[var(--color-text)]">
+                  {peekDecision.dueDate || 'Unscheduled'}
+                </span>
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1">
+                  Decision Status
+                </span>
+                <span className={clsx("px-2 py-0.5 rounded text-xs font-semibold inline-block", getStatusStyle(peekDecision.status))}>
+                  {peekDecision.status}
+                </span>
+              </div>
+            </div>
+
+            {/* Rationale */}
+            {peekDecision.rationale && (
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] mb-1.5">
+                  Business & Architectural Rationale
+                </div>
+                <div className="p-3.5 rounded-2xl bg-[var(--color-surface-2)]/50 border border-[var(--color-divider)] leading-relaxed text-xs text-[var(--color-text)]">
+                  <p className="whitespace-pre-wrap">{peekDecision.rationale}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Alternatives Considered */}
+            {peekDecision.alternatives && (
+              <div>
+                <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] mb-1.5">
+                  Alternatives Considered & Trade-Offs
+                </div>
+                <div className="p-3.5 rounded-2xl bg-[var(--color-surface-2)]/50 border border-[var(--color-divider)] leading-relaxed text-xs text-[var(--color-text)]">
+                  <p className="whitespace-pre-wrap">{peekDecision.alternatives}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </SlideOverDrawer>
     </MotionPage>
   );
 };
