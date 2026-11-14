@@ -12,7 +12,8 @@ import {
   Release, 
   Feature, 
   LogEntry, 
-  Baseline
+  Baseline,
+  RetroItem
 } from '../types';
 import { 
   getHealthScore, 
@@ -4142,6 +4143,41 @@ export const exportProjectExcel = async (state: ProjectState): Promise<string> =
   });
 
   // ─────────────────────────────────────────────────────────────
+  // SHEET 11B: RETROSPECTIVES
+  // ─────────────────────────────────────────────────────────────
+  const rts = wb.addWorksheet('Retros', { views: [{ state: 'frozen', ySplit: 1 }] });
+  rts.properties.tabColor = { argb: palette.emerald };
+  rts.columns = [
+    { header: 'ID', key: 'id', width: 12 },
+    { header: 'Category', key: 'category', width: 18 },
+    { header: 'Title', key: 'title', width: 40 },
+    { header: 'Description', key: 'desc', width: 48 },
+    { header: 'Author', key: 'author', width: 20 },
+    { header: 'Assigned To', key: 'assignedTo', width: 20 },
+    { header: 'Status', key: 'status', width: 15 },
+    { header: 'Target Sprint', key: 'targetSprint', width: 16 },
+    { header: 'Votes', key: 'votes', width: 10 },
+    { header: 'Created Date', key: 'createdAt', width: 15 }
+  ];
+  for (let c = 1; c <= 10; c++) styleHeaderCell(rts.getRow(1).getCell(c), palette.emerald);
+
+  (state.retros || []).forEach((r, i) => {
+    const row = rts.addRow({
+      id: r.id,
+      category: r.category,
+      title: r.title,
+      desc: r.desc || '',
+      author: r.author,
+      assignedTo: r.assignedTo || '',
+      status: r.status || '',
+      targetSprint: r.targetSprint || '',
+      votes: r.votes,
+      createdAt: r.createdAt
+    });
+    styleZebraRow(row, i, palette, 10);
+  });
+
+  // ─────────────────────────────────────────────────────────────
   // SHEET 12: DATA DICTIONARY & README
   // ─────────────────────────────────────────────────────────────
   const dict = wb.addWorksheet('Data Dictionary', { views: [{ state: 'frozen', ySplit: 1 }] });
@@ -4700,6 +4736,52 @@ export const importProjectExcel = async (
   }));
 
   // ─────────────────────────────────────────────────────────────
+  // 8B. PARSE RETROSPECTIVE ITEMS
+  // ─────────────────────────────────────────────────────────────
+  const rawRetros = readTable(['Retros', 'Retrospective', 'Sprint Retrospective', 'Retro'], {
+    id: ['id', 'retroid', 'key'],
+    category: ['category', 'type'],
+    title: ['title', 'name', 'observation', 'summary'],
+    desc: ['desc', 'description', 'notes', 'context'],
+    author: ['author', 'contributor', 'reporter', 'submittedby'],
+    assignedTo: ['assignedto', 'assignee', 'owner'],
+    status: ['status', 'state'],
+    targetSprint: ['targetsprint', 'sprint'],
+    votes: ['votes', 'score'],
+    createdAt: ['createdat', 'createddate', 'date']
+  });
+
+  const retros: RetroItem[] = rawRetros.map((r, idx) => {
+    let cat: RetroItem['category'] = 'went_well';
+    const c = String(r.category || '').toLowerCase();
+    if (c.includes('improve') || c.includes('growth') || c.includes('bad') || c.includes('friction')) cat = 'needs_improvement';
+    else if (c.includes('action') || c.includes('commit') || c.includes('kaizen')) cat = 'action_item';
+    else if (c.includes('kudo') || c.includes('praise') || c.includes('shout')) cat = 'kudos';
+    else cat = 'went_well';
+
+    let actionStatus: 'Open' | 'In Progress' | 'Resolved' | undefined = undefined;
+    if (cat === 'action_item') {
+      const st = String(r.status || '').toLowerCase();
+      if (st.includes('resolve') || st.includes('done') || st.includes('close')) actionStatus = 'Resolved';
+      else if (st.includes('progress') || st.includes('wip')) actionStatus = 'In Progress';
+      else actionStatus = 'Open';
+    }
+
+    return {
+      id: r.id || `RETRO-${String(idx + 1).padStart(2, '0')}`,
+      category: cat,
+      title: r.title || 'Observation',
+      desc: r.desc || undefined,
+      author: r.author || 'Team Member',
+      assignedTo: r.assignedTo || undefined,
+      status: actionStatus,
+      targetSprint: r.targetSprint || undefined,
+      votes: Number(r.votes) || 1,
+      createdAt: parseExcelDate(r.createdAt) || new Date().toISOString().split('T')[0]
+    };
+  });
+
+  // ─────────────────────────────────────────────────────────────
   // 9. PARSE PROJECT METADATA (Name & Description)
   // ─────────────────────────────────────────────────────────────
   let projectName = '';
@@ -4739,6 +4821,7 @@ export const importProjectExcel = async (
   if (members.length > 0) reconstructed.members = members;
   if (releases.length > 0) reconstructed.releases = releases;
   if (features.length > 0) reconstructed.features = features;
+  if (retros.length > 0) reconstructed.retros = retros;
 
   return reconstructed;
 };
