@@ -918,7 +918,7 @@ export const DeliveriesView: React.FC = () => {
           <StaggerItem className="min-w-[155px] sm:min-w-0 shrink-0 snap-start bg-[var(--color-surface-2)]/80 border border-[var(--color-divider)] p-3 sm:p-3.5 rounded-2xl shadow-2xs">
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Avg Cycle Lead Time</div>
             <div className="text-xl font-bold text-[var(--color-text)] mt-1 tracking-tight">
-              <AnimatedMetric value={telemetry.avgLeadTime} /> <span className="text-xs text-[var(--color-text-muted)] font-normal">days</span>
+              <AnimatedMetric value={parseFloat(telemetry.avgLeadTime) || 0} decimals={1} /> <span className="text-xs text-[var(--color-text-muted)] font-normal">days</span>
             </div>
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Commit-to-release duration</div>
           </StaggerItem>

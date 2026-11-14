@@ -4,7 +4,7 @@ import { animate, useReducedMotion } from 'motion/react';
 export const COCKPIT_EASE: readonly [number, number, number, number] = [0.23, 1, 0.32, 1];
 
 export interface AnimatedMetricProps {
-  value: number;
+  value: number | string;
   prefix?: string;
   suffix?: string;
   decimals?: number;
@@ -17,6 +17,7 @@ export interface AnimatedMetricProps {
 /**
  * High-performance hardware-friendly numeric counter writing directly to DOM ref (0 React re-renders/frame).
  * Renders the final formatted value immediately in JSX so SSR, Playwright tests, and initial paint never read 0.
+ * Supports both numbers and numeric strings (e.g. from `.toFixed()`).
  * Respects system prefers-reduced-motion by default.
  */
 export const AnimatedMetric: React.FC<AnimatedMetricProps> = ({
@@ -33,9 +34,14 @@ export const AnimatedMetric: React.FC<AnimatedMetricProps> = ({
   const systemReducedMotion = useReducedMotion();
   const shouldReduce = explicitReducedMotion ?? (systemReducedMotion === true);
 
+  const numericValue = typeof value === 'number' ? value : parseFloat(value) || 0;
+  const effectiveDecimals = decimals > 0 
+    ? decimals 
+    : (typeof value === 'string' && value.includes('.') ? value.split('.')[1].length : 0);
+
   const formatNumber = (num: number) => {
-    if (decimals > 0) {
-      return num.toFixed(decimals);
+    if (effectiveDecimals > 0) {
+      return num.toFixed(effectiveDecimals);
     }
     return Math.round(num).toString();
   };
@@ -44,12 +50,12 @@ export const AnimatedMetric: React.FC<AnimatedMetricProps> = ({
     const el = spanRef.current;
     if (!el) return;
 
-    if (shouldReduce || value === 0 || isNaN(value)) {
-      el.textContent = `${prefix}${formatNumber(value)}${suffix}`;
+    if (shouldReduce || numericValue === 0 || isNaN(numericValue)) {
+      el.textContent = `${prefix}${formatNumber(numericValue)}${suffix}`;
       return;
     }
 
-    const controls = animate(0, value, {
+    const controls = animate(0, numericValue, {
       duration,
       ease: COCKPIT_EASE,
       onUpdate: (latest) => {
@@ -58,11 +64,11 @@ export const AnimatedMetric: React.FC<AnimatedMetricProps> = ({
     });
 
     return () => controls.stop();
-  }, [value, prefix, suffix, decimals, duration, triggerKey, shouldReduce]);
+  }, [numericValue, prefix, suffix, effectiveDecimals, duration, triggerKey, shouldReduce]);
 
   return (
     <span ref={spanRef} className={className} data-animated-metric="true">
-      {prefix}{formatNumber(value)}{suffix}
+      {prefix}{formatNumber(numericValue)}{suffix}
     </span>
   );
 };
