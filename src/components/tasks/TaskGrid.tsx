@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, type FC, type MouseEvent } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { Task, TaskStatus, TaskPriority, Subtask } from '../../types';
 import { fmtDate, daysDiff, isBlocked, todayStr } from '../../utils/projectUtils';
@@ -30,7 +30,8 @@ import {
   Plus,
   Search,
   RotateCcw,
-  ExternalLink
+  ExternalLink,
+  Pencil
 } from 'lucide-react';
 import Button from '../shared/Button';
 import { motion, AnimatePresence } from 'motion/react';
@@ -65,6 +66,26 @@ const ST_MAP: Record<string, string> = {
   [TaskStatus.CANCELLED]: 'cancelled',
 };
 
+const STATUS_DOT_COLORS: Record<TaskStatus, string> = {
+  [TaskStatus.NOT_STARTED]: 'bg-slate-400',
+  [TaskStatus.IN_PROGRESS]: 'bg-sky-500',
+  [TaskStatus.BLOCKED]: 'bg-rose-500',
+  [TaskStatus.UNDER_REVIEW]: 'bg-amber-500',
+  [TaskStatus.COMPLETED]: 'bg-emerald-500',
+  [TaskStatus.ON_HOLD]: 'bg-purple-500',
+  [TaskStatus.CANCELLED]: 'bg-zinc-400',
+};
+
+const STATUS_ORDER: { status: TaskStatus; key: string }[] = [
+  { status: TaskStatus.NOT_STARTED, key: '1' },
+  { status: TaskStatus.IN_PROGRESS, key: '2' },
+  { status: TaskStatus.BLOCKED, key: '3' },
+  { status: TaskStatus.UNDER_REVIEW, key: '4' },
+  { status: TaskStatus.COMPLETED, key: '5' },
+  { status: TaskStatus.ON_HOLD, key: '6' },
+  { status: TaskStatus.CANCELLED, key: '7' },
+];
+
 const PRI_MAP: Record<string, string> = {
   [TaskPriority.CRITICAL]: 'critical',
   [TaskPriority.HIGH]: 'high',
@@ -72,7 +93,7 @@ const PRI_MAP: Record<string, string> = {
   [TaskPriority.LOW]: 'low',
 };
 
-const TaskGrid: React.FC<TaskGridProps> = ({ 
+const TaskGrid: FC<TaskGridProps> = ({ 
   onEditTask, 
   onNewTask,
   selectedModule: propSelectedModule,
@@ -131,12 +152,119 @@ const TaskGrid: React.FC<TaskGridProps> = ({
   // Master-Detail Peek Side Drawer State
   const [peekTaskId, setPeekTaskId] = useState<string | null>(null);
 
+  // Inline Quick-Edit & Micro-Interaction States
+  const [editingTitleTaskId, setEditingTitleTaskId] = useState<string | null>(null);
+  const [editingTitleValue, setEditingTitleValue] = useState<string>('');
+  const editTitleInputRef = useRef<HTMLInputElement>(null);
+
+  const [statusMenuTaskId, setStatusMenuTaskId] = useState<string | null>(null);
+  const [assigneeMenuTaskId, setAssigneeMenuTaskId] = useState<string | null>(null);
+
+  const startTitleEdit = (taskId: string, currentTitle: string) => {
+    setEditingTitleTaskId(taskId);
+    setEditingTitleValue(currentTitle);
+    setStatusMenuTaskId(null);
+    setAssigneeMenuTaskId(null);
+  };
+
+  const commitTitleEdit = (taskId: string) => {
+    const trimmed = editingTitleValue.trim();
+    if (trimmed) {
+      const task = state.tasks.find(t => t.id === taskId);
+      if (task && task.name !== trimmed) {
+        const res = updateTask(taskId, { name: trimmed }, 'Renamed task title');
+        if (res.ok) {
+          toast.success('Task title updated');
+        } else {
+          toast.error(res.reason || 'Failed to rename task');
+        }
+      }
+    }
+    setEditingTitleTaskId(null);
+  };
+
+  const handleDirectStatusChange = (task: Task, newStatus: TaskStatus, e?: MouseEvent) => {
+    if (e) {
+      e.stopPropagation();
+      if (newStatus === TaskStatus.COMPLETED) {
+        markInteractionOrigin(e.currentTarget);
+      }
+    }
+    const res = updateTask(task.id, { status: newStatus }, `Status jumped to ${newStatus}`);
+    if (!res.ok) {
+      toast.error(res.reason || 'Status update failed.');
+    } else {
+      toast.success(`Task moved to ${newStatus}`);
+    }
+    setStatusMenuTaskId(null);
+  };
+
+  const handleReassign = (taskId: string, newAssignee: string, e: MouseEvent) => {
+    e.stopPropagation();
+    const res = updateTask(taskId, { assignee: newAssignee }, newAssignee ? `Reassigned to ${newAssignee}` : 'Unassigned task');
+    if (!res.ok) {
+      toast.error(res.reason || 'Reassign failed.');
+    } else {
+      toast.success(newAssignee ? `Assigned to ${newAssignee}` : 'Task unassigned');
+    }
+    setAssigneeMenuTaskId(null);
+  };
+
+  // Focus and select input on title edit activation
+  useEffect(() => {
+    if (editingTitleTaskId && editTitleInputRef.current) {
+      editTitleInputRef.current.focus();
+      editTitleInputRef.current.select();
+    }
+  }, [editingTitleTaskId]);
+
+  // Hotkeys for status menu (1-7, Esc)
+  useEffect(() => {
+    if (!statusMenuTaskId) return;
+
+    const handleMenuKeys = (e: globalThis.KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setStatusMenuTaskId(null);
+        return;
+      }
+      const keyMap: Record<string, TaskStatus> = {
+        '1': TaskStatus.NOT_STARTED,
+        '2': TaskStatus.IN_PROGRESS,
+        '3': TaskStatus.BLOCKED,
+        '4': TaskStatus.UNDER_REVIEW,
+        '5': TaskStatus.COMPLETED,
+        '6': TaskStatus.ON_HOLD,
+        '7': TaskStatus.CANCELLED,
+      };
+      if (keyMap[e.key]) {
+        e.preventDefault();
+        const targetTask = state.tasks.find(t => t.id === statusMenuTaskId);
+        if (targetTask) {
+          handleDirectStatusChange(targetTask, keyMap[e.key]);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleMenuKeys);
+    return () => window.removeEventListener('keydown', handleMenuKeys);
+  }, [statusMenuTaskId, state.tasks]);
+
+  // Document click listener to close floating micro-menus
+  useEffect(() => {
+    if (!statusMenuTaskId && !assigneeMenuTaskId) return;
+    const handleDocClick = () => {
+      setStatusMenuTaskId(null);
+      setAssigneeMenuTaskId(null);
+    };
+    document.addEventListener('click', handleDocClick);
+    return () => document.removeEventListener('click', handleDocClick);
+  }, [statusMenuTaskId, assigneeMenuTaskId]);
+
   // Filter options
   const modules = useMemo(() => Array.from(new Set(state.tasks.map(t => t.module).filter(Boolean))), [state.tasks]);
   const releases = useMemo(() => Array.from(new Set(state.tasks.map(t => t.release).filter(Boolean))), [state.tasks]);
   const assignees = useMemo(() => Array.from(new Set(state.tasks.map(t => t.assignee).filter(Boolean))), [state.tasks]);
 
-  const toggleExpand = (taskId: string, e: React.MouseEvent) => {
+  const toggleExpand = (taskId: string, e: MouseEvent) => {
     e.stopPropagation();
     setExpandedTasks(prev => {
       const next = new Set(prev);
@@ -146,7 +274,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
     });
   };
 
-  const handleCycleStatus = (task: Task, e: React.MouseEvent) => {
+  const handleCycleStatus = (task: Task, e: MouseEvent) => {
     e.stopPropagation();
     const nextStatus = nextTaskQuickStatus(task.status);
     if (nextStatus === TaskStatus.COMPLETED) {
@@ -159,7 +287,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
     }
   };
 
-  const handleToggleSubtask = (task: Task, subId: string, e: React.MouseEvent) => {
+  const handleToggleSubtask = (task: Task, subId: string, e: MouseEvent) => {
     e.stopPropagation();
     const patch = computeSubtaskRollup(task, subId);
     if (patch.status === TaskStatus.COMPLETED && task.status !== TaskStatus.COMPLETED) {
@@ -173,7 +301,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
   };
 
   // Bulk Selection Handlers
-  const toggleSelectTask = (id: string, e: React.MouseEvent) => {
+  const toggleSelectTask = (id: string, e: MouseEvent) => {
     e.stopPropagation();
     setSelectedTaskIds(prev => {
       const next = new Set(prev);
@@ -441,32 +569,93 @@ const TaskGrid: React.FC<TaskGridProps> = ({
       cell: (task) => {
         const isMilestone = (task.startDate && task.startDate === task.dueDate) || task.subtasks.some(s => s.name.toLowerCase().includes('milestone'));
         const doneCount = task.subtasks.filter(s => s.done).length;
+        const isEditingThisTitle = editingTitleTaskId === task.id;
+
         return (
           <div className="min-w-0 max-w-[440px] py-0.5">
-            <div className="flex items-center gap-2 min-w-0">
-              {isMilestone && <span title="Milestone" className="shrink-0"><Flag size={12} className="text-amber-500" /></span>}
-              <span 
-                className="text-xs font-semibold text-[var(--color-text)] truncate group-hover:text-[var(--color-primary-hex)] transition-colors cursor-pointer"
-                title={task.screenName ? `${task.name} (Screen: ${task.screenName})` : task.name}
+            {isEditingThisTitle ? (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  commitTitleEdit(task.id);
+                }}
+                className="flex items-center gap-1.5 w-full py-0.5"
+                onClick={(e) => e.stopPropagation()}
+                onDoubleClick={(e) => e.stopPropagation()}
               >
-                {task.name}
-              </span>
-              {task.release && (
-                <span className="shrink-0 px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)] text-[9px] font-mono font-semibold">
-                  {task.release}
-                </span>
-              )}
-              {task.subtasks.length > 0 && (
+                <input
+                  ref={editTitleInputRef}
+                  type="text"
+                  value={editingTitleValue}
+                  onChange={(e) => setEditingTitleValue(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
+                      e.stopPropagation();
+                      setEditingTitleTaskId(null);
+                    }
+                  }}
+                  onBlur={() => commitTitleEdit(task.id)}
+                  className="flex-1 min-w-0 px-2 py-1 text-xs font-semibold text-[var(--color-text)] bg-[var(--color-surface)] border-2 border-[var(--color-primary-hex)] rounded-lg outline-none shadow-sm ring-2 ring-[var(--color-primary-hex)]/20"
+                />
                 <button
-                  onClick={(e) => toggleExpand(task.id, e)}
-                  className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--color-primary-highlight-hex)] hover:bg-[var(--color-primary-highlight-hex)]/80 border border-[var(--color-primary-hex)]/20 text-[10px] font-semibold text-[var(--color-primary-hex)] transition-colors cursor-pointer"
-                  title="Toggle Checklist"
+                  type="submit"
+                  className="p-1 rounded-md bg-[var(--color-primary-hex)] text-white hover:opacity-90 transition-opacity shrink-0 cursor-pointer shadow-2xs"
+                  title="Save (Enter)"
                 >
-                  <CheckSquare size={10} />
-                  <span>{doneCount}/{task.subtasks.length}</span>
+                  <Check size={12} strokeWidth={2.5} />
                 </button>
-              )}
-            </div>
+                <button
+                  type="button"
+                  onClick={() => setEditingTitleTaskId(null)}
+                  className="p-1 rounded-md hover:bg-[var(--color-surface-2)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors shrink-0 cursor-pointer"
+                  title="Cancel (Esc)"
+                >
+                  <X size={12} strokeWidth={2.5} />
+                </button>
+              </form>
+            ) : (
+              <div 
+                className="group/title flex items-center gap-2 min-w-0"
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  startTitleEdit(task.id, task.name);
+                }}
+              >
+                {isMilestone && <span title="Milestone" className="shrink-0"><Flag size={12} className="text-amber-500" /></span>}
+                <span 
+                  className="text-xs font-semibold text-[var(--color-text)] truncate group-hover/title:text-[var(--color-primary-hex)] transition-colors cursor-pointer"
+                  title={`${task.name} (Double-click to rename)`}
+                >
+                  {task.name}
+                </span>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    startTitleEdit(task.id, task.name);
+                  }}
+                  className="opacity-0 group-hover/title:opacity-100 p-0.5 rounded text-[var(--color-text-faint)] hover:text-[var(--color-primary-hex)] transition-all shrink-0 cursor-pointer"
+                  title="Rename task (or double-click)"
+                >
+                  <Pencil size={11} />
+                </button>
+                {task.release && (
+                  <span className="shrink-0 px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)] text-[9px] font-mono font-semibold">
+                    {task.release}
+                  </span>
+                )}
+                {task.subtasks.length > 0 && (
+                  <button
+                    onClick={(e) => toggleExpand(task.id, e)}
+                    className="shrink-0 inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-[var(--color-primary-highlight-hex)] hover:bg-[var(--color-primary-highlight-hex)]/80 border border-[var(--color-primary-hex)]/20 text-[10px] font-semibold text-[var(--color-primary-hex)] transition-colors cursor-pointer"
+                    title="Toggle Checklist"
+                  >
+                    <CheckSquare size={10} />
+                    <span>{doneCount}/{task.subtasks.length}</span>
+                  </button>
+                )}
+              </div>
+            )}
             {/* Second line in comfortable view */}
             <div className="cell-secondary text-[10px] text-[var(--color-text-muted)] flex items-center gap-2 mt-0.5 truncate">
               {task.screenName && (
@@ -492,7 +681,7 @@ const TaskGrid: React.FC<TaskGridProps> = ({
       header: colMap['status']?.label || 'STATUS',
       headerTitle: 'Current task lifecycle state (Not Started, In Progress, Review, Completed, On Hold, Cancelled). Click badge in rows to quick-cycle. Click to sort.',
       sortable: true,
-      width: 'w-32',
+      width: 'w-36',
       filter: (
         <select
           value={selectedStatus}
@@ -505,16 +694,82 @@ const TaskGrid: React.FC<TaskGridProps> = ({
           ))}
         </select>
       ),
-      cell: (task) => (
-        <button
-          onClick={(e) => handleCycleStatus(task, e)}
-          title="Click to cycle status"
-          className={clsx("st-badge cursor-pointer shadow-2xs active:scale-95", `st-${ST_MAP[task.status] || 'not-started'}`)}
-        >
-          <span className="dot" />
-          <span>{task.status}</span>
-        </button>
-      )
+      cell: (task) => {
+        const isMenuOpen = statusMenuTaskId === task.id;
+        return (
+          <div className="relative inline-flex items-center">
+            <div className="inline-flex items-center rounded-lg shadow-2xs group/st">
+              <button
+                type="button"
+                onClick={(e) => handleCycleStatus(task, e)}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setStatusMenuTaskId(prev => prev === task.id ? null : task.id);
+                  setAssigneeMenuTaskId(null);
+                }}
+                title="Click badge to advance, click chevron or right-click to jump"
+                className={clsx(
+                  "st-badge cursor-pointer active:scale-95 transition-transform", 
+                  `st-${ST_MAP[task.status] || 'not-started'}`,
+                  "pr-1 rounded-r-none border-r-0"
+                )}
+              >
+                <span className="dot" />
+                <span>{task.status}</span>
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setStatusMenuTaskId(prev => prev === task.id ? null : task.id);
+                  setAssigneeMenuTaskId(null);
+                }}
+                className={clsx(
+                  "st-badge cursor-pointer px-1.5 rounded-l-none border-l border-current/20 hover:opacity-80 transition-opacity inline-flex items-center justify-center",
+                  `st-${ST_MAP[task.status] || 'not-started'}`
+                )}
+                title="Jump directly to status (Keys 1-7)"
+              >
+                <ChevronDown size={11} className={clsx("transition-transform duration-150", isMenuOpen && "rotate-180")} />
+              </button>
+            </div>
+
+            {isMenuOpen && (
+              <div 
+                className="absolute left-0 top-full mt-1.5 z-50 min-w-[170px] p-1.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-100"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] border-b border-[var(--color-divider)]/40 mb-1 flex items-center justify-between">
+                  <span>Jump to status</span>
+                  <span className="font-mono text-[9px] text-[var(--color-text-faint)]">Keys 1-7</span>
+                </div>
+                <div className="space-y-0.5">
+                  {STATUS_ORDER.map(opt => (
+                    <button
+                      key={opt.status}
+                      type="button"
+                      onClick={(e) => handleDirectStatusChange(task, opt.status, e)}
+                      className={clsx(
+                        "w-full flex items-center justify-between px-2 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer text-left",
+                        task.status === opt.status 
+                          ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold" 
+                          : "text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
+                      )}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={clsx("w-2 h-2 rounded-full shrink-0", STATUS_DOT_COLORS[opt.status])} />
+                        <span>{opt.status}</span>
+                      </div>
+                      <span className="text-[10px] font-mono text-[var(--color-text-faint)]">{opt.key}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
     },
     {
       id: 'priority',
@@ -559,18 +814,81 @@ const TaskGrid: React.FC<TaskGridProps> = ({
           ))}
         </select>
       ),
-      cell: (task) => task.assignee ? (
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold text-[9px] flex items-center justify-center shrink-0 border border-[var(--color-primary-hex)]/30 shadow-2xs">
-            {task.assignee.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase()}
+      cell: (task) => {
+        const isAssigneeOpen = assigneeMenuTaskId === task.id;
+        return (
+          <div className="relative inline-flex items-center min-w-0">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setAssigneeMenuTaskId(prev => prev === task.id ? null : task.id);
+                setStatusMenuTaskId(null);
+              }}
+              className="flex items-center gap-2 px-1.5 py-1 rounded-lg hover:bg-[var(--color-surface-2)] transition-colors group/assign cursor-pointer text-left max-w-full"
+              title="Click to reassign"
+            >
+              {task.assignee ? (
+                <>
+                  <div className="w-5 h-5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold text-[9px] flex items-center justify-center shrink-0 border border-[var(--color-primary-hex)]/30 shadow-2xs">
+                    {task.assignee.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase()}
+                  </div>
+                  <span className="text-xs font-medium text-[var(--color-text)] truncate max-w-[110px]">
+                    {task.assignee}
+                  </span>
+                </>
+              ) : (
+                <span className="text-[11px] text-[var(--color-text-faint)] italic hover:text-[var(--color-primary-hex)]">
+                  + Assign
+                </span>
+              )}
+              <ChevronDown size={10} className="text-[var(--color-text-faint)] group-hover/assign:text-[var(--color-text)] opacity-0 group-hover/assign:opacity-100 transition-opacity shrink-0" />
+            </button>
+
+            {isAssigneeOpen && (
+              <div
+                className="absolute left-0 top-full mt-1.5 z-50 min-w-[180px] p-1.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-100"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] border-b border-[var(--color-divider)]/40 mb-1">
+                  Reassign Task
+                </div>
+                <div className="max-h-[190px] overflow-y-auto space-y-0.5 custom-scroll">
+                  <button
+                    type="button"
+                    onClick={(e) => handleReassign(task.id, '', e)}
+                    className="w-full flex items-center gap-2 px-2 py-1 rounded-lg text-xs font-semibold text-rose-500 hover:bg-rose-500/10 transition-colors text-left cursor-pointer"
+                  >
+                    <X size={12} />
+                    <span>Unassigned</span>
+                  </button>
+                  {assignees.map(member => (
+                    <button
+                      key={member}
+                      type="button"
+                      onClick={(e) => handleReassign(task.id, member, e)}
+                      className={clsx(
+                        "w-full flex items-center justify-between px-2 py-1 rounded-lg text-xs font-semibold transition-colors text-left cursor-pointer",
+                        task.assignee === member
+                          ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold"
+                          : "text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
+                      )}
+                    >
+                      <div className="flex items-center gap-2 truncate">
+                        <div className="w-4 h-4 rounded-full bg-[var(--color-primary-hex)] text-white font-bold text-[8px] flex items-center justify-center shrink-0">
+                          {member.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase()}
+                        </div>
+                        <span className="truncate">{member}</span>
+                      </div>
+                      {task.assignee === member && <Check size={12} className="ml-1 shrink-0 text-[var(--color-primary-hex)]" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-          <span className="text-xs font-medium text-[var(--color-text)] truncate max-w-[120px]">
-            {task.assignee}
-          </span>
-        </div>
-      ) : (
-        <span className="text-[11px] text-[var(--color-text-faint)] italic">—</span>
-      )
+        );
+      }
     },
     {
       id: 'dueDate',
