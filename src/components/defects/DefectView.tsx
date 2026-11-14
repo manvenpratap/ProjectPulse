@@ -735,6 +735,7 @@ const DefectView: React.FC = () => {
             onToggleSelectAll={toggleSelectAll}
             isAllSelected={isAllSelected}
             showRowNumbers
+            stickyFirstColumn
             pagination={pagination}
             itemLabel="defects"
             onRowClick={(defect) => handleEdit(defect.id)}

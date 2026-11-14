@@ -1,4 +1,5 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, Fragment } from 'react';
+import type { ReactNode, ReactElement, ChangeEvent, MouseEvent as ReactMouseEvent } from 'react';
 import { ChevronRight, LayoutList, Table2, SlidersHorizontal, RotateCcw, Inbox } from 'lucide-react';
 import clsx from 'clsx';
 import TablePagination, { UsePaginationReturn } from './TablePagination';
@@ -7,17 +8,17 @@ export type DensityMode = 'comfortable' | 'compact';
 
 export interface ColumnDef<T> {
   id: string;
-  header: React.ReactNode;
+  header: ReactNode;
   headerTitle?: string;
   width?: string;
   align?: 'left' | 'center' | 'right';
   sortable?: boolean;
   sortKey?: string;
-  filter?: React.ReactNode;
-  cell: (item: T, index: number, meta?: { density: DensityMode }) => React.ReactNode;
+  filter?: ReactNode;
+  cell: (item: T, index: number, meta?: { density: DensityMode }) => ReactNode;
   className?: string;
   headerClassName?: string;
-  onClick?: (item: T, event: React.MouseEvent) => void;
+  onClick?: (item: T, event: ReactMouseEvent) => void;
   hideable?: boolean;
   defaultHidden?: boolean;
 }
@@ -45,7 +46,7 @@ export interface DataTableProps<T> {
   // Row Selection & Checkbox Column
   selectable?: boolean;
   selectedIds?: Set<string>;
-  onToggleSelect?: (id: string, event: React.ChangeEvent<HTMLInputElement> | React.MouseEvent) => void;
+  onToggleSelect?: (id: string, event: ChangeEvent<HTMLInputElement> | ReactMouseEvent) => void;
   onToggleSelectAll?: () => void;
   isAllSelected?: boolean;
 
@@ -57,12 +58,13 @@ export interface DataTableProps<T> {
   expandable?: boolean;
   canExpand?: (item: T) => boolean;
   isExpanded?: (item: T) => boolean;
-  onToggleExpand?: (item: T, event: React.MouseEvent) => void;
-  renderSubRows?: (item: T, index: number) => React.ReactNode;
+  onToggleExpand?: (item: T, event: ReactMouseEvent) => void;
+  renderSubRows?: (item: T, index: number) => ReactNode;
 
   // Customization
-  onRowClick?: (item: T, event: React.MouseEvent) => void;
+  onRowClick?: (item: T, event: ReactMouseEvent) => void;
   rowClassName?: (item: T, index: number) => string | undefined | false;
+  stickyFirstColumn?: boolean;
 
   // Loading & Skeletons
   isLoading?: boolean;
@@ -70,8 +72,8 @@ export interface DataTableProps<T> {
 
   // Empty State
   emptyTitle?: string;
-  emptyMessage?: React.ReactNode;
-  emptyAction?: React.ReactNode;
+  emptyMessage?: ReactNode;
+  emptyAction?: ReactNode;
 
   // Responsive Accessibility & Mobile Card Mode (< md)
   tableLabel?: string;
@@ -79,10 +81,10 @@ export interface DataTableProps<T> {
     item: T,
     meta: {
       isSelected: boolean;
-      onToggleSelect: (event: React.ChangeEvent<HTMLInputElement> | React.MouseEvent) => void;
+      onToggleSelect: (event: ChangeEvent<HTMLInputElement> | ReactMouseEvent) => void;
       index: number;
     }
-  ) => React.ReactNode;
+  ) => ReactNode;
 
   // Optional Integrated Pagination
   pagination?: UsePaginationReturn<T>;
@@ -117,6 +119,7 @@ export function DataTable<T>({
   renderSubRows,
   onRowClick,
   rowClassName,
+  stickyFirstColumn = false,
   isLoading = false,
   skeletonRowCount = 5,
   emptyTitle,
@@ -129,7 +132,7 @@ export function DataTable<T>({
   pageSizeOptions,
   enableColumnVisibility = true,
   columnVisibilityStorageKey
-}: DataTableProps<T>): React.ReactElement {
+}: DataTableProps<T>): ReactElement {
   const [showMatrixOnMobile, setShowMatrixOnMobile] = useState(false);
 
   // Column Visibility State & Persistence
@@ -226,6 +229,15 @@ export function DataTable<T>({
     }
     return String(index);
   };
+
+  // Calculate sticky left offsets for frozen primary column
+  let selOffset = 0;
+  if (selectable) selOffset += 40; // w-10 = 40px
+  let numOffset = selOffset;
+  if (showRowNumbers) numOffset += 44; // w-11 = 44px
+  let expOffset = numOffset;
+  if (hasExpand) expOffset += 32; // w-8 = 32px
+  const col0Offset = expOffset;
 
   return (
     <div 
@@ -380,13 +392,13 @@ export function DataTable<T>({
               const id = getKey(item, idx);
               const isSelected = selectedIds ? selectedIds.has(id) : false;
               return (
-                <React.Fragment key={id}>
+                <Fragment key={id}>
                   {mobileCardRenderer(item, {
                     isSelected,
                     onToggleSelect: (e) => onToggleSelect && onToggleSelect(id, e),
                     index: idx,
                   })}
-                </React.Fragment>
+                </Fragment>
               );
             })
           )}
@@ -433,7 +445,10 @@ export function DataTable<T>({
             <tr className={clsx("bg-transparent border-b border-[var(--color-divider)] text-[10px] font-extrabold uppercase tracking-wider text-[var(--color-text-muted)] select-none", headPadY)}>
               {/* Checkbox Header */}
               {selectable && (
-                <th className={clsx("px-2.5 w-10 text-center", headPadY)}>
+                <th 
+                  style={stickyFirstColumn ? { position: 'sticky', left: 0, zIndex: 30 } : undefined}
+                  className={clsx("px-2.5 w-10 text-center", headPadY, stickyFirstColumn && "bg-[var(--color-surface)]")}
+                >
                   <input
                     type="checkbox"
                     checked={isAllSelected}
@@ -446,19 +461,28 @@ export function DataTable<T>({
 
               {/* Row Number Header (#) */}
               {showRowNumbers && (
-                <th className={clsx("px-2 w-11 text-center td-rn font-mono text-[10px] tabular-nums", headPadY)} title="Sequential row index">
+                <th 
+                  style={stickyFirstColumn ? { position: 'sticky', left: selOffset, zIndex: 30 } : undefined}
+                  className={clsx("px-2 w-11 text-center td-rn font-mono text-[10px] tabular-nums", headPadY, stickyFirstColumn && "bg-[var(--color-surface)]")} 
+                  title="Sequential row index"
+                >
                   #
                 </th>
               )}
 
               {/* Expand Toggle Header */}
               {hasExpand && (
-                <th className={clsx("px-1 w-8 text-center", headPadY)} title="Expand or collapse rows" />
+                <th 
+                  style={stickyFirstColumn ? { position: 'sticky', left: numOffset, zIndex: 30 } : undefined}
+                  className={clsx("px-1 w-8 text-center", headPadY, stickyFirstColumn && "bg-[var(--color-surface)]")} 
+                  title="Expand or collapse rows" 
+                />
               )}
 
               {/* Data Columns */}
-              {visibleColumns.map((col) => {
+              {visibleColumns.map((col, cIdx) => {
                 const isSorted = sortField && sortField === (col.sortKey || col.id);
+                const isFrozenCol = stickyFirstColumn && cIdx === 0;
                 const alignClass = 
                   col.align === 'center' ? 'px-2 text-center' :
                   col.align === 'right' ? 'px-3 text-right tabular-nums' :
@@ -473,12 +497,14 @@ export function DataTable<T>({
                   <th
                     key={col.id}
                     onClick={col.sortable && onSort ? () => onSort(col.sortKey || col.id) : undefined}
+                    style={isFrozenCol ? { position: 'sticky', left: col0Offset, zIndex: 30 } : undefined}
                     className={clsx(
                       headPadY,
                       "whitespace-nowrap transition-colors select-none",
                       alignClass,
                       col.width,
                       col.sortable && onSort && "cursor-pointer hover:bg-[var(--color-surface-2)]",
+                      isFrozenCol && "bg-[var(--color-surface)] border-r border-[var(--color-divider)] shadow-[3px_0_8px_-3px_rgba(0,0,0,0.12)]",
                       col.headerClassName
                     )}
                     title={col.headerTitle}
@@ -499,17 +525,42 @@ export function DataTable<T>({
             {/* Inline Filter Row (Sticky along with header) */}
             {hasInlineFilters && (
               <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-divider)] text-xs shadow-xs">
-                {selectable && <th className="p-1" />}
-                {showRowNumbers && <th className="p-1" />}
-                {hasExpand && <th className="p-1" />}
-                {visibleColumns.map((col) => {
+                {selectable && (
+                  <th 
+                    style={stickyFirstColumn ? { position: 'sticky', left: 0, zIndex: 25 } : undefined}
+                    className={clsx("p-1", stickyFirstColumn && "bg-[var(--color-surface-2)]")} 
+                  />
+                )}
+                {showRowNumbers && (
+                  <th 
+                    style={stickyFirstColumn ? { position: 'sticky', left: selOffset, zIndex: 25 } : undefined}
+                    className={clsx("p-1", stickyFirstColumn && "bg-[var(--color-surface-2)]")} 
+                  />
+                )}
+                {hasExpand && (
+                  <th 
+                    style={stickyFirstColumn ? { position: 'sticky', left: numOffset, zIndex: 25 } : undefined}
+                    className={clsx("p-1", stickyFirstColumn && "bg-[var(--color-surface-2)]")} 
+                  />
+                )}
+                {visibleColumns.map((col, cIdx) => {
+                  const isFrozenCol = stickyFirstColumn && cIdx === 0;
                   const alignClass = 
                     col.align === 'center' ? 'text-center' :
                     col.align === 'right' ? 'text-right' :
                     'text-left';
 
                   return (
-                    <th key={`filter-${col.id}`} className={clsx("p-1", alignClass, col.headerClassName)}>
+                    <th 
+                      key={`filter-${col.id}`} 
+                      style={isFrozenCol ? { position: 'sticky', left: col0Offset, zIndex: 25 } : undefined}
+                      className={clsx(
+                        "p-1", 
+                        alignClass, 
+                        isFrozenCol && "bg-[var(--color-surface-2)] border-r border-[var(--color-divider)] shadow-[3px_0_8px_-3px_rgba(0,0,0,0.12)]",
+                        col.headerClassName
+                      )}
+                    >
                       {col.filter ?? null}
                     </th>
                   );
@@ -531,32 +582,52 @@ export function DataTable<T>({
                   )}
                 >
                   {selectable && (
-                    <td className={clsx("px-2.5 text-center", padY)}>
+                    <td 
+                      style={stickyFirstColumn ? { position: 'sticky', left: 0, zIndex: 10 } : undefined}
+                      className={clsx("px-2.5 text-center", padY, stickyFirstColumn && "bg-[var(--color-surface)]")}
+                    >
                       <div className="w-4 h-4 mx-auto rounded bg-[var(--color-surface-2)]" />
                     </td>
                   )}
                   {showRowNumbers && (
-                    <td className={clsx("px-2 text-center", padY)}>
+                    <td 
+                      style={stickyFirstColumn ? { position: 'sticky', left: selOffset, zIndex: 10 } : undefined}
+                      className={clsx("px-2 text-center", padY, stickyFirstColumn && "bg-[var(--color-surface)]")}
+                    >
                       <div className="w-5 h-3 mx-auto rounded bg-[var(--color-surface-2)]" />
                     </td>
                   )}
                   {hasExpand && (
-                    <td className={clsx("px-1 text-center", padY)}>
+                    <td 
+                      style={stickyFirstColumn ? { position: 'sticky', left: numOffset, zIndex: 10 } : undefined}
+                      className={clsx("px-1 text-center", padY, stickyFirstColumn && "bg-[var(--color-surface)]")}
+                    >
                       <div className="w-3.5 h-3.5 mx-auto rounded bg-[var(--color-surface-2)]" />
                     </td>
                   )}
-                  {visibleColumns.map((col, cIdx) => (
-                    <td key={`skeleton-col-${col.id}-${cIdx}`} className={clsx(padY, "px-3")}>
-                      <div
+                  {visibleColumns.map((col, cIdx) => {
+                    const isFrozenCol = stickyFirstColumn && cIdx === 0;
+                    return (
+                      <td 
+                        key={`skeleton-col-${col.id}-${cIdx}`} 
+                        style={isFrozenCol ? { position: 'sticky', left: col0Offset, zIndex: 10 } : undefined}
                         className={clsx(
-                          "h-3.5 rounded-md bg-[var(--color-surface-2)]",
-                          cIdx === 0 ? "w-2/3" : cIdx % 2 === 0 ? "w-3/4" : "w-1/2",
-                          col.align === 'right' && "ml-auto",
-                          col.align === 'center' && "mx-auto"
+                          padY, 
+                          "px-3",
+                          isFrozenCol && "bg-[var(--color-surface)] border-r border-[var(--color-divider)] shadow-[3px_0_8px_-3px_rgba(0,0,0,0.12)]"
                         )}
-                      />
-                    </td>
-                  ))}
+                      >
+                        <div
+                          className={clsx(
+                            "h-3.5 rounded-md bg-[var(--color-surface-2)]",
+                            cIdx === 0 ? "w-2/3" : cIdx % 2 === 0 ? "w-3/4" : "w-1/2",
+                            col.align === 'right' && "ml-auto",
+                            col.align === 'center' && "mx-auto"
+                          )}
+                        />
+                      </td>
+                    );
+                  })}
                 </tr>
               ))
             ) : (
@@ -568,7 +639,7 @@ export function DataTable<T>({
                 const customRowClass = rowClassName ? rowClassName(item, idx) : '';
 
                 return (
-                  <React.Fragment key={id}>
+                  <Fragment key={id}>
                     <tr
                       data-density={density}
                       onClick={onRowClick ? (e) => onRowClick(item, e) : undefined}
@@ -581,7 +652,16 @@ export function DataTable<T>({
                     >
                       {/* Checkbox Cell */}
                       {selectable && (
-                        <td className={clsx("px-2.5 text-center", padY)} onClick={e => e.stopPropagation()}>
+                        <td 
+                          style={stickyFirstColumn ? { position: 'sticky', left: 0, zIndex: 10 } : undefined}
+                          className={clsx(
+                            "px-2.5 text-center", 
+                            padY,
+                            stickyFirstColumn && "bg-[var(--color-surface)] group-hover:bg-[var(--color-surface-2)]",
+                            isSelected && stickyFirstColumn && "bg-[var(--color-primary-highlight-hex)]/40"
+                          )} 
+                          onClick={e => e.stopPropagation()}
+                        >
                           <input
                             type="checkbox"
                             checked={isSelected}
@@ -594,14 +674,31 @@ export function DataTable<T>({
 
                       {/* Row Number Cell */}
                       {showRowNumbers && (
-                        <td className={clsx("px-2 text-center td-rn font-mono text-[10px] tabular-nums text-[var(--color-text-faint)]", padY)}>
+                        <td 
+                          style={stickyFirstColumn ? { position: 'sticky', left: selOffset, zIndex: 10 } : undefined}
+                          className={clsx(
+                            "px-2 text-center td-rn font-mono text-[10px] tabular-nums text-[var(--color-text-faint)]", 
+                            padY,
+                            stickyFirstColumn && "bg-[var(--color-surface)] group-hover:bg-[var(--color-surface-2)]",
+                            isSelected && stickyFirstColumn && "bg-[var(--color-primary-highlight-hex)]/40"
+                          )}
+                        >
                           {baseStartIndex + idx + 1}
                         </td>
                       )}
 
                       {/* Expand Button Cell */}
                       {hasExpand && (
-                        <td className={clsx("px-1 text-center", padY)} onClick={e => e.stopPropagation()}>
+                        <td 
+                          style={stickyFirstColumn ? { position: 'sticky', left: numOffset, zIndex: 10 } : undefined}
+                          className={clsx(
+                            "px-1 text-center", 
+                            padY,
+                            stickyFirstColumn && "bg-[var(--color-surface)] group-hover:bg-[var(--color-surface-2)]",
+                            isSelected && stickyFirstColumn && "bg-[var(--color-primary-highlight-hex)]/40"
+                          )} 
+                          onClick={e => e.stopPropagation()}
+                        >
                           {canItemExpand ? (
                             <button
                               onClick={(e) => onToggleExpand && onToggleExpand(item, e)}
@@ -618,7 +715,8 @@ export function DataTable<T>({
                       )}
 
                       {/* Data Cells */}
-                      {visibleColumns.map((col) => {
+                      {visibleColumns.map((col, cIdx) => {
+                        const isFrozenCol = stickyFirstColumn && cIdx === 0;
                         const alignClass = 
                           col.align === 'center' ? 'px-2 text-center' :
                           col.align === 'right' ? 'px-3 text-right tabular-nums' :
@@ -627,7 +725,14 @@ export function DataTable<T>({
                         return (
                           <td
                             key={col.id}
-                            className={clsx(padY, alignClass, col.className)}
+                            style={isFrozenCol ? { position: 'sticky', left: col0Offset, zIndex: 10 } : undefined}
+                            className={clsx(
+                              padY, 
+                              alignClass, 
+                              col.className,
+                              isFrozenCol && "bg-[var(--color-surface)] group-hover:bg-[var(--color-surface-2)] border-r border-[var(--color-divider)] shadow-[3px_0_8px_-3px_rgba(0,0,0,0.12)]",
+                              isSelected && isFrozenCol && "bg-[var(--color-primary-highlight-hex)]/40"
+                            )}
                             onClick={col.onClick ? (e) => { e.stopPropagation(); col.onClick!(item, e); } : undefined}
                           >
                             {col.cell(item, idx, { density })}
@@ -638,7 +743,7 @@ export function DataTable<T>({
 
                     {/* Sub-rows / Child Hierarchy (e.g. subtasks) */}
                     {isItemExpanded && renderSubRows && renderSubRows(item, idx)}
-                  </React.Fragment>
+                  </Fragment>
                 );
               })
             )}

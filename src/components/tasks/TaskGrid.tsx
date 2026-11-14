@@ -31,7 +31,9 @@ import {
   Search,
   RotateCcw,
   ExternalLink,
-  Pencil
+  Pencil,
+  LayoutList,
+  Table2
 } from 'lucide-react';
 import Button from '../shared/Button';
 import { motion, AnimatePresence } from 'motion/react';
@@ -151,6 +153,8 @@ const TaskGrid: FC<TaskGridProps> = ({
   const [selectedTaskIds, setSelectedTaskIds] = useState<Set<string>>(new Set());
   // Master-Detail Peek Side Drawer State
   const [peekTaskId, setPeekTaskId] = useState<string | null>(null);
+  // Mobile Presentation Mode: Touch Cards vs Horizontal Matrix
+  const [mobileViewMode, setMobileViewMode] = useState<'cards' | 'matrix'>('cards');
 
   // Inline Quick-Edit & Micro-Interaction States
   const [editingTitleTaskId, setEditingTitleTaskId] = useState<string | null>(null);
@@ -1134,6 +1138,38 @@ const TaskGrid: FC<TaskGridProps> = ({
               </select>
             </div>
 
+            {/* Mobile Cards vs Matrix Presentation Mode Switcher */}
+            <div className="lg:hidden inline-flex items-center p-0.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)]">
+              <button
+                type="button"
+                onClick={() => setMobileViewMode('cards')}
+                className={clsx(
+                  "px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer",
+                  mobileViewMode === 'cards' 
+                    ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] shadow-2xs" 
+                    : "text-[var(--color-text-muted)]"
+                )}
+                title="View touch cards"
+              >
+                <LayoutList size={13} />
+                <span>Cards</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setMobileViewMode('matrix')}
+                className={clsx(
+                  "px-2.5 py-1 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-colors cursor-pointer",
+                  mobileViewMode === 'matrix' 
+                    ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] shadow-2xs" 
+                    : "text-[var(--color-text-muted)]"
+                )}
+                title="View full horizontal data matrix"
+              >
+                <Table2 size={13} />
+                <span>Matrix</span>
+              </button>
+            </div>
+
             {/* Toggle Inline Filters */}
             <button
               onClick={() => setShowInlineFilters(!showInlineFilters)}
@@ -1263,7 +1299,8 @@ const TaskGrid: FC<TaskGridProps> = ({
         showRowNumbers
         pagination={pagination}
         itemLabel="tasks"
-        containerClassName="hidden lg:block"
+        stickyFirstColumn
+        containerClassName={mobileViewMode === 'matrix' ? 'block' : 'hidden lg:block'}
         canExpand={(task) => task.subtasks.length > 0}
         isExpanded={(task) => expandedTasks.has(task.id)}
         onToggleExpand={(task, e) => toggleExpand(task.id, e)}
@@ -1391,112 +1428,207 @@ const TaskGrid: FC<TaskGridProps> = ({
       />
 
       {/* ── 4. Mobile View Cards (Touch-friendly & responsive) ── */}
-      <div className="grid grid-cols-1 gap-3 lg:hidden">
-        {filteredTasks.length === 0 && (
-          <div className="p-6 text-center rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] space-y-3">
-            <div className="text-xs font-bold text-[var(--color-text)]">No tasks match active filters</div>
-            <button
-              onClick={() => {
-                setSelectedModule('all');
-                setSelectedRelease('all');
-                setSelectedStatus('all');
-                setSelectedAssignee('all');
-                setSelectedPriority('all');
-                setSearchTerm('');
-              }}
-              className="h-8 px-3.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs font-semibold cursor-pointer"
-            >
-              Clear Filters
-            </button>
-          </div>
-        )}
-        {pagination.paginatedItems.map((task) => {
-          const overdue = daysDiff(task.dueDate)! < 0 && task.status !== TaskStatus.COMPLETED && task.status !== TaskStatus.CANCELLED;
-          const blocked = isBlocked(task, state.tasks);
-          const isExpanded = expandedTasks.has(task.id);
-          
-          return (
-            <div 
-              key={task.id}
-              onClick={() => setPeekTaskId(task.id)}
-              className={clsx(
-                "p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xs motion-safe:active:scale-[0.98] transition-colors duration-150 relative",
-                blocked && "bg-amber-500/5 border-amber-500/20",
-                overdue && "border-rose-500/40 bg-rose-500/5 shadow-xs"
-              )}
-            >
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex flex-col gap-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[11px] font-mono font-bold text-[var(--color-primary-hex)]">{task.id}</span>
+      {mobileViewMode === 'cards' && (
+        <div className="grid grid-cols-1 gap-3 lg:hidden">
+          {filteredTasks.length === 0 && (
+            <div className="p-6 text-center rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface)] space-y-3">
+              <div className="text-xs font-bold text-[var(--color-text)]">No tasks match active filters</div>
+              <button
+                onClick={() => {
+                  setSelectedModule('all');
+                  setSelectedRelease('all');
+                  setSelectedStatus('all');
+                  setSelectedAssignee('all');
+                  setSelectedPriority('all');
+                  setSearchTerm('');
+                }}
+                className="h-8 px-3.5 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg text-xs font-semibold cursor-pointer"
+              >
+                Clear Filters
+              </button>
+            </div>
+          )}
+          {pagination.paginatedItems.map((task) => {
+            const overdue = daysDiff(task.dueDate)! < 0 && task.status !== TaskStatus.COMPLETED && task.status !== TaskStatus.CANCELLED;
+            const blocked = isBlocked(task, state.tasks);
+            const isExpanded = expandedTasks.has(task.id);
+            const isSelected = selectedTaskIds.has(task.id);
+            
+            return (
+              <div 
+                key={task.id}
+                onClick={() => setPeekTaskId(task.id)}
+                className={clsx(
+                  "p-4 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xs motion-safe:active:scale-[0.98] transition-colors duration-150 relative cursor-pointer",
+                  blocked && "bg-amber-500/5 border-amber-500/20",
+                  overdue && "border-rose-500/40 bg-rose-500/5 shadow-xs",
+                  isSelected && "ring-2 ring-[var(--color-primary-hex)] bg-[var(--color-primary-highlight-hex)]/20"
+                )}
+              >
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="flex items-center gap-2 flex-wrap min-w-0">
+                    {/* Mobile Checkbox Selection with 44px touch area */}
                     <button
-                      onClick={(e) => handleCycleStatus(task, e)}
-                      title="Click to cycle status"
-                      className={clsx("st-badge text-[10px]", `st-${ST_MAP[task.status] || 'not-started'}`)}
+                      type="button"
+                      onClick={(e) => toggleSelectTask(task.id, e)}
+                      className="w-8 h-8 -ml-1 rounded-lg flex items-center justify-center hover:bg-[var(--color-surface-2)] active:scale-90 transition-transform cursor-pointer shrink-0"
+                      title="Select task for batch actions"
                     >
-                      <span className="dot" />
-                      <span>{task.status}</span>
+                      {isSelected ? (
+                        <CheckSquare size={18} className="text-[var(--color-primary-hex)]" />
+                      ) : (
+                        <Square size={18} className="text-[var(--color-text-faint)]" />
+                      )}
                     </button>
+
+                    <span className="text-[11px] font-mono font-bold text-[var(--color-primary-hex)] shrink-0">{task.id}</span>
+                    
+                    {/* Status Badge with split chevron jump */}
+                    <div className="relative inline-flex items-center">
+                      <div className="inline-flex items-center rounded-lg shadow-2xs group/mobst">
+                        <button
+                          type="button"
+                          onClick={(e) => handleCycleStatus(task, e)}
+                          title="Tap to cycle status"
+                          className={clsx(
+                            "st-badge text-[10px] cursor-pointer active:scale-95 transition-transform", 
+                            `st-${ST_MAP[task.status] || 'not-started'}`,
+                            "pr-1 rounded-r-none border-r-0 min-h-[30px]"
+                          )}
+                        >
+                          <span className="dot" />
+                          <span>{task.status}</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setStatusMenuTaskId(prev => prev === task.id ? null : task.id);
+                          }}
+                          className={clsx(
+                            "st-badge cursor-pointer px-1.5 rounded-l-none border-l border-current/20 hover:opacity-80 transition-opacity inline-flex items-center justify-center min-h-[30px]",
+                            `st-${ST_MAP[task.status] || 'not-started'}`
+                          )}
+                          title="Jump to status"
+                        >
+                          <ChevronDown size={10} />
+                        </button>
+                      </div>
+                    </div>
+
                     {task.subtasks.length > 0 && (
                       <button
+                        type="button"
                         onClick={(e) => toggleExpand(task.id, e)}
-                        className="flex items-center justify-center gap-1 text-xs font-medium text-[var(--color-primary-hex)] px-2 py-1 min-h-[32px] rounded-lg bg-[var(--color-primary-highlight-hex)] cursor-pointer"
+                        className="inline-flex items-center justify-center gap-1 text-[11px] font-bold text-[var(--color-primary-hex)] px-2.5 py-1 min-h-[30px] rounded-lg bg-[var(--color-primary-highlight-hex)] border border-[var(--color-primary-hex)]/20 cursor-pointer active:scale-95"
+                        title="Expand subtasks"
                       >
-                        <CheckSquare size={12} /> {task.subtasks.filter(s => s.done).length}/{task.subtasks.length}
+                        <CheckSquare size={12} />
+                        <span>{task.subtasks.filter(s => s.done).length}/{task.subtasks.length}</span>
                       </button>
                     )}
                   </div>
-                  <h4 className="text-sm font-bold text-[var(--color-text)] leading-tight mt-1">{task.name}</h4>
-                </div>
-                {blocked && <Lock size={14} className="text-amber-500 shrink-0 ml-2" />}
-              </div>
 
-              {/* Subtasks checklist on mobile */}
-              {isExpanded && task.subtasks.length > 0 && (
-                <div className="mt-3 p-3 bg-[var(--color-surface-2)] rounded-xl space-y-2 border border-[var(--color-divider)]">
-                  {task.subtasks.map(s => (
-                    <div 
-                      key={s.id} 
-                      onClick={(e) => handleToggleSubtask(task, s.id, e)}
-                      className="flex items-center gap-2 text-xs cursor-pointer text-[var(--color-text)] min-h-[32px]"
-                    >
-                      {s.done ? <CheckSquare size={16} className="text-emerald-500 shrink-0" /> : <Square size={16} className="text-[var(--color-text-faint)] shrink-0" />}
-                      <span className={clsx(s.done && "line-through text-[var(--color-text-muted)]")}>{s.name}</span>
+                  {blocked && <Lock size={15} className="text-amber-500 shrink-0 mt-1" />}
+                </div>
+
+                {/* Task Title */}
+                <h4 className="text-sm font-bold text-[var(--color-text)] leading-snug my-1.5">{task.name}</h4>
+
+                {/* Subtasks checklist on mobile with 44px min tap targets */}
+                {isExpanded && task.subtasks.length > 0 && (
+                  <div className="mt-3 p-2 bg-[var(--color-surface-2)] rounded-xl space-y-1 border border-[var(--color-divider)]">
+                    {task.subtasks.map(s => (
+                      <div 
+                        key={s.id} 
+                        onClick={(e) => handleToggleSubtask(task, s.id, e)}
+                        className="flex items-center gap-2.5 px-2 py-2 text-xs cursor-pointer text-[var(--color-text)] min-h-[44px] rounded-lg hover:bg-[var(--color-surface-offset)] active:bg-[var(--color-surface-offset)] transition-colors select-none"
+                      >
+                        {s.done ? (
+                          <CheckSquare size={18} className="text-emerald-500 shrink-0" />
+                        ) : (
+                          <Square size={18} className="text-[var(--color-text-faint)] shrink-0" />
+                        )}
+                        <span className={clsx("flex-1", s.done && "line-through text-[var(--color-text-muted)]")}>
+                          {s.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Card Meta & Progress Bar */}
+                <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-[var(--color-divider)] text-xs">
+                  <div className="flex items-center gap-2.5">
+                    <span className="font-bold text-[var(--color-text-muted)] text-[11px] truncate max-w-[100px]">{task.module}</span>
+                    <span className={clsx("font-mono text-[11px]", overdue ? "text-rose-500 font-bold" : "text-[var(--color-text-muted)]")}>
+                      {fmtDate(task.dueDate)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-bold text-[var(--color-text)] text-[11px]">{task.progress}%</span>
+                    <div className="w-14 h-1.5 bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
+                      <div className="h-full bg-[var(--color-primary-hex)] rounded-full transition-all" style={{ width: `${task.progress}%` }} />
                     </div>
-                  ))}
+                  </div>
                 </div>
-              )}
 
-              <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-[var(--color-divider)] text-xs">
-                <div className="flex items-center gap-3">
-                  <span className="font-bold text-[var(--color-text-muted)] truncate max-w-[110px]">{task.module}</span>
-                  <span className={clsx("font-mono text-[11px]", overdue ? "text-red-500 font-bold" : "text-[var(--color-text-muted)]")}>
-                    {fmtDate(task.dueDate)}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="font-mono font-bold text-[var(--color-text)]">{task.progress}%</span>
-                  <div className="w-12 h-1.5 bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
-                    <div className="h-full bg-[var(--color-primary-hex)]" style={{ width: `${task.progress}%` }} />
+                {/* Quick Mobile Action Strip */}
+                <div className="flex items-center justify-between gap-2 mt-3 pt-2.5 border-t border-[var(--color-divider)]/40" onClick={e => e.stopPropagation()}>
+                  <div className="flex items-center gap-1.5">
+                    {task.assignee ? (
+                      <div className="flex items-center gap-1.5 text-[11px] text-[var(--color-text-muted)] font-medium">
+                        <div className="w-4 h-4 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold text-[8px] flex items-center justify-center border border-[var(--color-primary-hex)]/30">
+                          {task.assignee.split(' ').map(p => p[0]).join('').slice(0, 2).toUpperCase()}
+                        </div>
+                        <span className="truncate max-w-[90px]">{task.assignee}</span>
+                      </div>
+                    ) : (
+                      <span className="text-[11px] text-[var(--color-text-faint)] italic">Unassigned</span>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPeekTaskId(task.id);
+                      }}
+                      className="px-2.5 py-1 min-h-[36px] rounded-lg bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] border border-[var(--color-divider)] text-[11px] font-bold text-[var(--color-text)] flex items-center gap-1 cursor-pointer active:scale-95 transition-transform"
+                      title="Open details drawer"
+                    >
+                      <ExternalLink size={12} />
+                      <span>Details</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => handleCycleStatus(task, e)}
+                      className="px-2.5 py-1 min-h-[36px] rounded-lg bg-[var(--color-primary-highlight-hex)] hover:bg-[var(--color-primary-highlight-hex)]/80 border border-[var(--color-primary-hex)]/20 text-[11px] font-bold text-[var(--color-primary-hex)] flex items-center gap-1 cursor-pointer active:scale-95 transition-transform"
+                      title="Advance to next status"
+                    >
+                      <CheckCircle2 size={12} />
+                      <span>Next</span>
+                    </button>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-        {filteredTasks.length > 0 && (
-          <TablePagination
-            currentPage={pagination.currentPage}
-            totalPages={pagination.totalPages}
-            totalItems={pagination.totalItems}
-            pageSize={pagination.pageSize}
-            onPageChange={pagination.setCurrentPage}
-            onPageSizeChange={pagination.setPageSize}
-            itemLabel="tasks"
-            className="rounded-2xl border border-[var(--color-divider)]"
-          />
-        )}
-      </div>
+            );
+          })}
+          {filteredTasks.length > 0 && (
+            <TablePagination
+              currentPage={pagination.currentPage}
+              totalPages={pagination.totalPages}
+              totalItems={pagination.totalItems}
+              pageSize={pagination.pageSize}
+              onPageChange={pagination.setCurrentPage}
+              onPageSizeChange={pagination.setPageSize}
+              itemLabel="tasks"
+              className="rounded-2xl border border-[var(--color-divider)]"
+            />
+          )}
+        </div>
+      )}
 
       {/* ── 5. Master-Detail Peek Side Drawer ── */}
       <SlideOverDrawer

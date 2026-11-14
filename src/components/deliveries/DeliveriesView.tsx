@@ -1057,6 +1057,7 @@ export const DeliveriesView: React.FC = () => {
             }}
             selectable
             selectedIds={selectedIds}
+            stickyFirstColumn
             onToggleSelect={toggleSelect}
             onToggleSelectAll={toggleSelectAll}
             isAllSelected={selectedIds.size > 0 && selectedIds.size === filteredDeliveries.length}
