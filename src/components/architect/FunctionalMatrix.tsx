@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { 
   Layers, 
@@ -33,6 +33,7 @@ import {
   AlertCircle,
   Sparkles,
   ListChecks,
+  ExternalLink,
   Link as LinkIcon
 } from 'lucide-react';
 import Button from '../shared/Button';
@@ -41,6 +42,7 @@ import SectionHelpButton from '../shared/SectionHelpButton';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef, DensityMode } from '../shared/DataTable';
+import SlideOverDrawer from '../shared/SlideOverDrawer';
 import Modal from '../shared/Modal';
 import ConfirmModal from '../shared/ConfirmModal';
 import { toast } from '../../utils/toast';
@@ -169,14 +171,29 @@ const STANDARD_CATEGORIES = [
   'UI/UX Polish'
 ];
 
+type FeaturePreset = 'all' | 'active' | 'at_risk' | 'matured' | 'planned' | 'complex' | 'unmapped';
+
 export const FunctionalMatrix: React.FC = () => {
-  const { state, updateProject } = useProject();
+  const { state, updateProject, setView } = useProject();
   const [viewMode, setViewMode] = useState<ViewMode>('matrix');
   const [density, setDensity] = useState<DensityMode>('comfortable');
   const [searchTerm, setSearchTerm] = useState('');
   const [complexityFilter, setComplexityFilter] = useState<ComplexityFilter>('all');
   const [selectedModule, setSelectedModule] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [activePreset, setActivePreset] = useState<FeaturePreset>('all');
+  
+  // Batch Operations State
+  const [selectedFeatureNames, setSelectedFeatureNames] = useState<Set<string>>(new Set());
+  const [batchRelease, setBatchRelease] = useState<string>('');
+  const [batchCategory, setBatchCategory] = useState<string>('');
+
+  // Inline Editing & Dropdown Jump Menu State
+  const [editingField, setEditingField] = useState<{ name: string; field: 'name' | 'desc' } | null>(null);
+  const [editingVal, setEditingVal] = useState<string>('');
+  const [categoryMenuFeatureName, setCategoryMenuFeatureName] = useState<string | null>(null);
+  const [releaseMenuFeatureName, setReleaseMenuFeatureName] = useState<string | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   
   // Coverage Audit Panel Toggle & Maps
   const [showCoverageAudit, setShowCoverageAudit] = useState(false);
@@ -399,6 +416,56 @@ export const FunctionalMatrix: React.FC = () => {
     return Array.from(mods).sort();
   }, [features, featureMetrics]);
 
+  // ── Quick Filter Presets & Counts ──
+  const presetCounts = useMemo(() => {
+    const counts = {
+      all: features.length,
+      active: 0,
+      at_risk: 0,
+      matured: 0,
+      planned: 0,
+      complex: 0,
+      unmapped: 0,
+    };
+
+    features.forEach(f => {
+      const mObj = featureMetrics[f.name];
+      const screenCount = (f.screens || []).length;
+      if (mObj?.status === 'Active') counts.active++;
+      if (mObj && (mObj.overdueTasks > 0 || mObj.status === 'At Risk')) counts.at_risk++;
+      if (mObj && (mObj.avgProg === 100 || mObj.status === 'Done')) counts.matured++;
+      if (mObj?.status === 'Planned') counts.planned++;
+      if (screenCount >= 6) counts.complex++;
+      if (screenCount === 0) counts.unmapped++;
+    });
+
+    return counts;
+  }, [features, featureMetrics]);
+
+  const PRESETS: { id: FeaturePreset; label: string; count: number }[] = useMemo(() => [
+    { id: 'all', label: 'All Features', count: presetCounts.all },
+    { id: 'active', label: 'Active', count: presetCounts.active },
+    { id: 'at_risk', label: 'At Risk', count: presetCounts.at_risk },
+    { id: 'matured', label: 'Fully Matured', count: presetCounts.matured },
+    { id: 'planned', label: 'Planned', count: presetCounts.planned },
+    { id: 'complex', label: 'Complex (6+)', count: presetCounts.complex },
+    { id: 'unmapped', label: 'Unmapped Screens', count: presetCounts.unmapped },
+  ], [presetCounts]);
+
+  const handlePresetClick = (preset: FeaturePreset) => {
+    setActivePreset(preset);
+  };
+
+  const hasActiveFilters = activePreset !== 'all' || searchTerm !== '' || complexityFilter !== 'all' || selectedModule !== 'all' || selectedStatus !== 'all';
+
+  const resetAllFilters = () => {
+    setActivePreset('all');
+    setSearchTerm('');
+    setComplexityFilter('all');
+    setSelectedModule('all');
+    setSelectedStatus('all');
+  };
+
   // ── 4. Filtering Logic ──
   const filteredFeatures = useMemo(() => {
     return features.filter(f => {
@@ -424,30 +491,250 @@ export const FunctionalMatrix: React.FC = () => {
         if (st !== selectedStatus) return false;
       }
 
+      // Preset Filtering
+      if (activePreset === 'active' && featureMetrics[f.name]?.status !== 'Active') return false;
+      if (activePreset === 'at_risk' && !(featureMetrics[f.name]?.overdueTasks > 0 || featureMetrics[f.name]?.status === 'At Risk')) return false;
+      if (activePreset === 'matured' && !(featureMetrics[f.name]?.avgProg === 100 || featureMetrics[f.name]?.status === 'Done')) return false;
+      if (activePreset === 'planned' && featureMetrics[f.name]?.status !== 'Planned') return false;
+      if (activePreset === 'complex' && (f.screens || []).length < 6) return false;
+      if (activePreset === 'unmapped' && (f.screens || []).length > 0) return false;
+
       return true;
     });
-  }, [features, searchTerm, complexityFilter, selectedModule, selectedStatus, featureMetrics]);
+  }, [features, searchTerm, complexityFilter, selectedModule, selectedStatus, activePreset, featureMetrics]);
 
   const pagination = usePagination<Feature>(filteredFeatures, 10, 'pp_page_size_features');
 
+  // ── Options and Dropdown Data for Modal & Filter ──
+  const allCategoryOptions = useMemo(() => {
+    const set = new Set<string>(STANDARD_CATEGORIES);
+    features.forEach(f => {
+      if (f.category) set.add(f.category);
+    });
+    return Array.from(set).sort();
+  }, [features]);
+
+  const allReleaseOptions = useMemo(() => {
+    const list = (state.releases || []).map(r => r.name).filter(Boolean);
+    if (list.length === 0) return ['v1.0.0', 'v1.1.0', 'v2.0.0'];
+    return list;
+  }, [state.releases]);
+
+  // Peek Sequential Navigation
+  const selectedFeatureIndex = useMemo(() => {
+    if (!selectedFeature) return -1;
+    return filteredFeatures.findIndex(f => f.name === selectedFeature.name);
+  }, [filteredFeatures, selectedFeature]);
+
+  const handlePrevFeature = () => {
+    if (selectedFeatureIndex > 0) {
+      setSelectedFeature(filteredFeatures[selectedFeatureIndex - 1]);
+    }
+  };
+
+  const handleNextFeature = () => {
+    if (selectedFeatureIndex >= 0 && selectedFeatureIndex < filteredFeatures.length - 1) {
+      setSelectedFeature(filteredFeatures[selectedFeatureIndex + 1]);
+    }
+  };
+
+  // Keyboard navigation & search focus listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) return;
+
+      if (e.key === '/') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+      if (e.key === '[') {
+        if (selectedFeature) handlePrevFeature();
+      }
+      if (e.key === ']') {
+        if (selectedFeature) handleNextFeature();
+      }
+      if (e.key === 'Escape') {
+        setEditingField(null);
+        setCategoryMenuFeatureName(null);
+        setReleaseMenuFeatureName(null);
+        setSelectedFeature(null);
+        setSelectedFeatureNames(new Set());
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedFeature, selectedFeatureIndex, filteredFeatures]);
+
+  // Close menus on outside click
+  useEffect(() => {
+    if (!categoryMenuFeatureName && !releaseMenuFeatureName) return;
+    const handleClickOutside = () => {
+      setCategoryMenuFeatureName(null);
+      setReleaseMenuFeatureName(null);
+    };
+    window.addEventListener('click', handleClickOutside);
+    return () => window.removeEventListener('click', handleClickOutside);
+  }, [categoryMenuFeatureName, releaseMenuFeatureName]);
+
+  const handleCommitEdit = (targetName: string, field: 'name' | 'desc') => {
+    if (!editingVal.trim() && field === 'name') {
+      setEditingField(null);
+      return;
+    }
+    const idx = features.findIndex(f => f.name === targetName);
+    if (idx < 0) {
+      setEditingField(null);
+      return;
+    }
+    const newFeatures = [...features];
+    newFeatures[idx] = {
+      ...newFeatures[idx],
+      [field]: editingVal.trim()
+    };
+    updateProject({ features: newFeatures });
+    toast.success(`Updated feature ${field}`);
+    setEditingField(null);
+  };
+
+  const handleSetFeatureCategory = (feat: Feature, category: string) => {
+    const idx = features.findIndex(f => f.name === feat.name);
+    if (idx < 0) return;
+    const newFeatures = [...features];
+    newFeatures[idx] = { ...newFeatures[idx], category };
+    updateProject({ features: newFeatures });
+    setCategoryMenuFeatureName(null);
+    toast.success(`Category set to "${category}"`);
+  };
+
+  const handleSetFeatureRelease = (feat: Feature, release: string) => {
+    const idx = features.findIndex(f => f.name === feat.name);
+    if (idx < 0) return;
+    const newFeatures = [...features];
+    newFeatures[idx] = { ...newFeatures[idx], release };
+    updateProject({ features: newFeatures });
+    setReleaseMenuFeatureName(null);
+    toast.success(`Release set to "${release}"`);
+  };
+
+  const handleToggleSelectAll = () => {
+    if (selectedFeatureNames.size === filteredFeatures.length) {
+      setSelectedFeatureNames(new Set());
+    } else {
+      setSelectedFeatureNames(new Set(filteredFeatures.map(f => f.name)));
+    }
+  };
+
+  const handleToggleSelectFeature = (name: string) => {
+    setSelectedFeatureNames(prev => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
+  };
+
+  const handleBatchApplyRelease = (rel: string) => {
+    if (!rel || selectedFeatureNames.size === 0) return;
+    const newFeatures = features.map(f => selectedFeatureNames.has(f.name) ? { ...f, release: rel } : f);
+    updateProject({ features: newFeatures });
+    toast.success(`Assigned ${selectedFeatureNames.size} feature(s) to release ${rel}`);
+    setSelectedFeatureNames(new Set());
+    setBatchRelease('');
+  };
+
+  const handleBatchApplyCategory = (cat: string) => {
+    if (!cat || selectedFeatureNames.size === 0) return;
+    const newFeatures = features.map(f => selectedFeatureNames.has(f.name) ? { ...f, category: cat } : f);
+    updateProject({ features: newFeatures });
+    toast.success(`Assigned ${selectedFeatureNames.size} feature(s) to category ${cat}`);
+    setSelectedFeatureNames(new Set());
+    setBatchCategory('');
+  };
+
+  const handleBatchDelete = () => {
+    if (selectedFeatureNames.size === 0) return;
+    setConfirmState({
+      isOpen: true,
+      title: `Delete ${selectedFeatureNames.size} Features?`,
+      message: `Are you sure you want to permanently remove ${selectedFeatureNames.size} features from the functional matrix? Constituent interface screens will become unmapped.`,
+      onConfirm: () => {
+        const newFeatures = features.filter(f => !selectedFeatureNames.has(f.name));
+        updateProject({ features: newFeatures });
+        toast.info(`Deleted ${selectedFeatureNames.size} features.`);
+        setSelectedFeatureNames(new Set());
+      }
+    });
+  };
+
   const columns = useMemo<ColumnDef<Feature>[]>(() => [
+    {
+      id: 'select',
+      header: (
+        <input
+          type="checkbox"
+          checked={filteredFeatures.length > 0 && selectedFeatureNames.size === filteredFeatures.length}
+          onChange={handleToggleSelectAll}
+          className="rounded border-[var(--color-divider)] text-[var(--color-primary-hex)] focus:ring-0 cursor-pointer"
+          aria-label="Select all features"
+        />
+      ),
+      width: 'w-10',
+      align: 'center',
+      cell: (f) => (
+        <input
+          type="checkbox"
+          checked={selectedFeatureNames.has(f.name)}
+          onChange={() => handleToggleSelectFeature(f.name)}
+          onClick={(e) => e.stopPropagation()}
+          className="rounded border-[var(--color-divider)] text-[var(--color-primary-hex)] focus:ring-0 cursor-pointer"
+          aria-label={`Select ${f.name}`}
+        />
+      )
+    },
     {
       id: 'name',
       header: 'Feature Node',
-      headerTitle: 'Strategic capability name and architectural scope',
+      headerTitle: 'Strategic capability name and architectural scope (Double-click to inline edit)',
       width: 'min-w-[260px]',
-      cell: (f) => (
-        <div className="flex flex-col min-w-0 max-w-[320px]">
-          <span className="font-bold text-xs text-[var(--color-text)] truncate" title={f.name}>
-            {f.name}
-          </span>
-          {f.desc && (
-            <span className="cell-secondary text-[10px] text-[var(--color-text-muted)] truncate" title={f.desc}>
-              {f.desc}
-            </span>
-          )}
-        </div>
-      )
+      cell: (f) => {
+        const isEditingName = editingField?.name === f.name && editingField?.field === 'name';
+        return (
+          <div className="flex flex-col min-w-0 max-w-[320px]">
+            {isEditingName ? (
+              <input
+                autoFocus
+                type="text"
+                value={editingVal}
+                onChange={(e) => setEditingVal(e.target.value)}
+                onBlur={() => handleCommitEdit(f.name, 'name')}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') handleCommitEdit(f.name, 'name');
+                  if (e.key === 'Escape') setEditingField(null);
+                }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full px-1.5 py-0.5 bg-[var(--color-surface-2)] border border-[var(--color-primary-hex)] rounded text-xs font-bold text-[var(--color-text)] outline-none"
+              />
+            ) : (
+              <span
+                onDoubleClick={(e) => {
+                  e.stopPropagation();
+                  setEditingField({ name: f.name, field: 'name' });
+                  setEditingVal(f.name);
+                }}
+                className="font-bold text-xs text-[var(--color-text)] truncate hover:text-[var(--color-primary-hex)] cursor-pointer"
+                title={`${f.name} (Double-click to edit)`}
+              >
+                {f.name}
+              </span>
+            )}
+            {f.desc && (
+              <span className="cell-secondary text-[10px] text-[var(--color-text-muted)] truncate" title={f.desc}>
+                {f.desc}
+              </span>
+            )}
+          </div>
+        );
+      }
     },
     {
       id: 'status',
@@ -470,24 +757,94 @@ export const FunctionalMatrix: React.FC = () => {
     {
       id: 'release',
       header: 'Release',
-      headerTitle: 'Target release milestone',
-      width: 'w-24',
-      cell: (f) => (
-        <span className="font-mono text-[11px] text-[var(--color-text-muted)] whitespace-nowrap">
-          {f.release || '—'}
-        </span>
-      )
+      headerTitle: 'Target release milestone (Click to switch)',
+      width: 'w-28',
+      cell: (f) => {
+        const isMenuOpen = releaseMenuFeatureName === f.name;
+        return (
+          <div className="relative inline-block">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setReleaseMenuFeatureName(isMenuOpen ? null : f.name);
+              }}
+              className="font-mono text-[11px] text-[var(--color-text-muted)] hover:text-[var(--color-text)] whitespace-nowrap inline-flex items-center gap-1 cursor-pointer px-1.5 py-0.5 rounded hover:bg-[var(--color-surface-2)]"
+              title="Click to change target release"
+            >
+              <span>{f.release || '—'}</span>
+              <ChevronDown size={10} className="text-[var(--color-text-faint)]" />
+            </button>
+            {isMenuOpen && (
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="absolute left-0 top-full mt-1 w-32 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl shadow-xl z-50 py-1 text-xs"
+              >
+                {allReleaseOptions.map((rel) => (
+                  <button
+                    key={rel}
+                    type="button"
+                    onClick={() => handleSetFeatureRelease(f, rel)}
+                    className={clsx(
+                      "w-full text-left px-3 py-1.5 text-xs hover:bg-[var(--color-surface-2)] flex items-center justify-between cursor-pointer font-mono",
+                      f.release === rel ? "font-bold text-[var(--color-primary-hex)]" : "text-[var(--color-text)]"
+                    )}
+                  >
+                    <span>{rel}</span>
+                    {f.release === rel && <Check size={11} />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      }
     },
     {
       id: 'category',
       header: 'Category',
-      headerTitle: 'Functional architectural domain category',
-      width: 'w-28',
-      cell: (f) => (
-        <span className="px-2 py-0.5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-semibold text-[10px] border border-[var(--color-primary-hex)]/20 whitespace-nowrap inline-block">
-          {f.category || 'General'}
-        </span>
-      )
+      headerTitle: 'Functional architectural domain category (Click to switch)',
+      width: 'w-32',
+      cell: (f) => {
+        const isMenuOpen = categoryMenuFeatureName === f.name;
+        return (
+          <div className="relative inline-block">
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setCategoryMenuFeatureName(isMenuOpen ? null : f.name);
+              }}
+              className="px-2 py-0.5 rounded-full bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-semibold text-[10px] border border-[var(--color-primary-hex)]/20 hover:border-[var(--color-primary-hex)] whitespace-nowrap inline-flex items-center gap-1 cursor-pointer transition-colors"
+              title="Click to change category"
+            >
+              <span>{f.category || 'General'}</span>
+              <ChevronDown size={10} />
+            </button>
+            {isMenuOpen && (
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="absolute left-0 top-full mt-1 w-44 bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-xl shadow-xl z-50 py-1 max-h-48 overflow-y-auto text-xs"
+              >
+                {STANDARD_CATEGORIES.map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => handleSetFeatureCategory(f, cat)}
+                    className={clsx(
+                      "w-full text-left px-3 py-1.5 text-xs hover:bg-[var(--color-surface-2)] flex items-center justify-between cursor-pointer",
+                      f.category === cat ? "font-bold text-[var(--color-primary-hex)]" : "text-[var(--color-text)]"
+                    )}
+                  >
+                    <span>{cat}</span>
+                    {f.category === cat && <Check size={11} />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      }
     },
     {
       id: 'maturation',
@@ -547,12 +904,20 @@ export const FunctionalMatrix: React.FC = () => {
     {
       id: 'actions',
       header: 'Actions',
-      width: 'w-20',
+      width: 'w-24',
       align: 'center',
       cell: (f) => {
         const actualIdx = features.indexOf(f);
         return (
           <div className="flex items-center justify-center gap-1 whitespace-nowrap" onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => setSelectedFeature(f)}
+              className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-[var(--color-surface-2)] text-[var(--color-primary-hex)] transition-colors cursor-pointer"
+              title="Quick Peek Drawer"
+              aria-label="Quick peek feature"
+            >
+              <ExternalLink size={13} />
+            </button>
             <button
               onClick={() => startEdit(actualIdx)}
               className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-[var(--color-surface-2)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors cursor-pointer"
@@ -573,22 +938,7 @@ export const FunctionalMatrix: React.FC = () => {
         );
       }
     }
-  ], [features, featureMetrics]);
-
-  // ── Options and Dropdown Data for Modal & Filter ──
-  const allCategoryOptions = useMemo(() => {
-    const set = new Set<string>(STANDARD_CATEGORIES);
-    features.forEach(f => {
-      if (f.category) set.add(f.category);
-    });
-    return Array.from(set).sort();
-  }, [features]);
-
-  const allReleaseOptions = useMemo(() => {
-    const list = (state.releases || []).map(r => r.name).filter(Boolean);
-    if (list.length === 0) return ['v1.0.0', 'v1.1.0', 'v2.0.0'];
-    return list;
-  }, [state.releases]);
+  ], [features, featureMetrics, filteredFeatures, selectedFeatureNames, editingField, editingVal, categoryMenuFeatureName, releaseMenuFeatureName, allReleaseOptions]);
 
   const availableScreenModules = useMemo(() => {
     const mods = new Set<string>();
@@ -1234,6 +1584,49 @@ export const FunctionalMatrix: React.FC = () => {
         </StaggerContainer>
         </CollapsibleSummaryStrip>
 
+        {/* ── Quick Filter Presets Strip ── */}
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 text-xs">
+          {PRESETS.map((p) => {
+            const isActive = activePreset === p.id;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => handlePresetClick(p.id)}
+                className={clsx(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-medium text-xs whitespace-nowrap transition-all cursor-pointer border active:scale-95",
+                  isActive
+                    ? "bg-[var(--color-primary-hex)] text-white border-[var(--color-primary-hex)] shadow-xs font-bold"
+                    : "bg-[var(--color-surface)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:border-[var(--color-border)] hover:text-[var(--color-text)]"
+                )}
+              >
+                <span>{p.label}</span>
+                <span
+                  className={clsx(
+                    "text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold",
+                    isActive
+                      ? "bg-white/20 text-white"
+                      : "bg-[var(--color-surface-2)] text-[var(--color-text-faint)]"
+                  )}
+                >
+                  {p.count}
+                </span>
+              </button>
+            );
+          })}
+
+          {hasActiveFilters && (
+            <button
+              type="button"
+              onClick={resetAllFilters}
+              className="text-xs text-[var(--color-primary-hex)] font-semibold hover:underline flex items-center gap-1 whitespace-nowrap px-2 py-1 cursor-pointer"
+            >
+              <X size={12} />
+              Reset All
+            </button>
+          )}
+        </div>
+
         {/* Filter Controls Row */}
         <div className="flex flex-wrap items-center justify-between gap-2.5 pt-1 text-xs">
           <div className="flex flex-wrap items-center gap-2 flex-1 min-w-[240px]">
@@ -1241,8 +1634,9 @@ export const FunctionalMatrix: React.FC = () => {
             <div className="relative flex-1 min-w-[160px] max-w-xs">
               <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
               <input 
+                ref={searchInputRef}
                 className="w-full bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-lg pl-8 pr-3 py-1.5 text-xs text-[var(--color-text)] outline-none focus:border-[var(--color-primary-hex)] transition-colors"
-                placeholder="Search features, screens, goals..."
+                placeholder="Search features, screens, goals... (/)"
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
               />
@@ -1331,8 +1725,9 @@ export const FunctionalMatrix: React.FC = () => {
               return (
                 <div 
                   key={f.name + idx}
+                  onClick={() => setSelectedFeature(f)}
                   className={clsx(
-                    "card-glass border rounded-2xl shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col relative overflow-hidden group",
+                    "card-glass border rounded-2xl shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col relative overflow-hidden group cursor-pointer",
                     healthBorder
                   )}
                 >
@@ -1374,7 +1769,21 @@ export const FunctionalMatrix: React.FC = () => {
                       {/* Card Actions */}
                       <div className="flex items-center gap-1 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shrink-0">
                         <button
-                          onClick={() => startEdit(actualIdx)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedFeature(f);
+                          }}
+                          className="w-7 h-7 rounded-lg hover:bg-[var(--color-surface-2)] text-[var(--color-primary-hex)] flex items-center justify-center transition-colors cursor-pointer"
+                          title="Quick Peek Drawer"
+                          aria-label="Quick peek feature"
+                        >
+                          <ExternalLink size={13} />
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            startEdit(actualIdx);
+                          }}
                           className="w-7 h-7 rounded-lg hover:bg-[var(--color-surface-2)] text-[var(--color-text-muted)] hover:text-[var(--color-text)] flex items-center justify-center transition-colors cursor-pointer"
                           title="Edit feature"
                           aria-label="Edit feature"
@@ -1382,7 +1791,10 @@ export const FunctionalMatrix: React.FC = () => {
                           <Edit2 size={13} />
                         </button>
                         <button
-                          onClick={() => removeFeature(actualIdx)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeFeature(actualIdx);
+                          }}
                           className="w-7 h-7 rounded-lg hover:bg-rose-500/10 text-rose-500 hover:text-rose-600 flex items-center justify-center transition-colors cursor-pointer"
                           title="Delete feature"
                           aria-label="Delete feature"
@@ -1503,6 +1915,7 @@ export const FunctionalMatrix: React.FC = () => {
             density={density}
             pagination={pagination}
             itemLabel="features"
+            stickyFirstColumn={true}
             onRowClick={(f) => setSelectedFeature(f)}
             rowClassName={(f) => {
               const mObj = featureMetrics[f.name];
@@ -1607,40 +2020,175 @@ export const FunctionalMatrix: React.FC = () => {
         </div>
       </Modal>
 
-      {/* ── 6. Feature Detail Inspector Drawer ── */}
-      {selectedFeature && (
-        <div className="fixed inset-0 z-[110] flex motion-safe:animate-in motion-safe:fade-in duration-200">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setSelectedFeature(null)} />
-          <div className="ml-auto w-full max-w-xl bg-[var(--color-surface)] h-full relative shadow-2xl flex flex-col border-l border-[var(--color-divider)]">
-            <div className="p-6 border-b border-[var(--color-divider)] flex items-center justify-between bg-[var(--color-surface-2)]">
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">Strategic Feature Node</span>
-                <h2 className="text-xl font-black text-[var(--color-text)] tracking-tight">{selectedFeature.name}</h2>
+      {/* ── 6. Feature Detail Master-Detail Peek Side Drawer ── */}
+      <SlideOverDrawer
+        isOpen={Boolean(selectedFeature)}
+        onClose={() => setSelectedFeature(null)}
+        widthClass="w-full sm:w-[540px] lg:w-[620px]"
+        onPrevious={handlePrevFeature}
+        onNext={handleNextFeature}
+        hasPrevious={selectedFeatureIndex > 0}
+        hasNext={selectedFeatureIndex < filteredFeatures.length - 1}
+        title={
+          selectedFeature ? (
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] border border-[var(--color-primary-hex)]/20 flex items-center justify-center font-mono font-bold text-xs shrink-0 shadow-xs">
+                {String((features.findIndex(f => f.name === selectedFeature.name) >= 0 ? features.findIndex(f => f.name === selectedFeature.name) : 0) + 1).padStart(2, '0')}
               </div>
-              <button onClick={() => setSelectedFeature(null)} className="p-2 text-[var(--color-text-faint)] hover:text-[var(--color-text)] cursor-pointer">
-                <X size={18} />
-              </button>
+              <div className="min-w-0">
+                <h3 className="font-bold text-sm text-[var(--color-text)] truncate">{selectedFeature.name}</h3>
+                <p className="text-xs text-[var(--color-text-muted)] truncate">{selectedFeature.category || 'Core Platform'}</p>
+              </div>
             </div>
+          ) : undefined
+        }
+        subtitle={
+          selectedFeature ? (() => {
+            const mObj = featureMetrics[selectedFeature.name] || { status: 'Planned', avgProg: 0 };
+            return (
+              <div className="flex items-center gap-2 mt-1">
+                <span className={clsx(
+                  "text-[10px] font-bold px-2 py-0.5 rounded-full border",
+                  mObj.status === 'Done' ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20" :
+                  mObj.status === 'At Risk' ? "bg-rose-500/10 text-rose-500 border-rose-500/20" :
+                  mObj.status === 'Active' ? "bg-blue-500/10 text-blue-500 border-blue-500/20" :
+                  "bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-divider)]"
+                )}>
+                  {mObj.status}
+                </span>
+                {selectedFeature.release && (
+                  <span className="text-[11px] font-mono text-[var(--color-text-faint)] flex items-center gap-1">
+                    <Flag size={11} /> {selectedFeature.release}
+                  </span>
+                )}
+              </div>
+            );
+          })() : undefined
+        }
+        footer={
+          selectedFeature ? (
+            <div className="flex items-center justify-between w-full">
+              <div className="text-[11px] text-[var(--color-text-faint)]">
+                Feature {selectedFeatureIndex + 1} of {filteredFeatures.length}
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const f = selectedFeature;
+                    const targetIdx = features.findIndex(feat => feat.name === f.name);
+                    setSelectedFeature(null);
+                    if (targetIdx >= 0) startEdit(targetIdx);
+                  }}
+                  className="flex items-center gap-1.5"
+                >
+                  <Edit2 size={13} />
+                  <span>Edit Definition</span>
+                </Button>
+                <Button
+                  size="sm"
+                  variant="primary"
+                  onClick={() => {
+                    setSelectedFeature(null);
+                    setView('tasks');
+                  }}
+                  className="flex items-center gap-1.5"
+                >
+                  <span>View in Tasks</span>
+                  <ExternalLink size={13} />
+                </Button>
+              </div>
+            </div>
+          ) : undefined
+        }
+      >
+        {selectedFeature && (() => {
+          const mObj = featureMetrics[selectedFeature.name] || {
+            totTasks: 0,
+            doneTasks: 0,
+            avgProg: 0,
+            overdueTasks: 0,
+            status: 'Planned',
+            impactedModules: []
+          };
+          const linkedTasks = state.tasks.filter(t => 
+            t.module === selectedFeature.name || 
+            selectedFeature.screens.includes(t.name) || 
+            (t.subtasks && t.subtasks.some(st => selectedFeature.screens.includes(st.name)))
+          );
 
-            <div className="flex-1 overflow-y-auto p-6 custom-scroll space-y-6 text-xs">
-              <section className="space-y-2">
+          return (
+            <div className="space-y-6 text-xs">
+              {/* Maturation & 4-Stat Metric Bento */}
+              <div className="p-4 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-xs text-[var(--color-text)]">Backlog Maturation</span>
+                  <span className="font-mono font-bold text-sm text-[var(--color-primary-hex)]">{mObj.avgProg}%</span>
+                </div>
+                <div className="h-2 w-full bg-[var(--color-surface)] rounded-full overflow-hidden border border-[var(--color-divider)]">
+                  <div
+                    className={clsx(
+                      "h-full rounded-full transition-all",
+                      mObj.avgProg >= 100 ? "bg-emerald-500" : mObj.avgProg >= 40 ? "bg-cyan-500" : "bg-amber-500"
+                    )}
+                    style={{ width: `${mObj.avgProg}%` }}
+                  />
+                </div>
+                <div className="grid grid-cols-3 gap-2 pt-1 text-center">
+                  <div className="p-2 rounded-lg bg-[var(--color-surface)] border border-[var(--color-divider)]">
+                    <div className="text-[9px] uppercase text-[var(--color-text-faint)] font-semibold">Total Tasks</div>
+                    <div className="text-xs font-bold font-mono text-[var(--color-text)] mt-0.5">{mObj.totTasks}</div>
+                  </div>
+                  <div className="p-2 rounded-lg bg-[var(--color-surface)] border border-[var(--color-divider)]">
+                    <div className="text-[9px] uppercase text-[var(--color-text-faint)] font-semibold">Done Tasks</div>
+                    <div className="text-xs font-bold font-mono text-emerald-500 mt-0.5">{mObj.doneTasks}</div>
+                  </div>
+                  <div className="p-2 rounded-lg bg-[var(--color-surface)] border border-[var(--color-divider)]">
+                    <div className="text-[9px] uppercase text-[var(--color-text-faint)] font-semibold">Overdue</div>
+                    <div className={clsx("text-xs font-bold font-mono mt-0.5", mObj.overdueTasks > 0 ? "text-rose-500" : "text-[var(--color-text-muted)]")}>
+                      {mObj.overdueTasks}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Strategic Purpose */}
+              <div className="space-y-2">
                 <h4 className="font-bold text-[var(--color-text-faint)] uppercase tracking-wider text-[10px]">Strategic Purpose</h4>
                 <p className="p-3.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-xs text-[var(--color-text)] leading-relaxed italic">
                   “{selectedFeature.desc || 'No strategic description defined.'}”
                 </p>
-              </section>
+              </div>
 
-              <section className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <h4 className="font-bold text-[var(--color-text-faint)] uppercase tracking-wider text-[10px]">Mapped Target Interfaces ({selectedFeature.screens.length})</h4>
+              {/* Impacted Modules */}
+              {mObj.impactedModules.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="font-bold text-[var(--color-text-faint)] uppercase tracking-wider text-[10px]">Impacted Modules</h4>
+                  <div className="flex flex-wrap gap-1.5 p-3 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)]">
+                    {mObj.impactedModules.map((mod, idx) => (
+                      <span key={idx} className="text-xs px-2.5 py-1 rounded-lg bg-[var(--color-surface)] text-[var(--color-text)] border border-[var(--color-divider)] font-medium">
+                        {mod}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              )}
+
+              {/* Mapped Target Interfaces */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-[var(--color-text-faint)] uppercase tracking-wider text-[10px]">
+                    Mapped Target Interfaces ({selectedFeature.screens.length})
+                  </h4>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-56 overflow-y-auto custom-scroll pr-1">
                   {selectedFeature.screens.map((s, si) => (
                     <div key={si} className="p-2.5 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center gap-2">
-                      <div className="w-6 h-6 rounded-lg bg-[var(--color-surface)] flex items-center justify-center font-bold text-[10px] text-[var(--color-primary-hex)] border border-[var(--color-divider)]">
+                      <div className="w-6 h-6 rounded-lg bg-[var(--color-surface)] flex items-center justify-center font-bold text-[10px] text-[var(--color-primary-hex)] border border-[var(--color-divider)] shrink-0">
                         {si + 1}
                       </div>
-                      <span className="font-bold text-[var(--color-text)] truncate">{s}</span>
+                      <span className="font-semibold text-xs text-[var(--color-text)] truncate">{s}</span>
                     </div>
                   ))}
                   {selectedFeature.screens.length === 0 && (
@@ -1649,47 +2197,54 @@ export const FunctionalMatrix: React.FC = () => {
                     </div>
                   )}
                 </div>
-              </section>
+              </div>
 
-              <section className="space-y-2">
-                <h4 className="font-bold text-[var(--color-text-faint)] uppercase tracking-wider text-[10px]">Linked Technical Tasks</h4>
-                <div className="space-y-2">
-                  {state.tasks.filter(t => t.module === selectedFeature.name || selectedFeature.screens.includes(t.name) || (t.subtasks && t.subtasks.some(st => selectedFeature.screens.includes(st.name)))).map(t => (
-                    <div key={t.id} className="p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-between">
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-[10px] font-bold text-[var(--color-primary-hex)]">{t.id}</span>
-                          <span className="font-bold text-xs">{t.name}</span>
-                        </div>
-                        <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Due: {t.dueDate} • Assignee: {t.assignee}</div>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-mono font-bold text-xs text-cyan-600 dark:text-cyan-400">{t.progress}%</span>
-                      </div>
-                    </div>
-                  ))}
+              {/* Linked Technical Tasks */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-[var(--color-text-faint)] uppercase tracking-wider text-[10px]">
+                    Linked Technical Tasks ({linkedTasks.length})
+                  </h4>
+                  {linkedTasks.length > 5 && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedFeature(null);
+                        setView('tasks');
+                      }}
+                      className="text-xs text-[var(--color-primary-hex)] font-semibold hover:underline cursor-pointer"
+                    >
+                      View all in Tasks &rarr;
+                    </button>
+                  )}
                 </div>
-              </section>
+                {linkedTasks.length === 0 ? (
+                  <div className="p-4 bg-[var(--color-surface-2)] rounded-xl border border-[var(--color-divider)] text-center text-xs text-[var(--color-text-muted)]">
+                    No technical tasks directly linked to this feature.
+                  </div>
+                ) : (
+                  <div className="space-y-1.5 max-h-64 overflow-y-auto custom-scroll pr-1">
+                    {linkedTasks.slice(0, 8).map(t => (
+                      <div key={t.id} className="p-3 rounded-xl bg-[var(--color-surface-2)] border border-[var(--color-divider)] flex items-center justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-[10px] font-bold text-[var(--color-primary-hex)]">{t.id}</span>
+                            <span className="font-bold text-xs truncate">{t.name}</span>
+                          </div>
+                          <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5 truncate">
+                            {t.dueDate ? `Due ${t.dueDate}` : 'No date'} • Assignee: {t.assignee || 'Unassigned'}
+                          </div>
+                        </div>
+                        <span className="font-mono font-bold text-xs text-cyan-600 dark:text-cyan-400 shrink-0">{t.progress}%</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-
-            <div className="p-4 bg-[var(--color-surface-2)] border-t border-[var(--color-divider)] flex justify-end gap-2">
-              <Button variant="ghost" size="sm" onClick={() => setSelectedFeature(null)}>Close</Button>
-              <Button 
-                variant="primary" 
-                size="sm" 
-                className="font-bold"
-                onClick={() => {
-                  const targetIdx = features.findIndex(f => f.name === selectedFeature.name);
-                  setSelectedFeature(null);
-                  if (targetIdx >= 0) startEdit(targetIdx);
-                }}
-              >
-                Edit Feature Definition
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+          );
+        })()}
+      </SlideOverDrawer>
 
       {/* ── 7. Edit / Create Feature Modal (Standard Accessible Modal) ── */}
       {editForm && (
@@ -2019,6 +2574,81 @@ export const FunctionalMatrix: React.FC = () => {
         variant="danger"
         confirmLabel="Remove Feature"
       />
+
+      {/* ── Floating Action Bar for Batch Selection ── */}
+      <AnimatePresence>
+        {selectedFeatureNames.size > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] bg-[var(--color-surface-2)]/95 backdrop-blur-md border border-[var(--color-divider)] shadow-2xl rounded-2xl px-4 py-2.5 flex items-center gap-3 text-xs"
+          >
+            <div className="flex items-center gap-2 pr-3 border-r border-[var(--color-divider)]">
+              <span className="w-5 h-5 rounded-full bg-[var(--color-primary-hex)] text-white text-[10px] font-bold flex items-center justify-center">
+                {selectedFeatureNames.size}
+              </span>
+              <span className="font-semibold text-[var(--color-text)]">Selected</span>
+            </div>
+
+            {/* Batch Assign Release */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[var(--color-text-muted)] text-[11px]">Release:</span>
+              <select
+                value={batchRelease}
+                onChange={(e) => {
+                  setBatchRelease(e.target.value);
+                  if (e.target.value) handleBatchApplyRelease(e.target.value);
+                }}
+                className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg px-2 py-1 text-xs text-[var(--color-text)] cursor-pointer"
+              >
+                <option value="">Assign Release...</option>
+                {allReleaseOptions.map(r => (
+                  <option key={r} value={r}>{r}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Batch Assign Category */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[var(--color-text-muted)] text-[11px]">Category:</span>
+              <select
+                value={batchCategory}
+                onChange={(e) => {
+                  setBatchCategory(e.target.value);
+                  if (e.target.value) handleBatchApplyCategory(e.target.value);
+                }}
+                className="bg-[var(--color-surface)] border border-[var(--color-divider)] rounded-lg px-2 py-1 text-xs text-[var(--color-text)] cursor-pointer"
+              >
+                <option value="">Assign Category...</option>
+                {STANDARD_CATEGORIES.map(c => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Batch Delete */}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleBatchDelete}
+              className="text-rose-500 hover:bg-rose-500/10 border-rose-500/30 flex items-center gap-1 h-7"
+            >
+              <Trash2 size={12} />
+              <span>Delete</span>
+            </Button>
+
+            {/* Clear Selection */}
+            <button
+              type="button"
+              onClick={() => setSelectedFeatureNames(new Set())}
+              className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] text-xs font-medium cursor-pointer ml-1"
+            >
+              Clear
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </MotionPage>
   );
 };
