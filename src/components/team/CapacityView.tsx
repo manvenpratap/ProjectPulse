@@ -32,7 +32,7 @@ import { toast } from '../../utils/toast';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import { TaskStatus } from '../../types';
 import { daysDiff, getBusinessDays, addBusDays } from '../../utils/projectUtils';
-import { MotionPage, StaggerContainer, StaggerItem } from '../shared/MotionPage';
+import { MotionPage, StaggerContainer, StaggerItem, AnimatedProgressBar } from '../shared/MotionPage';
 import { AnimatedMetric } from '../shared/AnimatedMetric';
 
 export interface CapacityViewProps {
@@ -475,17 +475,13 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
               <span className={clsx(
                 "font-mono font-bold",
                 selectedActiveCell.utilization > 100 ? "text-rose-500" : "text-[var(--color-primary-hex)]"
-              )}>{selectedActiveCell.utilization}% ({selectedActiveCell.days}d / {settings.daysPerWeek}d)</span>
+              )}><AnimatedMetric value={selectedActiveCell.utilization} suffix="%" /> ({selectedActiveCell.days}d / {settings.daysPerWeek}d)</span>
             </div>
-            <div className="h-2 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
-              <div 
-                className={clsx(
-                  "h-full rounded-full transition-all duration-300",
-                  selectedActiveCell.utilization > 100 ? "bg-rose-500" : "bg-[var(--color-primary-hex)]"
-                )}
-                style={{ width: `${Math.min(selectedActiveCell.utilization, 100)}%` }}
-              />
-            </div>
+            <AnimatedProgressBar 
+              progress={selectedActiveCell.utilization} 
+              height={8} 
+              barClassName={selectedActiveCell.utilization > 100 ? "bg-rose-500" : "bg-[var(--color-primary-hex)]"} 
+            />
           </div>
         </div>
 
@@ -1247,15 +1243,11 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                             <span>Weekly: <strong className="font-mono text-[var(--color-text)]">{member.avgLoad}d</strong></span>
                             <span>Total: <strong className="font-mono text-[var(--color-text)]">{member.totalLoad.toFixed(1)}d</strong></span>
                           </div>
-                          <div className="h-1.5 w-full bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
-                            <div 
-                              className={clsx(
-                                "h-full rounded-full transition-all duration-300",
-                                isOverloaded ? "bg-rose-500" : "bg-[var(--color-primary-hex)]"
-                              )}
-                              style={{ width: `${Math.min(member.utilization, 100)}%` }}
-                            />
-                          </div>
+                          <AnimatedProgressBar 
+                            progress={member.utilization} 
+                            height={6} 
+                            barClassName={isOverloaded ? "bg-rose-500" : "bg-[var(--color-primary-hex)]"} 
+                          />
                         </div>
 
                         {/* 8-Week Touch Strip */}
@@ -1442,15 +1434,11 @@ const CapacityView: React.FC<CapacityViewProps> = ({ initialMode }) => {
                                   <span className="text-[10px] text-[var(--color-text-faint)]">Idle</span>
                                 )}
                               </div>
-                              <div className="w-full h-1.5 bg-[var(--color-surface-offset)] rounded-full overflow-hidden">
-                                <div 
-                                  className={clsx(
-                                    "h-full rounded-full transition-colors",
-                                    member.utilization > 100 ? "bg-rose-500" : "bg-[var(--color-primary-hex)]"
-                                  )}
-                                  style={{ width: `${Math.min(member.utilization, 100)}%` }}
-                                />
-                              </div>
+                              <AnimatedProgressBar 
+                                progress={member.utilization} 
+                                height={6} 
+                                barClassName={member.utilization > 100 ? "bg-rose-500" : "bg-[var(--color-primary-hex)]"} 
+                              />
                             </div>
                           </td>
                         </tr>

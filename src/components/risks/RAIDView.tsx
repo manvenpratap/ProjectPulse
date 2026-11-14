@@ -677,7 +677,7 @@ const RAIDView: React.FC = () => {
                               matrixFilter?.impact === 'High' && matrixFilter.prob === 'Low' && "ring-2 ring-[var(--color-primary-hex)] bg-amber-500/25"
                             )}
                             aria-label={`High Impact, Low Probability: ${getCellCount('High', 'Low')} items`}
-                          >{getCellCount('High', 'Low')}</button>
+                          ><AnimatedMetric value={getCellCount('High', 'Low')} /></button>
                           <button 
                             type="button"
                             onClick={() => selectMatrixCell('High', 'Medium')}
@@ -686,7 +686,7 @@ const RAIDView: React.FC = () => {
                               matrixFilter?.impact === 'High' && matrixFilter.prob === 'Medium' && "ring-2 ring-[var(--color-primary-hex)] bg-orange-500/25"
                             )}
                             aria-label={`High Impact, Medium Probability: ${getCellCount('High', 'Medium')} items`}
-                          >{getCellCount('High', 'Medium')}</button>
+                          ><AnimatedMetric value={getCellCount('High', 'Medium')} /></button>
                           <button 
                             type="button"
                             onClick={() => selectMatrixCell('High', 'High')}
@@ -695,7 +695,7 @@ const RAIDView: React.FC = () => {
                               matrixFilter?.impact === 'High' && matrixFilter.prob === 'High' && "ring-2 ring-[var(--color-primary-hex)] bg-rose-500/40"
                             )}
                             aria-label={`High Impact, High Probability: ${getCellCount('High', 'High')} items`}
-                          >{getCellCount('High', 'High')}</button>
+                          ><AnimatedMetric value={getCellCount('High', 'High')} /></button>
 
                           {/* Medium-Risk Row */}
                           <button 
@@ -706,7 +706,7 @@ const RAIDView: React.FC = () => {
                               matrixFilter?.impact === 'Medium' && matrixFilter.prob === 'Low' && "ring-2 ring-[var(--color-primary-hex)] bg-yellow-500/20"
                             )}
                             aria-label={`Medium Impact, Low Probability: ${getCellCount('Medium', 'Low')} items`}
-                          >{getCellCount('Medium', 'Low')}</button>
+                          ><AnimatedMetric value={getCellCount('Medium', 'Low')} /></button>
                           <button 
                             type="button"
                             onClick={() => selectMatrixCell('Medium', 'Medium')}
@@ -715,7 +715,7 @@ const RAIDView: React.FC = () => {
                               matrixFilter?.impact === 'Medium' && matrixFilter.prob === 'Medium' && "ring-2 ring-[var(--color-primary-hex)] bg-amber-500/25"
                             )}
                             aria-label={`Medium Impact, Medium Probability: ${getCellCount('Medium', 'Medium')} items`}
-                          >{getCellCount('Medium', 'Medium')}</button>
+                          ><AnimatedMetric value={getCellCount('Medium', 'Medium')} /></button>
                           <button 
                             type="button"
                             onClick={() => selectMatrixCell('Medium', 'High')}
@@ -724,7 +724,7 @@ const RAIDView: React.FC = () => {
                               matrixFilter?.impact === 'Medium' && matrixFilter.prob === 'High' && "ring-2 ring-[var(--color-primary-hex)] bg-orange-500/35"
                             )}
                             aria-label={`Medium Impact, High Probability: ${getCellCount('Medium', 'High')} items`}
-                          >{getCellCount('Medium', 'High')}</button>
+                          ><AnimatedMetric value={getCellCount('Medium', 'High')} /></button>
 
                           {/* Low-Risk Row */}
                           <button 
@@ -735,7 +735,7 @@ const RAIDView: React.FC = () => {
                               matrixFilter?.impact === 'Low' && matrixFilter.prob === 'Low' && "ring-2 ring-[var(--color-primary-hex)] bg-emerald-500/20"
                             )}
                             aria-label={`Low Impact, Low Probability: ${getCellCount('Low', 'Low')} items`}
-                          >{getCellCount('Low', 'Low')}</button>
+                          ><AnimatedMetric value={getCellCount('Low', 'Low')} /></button>
                           <button 
                             type="button"
                             onClick={() => selectMatrixCell('Low', 'Medium')}
@@ -744,7 +744,7 @@ const RAIDView: React.FC = () => {
                               matrixFilter?.impact === 'Low' && matrixFilter.prob === 'Medium' && "ring-2 ring-[var(--color-primary-hex)] bg-yellow-500/20"
                             )}
                             aria-label={`Low Impact, Medium Probability: ${getCellCount('Low', 'Medium')} items`}
-                          >{getCellCount('Low', 'Medium')}</button>
+                          ><AnimatedMetric value={getCellCount('Low', 'Medium')} /></button>
                           <button 
                             type="button"
                             onClick={() => selectMatrixCell('Low', 'High')}
@@ -753,7 +753,7 @@ const RAIDView: React.FC = () => {
                               matrixFilter?.impact === 'Low' && matrixFilter.prob === 'High' && "ring-2 ring-[var(--color-primary-hex)] bg-amber-500/30"
                             )}
                             aria-label={`Low Impact, High Probability: ${getCellCount('Low', 'High')} items`}
-                          >{getCellCount('Low', 'High')}</button>
+                          ><AnimatedMetric value={getCellCount('Low', 'High')} /></button>
                         </div>
                       </div>
 

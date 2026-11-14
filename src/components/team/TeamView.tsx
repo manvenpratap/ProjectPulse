@@ -1478,27 +1478,27 @@ const TeamView: React.FC = () => {
                     <div className="grid grid-cols-3 gap-1.5 text-center">
                       <div className="bg-[var(--color-surface-2)] p-1.5 rounded-lg border border-[var(--color-divider)]">
                         <div className="text-[9px] font-semibold text-[var(--color-text-faint)] uppercase">Pending</div>
-                        <div className="text-xs font-bold font-mono text-[var(--color-text)]">{pendingCount}</div>
+                        <div className="text-xs font-bold font-mono text-[var(--color-text)]"><AnimatedMetric value={pendingCount} /></div>
                       </div>
                       <div className="bg-[var(--color-surface-2)] p-1.5 rounded-lg border border-[var(--color-divider)]">
                         <div className="text-[9px] font-semibold text-[var(--color-text-faint)] uppercase">Done</div>
-                        <div className="text-xs font-bold font-mono text-emerald-500">{doneCount}</div>
+                        <div className="text-xs font-bold font-mono text-emerald-500"><AnimatedMetric value={doneCount} /></div>
                       </div>
                       <div className="bg-[var(--color-surface-2)] p-1.5 rounded-lg border border-[var(--color-divider)]">
                         <div className="text-[9px] font-semibold text-[var(--color-text-faint)] uppercase">Blocked</div>
-                        <div className={clsx("text-xs font-bold font-mono", blockedCount > 0 ? "text-rose-500" : "text-[var(--color-text-muted)]")}>{blockedCount}</div>
+                        <div className={clsx("text-xs font-bold font-mono", blockedCount > 0 ? "text-rose-500" : "text-[var(--color-text-muted)]")}><AnimatedMetric value={blockedCount} /></div>
                       </div>
                       <div className="bg-[var(--color-surface-2)] p-1.5 rounded-lg border border-[var(--color-divider)]">
                         <div className="text-[9px] font-semibold text-[var(--color-text-faint)] uppercase">Overdue</div>
-                        <div className={clsx("text-xs font-bold font-mono", overdueCount > 0 ? "text-rose-500" : "text-[var(--color-text-muted)]")}>{overdueCount}</div>
+                        <div className={clsx("text-xs font-bold font-mono", overdueCount > 0 ? "text-rose-500" : "text-[var(--color-text-muted)]")}><AnimatedMetric value={overdueCount} /></div>
                       </div>
                       <div className="bg-[var(--color-surface-2)] p-1.5 rounded-lg border border-[var(--color-divider)]">
                         <div className="text-[9px] font-semibold text-[var(--color-text-faint)] uppercase">Hi/Crit</div>
-                        <div className={clsx("text-xs font-bold font-mono", highCritCount > 0 ? "text-amber-500" : "text-[var(--color-text-muted)]")}>{highCritCount}</div>
+                        <div className={clsx("text-xs font-bold font-mono", highCritCount > 0 ? "text-amber-500" : "text-[var(--color-text-muted)]")}><AnimatedMetric value={highCritCount} /></div>
                       </div>
                       <div className="bg-[var(--color-surface-2)] p-1.5 rounded-lg border border-[var(--color-divider)]">
                         <div className="text-[9px] font-semibold text-[var(--color-text-faint)] uppercase">Leaves</div>
-                        <div className="text-xs font-bold font-mono text-[var(--color-text-muted)]">{Math.round(totalLeaveDays)}d</div>
+                        <div className="text-xs font-bold font-mono text-[var(--color-text-muted)]"><AnimatedMetric value={Math.round(totalLeaveDays)} suffix="d" /></div>
                       </div>
                     </div>
 

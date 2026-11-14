@@ -875,7 +875,7 @@ export const DeliveriesView: React.FC = () => {
             <div className="text-xl font-bold text-emerald-500 mt-1 flex items-baseline gap-1.5 tracking-tight">
               <span><AnimatedMetric value={telemetry.deployed} /></span>
               <span className="text-[11px] font-normal text-[var(--color-text-muted)]">
-                / {telemetry.total}
+                / <AnimatedMetric value={telemetry.total} />
               </span>
             </div>
             <div className="text-[10px] text-[var(--color-text-faint)] mt-0.5">Production sign-off</div>
@@ -904,11 +904,11 @@ export const DeliveriesView: React.FC = () => {
             <div className="text-xs font-medium text-[var(--color-text-muted)]">Smoke Test Gates</div>
             <div className="text-xl font-bold mt-1 flex items-center gap-2 tracking-tight">
               <span className={telemetry.failedSmoke > 0 ? "text-rose-500" : "text-emerald-500"}>
-                {telemetry.failedSmoke > 0 ? `${telemetry.failedSmoke} Fail` : '0 Fail'}
+                {telemetry.failedSmoke > 0 ? <><AnimatedMetric value={telemetry.failedSmoke} /> Fail</> : '0 Fail'}
               </span>
               {telemetry.runningSmoke > 0 && (
                 <span className="text-[10px] text-cyan-500 font-mono motion-safe:animate-pulse">
-                  ({telemetry.runningSmoke} Run)
+                  (<AnimatedMetric value={telemetry.runningSmoke} /> Run)
                 </span>
               )}
             </div>

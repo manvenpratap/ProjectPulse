@@ -236,11 +236,16 @@ const SettingsView: React.FC = () => {
                 <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] flex items-center justify-center shrink-0">
                   <ShieldCheck size={24} />
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <h3 className="text-base font-bold text-[var(--color-text)]">
-                    Role-Based Access Control (RBAC) Governance
-                  </h3>
-                  <SectionHelpButton view="settings" section="Role-Based Access Control" label="RBAC Access guide" />
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <h3 className="text-base font-bold text-[var(--color-text)]">
+                      Role-Based Access Control (RBAC) Governance
+                    </h3>
+                    <SectionHelpButton view="settings" section="Role-Based Access Control" label="RBAC Access guide" />
+                  </div>
+                  <div className="text-xs text-[var(--color-text-muted)] mt-0.5">
+                    <span className="font-mono font-bold text-[var(--color-primary-hex)]"><AnimatedMetric value={users.length} /></span> Enrolled personas in workspace
+                  </div>
                 </div>
               </div>
               <Button 
@@ -323,7 +328,7 @@ const SettingsView: React.FC = () => {
                       <div>
                         <span className="text-[var(--color-text-faint)] block text-[10px] font-medium">VIEW ACCESS</span>
                         <span className="font-semibold text-[var(--color-text)]">
-                          {u.allowedViews ? `${u.allowedViews.length} custom views` : (perms?.allowedViews.includes('*') ? 'All views (Universal)' : `${perms?.allowedViews.length || 0} views`)}
+                          {u.allowedViews ? <><AnimatedMetric value={u.allowedViews.length} /> custom views</> : (perms?.allowedViews.includes('*') ? 'All views (Universal)' : <><AnimatedMetric value={perms?.allowedViews.length || 0} /> views</>)}
                         </span>
                       </div>
                       <div>

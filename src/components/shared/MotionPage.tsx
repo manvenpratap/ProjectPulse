@@ -165,8 +165,9 @@ export const StaggerItem: React.FC<StaggerItemProps> = ({
   );
 };
 
-interface AnimatedProgressBarProps {
+export interface AnimatedProgressBarProps {
   progress: number;
+  height?: number | string;
   heightClass?: string;
   trackClassName?: string;
   barClassName?: string;
@@ -178,6 +179,7 @@ interface AnimatedProgressBarProps {
  */
 export const AnimatedProgressBar: React.FC<AnimatedProgressBarProps> = ({
   progress,
+  height,
   heightClass = "h-1.5",
   trackClassName = "bg-[var(--color-surface-2)] border border-[var(--color-divider)]/40",
   barClassName = "bg-[var(--color-primary-hex)]",
@@ -185,9 +187,13 @@ export const AnimatedProgressBar: React.FC<AnimatedProgressBarProps> = ({
 }) => {
   const shouldReduce = useReducedMotion();
   const clamped = Math.max(0, Math.min(100, Math.round(progress)));
+  const style = height ? { height: typeof height === 'number' ? `${height}px` : height } : undefined;
 
   return (
-    <div className={clsx("w-full rounded-full overflow-hidden shadow-inner", heightClass, trackClassName)}>
+    <div 
+      className={clsx("w-full rounded-full overflow-hidden shadow-inner", !height && heightClass, trackClassName)}
+      style={style}
+    >
       <motion.div
         initial={shouldReduce ? { width: `${clamped}%` } : { width: '0%' }}
         animate={{ width: `${clamped}%` }}
