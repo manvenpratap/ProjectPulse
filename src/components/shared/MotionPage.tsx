@@ -1,4 +1,4 @@
-import React from 'react';
+import { forwardRef, type FC, type ReactNode } from 'react';
 import { motion, useReducedMotion, Variants } from 'motion/react';
 import clsx from 'clsx';
 import { COCKPIT_EASE } from './AnimatedMetric';
@@ -54,7 +54,7 @@ export const STAGGER_ITEM_VARIANTS: Variants = {
 };
 
 interface MotionPageProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   id?: string;
 }
@@ -63,7 +63,7 @@ interface MotionPageProps {
  * Top-level view transition wrapper that provides the executive cockpit entry animation.
  * Strictly respects system prefers-reduced-motion.
  */
-export const MotionPage = React.forwardRef<HTMLDivElement, MotionPageProps>(({
+export const MotionPage = forwardRef<HTMLDivElement, MotionPageProps>(({
   children,
   className = "flex-1 overflow-y-auto custom-scroll w-full",
   id
@@ -96,7 +96,7 @@ export const MotionPage = React.forwardRef<HTMLDivElement, MotionPageProps>(({
 MotionPage.displayName = 'MotionPage';
 
 interface StaggerContainerProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   stagger?: number;
   delay?: number;
@@ -106,7 +106,7 @@ interface StaggerContainerProps {
 /**
  * Container that orchestrates sequential entrance delays across child StaggerItems.
  */
-export const StaggerContainer: React.FC<StaggerContainerProps> = ({
+export const StaggerContainer: FC<StaggerContainerProps> = ({
   children,
   className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4",
   stagger = 0.04,
@@ -131,7 +131,7 @@ export const StaggerContainer: React.FC<StaggerContainerProps> = ({
 };
 
 interface StaggerItemProps {
-  children: React.ReactNode;
+  children: ReactNode;
   className?: string;
   onClick?: () => void;
 }
@@ -139,7 +139,7 @@ interface StaggerItemProps {
 /**
  * Individual widget/card item with hardware-accelerated GPU translation and fade entry.
  */
-export const StaggerItem: React.FC<StaggerItemProps> = ({
+export const StaggerItem: FC<StaggerItemProps> = ({
   children,
   className,
   onClick
@@ -177,7 +177,7 @@ export interface AnimatedProgressBarProps {
 /**
  * Smoothly animated progress bar using spring/ease physics from 0 to target percentage.
  */
-export const AnimatedProgressBar: React.FC<AnimatedProgressBarProps> = ({
+export const AnimatedProgressBar: FC<AnimatedProgressBarProps> = ({
   progress,
   height,
   heightClass = "h-1.5",

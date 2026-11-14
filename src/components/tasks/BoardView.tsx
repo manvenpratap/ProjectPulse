@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { Task, TaskStatus } from '../../types';
 import { MoreVertical, Plus, Clock, AlertCircle, Lock } from 'lucide-react';
@@ -9,7 +9,7 @@ interface BoardViewProps {
   onEditTask: (id: string) => void;
 }
 
-const BoardView: React.FC<BoardViewProps> = ({ onEditTask }) => {
+const BoardView: FC<BoardViewProps> = ({ onEditTask }) => {
   const { state, updateTask, searchTerm } = useProject();
   
   const filteredTasks = state.tasks.filter(t => 

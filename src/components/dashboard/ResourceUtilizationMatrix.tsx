@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { useAuth } from '../../store/AuthContext';
 import { TaskStatus } from '../../types';
@@ -6,7 +6,7 @@ import { Users, ArrowRight, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import clsx from 'clsx';
 import SectionHelpButton from '../shared/SectionHelpButton';
 
-export const ResourceUtilizationMatrix: React.FC = () => {
+export const ResourceUtilizationMatrix: FC = () => {
   const { state, setView } = useProject();
   const { hasViewAccess } = useAuth();
   const { members = [], tasks = [] } = state;

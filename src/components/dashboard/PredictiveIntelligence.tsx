@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { TaskStatus, TaskPriority } from '../../types';
 import { daysDiff, getWeekNumber, todayStr } from '../../utils/projectUtils';
@@ -15,7 +15,7 @@ import {
 import SectionHelpButton from '../shared/SectionHelpButton';
 import clsx from 'clsx';
 
-const PredictiveIntelligence: React.FC = () => {
+const PredictiveIntelligence: FC = () => {
   const { state } = useProject();
   const { tasks, log, members } = state;
 

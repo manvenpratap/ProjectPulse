@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC } from 'react';
 import CxoEmailBriefing from './CxoEmailBriefing';
 
 export interface CxoEmailModalProps {
@@ -6,7 +6,7 @@ export interface CxoEmailModalProps {
   onClose: () => void;
 }
 
-export const CxoEmailModal: React.FC<CxoEmailModalProps> = ({ isOpen, onClose }) => {
+export const CxoEmailModal: FC<CxoEmailModalProps> = ({ isOpen, onClose }) => {
   return <CxoEmailBriefing embedded={false} isOpen={isOpen} onClose={onClose} />;
 };
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC } from 'react';
 import { HelpCircle } from 'lucide-react';
 import clsx from 'clsx';
 
@@ -13,7 +13,7 @@ interface SectionHelpButtonProps {
 /**
  * Discreet per-section help trigger that opens HelpModal focused directly on the section's guide.
  */
-export const SectionHelpButton: React.FC<SectionHelpButtonProps> = ({
+export const SectionHelpButton: FC<SectionHelpButtonProps> = ({
   view,
   section,
   label,

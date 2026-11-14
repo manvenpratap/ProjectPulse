@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC, ButtonHTMLAttributes } from 'react';
 import clsx from 'clsx';
 import { type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -7,13 +7,13 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'outline' | 'ghost' | 'danger' | 'secondary';
   size?: 'sm' | 'md' | 'lg' | 'icon';
   isLoading?: boolean;
 }
 
-const Button: React.FC<ButtonProps> = ({ 
+const Button: FC<ButtonProps> = ({ 
   children, 
   className, 
   variant = 'outline', 

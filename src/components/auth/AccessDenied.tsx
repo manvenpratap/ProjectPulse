@@ -1,4 +1,4 @@
-import React from 'react';
+import type { FC } from 'react';
 import { useAuth } from '../../store/AuthContext';
 import { useProject } from '../../store/ProjectContext';
 import { getAllNavItems } from '../../config/navigation';
@@ -10,7 +10,7 @@ interface AccessDeniedProps {
   onOpenAccessManager?: () => void;
 }
 
-export const AccessDenied: React.FC<AccessDeniedProps> = ({ viewId, onOpenAccessManager }) => {
+export const AccessDenied: FC<AccessDeniedProps> = ({ viewId, onOpenAccessManager }) => {
   const { currentUser, switchUser, users, isAdmin, hasViewAccess } = useAuth();
   const { setView } = useProject();
 
