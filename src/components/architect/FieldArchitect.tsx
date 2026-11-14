@@ -183,12 +183,25 @@ export const FieldArchitect: React.FC = () => {
   const [nameError, setNameError] = useState<string | null>(null);
 
   const nameInputRef = useRef<HTMLInputElement>(null);
+  const searchQueryInputRef = useRef<HTMLInputElement>(null);
   const undoTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
     return () => {
       if (undoTimerRef.current) window.clearTimeout(undoTimerRef.current);
     };
+  }, []);
+
+  // Keyboard shortcut '/' to focus search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === '/' && !(document.activeElement instanceof HTMLInputElement || document.activeElement instanceof HTMLTextAreaElement)) {
+        e.preventDefault();
+        searchQueryInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
 
   const showUndoToast = (snapshot: UndoSnapshot) => {
@@ -605,8 +618,9 @@ export const FieldArchitect: React.FC = () => {
           <search className="relative w-full sm:w-64">
             <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] opacity-60 pointer-events-none" />
             <input
+              ref={searchQueryInputRef}
               type="search"
-              placeholder="Filter attributes by name, type, or ID…"
+              placeholder="Filter attributes… (Press /)"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               aria-label="Filter attributes by name, type, or ID"
