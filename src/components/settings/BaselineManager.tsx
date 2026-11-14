@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useProject } from '../../store/ProjectContext';
 import { Baseline, TaskStatus } from '../../types';
 import { fmtDate, todayStr, daysDiff } from '../../utils/projectUtils';
@@ -15,24 +15,41 @@ import {
   Search,
   Eye,
   X,
-  FileSpreadsheet
+  FileSpreadsheet,
+  ExternalLink
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import Button from '../shared/Button';
 import Modal from '../shared/Modal';
 import ConfirmModal from '../shared/ConfirmModal';
 import SectionHelpButton from '../shared/SectionHelpButton';
+import DataTable, { ColumnDef, DensityMode } from '../shared/DataTable';
+import { usePagination } from '../shared/TablePagination';
 import { toast } from '../../utils/toast';
 import clsx from 'clsx';
 
+export interface BaselineComparisonRow {
+  taskId: string;
+  taskName: string;
+  baselineDueDate: string;
+  currentDueDate: string;
+  varianceDays: number;
+  baselineEffort: number;
+  currentStatus: string;
+}
+
 export const BaselineManager: React.FC = () => {
-  const { state, updateProject, addLog } = useProject();
+  const { state, updateProject, addLog, setView } = useProject();
   const { baselines = [], tasks = [] } = state;
 
   const [isCaptureModalOpen, setIsCaptureModalOpen] = useState(false);
   const [baselineName, setBaselineName] = useState('');
   const [baselineDesc, setBaselineDesc] = useState('');
   const [selectedBaseline, setSelectedBaseline] = useState<string | null>(null);
+  const [tableSearch, setTableSearch] = useState('');
+  const [tableDensity, setTableDensity] = useState<DensityMode>('compact');
+  const [sortField, setSortField] = useState<string>('varianceDays');
+  const [sortAsc, setSortAsc] = useState<boolean>(false);
   const [confirmState, setConfirmState] = useState<{
     isOpen: boolean;
     title: string;
@@ -170,6 +187,154 @@ export const BaselineManager: React.FC = () => {
 
   const activeSnapshotDetails = groupedSnapshots.find(s => s.id === selectedBaseline);
 
+  const comparisonRows = useMemo<BaselineComparisonRow[]>(() => {
+    if (!activeSnapshotDetails) return [];
+    return activeSnapshotDetails.items.map(item => {
+      const currentTask = tasks.find(t => t.id === item.taskId);
+      const curDue = currentTask?.dueDate || '';
+      const diff = (curDue && item.baselineDueDate) 
+        ? Math.round((new Date(curDue).getTime() - new Date(item.baselineDueDate).getTime()) / 864e5) 
+        : 0;
+      return {
+        taskId: item.taskId,
+        taskName: item.taskName,
+        baselineDueDate: item.baselineDueDate,
+        currentDueDate: curDue,
+        varianceDays: diff,
+        baselineEffort: item.baselineEffort,
+        currentStatus: currentTask?.status || 'Unknown'
+      };
+    });
+  }, [activeSnapshotDetails, tasks]);
+
+  const filteredComparisonRows = useMemo(() => {
+    const q = tableSearch.toLowerCase().trim();
+    if (!q) return comparisonRows;
+    return comparisonRows.filter(r => 
+      r.taskId.toLowerCase().includes(q) ||
+      r.taskName.toLowerCase().includes(q) ||
+      r.currentStatus.toLowerCase().includes(q)
+    );
+  }, [comparisonRows, tableSearch]);
+
+  const sortedComparisonRows = useMemo(() => {
+    return [...filteredComparisonRows].sort((a, b) => {
+      let aVal: any = a[sortField as keyof BaselineComparisonRow];
+      let bVal: any = b[sortField as keyof BaselineComparisonRow];
+      if (typeof aVal === 'string') {
+        aVal = aVal.toLowerCase();
+        bVal = (bVal || '').toLowerCase();
+      }
+      if (aVal < bVal) return sortAsc ? -1 : 1;
+      if (aVal > bVal) return sortAsc ? 1 : -1;
+      return 0;
+    });
+  }, [filteredComparisonRows, sortField, sortAsc]);
+
+  const pagination = usePagination<BaselineComparisonRow>(sortedComparisonRows, 10, 'pp_page_size_baseline_comparison');
+
+  const baselineColumns = useMemo<ColumnDef<BaselineComparisonRow>[]>(() => [
+    {
+      id: 'taskName',
+      header: 'TASK IDENTIFIER & NAME',
+      headerTitle: 'Task identifier and summary',
+      cell: (r) => (
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-xs font-bold text-[var(--color-primary-hex)] shrink-0">{r.taskId}</span>
+          <span className="font-semibold text-xs text-[var(--color-text)] truncate max-w-[280px]" title={r.taskName}>
+            {r.taskName}
+          </span>
+        </div>
+      )
+    },
+    {
+      id: 'baselineDueDate',
+      header: 'BASELINE TARGET',
+      headerTitle: 'Original baseline target deadline',
+      cell: (r) => (
+        <span className="font-mono text-xs text-[var(--color-text-muted)]">
+          {fmtDate(r.baselineDueDate)}
+        </span>
+      )
+    },
+    {
+      id: 'currentDueDate',
+      header: 'CURRENT DUE DATE',
+      headerTitle: 'Current active due date',
+      cell: (r) => (
+        <span className="font-mono text-xs font-semibold text-[var(--color-text)]">
+          {fmtDate(r.currentDueDate)}
+        </span>
+      )
+    },
+    {
+      id: 'varianceDays',
+      header: 'SCHEDULE VARIANCE',
+      headerTitle: 'Schedule slip or early completion variance',
+      align: 'right',
+      cell: (r) => {
+        const diff = r.varianceDays;
+        return (
+          <div className="flex items-center justify-end">
+            {diff > 0 ? (
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                +{diff}d slip
+              </span>
+            ) : diff < 0 ? (
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                {diff}d ahead
+              </span>
+            ) : (
+              <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-semibold bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border border-[var(--color-divider)]">
+                On track
+              </span>
+            )}
+          </div>
+        );
+      }
+    },
+    {
+      id: 'baselineEffort',
+      header: 'EFFORT',
+      headerTitle: 'Estimated baseline effort in work days',
+      align: 'right',
+      cell: (r) => (
+        <span className="font-mono text-xs text-[var(--color-text-muted)]">
+          {r.baselineEffort}d
+        </span>
+      )
+    },
+    {
+      id: 'currentStatus',
+      header: 'STATUS',
+      headerTitle: 'Current live task status',
+      cell: (r) => (
+        <span className="px-2 py-0.5 rounded-md text-[11px] font-medium bg-[var(--color-surface-2)] text-[var(--color-text)] border border-[var(--color-divider)]">
+          {r.currentStatus}
+        </span>
+      )
+    },
+    {
+      id: 'actions',
+      header: '',
+      headerTitle: 'Action shortcuts',
+      align: 'right',
+      cell: (r) => (
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setView('tasks');
+          }}
+          title="Open in Task Grid"
+          className="p-1 rounded-md text-[var(--color-text-muted)] hover:text-cyan-400 transition-colors cursor-pointer"
+        >
+          <ExternalLink size={13} />
+        </button>
+      )
+    }
+  ], [setView]);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-6 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)]">
@@ -295,75 +460,69 @@ export const BaselineManager: React.FC = () => {
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-6 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm space-y-4"
+          className="p-5 sm:p-6 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-sm space-y-4"
         >
-          <div className="flex items-center justify-between">
-            <h4 className="font-bold text-sm text-[var(--color-text)] flex items-center gap-2">
-              <TrendingUp size={16} className="text-[var(--color-primary-hex)]" />
-              <span>Baseline Comparison Table: {activeSnapshotDetails.name}</span>
-              <SectionHelpButton view="settings" section="Project Baselines" label="Baseline variance guide" size={13} />
-            </h4>
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-[var(--color-divider)] pb-4">
+            <div>
+              <h4 className="font-bold text-sm sm:text-base text-[var(--color-text)] flex items-center gap-2">
+                <TrendingUp size={16} className="text-[var(--color-primary-hex)]" />
+                <span>Baseline Comparison Table: {activeSnapshotDetails.name}</span>
+                <SectionHelpButton view="settings" section="Project Baselines" label="Baseline variance guide" size={13} />
+              </h4>
+              <p className="text-xs text-[var(--color-text-muted)] mt-0.5">
+                Comparing {activeSnapshotDetails.items.length} baseline milestones captured on {fmtDate(activeSnapshotDetails.date)} against current live task schedules.
+              </p>
+            </div>
 
-            <Button variant="ghost" size="sm" onClick={() => setSelectedBaseline(null)}>
-              Close
-            </Button>
+            <div className="flex items-center gap-2 self-stretch sm:self-auto justify-end">
+              <div className="relative w-full sm:w-56">
+                <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)]" />
+                <input
+                  type="text"
+                  value={tableSearch}
+                  onChange={(e) => setTableSearch(e.target.value)}
+                  placeholder="Filter baseline tasks..."
+                  className="w-full h-8 pl-8 pr-7 bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl text-xs text-[var(--color-text)] outline-none focus:border-[var(--color-primary-hex)] shadow-2xs"
+                />
+                {tableSearch && (
+                  <button 
+                    onClick={() => setTableSearch('')}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--color-text-muted)] hover:text-[var(--color-text)]"
+                  >
+                    <X size={12} />
+                  </button>
+                )}
+              </div>
+
+              <Button variant="ghost" size="sm" onClick={() => setSelectedBaseline(null)} className="h-8 px-3 text-xs">
+                Close
+              </Button>
+            </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-[var(--color-divider)] text-xs font-semibold text-[var(--color-text-faint)]">
-                  <th className="py-2.5 px-3">Task</th>
-                  <th className="py-2.5 px-3">Baseline Target</th>
-                  <th className="py-2.5 px-3">Current Due Date</th>
-                  <th className="py-2.5 px-3">Variance</th>
-                  <th className="py-2.5 px-3">Baseline Effort</th>
-                  <th className="py-2.5 px-3">Current Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--color-divider)]">
-                {activeSnapshotDetails.items.map(item => {
-                  const currentTask = tasks.find(t => t.id === item.taskId);
-                  const curDue = currentTask?.dueDate || '';
-                  const diff = (curDue && item.baselineDueDate) 
-                    ? Math.round((new Date(curDue).getTime() - new Date(item.baselineDueDate).getTime()) / 864e5) 
-                    : 0;
-
-                  return (
-                    <tr key={item.taskId} className="hover:bg-[var(--color-surface-2)] transition-colors">
-                      <td className="py-2.5 px-3">
-                        <div className="font-mono font-bold text-[var(--color-primary-hex)]">{item.taskId}</div>
-                        <div className="font-semibold text-[var(--color-text)]">{item.taskName}</div>
-                      </td>
-                      <td className="py-2.5 px-3 font-mono text-[var(--color-text-muted)]">
-                        {fmtDate(item.baselineDueDate)}
-                      </td>
-                      <td className="py-2.5 px-3 font-mono text-[var(--color-text)] font-semibold">
-                        {fmtDate(curDue)}
-                      </td>
-                      <td className="py-2.5 px-3 font-mono font-bold">
-                        {diff > 0 ? (
-                          <span className="text-red-500">+{diff}d slip</span>
-                        ) : diff < 0 ? (
-                          <span className="text-emerald-500">{diff}d ahead</span>
-                        ) : (
-                          <span className="text-[var(--color-text-faint)]">On track</span>
-                        )}
-                      </td>
-                      <td className="py-2.5 px-3 font-mono text-[var(--color-text-muted)]">
-                        {item.baselineEffort}d
-                      </td>
-                      <td className="py-2.5 px-3">
-                        <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-surface-2)] text-[var(--color-text)]">
-                          {currentTask?.status || 'Unknown'}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <DataTable<BaselineComparisonRow>
+            data={sortedComparisonRows}
+            columns={baselineColumns}
+            keyField="taskId"
+            minWidth="w-full"
+            density={tableDensity}
+            sortField={sortField}
+            sortAsc={sortAsc}
+            onSort={(field) => {
+              if (sortField === field) {
+                setSortAsc(!sortAsc);
+              } else {
+                setSortField(field);
+                setSortAsc(true);
+              }
+            }}
+            showRowNumbers
+            stickyFirstColumn
+            pagination={pagination}
+            itemLabel="baseline tasks"
+            tableLabel="Baseline Schedule Comparison"
+            onRowClick={(r) => setView('tasks')}
+          />
         </motion.div>
       )}
 
