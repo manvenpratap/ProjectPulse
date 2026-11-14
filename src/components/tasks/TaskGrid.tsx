@@ -259,8 +259,13 @@ const TaskGrid: FC<TaskGridProps> = ({
       setStatusMenuTaskId(null);
       setAssigneeMenuTaskId(null);
     };
-    document.addEventListener('click', handleDocClick);
-    return () => document.removeEventListener('click', handleDocClick);
+    const timer = setTimeout(() => {
+      document.addEventListener('click', handleDocClick);
+    }, 0);
+    return () => {
+      clearTimeout(timer);
+      document.removeEventListener('click', handleDocClick);
+    };
   }, [statusMenuTaskId, assigneeMenuTaskId]);
 
   // Filter options
@@ -701,43 +706,29 @@ const TaskGrid: FC<TaskGridProps> = ({
       cell: (task) => {
         const isMenuOpen = statusMenuTaskId === task.id;
         return (
-          <div className="relative inline-flex items-center">
-            <div className="inline-flex items-center rounded-lg shadow-2xs group/st">
-              <button
-                type="button"
-                onClick={(e) => handleCycleStatus(task, e)}
-                onContextMenu={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setStatusMenuTaskId(prev => prev === task.id ? null : task.id);
-                  setAssigneeMenuTaskId(null);
-                }}
-                title="Click badge to advance, click chevron or right-click to jump"
-                className={clsx(
-                  "st-badge cursor-pointer active:scale-95 transition-transform", 
-                  `st-${ST_MAP[task.status] || 'not-started'}`,
-                  "pr-1 rounded-r-none border-r-0"
-                )}
-              >
-                <span className="dot" />
-                <span>{task.status}</span>
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setStatusMenuTaskId(prev => prev === task.id ? null : task.id);
-                  setAssigneeMenuTaskId(null);
-                }}
-                className={clsx(
-                  "st-badge cursor-pointer px-1.5 rounded-l-none border-l border-current/20 hover:opacity-80 transition-opacity inline-flex items-center justify-center",
-                  `st-${ST_MAP[task.status] || 'not-started'}`
-                )}
-                title="Jump directly to status (Keys 1-7)"
-              >
-                <ChevronDown size={11} className={clsx("transition-transform duration-150", isMenuOpen && "rotate-180")} />
-              </button>
-            </div>
+          <div className="relative inline-flex items-center" onClick={e => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setStatusMenuTaskId(prev => prev === task.id ? null : task.id);
+                setAssigneeMenuTaskId(null);
+              }}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleCycleStatus(task, e);
+              }}
+              title="Click to change status (right-click to quick-advance)"
+              className={clsx(
+                "st-badge cursor-pointer inline-flex items-center gap-1.5 transition-all hover:ring-1 hover:ring-current/30 active:scale-95 shadow-2xs group/st", 
+                `st-${ST_MAP[task.status] || 'not-started'}`
+              )}
+            >
+              <span className="dot" />
+              <span>{task.status}</span>
+              <ChevronDown size={11} className={clsx("opacity-40 group-hover/st:opacity-90 transition-transform duration-150", isMenuOpen && "rotate-180")} />
+            </button>
 
             {isMenuOpen && (
               <div 
@@ -997,7 +988,7 @@ const TaskGrid: FC<TaskGridProps> = ({
   });
 
   return visibleCols;
-  }, [state.tasks, state.cols, state.customFields, colMap, selectedModule, modules, selectedStatus, selectedPriority, selectedAssignee, assignees, onEditTask]);
+  }, [state.tasks, state.cols, state.customFields, colMap, selectedModule, modules, selectedStatus, selectedPriority, selectedAssignee, assignees, onEditTask, statusMenuTaskId, assigneeMenuTaskId, editingTitleTaskId, editingTitleValue]);
 
   const isAllSelected = filteredTasks.length > 0 && selectedTaskIds.size === filteredTasks.length;
 
@@ -1483,37 +1474,20 @@ const TaskGrid: FC<TaskGridProps> = ({
 
                     <span className="text-[11px] font-mono font-bold text-[var(--color-primary-hex)] shrink-0">{task.id}</span>
                     
-                    {/* Status Badge with split chevron jump */}
-                    <div className="relative inline-flex items-center">
-                      <div className="inline-flex items-center rounded-lg shadow-2xs group/mobst">
-                        <button
-                          type="button"
-                          onClick={(e) => handleCycleStatus(task, e)}
-                          title="Tap to cycle status"
-                          className={clsx(
-                            "st-badge text-[10px] cursor-pointer active:scale-95 transition-transform", 
-                            `st-${ST_MAP[task.status] || 'not-started'}`,
-                            "pr-1 rounded-r-none border-r-0 min-h-[30px]"
-                          )}
-                        >
-                          <span className="dot" />
-                          <span>{task.status}</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setStatusMenuTaskId(prev => prev === task.id ? null : task.id);
-                          }}
-                          className={clsx(
-                            "st-badge cursor-pointer px-1.5 rounded-l-none border-l border-current/20 hover:opacity-80 transition-opacity inline-flex items-center justify-center min-h-[30px]",
-                            `st-${ST_MAP[task.status] || 'not-started'}`
-                          )}
-                          title="Jump to status"
-                        >
-                          <ChevronDown size={10} />
-                        </button>
-                      </div>
+                    {/* Status Badge */}
+                    <div className="relative inline-flex items-center" onClick={e => e.stopPropagation()}>
+                      <button
+                        type="button"
+                        onClick={(e) => handleCycleStatus(task, e)}
+                        title="Tap to cycle status"
+                        className={clsx(
+                          "st-badge text-[10px] cursor-pointer active:scale-95 transition-transform inline-flex items-center gap-1 min-h-[30px]", 
+                          `st-${ST_MAP[task.status] || 'not-started'}`
+                        )}
+                      >
+                        <span className="dot" />
+                        <span>{task.status}</span>
+                      </button>
                     </div>
 
                     {task.subtasks.length > 0 && (

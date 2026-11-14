@@ -575,29 +575,28 @@ const DefectView: React.FC = () => {
         const isStatusOpen = statusMenuDefectId === defect.id;
         return (
           <div className="relative inline-block" onClick={e => e.stopPropagation()}>
-            <div className="inline-flex items-center rounded-full">
-              <button
-                type="button"
-                onClick={(e) => handleCycleStatus(defect, e)}
-                title="Click to advance status"
-                className={clsx("st-badge cursor-pointer", `st-${DEF_ST_MAP[defect.status] || 'not-started'}`)}
-              >
-                <span className="dot" />
-                <span>{defect.status}</span>
-              </button>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setStatusMenuDefectId(prev => prev === defect.id ? null : defect.id);
-                  setAssigneeMenuDefectId(null);
-                }}
-                className="p-1 -ml-1 text-[var(--color-text-faint)] hover:text-[var(--color-text)] rounded-full hover:bg-[var(--color-surface-offset)] transition-colors cursor-pointer"
-                title="Jump to specific status"
-              >
-                <ChevronDown size={11} />
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setStatusMenuDefectId(prev => prev === defect.id ? null : defect.id);
+                setAssigneeMenuDefectId(null);
+              }}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleCycleStatus(defect, e);
+              }}
+              title="Click to change status (right-click to quick-advance)"
+              className={clsx(
+                "st-badge cursor-pointer inline-flex items-center gap-1.5 transition-all hover:ring-1 hover:ring-current/30 active:scale-95 shadow-2xs group/st", 
+                `st-${DEF_ST_MAP[defect.status] || 'not-started'}`
+              )}
+            >
+              <span className="dot" />
+              <span>{defect.status}</span>
+              <ChevronDown size={11} className={clsx("opacity-40 group-hover/st:opacity-90 transition-transform duration-150", isStatusOpen && "rotate-180")} />
+            </button>
 
             {isStatusOpen && (
               <div

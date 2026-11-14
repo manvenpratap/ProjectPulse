@@ -446,7 +446,7 @@ export function DataTable<T>({
               {/* Checkbox Header */}
               {selectable && (
                 <th 
-                  style={stickyFirstColumn ? { position: 'sticky', left: 0, zIndex: 30 } : undefined}
+                  style={{ width: 40, minWidth: 40, maxWidth: 40, ...(stickyFirstColumn ? { position: 'sticky', left: 0, zIndex: 30 } : {}) }}
                   className={clsx("px-2.5 w-10 text-center", headPadY, stickyFirstColumn && "bg-[var(--color-surface)]")}
                 >
                   <input
@@ -462,7 +462,7 @@ export function DataTable<T>({
               {/* Row Number Header (#) */}
               {showRowNumbers && (
                 <th 
-                  style={stickyFirstColumn ? { position: 'sticky', left: selOffset, zIndex: 30 } : undefined}
+                  style={{ width: 44, minWidth: 44, maxWidth: 44, ...(stickyFirstColumn ? { position: 'sticky', left: selOffset, zIndex: 30 } : {}) }}
                   className={clsx("px-2 w-11 text-center td-rn font-mono text-[10px] tabular-nums", headPadY, stickyFirstColumn && "bg-[var(--color-surface)]")} 
                   title="Sequential row index"
                 >
@@ -473,7 +473,7 @@ export function DataTable<T>({
               {/* Expand Toggle Header */}
               {hasExpand && (
                 <th 
-                  style={stickyFirstColumn ? { position: 'sticky', left: numOffset, zIndex: 30 } : undefined}
+                  style={{ width: 32, minWidth: 32, maxWidth: 32, ...(stickyFirstColumn ? { position: 'sticky', left: numOffset, zIndex: 30 } : {}) }}
                   className={clsx("px-1 w-8 text-center", headPadY, stickyFirstColumn && "bg-[var(--color-surface)]")} 
                   title="Expand or collapse rows" 
                 />
@@ -527,20 +527,20 @@ export function DataTable<T>({
               <tr className="bg-[var(--color-surface-2)] border-b border-[var(--color-divider)] text-xs shadow-xs">
                 {selectable && (
                   <th 
-                    style={stickyFirstColumn ? { position: 'sticky', left: 0, zIndex: 25 } : undefined}
-                    className={clsx("p-1", stickyFirstColumn && "bg-[var(--color-surface-2)]")} 
+                    style={{ width: 40, minWidth: 40, maxWidth: 40, ...(stickyFirstColumn ? { position: 'sticky', left: 0, zIndex: 25 } : {}) }}
+                    className={clsx("p-1 w-10", stickyFirstColumn && "bg-[var(--color-surface-2)]")} 
                   />
                 )}
                 {showRowNumbers && (
                   <th 
-                    style={stickyFirstColumn ? { position: 'sticky', left: selOffset, zIndex: 25 } : undefined}
-                    className={clsx("p-1", stickyFirstColumn && "bg-[var(--color-surface-2)]")} 
+                    style={{ width: 44, minWidth: 44, maxWidth: 44, ...(stickyFirstColumn ? { position: 'sticky', left: selOffset, zIndex: 25 } : {}) }}
+                    className={clsx("p-1 w-11", stickyFirstColumn && "bg-[var(--color-surface-2)]")} 
                   />
                 )}
                 {hasExpand && (
                   <th 
-                    style={stickyFirstColumn ? { position: 'sticky', left: numOffset, zIndex: 25 } : undefined}
-                    className={clsx("p-1", stickyFirstColumn && "bg-[var(--color-surface-2)]")} 
+                    style={{ width: 32, minWidth: 32, maxWidth: 32, ...(stickyFirstColumn ? { position: 'sticky', left: numOffset, zIndex: 25 } : {}) }}
+                    className={clsx("p-1 w-8", stickyFirstColumn && "bg-[var(--color-surface-2)]")} 
                   />
                 )}
                 {visibleColumns.map((col, cIdx) => {
@@ -583,24 +583,24 @@ export function DataTable<T>({
                 >
                   {selectable && (
                     <td 
-                      style={stickyFirstColumn ? { position: 'sticky', left: 0, zIndex: 10 } : undefined}
-                      className={clsx("px-2.5 text-center", padY, stickyFirstColumn && "bg-[var(--color-surface)]")}
+                      style={{ width: 40, minWidth: 40, maxWidth: 40, ...(stickyFirstColumn ? { position: 'sticky', left: 0, zIndex: 10 } : {}) }}
+                      className={clsx("px-2.5 w-10 text-center", padY, stickyFirstColumn && "bg-[var(--color-surface)]")}
                     >
                       <div className="w-4 h-4 mx-auto rounded bg-[var(--color-surface-2)]" />
                     </td>
                   )}
                   {showRowNumbers && (
                     <td 
-                      style={stickyFirstColumn ? { position: 'sticky', left: selOffset, zIndex: 10 } : undefined}
-                      className={clsx("px-2 text-center", padY, stickyFirstColumn && "bg-[var(--color-surface)]")}
+                      style={{ width: 44, minWidth: 44, maxWidth: 44, ...(stickyFirstColumn ? { position: 'sticky', left: selOffset, zIndex: 10 } : {}) }}
+                      className={clsx("px-2 w-11 text-center", padY, stickyFirstColumn && "bg-[var(--color-surface)]")}
                     >
                       <div className="w-5 h-3 mx-auto rounded bg-[var(--color-surface-2)]" />
                     </td>
                   )}
                   {hasExpand && (
                     <td 
-                      style={stickyFirstColumn ? { position: 'sticky', left: numOffset, zIndex: 10 } : undefined}
-                      className={clsx("px-1 text-center", padY, stickyFirstColumn && "bg-[var(--color-surface)]")}
+                      style={{ width: 32, minWidth: 32, maxWidth: 32, ...(stickyFirstColumn ? { position: 'sticky', left: numOffset, zIndex: 10 } : {}) }}
+                      className={clsx("px-1 w-8 text-center", padY, stickyFirstColumn && "bg-[var(--color-surface)]")}
                     >
                       <div className="w-3.5 h-3.5 mx-auto rounded bg-[var(--color-surface-2)]" />
                     </td>
@@ -653,9 +653,9 @@ export function DataTable<T>({
                       {/* Checkbox Cell */}
                       {selectable && (
                         <td 
-                          style={stickyFirstColumn ? { position: 'sticky', left: 0, zIndex: 10 } : undefined}
+                          style={{ width: 40, minWidth: 40, maxWidth: 40, ...(stickyFirstColumn ? { position: 'sticky', left: 0, zIndex: 10 } : {}) }}
                           className={clsx(
-                            "px-2.5 text-center", 
+                            "px-2.5 w-10 text-center", 
                             padY,
                             stickyFirstColumn && "bg-[var(--color-surface)] group-hover:bg-[var(--color-surface-2)]",
                             isSelected && stickyFirstColumn && "bg-[var(--color-primary-highlight-hex)]/40"
@@ -675,9 +675,9 @@ export function DataTable<T>({
                       {/* Row Number Cell */}
                       {showRowNumbers && (
                         <td 
-                          style={stickyFirstColumn ? { position: 'sticky', left: selOffset, zIndex: 10 } : undefined}
+                          style={{ width: 44, minWidth: 44, maxWidth: 44, ...(stickyFirstColumn ? { position: 'sticky', left: selOffset, zIndex: 10 } : {}) }}
                           className={clsx(
-                            "px-2 text-center td-rn font-mono text-[10px] tabular-nums text-[var(--color-text-faint)]", 
+                            "px-2 w-11 text-center td-rn font-mono text-[10px] tabular-nums text-[var(--color-text-faint)]", 
                             padY,
                             stickyFirstColumn && "bg-[var(--color-surface)] group-hover:bg-[var(--color-surface-2)]",
                             isSelected && stickyFirstColumn && "bg-[var(--color-primary-highlight-hex)]/40"
@@ -690,9 +690,9 @@ export function DataTable<T>({
                       {/* Expand Button Cell */}
                       {hasExpand && (
                         <td 
-                          style={stickyFirstColumn ? { position: 'sticky', left: numOffset, zIndex: 10 } : undefined}
+                          style={{ width: 32, minWidth: 32, maxWidth: 32, ...(stickyFirstColumn ? { position: 'sticky', left: numOffset, zIndex: 10 } : {}) }}
                           className={clsx(
-                            "px-1 text-center", 
+                            "px-1 w-8 text-center", 
                             padY,
                             stickyFirstColumn && "bg-[var(--color-surface)] group-hover:bg-[var(--color-surface-2)]",
                             isSelected && stickyFirstColumn && "bg-[var(--color-primary-highlight-hex)]/40"
@@ -729,6 +729,7 @@ export function DataTable<T>({
                             className={clsx(
                               padY, 
                               alignClass, 
+                              col.width,
                               col.className,
                               isFrozenCol && "bg-[var(--color-surface)] group-hover:bg-[var(--color-surface-2)] border-r border-[var(--color-divider)] shadow-[3px_0_8px_-3px_rgba(0,0,0,0.12)]",
                               isSelected && isFrozenCol && "bg-[var(--color-primary-highlight-hex)]/40"
