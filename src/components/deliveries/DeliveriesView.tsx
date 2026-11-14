@@ -51,6 +51,7 @@ import PageHeader from '../shared/PageHeader';
 import SectionHelpButton from '../shared/SectionHelpButton';
 import CollapsibleSummaryStrip from '../shared/CollapsibleSummaryStrip';
 import Modal from '../shared/Modal';
+import SlideOverDrawer from '../shared/SlideOverDrawer';
 import TablePagination, { usePagination } from '../shared/TablePagination';
 import DataTable, { ColumnDef } from '../shared/DataTable';
 import { MotionPage, StaggerContainer, StaggerItem } from '../shared/MotionPage';
@@ -59,6 +60,18 @@ import { AnimatedMetric } from '../shared/AnimatedMetric';
 type ViewMode = 'table' | 'cards' | 'kanban' | 'heatmap';
 type HeatmapPerspective = 'feat_screens' | 'env_pipeline' | 'del_impact';
 type AutofitStrategy = 'all' | 'content-only' | 'header-only' | 'compact' | 'comfortable';
+type DeliveryPreset = 'all' | 'in_progress' | 'ready_deploy' | 'smoke_failed' | 'pending_signoff' | 'deployed';
+
+const ALL_ALM_STATUSES = [
+  'New',
+  'Scheduled',
+  'In Progress',
+  'Ready for Deployment',
+  'Deployed',
+  'Closed',
+  'Cancelled',
+  'Rolled Back'
+];
 
 const DEL_ST_MAP: Record<string, string> = {
   'Deployed': 'deployed',
@@ -114,6 +127,7 @@ export const DeliveriesView: React.FC = () => {
   
   // Filtering & Search
   const [searchQuery, setSearchQuery] = useState('');
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const [filterEnv, setFilterEnv] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [filterVersion, setFilterVersion] = useState<string>('all');
@@ -123,12 +137,63 @@ export const DeliveriesView: React.FC = () => {
   const [sortBy, setSortBy] = useState<keyof Delivery>('targetDeliveryDate');
   const [sortAsc, setSortAsc] = useState<boolean>(true);
 
+  // Quick Preset Chips state
+  const [activePreset, setActivePreset] = useState<DeliveryPreset>('all');
+
+  // Master-Detail Peek Side Drawer state
+  const [peekDeliveryId, setPeekDeliveryId] = useState<string | null>(null);
+
+  // Inline Quick-Edit states
+  const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
+  const [editingTitleVal, setEditingTitleVal] = useState<string>('');
+  const [statusMenuDeliveryId, setStatusMenuDeliveryId] = useState<string | null>(null);
+
   // Selection for bulk actions
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingDelivery, setEditingDelivery] = useState<Delivery | null>(null);
+
+  // Keyboard shortcut: '/' to focus search
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === '/' && !['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Close menus on outside click
+  useEffect(() => {
+    if (!statusMenuDeliveryId) return;
+    const handleClickOutside = () => {
+      setStatusMenuDeliveryId(null);
+    };
+    window.addEventListener('click', handleClickOutside);
+    return () => window.removeEventListener('click', handleClickOutside);
+  }, [statusMenuDeliveryId]);
+
+  // Inline Title Editing Commit
+  const handleCommitTitle = (delivery: Delivery) => {
+    const trimmed = editingTitleVal.trim();
+    if (trimmed && trimmed !== delivery.name) {
+      saveDelivery({ name: trimmed }, delivery.id);
+      toast.success('Package title updated');
+    }
+    setEditingTitleId(null);
+  };
+
+  // Status Jump Menu Handler
+  const handleSetAlmStatus = (delivery: Delivery, newStatus: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    saveDelivery({ almStatus: newStatus }, delivery.id);
+    setStatusMenuDeliveryId(null);
+    toast.success(`ALM status changed to ${newStatus}`);
+  };
 
   // Compute Cockpit Telemetry
   const telemetry = useMemo(() => {
@@ -166,10 +231,59 @@ export const DeliveriesView: React.FC = () => {
     };
   }, [deliveries]);
 
+  // Quick Preset Definitions
+  const presetCounts = useMemo(() => ({
+    all: deliveries.length,
+    in_progress: deliveries.filter(d => d.status === 'In Progress' || d.almStatus === 'In Progress').length,
+    ready_deploy: deliveries.filter(d => d.status === 'Ready for Deployment' || d.almStatus === 'Ready for Deployment' || d.almStatus === 'Ready for Test').length,
+    smoke_failed: deliveries.filter(d => d.smokeTestStatus === 'Failed').length,
+    pending_signoff: deliveries.filter(d => d.signOffStatus === 'Pending').length,
+    deployed: deliveries.filter(d => d.status === 'Deployed' || d.almStatus === 'Deployed').length,
+  }), [deliveries]);
+
+  const PRESETS: { id: DeliveryPreset; label: string; count: number }[] = useMemo(() => [
+    { id: 'all', label: 'All Packages', count: presetCounts.all },
+    { id: 'in_progress', label: 'In Progress', count: presetCounts.in_progress },
+    { id: 'ready_deploy', label: 'Ready for Deploy', count: presetCounts.ready_deploy },
+    { id: 'smoke_failed', label: 'Smoke Gate Alert', count: presetCounts.smoke_failed },
+    { id: 'pending_signoff', label: 'Pending Sign-Off', count: presetCounts.pending_signoff },
+    { id: 'deployed', label: 'Deployed to Prod', count: presetCounts.deployed },
+  ], [presetCounts]);
+
+  const handlePresetClick = (preset: DeliveryPreset) => {
+    setActivePreset(preset);
+    setFilterStatus('all');
+    setFilterEnv('all');
+    setFilterVersion('all');
+    setFilterCategory('all');
+    setFilterSmoke('all');
+  };
+
+  const resetAllFilters = () => {
+    setActivePreset('all');
+    setFilterStatus('all');
+    setFilterEnv('all');
+    setFilterVersion('all');
+    setFilterCategory('all');
+    setFilterSmoke('all');
+    setSearchQuery('');
+  };
+
+  const hasActiveFilters = activePreset !== 'all' || filterStatus !== 'all' || filterEnv !== 'all' || filterVersion !== 'all' || filterCategory !== 'all' || filterSmoke !== 'all' || searchQuery.length > 0;
+
   // Filtered & Sorted Deliveries
   const filteredDeliveries = useMemo(() => {
     return deliveries
       .filter(item => {
+        const matchesPreset = 
+          activePreset === 'all' ? true :
+          activePreset === 'in_progress' ? (item.status === 'In Progress' || item.almStatus === 'In Progress') :
+          activePreset === 'ready_deploy' ? (item.status === 'Ready for Deployment' || item.almStatus === 'Ready for Deployment' || item.almStatus === 'Ready for Test') :
+          activePreset === 'smoke_failed' ? (item.smokeTestStatus === 'Failed') :
+          activePreset === 'pending_signoff' ? (item.signOffStatus === 'Pending') :
+          activePreset === 'deployed' ? (item.status === 'Deployed' || item.almStatus === 'Deployed') : true;
+
+        if (!matchesPreset) return false;
         if (filterEnv !== 'all' && item.environment !== filterEnv) return false;
         if (filterStatus !== 'all' && item.status !== filterStatus) return false;
         if (filterVersion !== 'all' && item.releaseVersion !== filterVersion) return false;
@@ -201,7 +315,29 @@ export const DeliveriesView: React.FC = () => {
         if (valA > valB) return sortAsc ? 1 : -1;
         return 0;
       });
-  }, [deliveries, filterEnv, filterStatus, filterVersion, filterCategory, filterSmoke, searchQuery, sortBy, sortAsc]);
+  }, [deliveries, activePreset, filterEnv, filterStatus, filterVersion, filterCategory, filterSmoke, searchQuery, sortBy, sortAsc]);
+
+  const peekDelivery = useMemo(() => {
+    if (!peekDeliveryId) return null;
+    return deliveries.find(d => d.id === peekDeliveryId) || null;
+  }, [peekDeliveryId, deliveries]);
+
+  const peekIndex = useMemo(() => {
+    if (!peekDeliveryId) return -1;
+    return filteredDeliveries.findIndex(d => d.id === peekDeliveryId);
+  }, [peekDeliveryId, filteredDeliveries]);
+
+  const handlePrevPeek = () => {
+    if (peekIndex > 0) {
+      setPeekDeliveryId(filteredDeliveries[peekIndex - 1].id);
+    }
+  };
+
+  const handleNextPeek = () => {
+    if (peekIndex >= 0 && peekIndex < filteredDeliveries.length - 1) {
+      setPeekDeliveryId(filteredDeliveries[peekIndex + 1].id);
+    }
+  };
 
   const pagination = usePagination<Delivery>(filteredDeliveries, 10, 'pp_page_size_deliveries');
 
@@ -250,27 +386,68 @@ export const DeliveriesView: React.FC = () => {
       sortable: true,
       width: 'min-w-[260px]',
       filter: <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by topbar search</span>,
-      cell: (item) => (
-        <div className="min-w-0 max-w-[380px] py-0.5">
-          <div className="flex items-center gap-1.5 min-w-0">
-            <span className="font-bold text-xs leading-tight truncate text-[var(--color-text)]" title={item.name}>
-              {item.name}
-            </span>
-            <span className="shrink-0 text-[10px] text-[var(--color-text-muted)] font-mono">
-              ({item.module})
-            </span>
-            {item.category && (
-              <span className="shrink-0 px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[9px] font-semibold text-[var(--color-text-muted)]">
-                {item.category}
+      cell: (item) => {
+        const isEditing = editingTitleId === item.id;
+
+        if (isEditing) {
+          return (
+            <div className="flex items-center gap-1 py-0.5 w-full" onClick={e => e.stopPropagation()}>
+              <input
+                autoFocus
+                value={editingTitleVal}
+                onChange={e => setEditingTitleVal(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter') handleCommitTitle(item);
+                  if (e.key === 'Escape') setEditingTitleId(null);
+                }}
+                onBlur={() => handleCommitTitle(item)}
+                className="w-full px-2 py-1 text-xs font-bold rounded-lg border border-[var(--color-primary-hex)] bg-[var(--color-surface)] text-[var(--color-text)] outline-none ring-2 ring-[var(--color-primary-highlight-hex)] shadow-sm"
+              />
+            </div>
+          );
+        }
+
+        return (
+          <div 
+            className="min-w-0 max-w-[380px] py-0.5 group/title cursor-text"
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              setEditingTitleId(item.id);
+              setEditingTitleVal(item.name);
+            }}
+          >
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className="font-bold text-xs leading-tight truncate text-[var(--color-text)]" title={item.name}>
+                {item.name}
               </span>
-            )}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setEditingTitleId(item.id);
+                  setEditingTitleVal(item.name);
+                }}
+                className="opacity-0 group-hover/title:opacity-100 p-0.5 text-[var(--color-text-faint)] hover:text-[var(--color-text)] rounded transition-opacity cursor-pointer shrink-0"
+                title="Edit title inline (double-click)"
+              >
+                <Edit3 size={11} />
+              </button>
+              <span className="shrink-0 text-[10px] text-[var(--color-text-muted)] font-mono">
+                ({item.module})
+              </span>
+              {item.category && (
+                <span className="shrink-0 px-1.5 py-0.2 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[9px] font-semibold text-[var(--color-text-muted)]">
+                  {item.category}
+                </span>
+              )}
+            </div>
+            {/* Second line in comfortable view */}
+            <div className="cell-secondary text-[10px] text-[var(--color-text-muted)] font-mono truncate max-w-[360px] mt-0.5" title={item.componentsDelivered || item.notes}>
+              {item.componentsDelivered || item.notes || `${item.releaseVersion || 'Unversioned'} · ${item.environment}`}
+            </div>
           </div>
-          {/* Second line in comfortable view */}
-          <div className="cell-secondary text-[10px] text-[var(--color-text-muted)] font-mono truncate max-w-[360px] mt-0.5" title={item.componentsDelivered || item.notes}>
-            {item.componentsDelivered || item.notes || `${item.releaseVersion || 'Unversioned'} · ${item.environment}`}
-          </div>
-        </div>
-      )
+        );
+      }
     },
     {
       id: 'almStatus',
@@ -290,12 +467,62 @@ export const DeliveriesView: React.FC = () => {
           ))}
         </select>
       ),
-      cell: (item) => (
-        <span className={clsx("st-badge", `st-${ALM_ST_MAP[item.almStatus] || 'not-started'}`)}>
-          <span className="dot" />
-          <span>{item.almStatus}</span>
-        </span>
-      )
+      cell: (item) => {
+        const isStatusOpen = statusMenuDeliveryId === item.id;
+        return (
+          <div className="relative inline-block" onClick={e => e.stopPropagation()}>
+            <div className="inline-flex items-center rounded-full">
+              <span className={clsx("st-badge", `st-${ALM_ST_MAP[item.almStatus] || 'not-started'}`)}>
+                <span className="dot" />
+                <span>{item.almStatus}</span>
+              </span>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setStatusMenuDeliveryId(prev => prev === item.id ? null : item.id);
+                }}
+                className="p-1 -ml-1 text-[var(--color-text-faint)] hover:text-[var(--color-text)] rounded-full hover:bg-[var(--color-surface-offset)] transition-colors cursor-pointer"
+                title="Change ALM status"
+              >
+                <ChevronDown size={11} />
+              </button>
+            </div>
+
+            {isStatusOpen && (
+              <div
+                className="absolute left-0 top-full mt-1.5 z-50 min-w-[170px] p-1.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-100"
+                onClick={e => e.stopPropagation()}
+              >
+                <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] border-b border-[var(--color-divider)]/40 mb-1">
+                  Set ALM Status
+                </div>
+                <div className="space-y-0.5">
+                  {ALL_ALM_STATUSES.map((st) => (
+                    <button
+                      key={st}
+                      type="button"
+                      onClick={(e) => handleSetAlmStatus(item, st, e)}
+                      className={clsx(
+                        "w-full flex items-center justify-between px-2 py-1 rounded-lg text-xs font-semibold transition-colors text-left cursor-pointer",
+                        item.almStatus === st
+                          ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold"
+                          : "text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
+                      )}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={clsx("w-2 h-2 rounded-full", `st-dot-${ALM_ST_MAP[st] || 'not-started'}`)} />
+                        <span>{st}</span>
+                      </div>
+                      {item.almStatus === st && <Check size={12} className="text-[var(--color-primary-hex)]" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
     },
     {
       id: 'environment',
@@ -817,8 +1044,9 @@ export const DeliveriesView: React.FC = () => {
             <div className="relative">
               <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[var(--color-text-faint)]" />
               <input 
+                ref={searchInputRef}
                 className="bg-[var(--color-surface-2)] border border-[var(--color-divider)] rounded-xl pl-7 pr-2 py-1.5 text-xs outline-none focus:border-[var(--color-primary-hex)] w-24 sm:w-[140px] md:w-[170px] text-[var(--color-text)]"
-                placeholder="Search..."
+                placeholder="Search... (/)"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 aria-label="Search deliveries"
@@ -950,6 +1178,56 @@ export const DeliveriesView: React.FC = () => {
 
       {/* 2. Main Workspace Body */}
       <div className="flex-1 overflow-auto custom-scroll p-4 sm:p-6 lg:p-8 space-y-4">
+        {/* ── Quick Filter Presets Strip ── */}
+        <div className="flex items-center justify-between gap-2 overflow-x-auto no-scrollbar py-0.5 select-none">
+          <div className="flex items-center gap-1.5 shrink-0">
+            <span className="text-[11px] font-bold text-[var(--color-text-faint)] uppercase tracking-wider hidden sm:inline mr-1">
+              Presets:
+            </span>
+            {PRESETS.map((p) => {
+              const isActive = activePreset === p.id;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => handlePresetClick(p.id)}
+                  className={clsx(
+                    "px-2.5 py-1 rounded-xl text-xs font-semibold flex items-center gap-1.5 border transition-all cursor-pointer active:scale-95",
+                    isActive
+                      ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] border-transparent shadow-xs font-bold"
+                      : "bg-[var(--color-surface)] text-[var(--color-text-muted)] border-[var(--color-divider)] hover:border-[var(--color-primary-hex)]/40 hover:text-[var(--color-text)]"
+                  )}
+                >
+                  <span>{p.label}</span>
+                  <span className={clsx(
+                    "text-[10px] font-mono px-1.5 py-0.2 rounded-md font-bold",
+                    isActive ? "bg-black/20 text-white" : "bg-[var(--color-surface-2)] text-[var(--color-text-faint)]"
+                  )}>
+                    {p.count}
+                  </span>
+                </button>
+              );
+            })}
+            {hasActiveFilters && (
+              <button
+                type="button"
+                onClick={resetAllFilters}
+                className="px-2 py-1 rounded-xl text-xs font-medium text-rose-500 hover:bg-rose-500/10 flex items-center gap-1 transition-colors cursor-pointer ml-1"
+                title="Reset all filters"
+              >
+                <X size={12} />
+                <span>Reset</span>
+              </button>
+            )}
+          </div>
+
+          <div className="hidden lg:flex items-center gap-2 text-[11px] text-[var(--color-text-faint)] font-mono shrink-0">
+            <span>Press <kbd className="px-1.5 py-0.5 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] font-semibold text-[10px]">/</kbd> to search</span>
+            <span>•</span>
+            <span><kbd className="px-1 py-0.5 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] font-semibold text-[10px]">[</kbd> <kbd className="px-1 py-0.5 rounded bg-[var(--color-surface-2)] border border-[var(--color-divider)] font-semibold text-[10px] shadow-2xs">]</kbd> to navigate</span>
+          </div>
+        </div>
+
         {/* Floating Bulk Actions Bar */}
         <AnimatePresence>
           {selectedIds.size > 0 && (
@@ -1064,10 +1342,10 @@ export const DeliveriesView: React.FC = () => {
             showRowNumbers
             pagination={pagination}
             itemLabel="packages"
-            onRowClick={(item) => handleOpenEdit(item)}
+            onRowClick={(item) => setPeekDeliveryId(item.id)}
             mobileCardRenderer={(item, { isSelected, onToggleSelect: toggleRowSelect }) => (
               <div
-                onClick={() => handleOpenEdit(item)}
+                onClick={() => setPeekDeliveryId(item.id)}
                 className={clsx(
                   "p-3.5 space-y-2.5 transition-colors active:bg-[var(--color-surface-2)]/70 cursor-pointer",
                   isSelected && "bg-[var(--color-primary-highlight-hex)]/25"
@@ -1110,9 +1388,42 @@ export const DeliveriesView: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-[11px] pt-1.5 border-t border-[var(--color-divider)]/50 text-[var(--color-text-muted)]">
-                  <span>{item.smokeTestStatus ? `Smoke: ${item.smokeTestStatus}` : 'No smoke gate'}</span>
+                <div className="flex items-center justify-between gap-2 text-[11px] pt-1.5 border-t border-[var(--color-divider)]/50 text-[var(--color-text-muted)]" onClick={e => e.stopPropagation()}>
                   <span className="font-mono">{item.targetDeliveryDate ? fmtDate(item.targetDeliveryDate) : 'Unscheduled'}</span>
+
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setPeekDeliveryId(item.id);
+                      }}
+                      className="px-2.5 py-1 min-h-[36px] rounded-lg bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] border border-[var(--color-divider)] text-[11px] font-bold text-[var(--color-text)] flex items-center gap-1 cursor-pointer active:scale-95 transition-transform"
+                    >
+                      <ExternalLink size={12} />
+                      <span>Details</span>
+                    </button>
+                    {item.status !== 'Deployed' && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const nextAction = item.status === 'Scheduled' ? 'start' : item.status === 'In Progress' ? 'ready' : 'deploy';
+                          const res = transitionDeliveryStage(item, nextAction);
+                          if (!res.ok) {
+                            toast.error(res.reason || 'Transition failed.');
+                            return;
+                          }
+                          saveDelivery(res.patch, item.id);
+                          toast.success(`Package moved to ${res.patch.status}`);
+                        }}
+                        className="px-2.5 py-1 min-h-[36px] rounded-lg bg-[var(--color-primary-highlight-hex)] border border-[var(--color-primary-hex)]/20 text-[11px] font-bold text-[var(--color-primary-hex)] flex items-center gap-1 cursor-pointer active:scale-95 transition-transform"
+                      >
+                        <CheckCircle2 size={12} />
+                        <span>Advance</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             )}
@@ -1134,7 +1445,7 @@ export const DeliveriesView: React.FC = () => {
                 return (
                   <div
                     key={item.id}
-                    onClick={() => handleOpenEdit(item)}
+                    onClick={() => setPeekDeliveryId(item.id)}
                     className={clsx(
                       "card p-5 group transition-all duration-150 flex flex-col cursor-pointer active:scale-[0.98] relative",
                       isSelected && "border-2 border-[var(--color-primary-hex)] shadow-sm",
@@ -1515,6 +1826,258 @@ export const DeliveriesView: React.FC = () => {
           </div>
         )}
       </div>
+
+      {/* ── Master-Detail Peek Side Drawer ── */}
+      <SlideOverDrawer
+        isOpen={Boolean(peekDelivery)}
+        onClose={() => setPeekDeliveryId(null)}
+        title={
+          peekDelivery && (
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-xs font-mono font-bold text-[var(--color-primary-hex)] bg-[var(--color-primary-highlight-hex)] border border-[var(--color-primary-hex)]/30 px-2 py-0.5 rounded leading-none">
+                {peekDelivery.almId || peekDelivery.id}
+              </span>
+              <span className={clsx("st-badge text-[11px]", `st-${DEL_ST_MAP[peekDelivery.status] || 'not-started'}`)}>
+                <span className="dot" />
+                <span>{peekDelivery.status}</span>
+              </span>
+              <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-[var(--color-surface-2)] border border-[var(--color-divider)] text-[var(--color-text)]">
+                {peekDelivery.environment}
+              </span>
+            </div>
+          )
+        }
+        subtitle={
+          peekDelivery && (
+            <div className="text-[11px] text-[var(--color-text-faint)] flex items-center gap-2 mt-0.5">
+              <span>Target: {fmtDate(peekDelivery.targetDeliveryDate)}</span>
+              {peekDelivery.releaseVersion && <span>• Release: {peekDelivery.releaseVersion}</span>}
+              {peekDelivery.module && <span>• Module: {peekDelivery.module}</span>}
+            </div>
+          )
+        }
+        hasPrevious={peekIndex > 0}
+        hasNext={peekIndex >= 0 && peekIndex < filteredDeliveries.length - 1}
+        onPrevious={handlePrevPeek}
+        onNext={handleNextPeek}
+        footer={
+          peekDelivery && (
+            <div className="flex items-center justify-between w-full gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  const del = peekDelivery;
+                  setPeekDeliveryId(null);
+                  handleOpenEdit(del);
+                }}
+                className="px-3 py-1.5 rounded-xl border border-[var(--color-divider)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-offset)] text-xs font-bold text-[var(--color-text)] flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Edit3 size={13} />
+                <span>Edit Full Form</span>
+              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (window.confirm(`Delete delivery package ${peekDelivery.almId || peekDelivery.name}?`)) {
+                      deleteDelivery(peekDelivery.id);
+                      setPeekDeliveryId(null);
+                      toast.info(`Delivery package deleted`);
+                    }
+                  }}
+                  className="px-3 py-1.5 rounded-xl border border-rose-500/30 text-rose-500 hover:bg-rose-500/10 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Delete
+                </button>
+                {peekDelivery.status !== 'Deployed' ? (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const nextAction = peekDelivery.status === 'Scheduled' ? 'start' : peekDelivery.status === 'In Progress' ? 'ready' : 'deploy';
+                      const res = transitionDeliveryStage(peekDelivery, nextAction);
+                      if (!res.ok) {
+                        toast.error(res.reason || 'Transition failed.');
+                        return;
+                      }
+                      saveDelivery(res.patch, peekDelivery.id);
+                      toast.success(`Package moved to ${res.patch.status}`);
+                    }}
+                    className="px-3.5 py-1.5 rounded-xl bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] text-xs font-bold flex items-center gap-1.5 shadow-xs transition-transform active:scale-95 cursor-pointer"
+                  >
+                    <CheckCircle2 size={13} />
+                    <span>Advance Stage</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const res = transitionDeliveryStage(peekDelivery, 'rollback');
+                      if (!res.ok) {
+                        toast.error(res.reason || 'Rollback failed.');
+                        return;
+                      }
+                      saveDelivery(res.patch, peekDelivery.id);
+                      toast.warning('Package rolled back');
+                    }}
+                    className="px-3 py-1.5 rounded-xl border border-amber-500/30 text-amber-500 hover:bg-amber-500/10 text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                  >
+                    <RefreshCw size={12} />
+                    <span>Rollback</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          )
+        }
+      >
+        {peekDelivery && (
+          <div className="space-y-5 text-xs text-[var(--color-text)]">
+            {/* Title */}
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] mb-1">
+                Package Name & Scope
+              </div>
+              <h2 className="text-base font-bold text-[var(--color-text)] leading-snug">
+                {peekDelivery.name}
+              </h2>
+              {peekDelivery.pdn && (
+                <div className="text-[11px] font-mono text-[var(--color-text-muted)] mt-0.5">
+                  PDN Code: {peekDelivery.pdn}
+                </div>
+              )}
+            </div>
+
+            {/* Lifecycle Progression Bar */}
+            <div className="p-3 rounded-2xl bg-[var(--color-surface-2)]/70 border border-[var(--color-divider)] space-y-2">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)]">
+                Deployment Progression
+              </div>
+              <div className="grid grid-cols-4 gap-1.5">
+                {['Scheduled', 'In Progress', 'Ready for Deployment', 'Deployed'].map(st => {
+                  const isCurrent = peekDelivery.status === st;
+                  return (
+                    <div
+                      key={st}
+                      className={clsx(
+                        "py-1.5 px-2 rounded-xl text-[10px] font-bold text-center transition-all",
+                        isCurrent
+                          ? "bg-[var(--color-primary-hex)] text-[var(--color-primary-text)] shadow-xs"
+                          : "bg-[var(--color-surface)] border border-[var(--color-divider)] text-[var(--color-text-muted)]"
+                      )}
+                    >
+                      {st === 'Ready for Deployment' ? 'Ready' : st}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Core Specs Grid */}
+            <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-[var(--color-surface-2)]/40 border border-[var(--color-divider)]">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1">
+                  Environment
+                </span>
+                <span className="font-semibold text-xs">
+                  {peekDelivery.environment || '—'}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1">
+                  Release Version
+                </span>
+                <span className="font-mono text-xs font-semibold">
+                  {peekDelivery.releaseVersion || 'Unversioned'}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1">
+                  Approver Lead
+                </span>
+                <span className="font-semibold text-xs">
+                  {peekDelivery.approver || 'Pending Assignment'}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1">
+                  Built / Fixed By
+                </span>
+                <span className="font-semibold text-xs">
+                  {peekDelivery.fixedBy || 'Unassigned'}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1">
+                  Target Date
+                </span>
+                <span className="font-mono text-xs text-[var(--color-text)]">
+                  {peekDelivery.targetDeliveryDate ? fmtDate(peekDelivery.targetDeliveryDate) : '—'}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1">
+                  Actual Deployed Date
+                </span>
+                <span className="font-mono text-xs text-emerald-500 font-semibold">
+                  {peekDelivery.actualDeliveryDate ? fmtDate(peekDelivery.actualDeliveryDate) : 'Not deployed'}
+                </span>
+              </div>
+            </div>
+
+            {/* Quality Gates: Smoke Test & Sign-Off */}
+            <div className="grid grid-cols-2 gap-3 p-3.5 rounded-2xl bg-[var(--color-surface-2)]/40 border border-[var(--color-divider)]">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1">
+                  Smoke Gate
+                </span>
+                <span className={clsx(
+                  "px-2 py-0.5 rounded text-xs font-bold inline-block",
+                  peekDelivery.smokeTestStatus === 'Passed' && "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30",
+                  peekDelivery.smokeTestStatus === 'Running' && "bg-cyan-500/15 text-cyan-400 motion-safe:animate-pulse",
+                  peekDelivery.smokeTestStatus === 'Failed' && "bg-rose-500/15 text-rose-400 border border-rose-500/30",
+                  (!peekDelivery.smokeTestStatus || peekDelivery.smokeTestStatus === 'Not Run') && "text-[var(--color-text-faint)] bg-[var(--color-surface)] border border-[var(--color-divider)]"
+                )}>
+                  {peekDelivery.smokeTestStatus || 'Not Run'}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] block mb-1">
+                  Sign-Off Status
+                </span>
+                <span className={clsx(
+                  "text-xs font-bold",
+                  peekDelivery.signOffStatus === 'Approved' && "text-emerald-400",
+                  peekDelivery.signOffStatus === 'Pending' && "text-amber-400",
+                  peekDelivery.signOffStatus === 'Rejected' && "text-rose-400",
+                  (!peekDelivery.signOffStatus || peekDelivery.signOffStatus === 'Not Required') && "text-[var(--color-text-muted)]"
+                )}>
+                  {peekDelivery.signOffStatus || 'Not Required'}
+                </span>
+              </div>
+            </div>
+
+            {/* Components Delivered & Scope Narrative */}
+            <div>
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] mb-1.5">
+                Components Delivered & Release Notes
+              </div>
+              <div className="p-3.5 rounded-2xl bg-[var(--color-surface-2)]/50 border border-[var(--color-divider)] text-xs text-[var(--color-text)] whitespace-pre-wrap leading-relaxed font-sans min-h-[80px]">
+                {peekDelivery.componentsDelivered || peekDelivery.notes || (
+                  <span className="text-[var(--color-text-faint)] italic">No components or notes recorded for this package.</span>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </SlideOverDrawer>
 
       {/* 4. Delivery Creation / Edit Modal */}
       {isModalOpen && (
