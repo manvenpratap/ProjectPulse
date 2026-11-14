@@ -1,4 +1,6 @@
 {
   "typescript.tsserver.experimental.enableProjectDiagnostics": true,
-  "java.configuration.updateBuildConfiguration": "automatic"
+  "java.configuration.updateBuildConfiguration": "automatic",
+  "gradle.nestedProjects": true,
+  "java.import.gradle.wrapper.enabled": true
 }
