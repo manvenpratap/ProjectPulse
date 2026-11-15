@@ -860,8 +860,8 @@
     "hash": "2586cb19c1d92aa1402dbcf1e8ad14c9"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/tasks/TaskGrid.tsx": {
-    "mtime": 1794679663.4898245,
-    "hash": "376d3324da838f71de36adcd5c329c43"
+    "mtime": 1794705471.8223615,
+    "hash": "14f725f3dd581a2f4292db0f5d5cbd49"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/tasks/TaskModal.tsx": {
     "mtime": 1794501791.8846433,
@@ -952,7 +952,7 @@
     "hash": "dec7a417ea2163466393db7c7b0b97b7"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/shared/DataTable.tsx": {
-    "mtime": 1794679419.9580243,
+    "mtime": 1794679976.685419,
     "hash": "caca01ad5575b0419fa9f4c53d0b2a79"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/shared/MobileLaunchQrModal.tsx": {
@@ -980,8 +980,8 @@
     "hash": "18994050e093ed339802aa8b0bbc1fba"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/defects/DefectView.tsx": {
-    "mtime": 1794679457.0797603,
-    "hash": "2c45a36659af86f37e0f622a6d17daa9"
+    "mtime": 1794705491.764468,
+    "hash": "ab8a2046646eb16f05f3264d1838a6eb"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/defects/DefectModal.tsx": {
     "mtime": 1794077295.404792,
@@ -1100,8 +1100,8 @@
     "hash": "a6a42d67e4e399b2aa29980f26eeb7a7"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/components/deliveries/DeliveriesView.tsx": {
-    "mtime": 1794654524.4011142,
-    "hash": "3ad35460fb9bb3b17404a23f3dc9d4f6"
+    "mtime": 1794705413.3958936,
+    "hash": "8d76fdd543b1947ba0cce981c32e77c7"
   },
   "/Volumes/Study/Projects/ProjectPulse 2.0/src/hooks/useClickOutside.ts": {
     "mtime": 1794279751.6925483,
