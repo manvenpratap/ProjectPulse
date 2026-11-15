@@ -2163,7 +2163,7 @@ const TeamView: React.FC = () => {
         {/* ══════════════════════════════════════════════════════════
             SECTION 8: INTERACTIVE ORGANIZATION HIERARCHY TREE
            ══════════════════════════════════════════════════════════ */}
-        <MemberHierarchy />
+        <MemberHierarchy onSelectMember={setPeekMemberId} />
 
       </div>
 

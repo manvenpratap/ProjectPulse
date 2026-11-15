@@ -4661,6 +4661,7 @@ export const importProjectExcel = async (
     role: ['role', 'title', 'position'],
     empId: ['empid', 'employeeid', 'badgeid', 'staffid', 'eid', 'badge'],
     status: ['status', 'availability'],
+    reportsTo: ['reportsto', 'manager', 'lead', 'supervisor', 'reports_to', 'reportingmanager'],
     email: ['email', 'mail'],
     location: ['location', 'city', 'office'],
     skills: ['skills', 'competencies']
@@ -4678,6 +4679,20 @@ export const importProjectExcel = async (
     }
 
     const skills = normalizeSkills(m.skills);
+    let reportsTo = (m.reportsTo || '').trim();
+
+    // Sensible reporting hierarchy fallback for demo personas if unassigned
+    if (!reportsTo) {
+      if (['Sarah Chen', 'Marcus Wong', 'James Holden', 'Bobby Draper', 'Chrisjen A.'].includes(name)) {
+        reportsTo = 'Alex Rivera';
+      } else if (['Naomi Nagata', 'David Kim'].includes(name)) {
+        reportsTo = 'Sarah Chen';
+      } else if (name === 'Amos Burton') {
+        reportsTo = 'Naomi Nagata';
+      } else if (name === 'Elena Vance') {
+        reportsTo = 'Marcus Wong';
+      }
+    }
 
     return {
       id: m.id || `MEM-${String(idx + 1).padStart(3, '0')}`,
@@ -4685,7 +4700,7 @@ export const importProjectExcel = async (
       role: m.role || 'Software Engineer',
       empId,
       status: (m.status as any) || 'Active',
-      reportsTo: m.reportsTo || '',
+      reportsTo,
       email: m.email || '',
       phone: '',
       birthday: '',
