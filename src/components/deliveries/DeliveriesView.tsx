@@ -64,11 +64,21 @@ type DeliveryPreset = 'all' | 'in_progress' | 'ready_deploy' | 'smoke_failed' | 
 
 const ALL_ALM_STATUSES = [
   'New',
+  'Open',
+  'In Progress',
+  'Fixed',
+  'Ready for Test',
+  'Retest',
+  'Closed',
+  'Rejected',
+  'Reopened'
+];
+
+const ALL_DEL_STATUSES = [
   'Scheduled',
   'In Progress',
   'Ready for Deployment',
   'Deployed',
-  'Closed',
   'Cancelled',
   'Rolled Back'
 ];
@@ -147,6 +157,7 @@ export const DeliveriesView: React.FC = () => {
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
   const [editingTitleVal, setEditingTitleVal] = useState<string>('');
   const [statusMenuDeliveryId, setStatusMenuDeliveryId] = useState<string | null>(null);
+  const [deployStatusMenuId, setDeployStatusMenuId] = useState<string | null>(null);
 
   // Selection for bulk actions
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -169,13 +180,19 @@ export const DeliveriesView: React.FC = () => {
 
   // Close menus on outside click
   useEffect(() => {
-    if (!statusMenuDeliveryId) return;
+    if (!statusMenuDeliveryId && !deployStatusMenuId) return;
     const handleClickOutside = () => {
       setStatusMenuDeliveryId(null);
+      setDeployStatusMenuId(null);
     };
-    window.addEventListener('click', handleClickOutside);
-    return () => window.removeEventListener('click', handleClickOutside);
-  }, [statusMenuDeliveryId]);
+    const timer = setTimeout(() => {
+      window.addEventListener('click', handleClickOutside);
+    }, 0);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('click', handleClickOutside);
+    };
+  }, [statusMenuDeliveryId, deployStatusMenuId]);
 
   // Inline Title Editing Commit
   const handleCommitTitle = (delivery: Delivery) => {
@@ -193,6 +210,14 @@ export const DeliveriesView: React.FC = () => {
     saveDelivery({ almStatus: newStatus }, delivery.id);
     setStatusMenuDeliveryId(null);
     toast.success(`ALM status changed to ${newStatus}`);
+  };
+
+  // Deploy Status Jump Menu Handler
+  const handleSetDeployStatus = (delivery: Delivery, newStatus: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    saveDelivery({ status: newStatus }, delivery.id);
+    setDeployStatusMenuId(null);
+    toast.success(`Deployment status changed to ${newStatus}`);
   };
 
   // Compute Cockpit Telemetry
@@ -410,6 +435,7 @@ export const DeliveriesView: React.FC = () => {
         return (
           <div 
             className="min-w-0 max-w-[380px] py-0.5 group/title cursor-text"
+            onClick={e => e.stopPropagation()}
             onDoubleClick={(e) => {
               e.stopPropagation();
               setEditingTitleId(item.id);
@@ -471,26 +497,27 @@ export const DeliveriesView: React.FC = () => {
         const isStatusOpen = statusMenuDeliveryId === item.id;
         return (
           <div className="relative inline-block" onClick={e => e.stopPropagation()}>
-            <div className="inline-flex items-center rounded-full">
-              <span className={clsx("st-badge", `st-${ALM_ST_MAP[item.almStatus] || 'not-started'}`)}>
-                <span className="dot" />
-                <span>{item.almStatus}</span>
-              </span>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setStatusMenuDeliveryId(prev => prev === item.id ? null : item.id);
-                }}
-                className="p-1 -ml-1 text-[var(--color-text-faint)] hover:text-[var(--color-text)] rounded-full hover:bg-[var(--color-surface-offset)] transition-colors cursor-pointer"
-                title="Change ALM status"
-              >
-                <ChevronDown size={11} />
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setStatusMenuDeliveryId(prev => prev === item.id ? null : item.id);
+                setDeployStatusMenuId(null);
+              }}
+              title="Click to change ALM status"
+              className={clsx(
+                "st-badge cursor-pointer inline-flex items-center gap-1.5 transition-all hover:ring-1 hover:ring-current/30 active:scale-95 shadow-2xs group/st", 
+                `st-${ALM_ST_MAP[item.almStatus] || 'not-started'}`
+              )}
+            >
+              <span className="dot" />
+              <span>{item.almStatus}</span>
+              <ChevronDown size={11} className={clsx("opacity-40 group-hover/st:opacity-90 transition-transform duration-150", isStatusOpen && "rotate-180")} />
+            </button>
 
             {isStatusOpen && (
               <div
+                data-testid="alm-status-menu"
                 className="absolute left-0 top-full mt-1.5 z-50 min-w-[170px] p-1.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-100"
                 onClick={e => e.stopPropagation()}
               >
@@ -560,14 +587,65 @@ export const DeliveriesView: React.FC = () => {
       header: delColMap['status']?.label || 'DEPLOY STATUS',
       headerTitle: 'Deployment pipeline status (Pending, Deployed, Verified, Rolled Back). Click to sort.',
       sortable: true,
-      width: 'w-32',
+      width: 'w-36',
       filter: null,
-      cell: (item) => (
-        <span className={clsx("st-badge", `st-${DEL_ST_MAP[item.status] || 'not-started'}`)}>
-          <span className="dot" />
-          <span>{item.status}</span>
-        </span>
-      )
+      cell: (item) => {
+        const isDeployOpen = deployStatusMenuId === item.id;
+        return (
+          <div className="relative inline-block" onClick={e => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setDeployStatusMenuId(prev => prev === item.id ? null : item.id);
+                setStatusMenuDeliveryId(null);
+              }}
+              title="Click to change deployment status"
+              className={clsx(
+                "st-badge cursor-pointer inline-flex items-center gap-1.5 transition-all hover:ring-1 hover:ring-current/30 active:scale-95 shadow-2xs group/st", 
+                `st-${DEL_ST_MAP[item.status] || 'not-started'}`
+              )}
+            >
+              <span className="dot" />
+              <span>{item.status}</span>
+              <ChevronDown size={11} className={clsx("opacity-40 group-hover/st:opacity-90 transition-transform duration-150", isDeployOpen && "rotate-180")} />
+            </button>
+
+            {isDeployOpen && (
+              <div
+                data-testid="deploy-status-menu"
+                className="absolute left-0 top-full mt-1.5 z-50 min-w-[190px] p-1.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-100"
+                onClick={e => e.stopPropagation()}
+              >
+                <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-[var(--color-text-faint)] border-b border-[var(--color-divider)]/40 mb-1">
+                  Set Deployment Status
+                </div>
+                <div className="space-y-0.5">
+                  {Object.keys(DEL_ST_MAP).map((st) => (
+                    <button
+                      key={st}
+                      type="button"
+                      onClick={(e) => handleSetDeployStatus(item, st, e)}
+                      className={clsx(
+                        "w-full flex items-center justify-between px-2 py-1 rounded-lg text-xs font-semibold transition-colors text-left cursor-pointer",
+                        item.status === st
+                          ? "bg-[var(--color-primary-highlight-hex)] text-[var(--color-primary-hex)] font-bold"
+                          : "text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
+                      )}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={clsx("w-2 h-2 rounded-full", `st-dot-${DEL_ST_MAP[st] || 'not-started'}`)} />
+                        <span>{st}</span>
+                      </div>
+                      {item.status === st && <Check size={12} className="text-[var(--color-primary-hex)]" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      }
     },
     {
       id: 'releaseVersion',
@@ -771,7 +849,7 @@ export const DeliveriesView: React.FC = () => {
   });
 
   return visibleCols;
-  }, [state.delCols, state.delCustomFields, delColMap, filterStatus, filterEnv, filterVersion, filterSmoke]);
+  }, [state.delCols, state.delCustomFields, delColMap, filterStatus, filterEnv, filterVersion, filterSmoke, editingTitleId, editingTitleVal, statusMenuDeliveryId, deployStatusMenuId]);
 
   // Handlers
   const toggleSelect = (id: string) => {

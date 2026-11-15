@@ -625,6 +625,7 @@ const TaskGrid: FC<TaskGridProps> = ({
             ) : (
               <div 
                 className="group/title flex items-center gap-2 min-w-0"
+                onClick={(e) => e.stopPropagation()}
                 onDoubleClick={(e) => {
                   e.stopPropagation();
                   startTitleEdit(task.id, task.name);
@@ -732,6 +733,7 @@ const TaskGrid: FC<TaskGridProps> = ({
 
             {isMenuOpen && (
               <div 
+                data-testid="task-status-menu"
                 className="absolute left-0 top-full mt-1.5 z-50 min-w-[170px] p-1.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-100"
                 onClick={(e) => e.stopPropagation()}
               >
@@ -842,6 +844,7 @@ const TaskGrid: FC<TaskGridProps> = ({
 
             {isAssigneeOpen && (
               <div
+                data-testid="task-assignee-menu"
                 className="absolute left-0 top-full mt-1.5 z-50 min-w-[180px] p-1.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-100"
                 onClick={(e) => e.stopPropagation()}
               >

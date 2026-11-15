@@ -157,8 +157,13 @@ const DefectView: React.FC = () => {
       setStatusMenuDefectId(null);
       setAssigneeMenuDefectId(null);
     };
-    window.addEventListener('click', handleClickOutside);
-    return () => window.removeEventListener('click', handleClickOutside);
+    const timer = setTimeout(() => {
+      window.addEventListener('click', handleClickOutside);
+    }, 0);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('click', handleClickOutside);
+    };
   }, [statusMenuDefectId, assigneeMenuDefectId]);
 
   const defectSummaryMetrics: SummaryMetricItem[] = useMemo(() => {
@@ -467,6 +472,7 @@ const DefectView: React.FC = () => {
         return (
           <div 
             className="min-w-0 max-w-[420px] py-0.5 group/title cursor-text"
+            onClick={e => e.stopPropagation()}
             onDoubleClick={(e) => {
               e.stopPropagation();
               setEditingTitleId(defect.id);
@@ -600,6 +606,7 @@ const DefectView: React.FC = () => {
 
             {isStatusOpen && (
               <div
+                data-testid="defect-status-menu"
                 className="absolute left-0 top-full mt-1.5 z-50 min-w-[170px] p-1.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-100"
                 onClick={e => e.stopPropagation()}
               >
@@ -687,6 +694,7 @@ const DefectView: React.FC = () => {
 
             {isAssigneeOpen && (
               <div
+                data-testid="defect-assignee-menu"
                 className="absolute left-0 top-full mt-1.5 z-50 min-w-[180px] p-1.5 rounded-xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xl backdrop-blur-md animate-in fade-in zoom-in-95 duration-100"
                 onClick={e => e.stopPropagation()}
               >
@@ -792,7 +800,7 @@ const DefectView: React.FC = () => {
     if (c.id === 'edit' || c.id === 'id' || c.id === 'title') return true;
     return defColMap[c.id]?.visible !== false;
   });
-  }, [state.defCols, state.defCustomFields, defColMap, severities, filterSeverity, priorities, filterPriority, filterStatus, assignees, filterAssignee]);
+  }, [state.defCols, state.defCustomFields, defColMap, severities, filterSeverity, priorities, filterPriority, filterStatus, assignees, filterAssignee, editingTitleId, editingTitleVal, statusMenuDefectId, assigneeMenuDefectId]);
 
   return (
     <MotionPage className="flex flex-col h-full bg-[var(--color-bg)] text-[var(--color-text)]">
