@@ -54,20 +54,51 @@ const chordReducer = (
   action: 'ARM' | 'DISARM'
 ): { status: 'idle' | 'armed' } => (action === 'ARM' ? { status: 'armed' } : { status: 'idle' });
 
+type ScreenTier = 'mobile' | 'compact' | 'wide';
+
+const getScreenTier = (width: number): ScreenTier => {
+  if (width < 1024) return 'mobile';
+  if (width < 1280) return 'compact';
+  return 'wide';
+};
+
 const MainApp: React.FC = () => {
   const { state, setView } = useProject();
   const { isAuthenticated, hasViewAccess, canPerform, currentUser } = useAuth();
   const isMobile = useMediaQuery('(max-width: 1023px)');
-  const [isSidebarOpen, setIsSidebarOpen] = useState(() => typeof window !== 'undefined' && window.innerWidth >= 1024);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return window.innerWidth >= 1280;
+  });
+  const prevTierRef = useRef<ScreenTier>(
+    typeof window !== 'undefined' ? getScreenTier(window.innerWidth) : 'wide'
+  );
   const [isAccessModalOpen, setIsAccessModalOpen] = useState(false);
   const [isCxoEmailOpen, setIsCxoEmailOpen] = useState(false);
   const [chordState, dispatchChord] = useReducer(chordReducer, { status: 'idle' });
   const chordTimerRef = useRef<number | null>(null);
   const isChordArmed = chordState.status === 'armed';
 
+  // Auto-adjust sidebar based on screen size:
+  // - Large / Wide Desktop (>= 1280px): Expanded navigation tree (270px)
+  // - Compact Desktop / Tablet Landscape (1024px - 1279px): Compact icon rail (68px)
+  // - Mobile / Tablet Portrait (< 1024px): Off-canvas drawer (closed by default)
   useEffect(() => {
-    setIsSidebarOpen(!isMobile);
-  }, [isMobile]);
+    const handleResize = () => {
+      const currentTier = getScreenTier(window.innerWidth);
+      if (currentTier !== prevTierRef.current) {
+        prevTierRef.current = currentTier;
+        setIsSidebarOpen(currentTier === 'wide');
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const handleOpenCxo = () => setIsCxoEmailOpen(true);
@@ -114,6 +145,13 @@ const MainApp: React.FC = () => {
           e.preventDefault();
           exportProjectExcel(state);
         }
+        return;
+      }
+
+      // Cmd/Ctrl + B -> Toggle Navigation Sidebar
+      if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        setIsSidebarOpen(prev => !prev);
         return;
       }
 
@@ -222,7 +260,7 @@ const MainApp: React.FC = () => {
       
       {/* Mobile Sidebar Overlay (dims Topbar z-40 cleanly under z-50 drawer) */}
       <AnimatePresence>
-        {isSidebarOpen && (
+        {isSidebarOpen && isMobile && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

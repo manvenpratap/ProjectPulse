@@ -524,6 +524,7 @@ const Topbar: React.FC<TopbarProps> = ({ toggleSidebar }) => {
             type="button"
             onClick={toggleSidebar}
             aria-label="Toggle navigation menu"
+            title="Toggle navigation sidebar (Cmd/Ctrl+B)"
             className="min-h-[44px] min-w-[44px] lg:min-h-[38px] lg:min-w-[38px] -ml-1 lg:ml-0 flex items-center justify-center hover:bg-[var(--color-surface-2)] rounded-xl text-[var(--color-text-muted)] hover:text-[var(--color-text)] transition-colors active:scale-95 cursor-pointer shrink-0"
           >
             <Menu size={18} />

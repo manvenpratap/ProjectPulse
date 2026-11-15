@@ -473,6 +473,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggle, onNavigate }) => {
           type="button"
           onClick={toggle}
           aria-label={isOpen ? 'Collapse navigation sidebar' : 'Expand navigation sidebar'}
+          title={isOpen ? 'Collapse sidebar (Cmd/Ctrl+B)' : 'Expand sidebar (Cmd/Ctrl+B)'}
           className="w-full flex items-center justify-center p-2 rounded-lg text-[var(--color-text-muted)] hover:bg-[var(--color-surface-2)] transition-colors active:scale-95 cursor-pointer min-h-[38px]"
         >
           {isOpen ? <ChevronLeft size={18} /> : <Menu size={18} />}
