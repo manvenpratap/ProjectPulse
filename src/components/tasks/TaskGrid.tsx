@@ -508,6 +508,7 @@ const TaskGrid: FC<TaskGridProps> = ({
     const baseCols: ColumnDef<Task>[] = [
     {
       id: 'id',
+      priority: 'essential',
       header: colMap['id']?.label || 'TASK ID',
       headerTitle: 'Unique persistent task identifier (e.g. T-101). Click to sort.',
       sortable: true,
@@ -534,6 +535,7 @@ const TaskGrid: FC<TaskGridProps> = ({
     },
     {
       id: 'module',
+      priority: 'high',
       header: colMap['module']?.label || 'MODULE & SCOPE',
       headerTitle: 'Functional architectural domain of the codebase this task impacts. Click to sort.',
       sortable: true,
@@ -570,10 +572,11 @@ const TaskGrid: FC<TaskGridProps> = ({
     },
     {
       id: 'name',
+      priority: 'essential',
       header: colMap['name']?.label || 'TASK NAME & CHECKLIST',
       headerTitle: 'Task title and subtask checklist status. Indented rows indicate child subtasks. Click to sort.',
       sortable: true,
-      width: 'min-w-[320px]',
+      width: 'min-w-[220px]',
       filter: <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by search</span>,
       cell: (task) => {
         const isMilestone = (task.startDate && task.startDate === task.dueDate) || task.subtasks.some(s => s.name.toLowerCase().includes('milestone'));
@@ -581,7 +584,7 @@ const TaskGrid: FC<TaskGridProps> = ({
         const isEditingThisTitle = editingTitleTaskId === task.id;
 
         return (
-          <div className="min-w-0 max-w-[440px] py-0.5">
+          <div className="min-w-0 max-w-[260px] md:max-w-[320px] lg:max-w-[420px] py-0.5">
             {isEditingThisTitle ? (
               <form
                 onSubmit={(e) => {
@@ -688,6 +691,7 @@ const TaskGrid: FC<TaskGridProps> = ({
     },
     {
       id: 'status',
+      priority: 'essential',
       header: colMap['status']?.label || 'STATUS',
       headerTitle: 'Current task lifecycle state (Not Started, In Progress, Review, Completed, On Hold, Cancelled). Click badge in rows to quick-cycle. Click to sort.',
       sortable: true,
@@ -770,6 +774,7 @@ const TaskGrid: FC<TaskGridProps> = ({
     },
     {
       id: 'priority',
+      priority: 'high',
       header: colMap['priority']?.label || 'PRIORITY',
       headerTitle: 'Execution urgency (Critical, High, Medium, Low). Prioritizes linear capacity leveling. Click to sort.',
       sortable: true,
@@ -795,6 +800,7 @@ const TaskGrid: FC<TaskGridProps> = ({
     },
     {
       id: 'assignee',
+      priority: 'medium',
       header: colMap['assignee']?.label || 'ASSIGNEE',
       headerTitle: 'Accountable module owner or developer. Subtask contributors roll up automatically. Click to sort.',
       sortable: true,
@@ -890,6 +896,7 @@ const TaskGrid: FC<TaskGridProps> = ({
     },
     {
       id: 'dueDate',
+      priority: 'medium',
       header: colMap['dueDate']?.label || 'DUE DATE',
       headerTitle: 'Planned feasibility target completion date. Evaluated against Baseline Due Date. Click to sort.',
       sortable: true,
@@ -913,6 +920,7 @@ const TaskGrid: FC<TaskGridProps> = ({
     },
     {
       id: 'progress',
+      priority: 'low',
       header: colMap['progress']?.label || 'PROGRESS',
       headerTitle: 'Granular completion percentage (0–100%). Click or slide to adjust. Click to sort.',
       sortable: true,
@@ -940,6 +948,7 @@ const TaskGrid: FC<TaskGridProps> = ({
   (state.customFields || []).forEach(cf => {
     baseCols.push({
       id: `cf_${cf.name}`,
+      priority: 'low',
       header: cf.name.toUpperCase(),
       headerTitle: `Custom Field: ${cf.name}`,
       sortable: true,
@@ -962,6 +971,7 @@ const TaskGrid: FC<TaskGridProps> = ({
   // Actions column is always last
   visibleCols.push({
     id: 'actions',
+    priority: 'essential',
     header: '',
     width: 'w-10',
     align: 'center',
@@ -1280,6 +1290,8 @@ const TaskGrid: FC<TaskGridProps> = ({
         data={filteredTasks}
         columns={columns}
         keyField="id"
+        tableLabel="Project Tasks Matrix"
+        columnVisibilityStorageKey="pp_cols_v2_tasks_matrix"
         density={density}
         showInlineFilters={showInlineFilters}
         sortField={sortField}

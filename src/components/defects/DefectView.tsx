@@ -409,6 +409,7 @@ const DefectView: React.FC = () => {
     const baseCols: ColumnDef<Defect>[] = [
     {
       id: 'edit',
+      priority: 'essential',
       header: '',
       headerTitle: 'Quick edit defect',
       width: 'w-8',
@@ -425,6 +426,7 @@ const DefectView: React.FC = () => {
     },
     {
       id: 'id',
+      priority: 'essential',
       header: defColMap['id']?.label || 'DEFECT ID',
       headerTitle: 'Persistent defect identifier (e.g. DEF-001). Click to sort.',
       sortable: true,
@@ -443,10 +445,11 @@ const DefectView: React.FC = () => {
     },
     {
       id: 'title',
+      priority: 'essential',
       header: defColMap['title']?.label || 'SUMMARY & SCOPE',
       headerTitle: 'Summary of the issue, failure symptom, or regression. Click to sort.',
       sortable: true,
-      width: 'min-w-[280px]',
+      width: 'min-w-[220px]',
       filter: <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by search</span>,
       cell: (defect) => {
         const isEditing = editingTitleId === defect.id;
@@ -471,7 +474,7 @@ const DefectView: React.FC = () => {
 
         return (
           <div 
-            className="min-w-0 max-w-[420px] py-0.5 group/title cursor-text"
+            className="min-w-0 max-w-[260px] md:max-w-[320px] lg:max-w-[420px] py-0.5 group/title cursor-text"
             onClick={e => e.stopPropagation()}
             onDoubleClick={(e) => {
               e.stopPropagation();
@@ -506,6 +509,7 @@ const DefectView: React.FC = () => {
     },
     {
       id: 'severity',
+      priority: 'essential',
       header: defColMap['severity']?.label || 'SEVERITY',
       headerTitle: 'Impact severity tier (S1-Blocker, S2-Critical, S3-Major, S4-Minor). Click to sort.',
       sortable: true,
@@ -536,6 +540,7 @@ const DefectView: React.FC = () => {
     },
     {
       id: 'priority',
+      priority: 'high',
       header: defColMap['priority']?.label || 'PRIORITY',
       headerTitle: 'Fix urgency for triage and sprint allocation. Click to sort.',
       sortable: true,
@@ -561,6 +566,7 @@ const DefectView: React.FC = () => {
     },
     {
       id: 'status',
+      priority: 'essential',
       header: defColMap['status']?.label || 'STATUS',
       headerTitle: 'Resolution lifecycle state (New, Open, In Progress, Resolved, Retest, Closed). Click to sort.',
       sortable: true,
@@ -645,6 +651,7 @@ const DefectView: React.FC = () => {
     },
     {
       id: 'assignee',
+      priority: 'medium',
       header: defColMap['assignee']?.label || 'ASSIGNEE',
       headerTitle: 'Assigned engineer or QA lead investigating the defect. Click to sort.',
       sortable: true,
@@ -740,6 +747,7 @@ const DefectView: React.FC = () => {
     },
     {
       id: 'linkedId',
+      priority: 'medium',
       header: defColMap['linkedId']?.label || 'LINKED ITEM',
       headerTitle: 'Associated task ID or GUI screen origin',
       width: 'w-32',
@@ -752,6 +760,7 @@ const DefectView: React.FC = () => {
     },
     {
       id: 'updatedAt',
+      priority: 'low',
       header: defColMap['updatedAt']?.label || 'UPDATED',
       headerTitle: 'Timestamp of last modification or comment. Click to sort.',
       sortable: true,
@@ -782,6 +791,7 @@ const DefectView: React.FC = () => {
   (state.defCustomFields || []).forEach(cf => {
     baseCols.push({
       id: `cf_${cf.name}`,
+      priority: 'low',
       header: cf.name.toUpperCase(),
       headerTitle: `Custom Field: ${cf.name}`,
       sortable: true,
@@ -1119,6 +1129,7 @@ const DefectView: React.FC = () => {
             columns={columns}
             keyField="id"
             tableLabel="Defect Workshop & Quality Matrix"
+            columnVisibilityStorageKey="pp_cols_v2_defects"
             density={density}
             showInlineFilters={showInlineFilters}
             sortField={sortBy}

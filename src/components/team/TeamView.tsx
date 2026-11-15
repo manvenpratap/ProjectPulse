@@ -1884,7 +1884,7 @@ const TeamView: React.FC = () => {
               pagination={pagination}
               itemLabel="members"
               density={tableDensity}
-              minWidth="min-w-[850px]"
+              minWidth="w-full"
               stickyFirstColumn={true}
               onRowClick={(m) => setPeekMemberId(m.id)}
             />
@@ -1964,7 +1964,7 @@ const TeamView: React.FC = () => {
               }
             }}
             showRowNumbers={false}
-            minWidth="min-w-[760px]"
+            minWidth="w-full"
             density="compact"
             onRowClick={(row) => setPeekMemberId(row.member.id)}
           />
@@ -2154,7 +2154,7 @@ const TeamView: React.FC = () => {
             data={members}
             columns={skillsColumns}
             showRowNumbers={false}
-            minWidth="min-w-[700px]"
+            minWidth="w-full"
             density="compact"
             onRowClick={(m) => setPeekMemberId(m.id)}
           />

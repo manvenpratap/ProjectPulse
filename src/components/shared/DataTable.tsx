@@ -6,6 +6,9 @@ import TablePagination, { UsePaginationReturn } from './TablePagination';
 
 export type DensityMode = 'comfortable' | 'compact';
 
+export type ColumnPriority = 'essential' | 'high' | 'medium' | 'low';
+export type Breakpoint = 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+
 export interface ColumnDef<T> {
   id: string;
   header: ReactNode;
@@ -21,6 +24,8 @@ export interface ColumnDef<T> {
   onClick?: (item: T, event: ReactMouseEvent) => void;
   hideable?: boolean;
   defaultHidden?: boolean;
+  priority?: ColumnPriority;
+  minBreakpoint?: Breakpoint;
 }
 
 export interface DataTableProps<T> {
@@ -99,7 +104,7 @@ export function DataTable<T>({
   density = 'comfortable',
   showInlineFilters = true,
   maxHeight = 'max-h-[calc(100vh-280px)]',
-  minWidth = 'min-w-[1100px]',
+  minWidth = 'min-w-full',
   containerClassName,
   tableClassName,
   sortField,
@@ -134,9 +139,107 @@ export function DataTable<T>({
   columnVisibilityStorageKey
 }: DataTableProps<T>): ReactElement {
   const [showMatrixOnMobile, setShowMatrixOnMobile] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState<number>(() => {
+    if (typeof window === 'undefined') return 1440;
+    const winW = window.innerWidth;
+    // Estimate container width accounting for navigation rail/sidebar and padding
+    return winW >= 1280 ? winW - 290 : winW >= 1024 ? winW - 88 : winW;
+  });
+
+  // Monitor container width reactively so tables auto-adjust columns to eliminate side scroll
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const updateWidth = () => {
+      if (containerRef.current) {
+        const w = containerRef.current.clientWidth;
+        if (w > 0) setContainerWidth(w);
+      } else {
+        const winW = window.innerWidth;
+        setContainerWidth(winW >= 1280 ? winW - 290 : winW >= 1024 ? winW - 88 : winW);
+      }
+    };
+
+    updateWidth();
+
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined' && containerRef.current) {
+      ro = new ResizeObserver((entries) => {
+        for (const entry of entries) {
+          const w = entry.contentBoxSize?.[0]?.inlineSize ?? entry.contentRect.width;
+          if (w > 0) setContainerWidth(w);
+        }
+      });
+      ro.observe(containerRef.current);
+    }
+
+    window.addEventListener('resize', updateWidth);
+    window.addEventListener('orientationchange', updateWidth);
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener('resize', updateWidth);
+      window.removeEventListener('orientationchange', updateWidth);
+    };
+  }, []);
+
+  // Determine if a column should be responsive-hidden by default for the current container width
+  const isColResponsiveHidden = (col: ColumnDef<T>, index: number, width: number): boolean => {
+    if (col.defaultHidden) return true;
+    if (col.hideable === false) return false;
+
+    // Resolve priority
+    let priority = col.priority;
+    if (!priority) {
+      if (col.minBreakpoint === '2xl') priority = 'low';
+      else if (col.minBreakpoint === 'xl') priority = 'medium';
+      else if (col.minBreakpoint === 'lg') priority = 'high';
+      else if (col.minBreakpoint === 'md') priority = 'high';
+      else if (col.minBreakpoint === 'sm') priority = 'essential';
+    }
+
+    if (!priority) {
+      const id = col.id.toLowerCase();
+      if (id === 'id' || id === 'name' || id === 'title' || id === 'status' || id === 'actions' || id === 'edit') {
+        priority = 'essential';
+      } else if (index < 2) {
+        priority = 'high';
+      } else if (index < 4) {
+        priority = 'medium';
+      } else {
+        priority = 'low';
+      }
+    }
+
+    // Container width responsive thresholds to maintain zero side scroll by default:
+    // < 1000px: only essential columns
+    if (width < 1000) {
+      return priority !== 'essential';
+    }
+    // 1000px - 1249px: essential + high (fits comfortably within 1000 - 1249px without side scroll)
+    if (width < 1250) {
+      return priority === 'medium' || priority === 'low';
+    }
+    // 1250px - 1549px: essential + high + medium (fits comfortably within 1250 - 1549px without side scroll)
+    if (width < 1550) {
+      return priority === 'low';
+    }
+    // >= 1550px: all columns fit comfortably
+    return false;
+  };
 
   // Column Visibility State & Persistence
-  const storageKey = columnVisibilityStorageKey || (tableLabel ? `pp_cols_${tableLabel.replace(/\s+/g, '_').toLowerCase()}` : undefined);
+  const storageKey = columnVisibilityStorageKey || (tableLabel ? `pp_cols_v2_${tableLabel.replace(/\s+/g, '_').toLowerCase()}` : undefined);
+  const [userCustomized, setUserCustomized] = useState<boolean>(() => {
+    if (storageKey && typeof window !== 'undefined') {
+      try {
+        return localStorage.getItem(storageKey) !== null;
+      } catch (e) {
+        return false;
+      }
+    }
+    return false;
+  });
+
   const [hiddenColumnIds, setHiddenColumnIds] = useState<Set<string>>(() => {
     if (storageKey && typeof window !== 'undefined') {
       try {
@@ -146,9 +249,22 @@ export function DataTable<T>({
         // ignore
       }
     }
-    const defHidden = columns.filter(c => c.defaultHidden).map(c => c.id);
-    return new Set(defHidden);
+    return new Set();
   });
+
+  // Effective hidden columns: user explicit choices if customized, else responsive screen-size defaults
+  const effectiveHiddenColumnIds = useMemo(() => {
+    if (userCustomized) {
+      return hiddenColumnIds;
+    }
+    const set = new Set<string>();
+    columns.forEach((col, idx) => {
+      if (isColResponsiveHidden(col, idx, containerWidth)) {
+        set.add(col.id);
+      }
+    });
+    return set;
+  }, [userCustomized, hiddenColumnIds, columns, containerWidth]);
 
   const [isColMenuOpen, setIsColMenuOpen] = useState(false);
   const colMenuRef = useRef<HTMLDivElement>(null);
@@ -165,8 +281,10 @@ export function DataTable<T>({
   }, [isColMenuOpen]);
 
   const toggleColumnVisibility = (colId: string) => {
+    setUserCustomized(true);
     setHiddenColumnIds(prev => {
-      const next = new Set(prev);
+      const base = userCustomized ? prev : effectiveHiddenColumnIds;
+      const next = new Set(base);
       if (next.has(colId)) next.delete(colId);
       else next.add(colId);
 
@@ -182,6 +300,19 @@ export function DataTable<T>({
   };
 
   const showAllColumns = () => {
+    setUserCustomized(true);
+    setHiddenColumnIds(new Set());
+    if (storageKey && typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(storageKey, JSON.stringify([]));
+      } catch (e) {
+        // ignore
+      }
+    }
+  };
+
+  const resetToAuto = () => {
+    setUserCustomized(false);
     setHiddenColumnIds(new Set());
     if (storageKey && typeof window !== 'undefined') {
       try {
@@ -195,8 +326,8 @@ export function DataTable<T>({
   // Filter columns based on visibility
   const visibleColumns = useMemo(() => {
     if (!enableColumnVisibility) return columns;
-    return columns.filter(c => !hiddenColumnIds.has(c.id));
-  }, [columns, hiddenColumnIds, enableColumnVisibility]);
+    return columns.filter(c => !effectiveHiddenColumnIds.has(c.id));
+  }, [columns, effectiveHiddenColumnIds, enableColumnVisibility]);
 
   // Determine if expand slot should be shown
   const hasExpand = expandable ?? (Boolean(canExpand) || Boolean(renderSubRows));
@@ -241,6 +372,7 @@ export function DataTable<T>({
 
   return (
     <div 
+      ref={containerRef}
       className={clsx(
         "rounded-2xl border border-[var(--color-divider)] bg-[var(--color-surface)] shadow-xs overflow-hidden",
         isCompact ? "density-compact" : "density-comfortable",
@@ -298,19 +430,31 @@ export function DataTable<T>({
                   <div className="absolute right-0 top-full mt-1.5 z-40 w-60 p-2 rounded-2xl bg-[var(--color-surface)] border border-[var(--color-divider)] shadow-xl space-y-1.5 text-xs animate-in fade-in zoom-in-95 duration-100">
                     <div className="px-2 py-1 flex items-center justify-between border-b border-[var(--color-divider)] text-[11px] font-bold text-[var(--color-text-muted)]">
                       <span>Column Visibility</span>
-                      <button
-                        type="button"
-                        onClick={showAllColumns}
-                        className="text-[10px] text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer font-semibold"
-                      >
-                        <RotateCcw size={10} />
-                        <span>Show All</span>
-                      </button>
+                      <div className="flex items-center gap-2">
+                        {userCustomized && (
+                          <button
+                            type="button"
+                            onClick={resetToAuto}
+                            className="text-[10px] text-[var(--color-text-muted)] hover:text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer font-semibold"
+                            title="Reset to automatic screen-size defaults"
+                          >
+                            <RotateCcw size={10} />
+                            <span>Auto</span>
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={showAllColumns}
+                          className="text-[10px] text-[var(--color-primary-hex)] hover:underline flex items-center gap-1 cursor-pointer font-semibold"
+                        >
+                          <span>Show All</span>
+                        </button>
+                      </div>
                     </div>
 
                     <div className="max-h-56 overflow-y-auto custom-scroll space-y-0.5 p-0.5">
                       {columns.map(col => {
-                        const isVisible = !hiddenColumnIds.has(col.id);
+                        const isVisible = !effectiveHiddenColumnIds.has(col.id);
                         const isLocked = col.hideable === false;
                         const label = col.headerTitle || (typeof col.header === 'string' ? col.header : col.id);
 

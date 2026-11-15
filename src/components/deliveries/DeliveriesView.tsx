@@ -379,6 +379,7 @@ export const DeliveriesView: React.FC = () => {
     const baseCols: ColumnDef<Delivery>[] = [
     {
       id: 'almId',
+      priority: 'essential',
       header: delColMap['almId']?.label || 'ALM ID / PDN',
       headerTitle: 'Application Lifecycle Management tracking ID and Package Delivery Note code. Click to sort.',
       sortable: true,
@@ -406,10 +407,11 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'name',
+      priority: 'essential',
       header: delColMap['name']?.label || 'DELIVERY SCOPE & DETAILS',
       headerTitle: 'Package title and delivery scope narrative. Click to sort.',
       sortable: true,
-      width: 'min-w-[260px]',
+      width: 'min-w-[220px]',
       filter: <span className="text-[10px] text-[var(--color-text-faint)] italic pl-1">Filtered by topbar search</span>,
       cell: (item) => {
         const isEditing = editingTitleId === item.id;
@@ -434,7 +436,7 @@ export const DeliveriesView: React.FC = () => {
 
         return (
           <div 
-            className="min-w-0 max-w-[380px] py-0.5 group/title cursor-text"
+            className="min-w-0 max-w-[260px] md:max-w-[320px] lg:max-w-[400px] py-0.5 group/title cursor-text"
             onClick={e => e.stopPropagation()}
             onDoubleClick={(e) => {
               e.stopPropagation();
@@ -477,6 +479,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'almStatus',
+      priority: 'essential',
       header: delColMap['almStatus']?.label || 'ALM STATUS',
       headerTitle: 'Current delivery lifecycle status (New, Scheduled, In Progress, Ready for Deployment, Closed). Click to sort.',
       sortable: true,
@@ -553,6 +556,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'environment',
+      priority: 'high',
       header: delColMap['environment']?.label || 'ENV',
       headerTitle: 'Target deployment infrastructure tier (DEV, SIT, UAT, STAGING, PROD). Click to sort.',
       sortable: true,
@@ -584,6 +588,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'status',
+      priority: 'medium',
       header: delColMap['status']?.label || 'DEPLOY STATUS',
       headerTitle: 'Deployment pipeline status (Pending, Deployed, Verified, Rolled Back). Click to sort.',
       sortable: true,
@@ -649,6 +654,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'releaseVersion',
+      priority: 'medium',
       header: delColMap['releaseVersion']?.label || 'RELEASE',
       headerTitle: 'Mapped release vehicle (e.g. v1.0.0, Q3 Release). Click to sort.',
       sortable: true,
@@ -673,6 +679,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'signOffStatus',
+      priority: 'low',
       header: delColMap['signOffStatus']?.label || 'SIGN-OFF',
       headerTitle: 'Quality and stakeholder sign-off status (Pending, Approved, Conditionally Approved, Rejected). Click to sort.',
       sortable: true,
@@ -699,6 +706,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'smokeTestStatus',
+      priority: 'low',
       header: delColMap['smokeTestStatus']?.label || 'SMOKE GATE',
       headerTitle: 'Automated smoke test gate status (Passed, Failed, In Progress, Blocked). Click to sort.',
       sortable: true,
@@ -729,6 +737,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'linkedScope',
+      priority: 'low',
       header: delColMap['linkedScope']?.label || 'LINKED SCOPE',
       headerTitle: 'Total count of tasks and GUI screens bundled into this delivery note',
       width: 'w-32',
@@ -743,6 +752,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'targetDeliveryDate',
+      priority: 'low',
       header: delColMap['targetDeliveryDate']?.label || 'TARGET DATE',
       headerTitle: 'Scheduled calendar delivery date. Click to sort.',
       sortable: true,
@@ -761,6 +771,7 @@ export const DeliveriesView: React.FC = () => {
     },
     {
       id: 'leadVar',
+      priority: 'low',
       header: delColMap['leadVar']?.label || 'LEAD / VAR',
       headerTitle: 'Lead time and schedule variance against baseline target',
       width: 'w-24',
@@ -784,6 +795,7 @@ export const DeliveriesView: React.FC = () => {
   (state.delCustomFields || []).forEach(cf => {
     baseCols.push({
       id: `cf_${cf.name}`,
+      priority: 'low',
       header: cf.name.toUpperCase(),
       headerTitle: `Custom Field: ${cf.name}`,
       sortable: true,
@@ -805,6 +817,7 @@ export const DeliveriesView: React.FC = () => {
 
   visibleCols.push({
     id: 'actions',
+    priority: 'essential',
     header: '',
     width: 'w-10',
     align: 'center',
@@ -1403,6 +1416,7 @@ export const DeliveriesView: React.FC = () => {
             columns={columns}
             keyField="id"
             tableLabel="Deliveries and Deployment Packages"
+            columnVisibilityStorageKey="pp_cols_v2_deliveries"
             density={autofitStrategy === 'compact' ? 'compact' : 'comfortable'}
             showInlineFilters={showInlineFilters}
             sortField={sortBy}
